@@ -1,0 +1,364 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
+import org.apache.commons.io.FileUtils
+import org.flywaydb.gradle.task.FlywayInfoTask
+import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Generate
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.Schema
+import org.jooq.meta.jaxb.Target
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Properties
+import java.util.TimeZone
+
+group = "io.easybreezy"
+version = "1.0-SNAPSHOT"
+
+buildscript {
+    repositories {
+        maven(url = "https://plugins.gradle.org/m2/")
+    }
+
+    dependencies {
+        classpath(Deps.postgresqlJDBC)
+        classpath(Deps.jooq)
+        classpath(Deps.jooq_codegen)
+    }
+}
+
+sourceSets.create("migrations") {
+    java.srcDir("src/migrations/kotlin")
+}
+
+sourceSets {
+    main {
+        java.srcDirs("src/main/generated")
+        compileClasspath += getByName("migrations").output
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+plugins {
+    kotlin(KotlinModules.jvm).version(Versions.kotlin)
+    id(Plugins.kotlin_allopen).version(Versions.kotlin)
+    id(Plugins.kotlin_noarg).version(Versions.kotlin)
+    id(Plugins.kotlin_jpa).version(Versions.kotlin)
+    id(Plugins.flyway).version(Versions.flyway)
+    id(Plugins.jooq_studer).version(Versions.jooq_studer)
+    id(Plugins.ktlint_gradle).version(Versions.ktlint_gradle)
+
+    java
+    application
+    io.easybreezy.shadow
+    id(Plugins.test_logger) version Versions.test_logger
+}
+
+dependencies {
+    implementation(kotlin(KotlinModules.stdlib_jdk8))
+    implementation(Deps.kotlin_reflect)
+    implementation(Deps.ktor_server_netty)
+    implementation(Deps.ktor_server_sessions)
+    implementation(Deps.ktor_locations)
+    implementation(Deps.ktor_gson)
+    implementation(Deps.cfg4k_core)
+    implementation(Deps.hikaricp)
+    implementation(Deps.gson)
+    implementation(Deps.valiktor_core)
+    implementation(Deps.hibernate_core)
+    implementation(Deps.jooq)
+    implementation(Deps.google_guice)
+    implementation(Deps.rabbitmq_amqp_client)
+    implementation(Deps.postgresqlJDBC)
+    implementation(Deps.flywaydb_flyway_core)
+    implementation(Deps.ktor_server_core)
+    implementation(Deps.ktor_client_cio)
+    implementation(Deps.ktor_client_gson)
+    implementation(Deps.ktor_client_auth_jvm)
+    implementation(Deps.mindrot_jbcrypt)
+    implementation(Deps.ktor_auth_jwt)
+
+    runtimeOnly(Deps.logback_classic)
+
+    testImplementation(Deps.ktor_server_test_host)
+    testImplementation(Deps.junit_juiter_api)
+    testRuntimeOnly(Deps.junit_jupiter_engine)
+
+    dependencies.add("migrationsImplementation", Deps.flywaydb_flyway_core)
+    dependencies.add("migrationsImplementation", Deps.kotlin_reflect)
+    dependencies.add("migrationsImplementation", kotlin(KotlinModules.stdlib_jdk8))
+    implementation(kotlin("stdlib-jdk8"))
+}
+
+ktlint {
+    version.set("0.35.0")
+    debug.set(false)
+    verbose.set(true)
+    android.set(false)
+    outputToConsole.set(true)
+    outputColorName.set("RED")
+    ignoreFailures.set(true)
+    enableExperimentalRules.set(false)
+    disabledRules.set(setOf("import-ordering"))
+    reporters {
+        reporter(ReporterType.PLAIN)
+        reporter(ReporterType.CHECKSTYLE)
+    }
+
+    filter {
+        exclude("**/generated/**")
+        include("**/kotlin/**")
+    }
+}
+
+application {
+    mainClassName = "io.easybreezy.application.MainKt"
+}
+
+allOpen {
+    annotation(Annotations.javax_entity)
+    annotation(Annotations.javax_mapped_super_class)
+    annotation(Annotations.javax_embeddable)
+}
+
+tasks.register("createDefaultUser", JavaExec::class) {
+    group = "user"
+    main = "io.easybreezy.user.cli.CreateDefaultUserCommand"
+    classpath = sourceSets["main"].runtimeClasspath
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = listOf(
+            "-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI",
+            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI"
+        )
+    }
+}
+
+configure<JavaPluginConvention> {
+    sourceCompatibility = JavaVersion.VERSION_11
+}
+
+//  ----------------  TEST ----------------  //
+
+testlogger {
+    theme = ThemeType.PLAIN
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+
+    dependsOn(":loadTestSystemConfiguration", ":migrationsTestMigrate", ":jooqTestCodeGen")
+
+    systemProperty("easybreezy.test", "true")
+    testLogging {
+        events("PASSED", "STARTED", "FAILED", "SKIPPED")
+        showStandardStreams = true
+    }
+
+    doFirst {
+        System.getProperties().forEach { (k, v) ->
+            if (k.toString().startsWith("easybreezy.")) {
+                systemProperty(k.toString(), v.toString())
+            }
+        }
+    }
+}
+
+//  ----------------  END TEST ----------------  //
+
+//  ----------------  JOOQ ----------------  //
+
+listOf("", "Test").forEach { testOrNotTest ->
+    tasks.register("jooq${testOrNotTest}CodeGen") {
+        dependsOn(":migrations${testOrNotTest}Migrate")
+
+        doLast {
+            val configuration = Configuration().apply {
+                version = project.version
+                jdbc = Jdbc().apply {
+                    url = System.getProperties().getOrDefault("easybreezy.jdbc.url", null) as String?
+                    user = System.getProperties().getOrDefault("easybreezy.jdbc.user", null) as String?
+                    username = System.getProperties().getOrDefault("easybreezy.jdbc.username", null) as String?
+                    password = System.getProperties().getOrDefault("easybreezy.jdbc.password", null) as String?
+                    driver = System.getProperties().getOrDefault("easybreezy.jdbc.driver", null) as String?
+                }
+                generator = Generator().apply {
+                    database = Database().apply {
+                        name = "org.jooq.meta.postgres.PostgresDatabase"
+                        includes = ".*"
+                        excludes = "flyway_schema_history"
+                        forcedTypes = listOf(
+                            ForcedType().apply {
+                                userType = "com.google.gson.JsonElement"
+                                binding = "io.easybreezy.application.db.jooq.PostgresJSONGsonBinding"
+                                // expression = ".*public.*"
+                                types = ".*json.*"
+                            }
+                        )
+                        schemata = listOf(
+                            Schema().apply { inputSchema = "public" }
+                        )
+                    }
+
+                    generate = Generate().apply {
+                        isGeneratedAnnotation = false
+                    }
+
+                    target = Target().apply {
+                        packageName = "io.easybreezy"
+                        directory = "${project.projectDir}/src/main/generated"
+                    }
+                }
+            }
+
+            GenerationTool.generate(configuration)
+        }
+    }
+}
+
+tasks.register("jooqCodeClean") {
+    doLast {
+        FileUtils.deleteDirectory(File("$projectDir/src/main/generated"))
+    }
+}
+
+tasks.getByPath("compileKotlin").dependsOn("jooqCodeGen")
+tasks.getByPath("compileTestKotlin").dependsOn("jooqTestCodeGen")
+tasks.getByPath("clean").finalizedBy("jooqCodeClean")
+
+//  ----------------  END JOOQ ----------------  //
+
+//  ----------------  MIGRATIONS ----------------  //
+
+val migrationsPath = "${project.projectDir}/src/migrations/kotlin/io/easybreezy/migrations"
+
+listOf("", "Test").forEach { testOrNotTest ->
+    val taskName = "migrations${testOrNotTest}Migrate"
+
+    tasks.register(taskName) {
+        group = "migrations"
+        dependsOn("migrationsClasses", ":load${testOrNotTest}SystemConfiguration")
+
+        doLast {
+            val jdbcUrl = System.getProperties().getOrDefault("easybreezy.jdbc.url", null) as String?
+            val jdbcUser = System.getProperties().getOrDefault("easybreezy.jdbc.user", null) as String?
+            val jdbcPassword = System.getProperties().getOrDefault("easybreezy.jdbc.password", null) as String?
+
+            logger.lifecycle("Migrating database $jdbcUrl")
+
+            flyway {
+                validateOnMigrate = false
+                outOfOrder = true
+                baselineOnMigrate = true
+                locations = listOf("classpath:io/easybreezy/migrations").toTypedArray()
+                url = jdbcUrl
+                user = jdbcUser
+                password = jdbcPassword
+            }
+            tasks.withType<FlywayInfoTask> { runTask() }
+            tasks.withType<FlywayMigrateTask> { runTask() }
+        }
+    }
+}
+
+tasks.register("migrationsGenerate") {
+    group = "migrations"
+
+    doLast {
+
+        val migrationName = properties["migname"]
+            ?: throw IllegalArgumentException("You must specify `migname` argument")
+
+        val dateFormat = SimpleDateFormat("yyyyMMddHHmmss")
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val timestamp = dateFormat.format(Date())
+
+        val fullMigrationName = "V${timestamp}__$migrationName"
+        val fullMigrationPath = "$migrationsPath/$fullMigrationName.kt"
+
+        val template = file("${project.projectDir}/src/migrations/resources/Migration.kt.template").readText()
+        val migrationBody = template.replace("\$MIGRATION_NAME", fullMigrationName)
+        file(fullMigrationPath).writeText(migrationBody)
+        logger.lifecycle("Migration $fullMigrationName has been generated")
+    }
+}
+
+//  ----------------  END MIGRATIONS ----------------  //
+
+//  ----------------  CONFIGURATIONS ----------------  //
+
+val globalPrudentaProperties = System.getProperties()
+    .entries
+    .filter { (k, _) -> k.toString().startsWith("easybreezy.") }
+    .map { (k, v) -> Pair(k.toString(), v.toString()) }
+
+tasks.register("loadSystemConfiguration") {
+    group = "configuration"
+
+    doLast {
+        val properties = Properties()
+        val localPropertiesFile = file("$projectDir/src/main/resources/local.properties")
+
+        if (localPropertiesFile.exists()) {
+            logger.lifecycle("Loading ${localPropertiesFile.path}")
+            properties.load(localPropertiesFile.readText().byteInputStream())
+        }
+
+        for ((k, v) in properties.entries) {
+            val sKey = k.toString()
+
+            if (sKey.startsWith("easybreezy.")) {
+                if (System.getProperty(sKey) == null) {
+                    System.setProperty(sKey, v.toString())
+                }
+
+                continue
+            }
+
+            System.setProperty(k.toString(), v.toString())
+        }
+
+        for ((k, v) in globalPrudentaProperties) {
+            System.setProperty(k, v)
+        }
+    }
+}
+
+tasks.register("loadTestSystemConfiguration") {
+    group = "configuration"
+
+    doLast {
+        val properties = Properties()
+        val localPropertiesFile = file("$projectDir/src/main/resources/local-test.properties")
+
+        if (localPropertiesFile.exists()) {
+            logger.lifecycle("Loading ${localPropertiesFile.path}")
+            properties.load(localPropertiesFile.readText().byteInputStream())
+        }
+
+        for ((k, v) in properties.entries) {
+            System.setProperty(k.toString(), v.toString())
+        }
+
+        for ((k, v) in globalPrudentaProperties) {
+            System.setProperty(k, v)
+        }
+
+        System.setProperty("easybreezy.test", "true")
+    }
+}
+
+//  ----------------  END CONFIGURATIONS ----------------  //
