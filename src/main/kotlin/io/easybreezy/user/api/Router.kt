@@ -38,6 +38,7 @@ class Router @Inject constructor(
             get("") { controller<UserController>(this).index() }
 
             post("/invite") { controller<UserController>(this).invite(call.receive()) }
+            post("/confirm") { controller<UserController>(this).confirm(call.receive()) }
         }
     }
 }

@@ -13,19 +13,23 @@ import io.easybreezy.application.db.hibernate.DataSourceProvider
 import io.easybreezy.application.db.hibernate.PostgreSQLCustomDialect
 import io.easybreezy.application.db.hikari.HikariDataSource
 import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
+import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Principal
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DataConversion
 import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -42,6 +46,7 @@ import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder
 import org.hibernate.boot.registry.classloading.spi.ClassLoaderService
 import org.slf4j.event.Level
+import org.valiktor.ConstraintViolationException
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
@@ -100,6 +105,14 @@ fun main() {
             }
         }
 
+        install(StatusPages) {
+            exception<ConstraintViolationException> { ErrorRenderer.render(call, it) }
+            status(HttpStatusCode.Unauthorized) {
+                ErrorRenderer.render(call, "You're not authorized", HttpStatusCode.Unauthorized)
+            }
+            exception<Exception> { ErrorRenderer.render(call, it) }
+        }
+
         install(ContentNegotiation) {
             register(ContentType.Application.Json, GsonConverter())
         }
@@ -133,7 +146,7 @@ private fun configureHibernate(dataSource: DataSource): SessionFactory {
     val registry = StandardServiceRegistryBuilder(serviceRegistry, loadedConfig)
         .applySetting("hibernate.connection.provider_class", provider)
         .applySetting("hibernate.current_session_context_class", "thread")
-        .applySetting("org.hibernate.flushMode ", "MANUAL")
+        .applySetting("org.hibernate.flushMode ", "COMMIT")
         .applySetting("hibernate.dialect", PostgreSQLCustomDialect::class.java.name)
         .applySetting("show_sql", true)
         .build()

@@ -5,6 +5,7 @@ import com.google.inject.Guice
 import io.easybreezy.application.db.test.TestDataSource
 import io.easybreezy.application.db.test.TestHibernate
 import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
+import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Principal
@@ -23,6 +24,7 @@ import io.ktor.features.DataConversion
 import io.ktor.features.StatusPages
 import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.createTestEnvironment
@@ -33,6 +35,7 @@ import io.ktor.sessions.sessions
 import io.ktor.sessions.set
 import io.ktor.util.DataConversionException
 import org.hibernate.SessionFactory
+import org.valiktor.ConstraintViolationException
 import java.util.UUID
 import javax.sql.DataSource
 
@@ -69,6 +72,11 @@ class TestEngine {
             })
 
             engine.application.install(StatusPages) {
+                exception<ConstraintViolationException> { ErrorRenderer.render(call, it) }
+                status(HttpStatusCode.Unauthorized) {
+                    ErrorRenderer.render(call, "You're not authorized", HttpStatusCode.Unauthorized)
+                }
+                exception<Exception> { ErrorRenderer.render(call, it) }
             }
 
             engine.application.intercept(ApplicationCallPipeline.Call) {
