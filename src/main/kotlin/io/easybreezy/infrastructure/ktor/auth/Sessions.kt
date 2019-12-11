@@ -2,7 +2,7 @@ package io.easybreezy.infrastructure.ktor.auth
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.easybreezy.user.model.User
+import io.easybreezy.user.model_legacy.User
 import io.ktor.sessions.SessionSerializer
 import java.lang.reflect.Type
 import java.util.UUID

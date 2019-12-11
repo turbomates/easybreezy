@@ -3,7 +3,7 @@ package io.easybreezy.user.infrastructure.security
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.easybreezy.user.model.UserId
+import io.easybreezy.user.model_legacy.UserId
 import java.util.Date
 
 object JWT {

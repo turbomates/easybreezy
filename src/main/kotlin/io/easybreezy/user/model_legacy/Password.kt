@@ -1,12 +1,8 @@
-package io.easybreezy.user.model
+package io.easybreezy.user.model_legacy
 
 import org.mindrot.jbcrypt.BCrypt
-import javax.persistence.Column
-import javax.persistence.Embeddable
 
-@Embeddable
 class Password(plainPassword: String) {
-    @Column(name = "password")
     private var hashedPassword: String = hash(plainPassword)
 
     companion object {

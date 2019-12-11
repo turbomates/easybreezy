@@ -8,16 +8,16 @@ import com.jdiazcano.cfg4k.loaders.SystemPropertyConfigLoader
 import com.jdiazcano.cfg4k.providers.ConfigProvider
 import com.jdiazcano.cfg4k.providers.OverrideConfigProvider
 import com.jdiazcano.cfg4k.providers.ProxyConfigProvider
+import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ConfigSource
-import io.easybreezy.application.db.hibernate.DataSourceProvider
-import io.easybreezy.application.db.hibernate.PostgreSQLCustomDialect
-import io.easybreezy.application.db.hikari.HikariDataSource
+import com.zaxxer.hikari.HikariConfig
 import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
+import io.easybreezy.user.model.Users
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -38,13 +38,7 @@ import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
-import org.hibernate.SessionFactory
-import org.hibernate.boot.MetadataSources
-import org.hibernate.boot.cfgxml.internal.ConfigLoader
-import org.hibernate.boot.cfgxml.spi.LoadedConfig
-import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder
-import org.hibernate.boot.registry.classloading.spi.ClassLoaderService
+import org.jetbrains.exposed.sql.Database
 import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
 import java.io.File
@@ -54,13 +48,12 @@ import javax.sql.DataSource
 
 fun main() {
     val configProvider = SystemConfiguration
-    val dataSource = HikariDataSource(SystemConfiguration)
-    val sessionFactory = configureHibernate(dataSource)
+    val dataSource = HikariDataSource(configProvider)
+    Database.connect(dataSource)
 
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)
-            bind(SessionFactory::class.java).toInstance(sessionFactory)
         }
     })
 
@@ -130,37 +123,6 @@ fun main() {
     }.start()
 }
 
-private fun configureHibernate(dataSource: DataSource): SessionFactory {
-    val provider = DataSourceProvider(dataSource)
-    val loadedConfig = LoadedConfig.baseline()
-    val serviceRegistry = BootstrapServiceRegistryBuilder().enableAutoClose().build()
-    val configLoader = ConfigLoader(serviceRegistry)
-
-    // toDO - подумать над расположением конфигов хибернейта
-    val hibernateResources =
-        serviceRegistry.getService(ClassLoaderService::class.java).locateResources("hibernate.cfg.xml")
-
-    for (resourceURL in hibernateResources) {
-        loadedConfig.merge(configLoader.loadConfigXmlUrl(resourceURL))
-    }
-    val registry = StandardServiceRegistryBuilder(serviceRegistry, loadedConfig)
-        .applySetting("hibernate.connection.provider_class", provider)
-        .applySetting("hibernate.current_session_context_class", "thread")
-        .applySetting("org.hibernate.flushMode ", "COMMIT")
-        .applySetting("hibernate.dialect", PostgreSQLCustomDialect::class.java.name)
-        .applySetting("show_sql", true)
-        .build()
-    try {
-        return MetadataSources(registry).buildMetadata().buildSessionFactory()
-    } catch (e: Exception) {
-        // The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
-        // so destroy it manually.
-        StandardServiceRegistryBuilder.destroy(registry)
-
-        throw ExceptionInInitializerError("Initial SessionFactory failed $e")
-    }
-}
-
 private fun buildConfiguration(): ConfigProvider {
     val resourceObject = object {}
 
@@ -193,3 +155,18 @@ private fun streamConfigSource(inputStream: InputStream): ConfigSource {
 }
 
 object SystemConfiguration : ConfigProvider by buildConfiguration()
+
+internal val lookupDataSource: (configProvider: ConfigProvider) -> DataSource = { configProvider ->
+    val hkConfig = HikariConfig().apply {
+        connectionTestQuery = "select 1"
+        jdbcUrl = configProvider.getOrNull("easybreezy.jdbc.url")
+        username = configProvider.getOrNull("easybreezy.jdbc.user")
+        password = configProvider.getOrNull("easybreezy.jdbc.password")
+    }
+
+    com.zaxxer.hikari.HikariDataSource(hkConfig)
+}
+
+abstract class HikariDataSourceBase(private val ds: DataSource) : DataSource by ds
+
+class HikariDataSource(configProvider: ConfigProvider) : HikariDataSourceBase(lookupDataSource(configProvider))
