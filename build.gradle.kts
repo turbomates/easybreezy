@@ -87,6 +87,10 @@ dependencies {
     implementation(Deps.ktor_client_auth_jvm)
     implementation(Deps.mindrot_jbcrypt)
     implementation(Deps.ktor_auth_jwt)
+    implementation(Deps.exposed_core)
+    implementation(Deps.exposed_dao)
+    implementation(Deps.exposed_jdbc)
+    implementation(Deps.exposed_jodatime)
 
     runtimeOnly(Deps.logback_classic)
 

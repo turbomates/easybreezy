@@ -19,6 +19,7 @@ object Versions {
     const val jsoup = "1.11.3"
     const val rabbitmq_amqp_client = "5.6.0"
     const val ktlint_gradle = "9.1.1"
+    const val exposed = "0.18.1"
 }
 
 object Deps {
@@ -63,7 +64,10 @@ object Deps {
 
     const val ktlint_gradle = "org.jlleitschuh.gradle:ktlint-gradle:${Versions.ktlint_gradle}"
 
-    const val exposed = ""
+    const val exposed_core = "org.jetbrains.exposed:exposed-core:${Versions.exposed}"
+    const val exposed_dao = "org.jetbrains.exposed:exposed-dao:${Versions.exposed}"
+    const val exposed_jdbc = "org.jetbrains.exposed:exposed-jdbc:${Versions.exposed}"
+    const val exposed_jodatime = "org.jetbrains.exposed:exposed-jodatime:${Versions.exposed}"
 }
 
 object Plugins {
