@@ -1,11 +1,6 @@
 package io.easybreezy.user.cli
 
-import com.google.gson.JsonArray
 import io.easybreezy.application.SystemConfiguration
-import io.easybreezy.application.db.hikari.HikariDataSource
-import io.easybreezy.user.model_legacy.Password
-import io.easybreezy.user.model_legacy.User
-import java.util.UUID
 
 class CreateDefaultUserCommand {
 
@@ -13,7 +8,6 @@ class CreateDefaultUserCommand {
         @JvmStatic
         fun main(args: Array<String>) {
             val configProvider = SystemConfiguration
-            val dataSource = HikariDataSource(configProvider)
 
             // dataSource.jooqDSL {
             //     if (!it.fetchExists(it.selectOne().from(USERS).where(USERS.EMAIL_ADDRESS.eq("admin@admin.my")))) {

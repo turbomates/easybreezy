@@ -1,12 +1,8 @@
 package io.easybreezy.user.infrastructure.auth
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.auth.PrincipalProvider
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
-import io.easybreezy.user.model_legacy.Password
-import io.easybreezy.user.model_legacy.User
 import io.easybreezy.user.model_legacy.UserId
 import io.ktor.auth.UserPasswordCredential
 import io.ktor.auth.jwt.JWTCredential

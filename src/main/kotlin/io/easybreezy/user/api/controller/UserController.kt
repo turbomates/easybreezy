@@ -8,6 +8,7 @@ import io.easybreezy.user.application.Handler
 import io.easybreezy.user.application.Invite
 import io.easybreezy.user.application.Validation
 import io.ktor.response.respondText
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class UserController @Inject constructor(
     private val handler: Handler,
@@ -20,13 +21,17 @@ class UserController @Inject constructor(
 
     suspend fun invite(command: Invite) {
         validation.onInvite(command)
-        // transactionWrapper { handler.handleInvite(command) }
+        transaction {
+            handler.handleInvite(command)
+        }
 
         call.respondOk()
     }
 
     suspend fun confirm(command: Confirm) {
-        // transactionWrapper { handler.handleConfirm(command) }
+        transaction {
+            handler.handleConfirm(command)
+        }
 
         call.respondOk()
     }

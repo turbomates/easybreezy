@@ -17,7 +17,6 @@ import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
-import io.easybreezy.user.model.Users
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install

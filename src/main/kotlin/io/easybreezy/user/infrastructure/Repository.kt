@@ -5,7 +5,7 @@ import io.easybreezy.user.model_legacy.UserId
 import java.util.Optional
 import io.easybreezy.user.model_legacy.Repository as RepositoryInterface
 
-class Repository: RepositoryInterface {
+class Repository : RepositoryInterface {
     override fun addUser(user: User) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

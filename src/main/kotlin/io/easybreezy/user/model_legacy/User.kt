@@ -8,12 +8,10 @@ import java.util.UUID
 
 typealias UserId = UUID
 
-
 class User(
     private val email: Email,
 
     protected var roles: MutableSet<Role>,
-
 
     private var status: Status
 ) : AggregateRoot() {
