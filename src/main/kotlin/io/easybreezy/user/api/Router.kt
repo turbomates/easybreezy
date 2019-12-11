@@ -2,7 +2,6 @@ package io.easybreezy.user.api
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.GenericPipeline
-import io.easybreezy.infrastructure.ktor.HibernateSession
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.user.api.controller.UserController
@@ -33,8 +32,6 @@ class Router @Inject constructor(
 
     private fun userRouting(route: Route) {
         route.route("/users") {
-            intercept<HibernateSession>(this)
-
             get("") { controller<UserController>(this).index() }
 
             post("/invite") { controller<UserController>(this).invite(call.receive()) }

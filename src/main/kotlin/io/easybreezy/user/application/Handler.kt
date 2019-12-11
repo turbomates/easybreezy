@@ -1,11 +1,11 @@
 package io.easybreezy.user.application
 
 import com.google.inject.Inject
-import io.easybreezy.user.model.Email
-import io.easybreezy.user.model.Name
-import io.easybreezy.user.model.Password
-import io.easybreezy.user.model.Repository
-import io.easybreezy.user.model.User
+import io.easybreezy.user.model_legacy.Email
+import io.easybreezy.user.model_legacy.Name
+import io.easybreezy.user.model_legacy.Password
+import io.easybreezy.user.model_legacy.Repository
+import io.easybreezy.user.model_legacy.User
 
 class Handler @Inject constructor(private val repository: Repository) {
 

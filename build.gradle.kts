@@ -1,18 +1,8 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
-import org.apache.commons.io.FileUtils
 import org.flywaydb.gradle.task.FlywayInfoTask
 import org.flywaydb.gradle.task.FlywayMigrateTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
-import org.jooq.codegen.GenerationTool
-import org.jooq.meta.jaxb.Configuration
-import org.jooq.meta.jaxb.Database
-import org.jooq.meta.jaxb.ForcedType
-import org.jooq.meta.jaxb.Generate
-import org.jooq.meta.jaxb.Generator
-import org.jooq.meta.jaxb.Jdbc
-import org.jooq.meta.jaxb.Schema
-import org.jooq.meta.jaxb.Target
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Properties
@@ -28,8 +18,6 @@ buildscript {
 
     dependencies {
         classpath(Deps.postgresqlJDBC)
-        classpath(Deps.jooq)
-        classpath(Deps.jooq_codegen)
     }
 }
 
@@ -55,7 +43,6 @@ plugins {
     id(Plugins.kotlin_noarg).version(Versions.kotlin)
     id(Plugins.kotlin_jpa).version(Versions.kotlin)
     id(Plugins.flyway).version(Versions.flyway)
-    id(Plugins.jooq_studer).version(Versions.jooq_studer)
     id(Plugins.ktlint_gradle).version(Versions.ktlint_gradle)
 
     java
@@ -75,8 +62,6 @@ dependencies {
     implementation(Deps.hikaricp)
     implementation(Deps.gson)
     implementation(Deps.valiktor_core)
-    implementation(Deps.hibernate_core)
-    implementation(Deps.jooq)
     implementation(Deps.google_guice)
     implementation(Deps.rabbitmq_amqp_client)
     implementation(Deps.postgresqlJDBC)
@@ -164,7 +149,7 @@ testlogger {
 tasks.withType<Test> {
     useJUnitPlatform()
 
-    dependsOn(":loadTestSystemConfiguration", ":migrationsTestMigrate", ":jooqTestCodeGen")
+    dependsOn(":loadTestSystemConfiguration")
 
     systemProperty("easybreezy.test", "true")
     testLogging {
@@ -182,68 +167,6 @@ tasks.withType<Test> {
 }
 
 //  ----------------  END TEST ----------------  //
-
-//  ----------------  JOOQ ----------------  //
-
-listOf("", "Test").forEach { testOrNotTest ->
-    tasks.register("jooq${testOrNotTest}CodeGen") {
-        dependsOn(":migrations${testOrNotTest}Migrate")
-
-        doLast {
-            val configuration = Configuration().apply {
-                version = project.version
-                jdbc = Jdbc().apply {
-                    url = System.getProperties().getOrDefault("easybreezy.jdbc.url", null) as String?
-                    user = System.getProperties().getOrDefault("easybreezy.jdbc.user", null) as String?
-                    username = System.getProperties().getOrDefault("easybreezy.jdbc.username", null) as String?
-                    password = System.getProperties().getOrDefault("easybreezy.jdbc.password", null) as String?
-                    driver = System.getProperties().getOrDefault("easybreezy.jdbc.driver", null) as String?
-                }
-                generator = Generator().apply {
-                    database = Database().apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        includes = ".*"
-                        excludes = "flyway_schema_history"
-                        forcedTypes = listOf(
-                            ForcedType().apply {
-                                userType = "com.google.gson.JsonElement"
-                                binding = "io.easybreezy.application.db.jooq.PostgresJSONGsonBinding"
-                                // expression = ".*public.*"
-                                types = ".*json.*"
-                            }
-                        )
-                        schemata = listOf(
-                            Schema().apply { inputSchema = "public" }
-                        )
-                    }
-
-                    generate = Generate().apply {
-                        isGeneratedAnnotation = false
-                    }
-
-                    target = Target().apply {
-                        packageName = "io.easybreezy"
-                        directory = "${project.projectDir}/src/main/generated"
-                    }
-                }
-            }
-
-            GenerationTool.generate(configuration)
-        }
-    }
-}
-
-tasks.register("jooqCodeClean") {
-    doLast {
-        FileUtils.deleteDirectory(File("$projectDir/src/main/generated"))
-    }
-}
-
-tasks.getByPath("compileKotlin").dependsOn("jooqCodeGen")
-tasks.getByPath("compileTestKotlin").dependsOn("jooqTestCodeGen")
-tasks.getByPath("clean").finalizedBy("jooqCodeClean")
-
-//  ----------------  END JOOQ ----------------  //
 
 //  ----------------  MIGRATIONS ----------------  //
 
@@ -304,7 +227,7 @@ tasks.register("migrationsGenerate") {
 
 //  ----------------  CONFIGURATIONS ----------------  //
 
-val globalPrudentaProperties = System.getProperties()
+val globalEasybreezyProperties = System.getProperties()
     .entries
     .filter { (k, _) -> k.toString().startsWith("easybreezy.") }
     .map { (k, v) -> Pair(k.toString(), v.toString()) }
@@ -335,7 +258,7 @@ tasks.register("loadSystemConfiguration") {
             System.setProperty(k.toString(), v.toString())
         }
 
-        for ((k, v) in globalPrudentaProperties) {
+        for ((k, v) in globalEasybreezyProperties) {
             System.setProperty(k, v)
         }
     }
@@ -357,7 +280,7 @@ tasks.register("loadTestSystemConfiguration") {
             System.setProperty(k.toString(), v.toString())
         }
 
-        for ((k, v) in globalPrudentaProperties) {
+        for ((k, v) in globalEasybreezyProperties) {
             System.setProperty(k, v)
         }
 
