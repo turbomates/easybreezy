@@ -62,6 +62,8 @@ object Deps {
     const val junit_jupiter_engine = "org.junit.jupiter:junit-jupiter-engine:${Versions.junit}"
 
     const val ktlint_gradle = "org.jlleitschuh.gradle:ktlint-gradle:${Versions.ktlint_gradle}"
+
+    const val exposed = ""
 }
 
 object Plugins {
