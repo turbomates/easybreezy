@@ -7,7 +7,7 @@ import io.easybreezy.user.model.UserId
 import java.util.Date
 
 object JWT {
-    const val audience = "prudenta"
+    const val audience = "easybreezy"
     private const val ttl: Int = 3600000 * 10 // 10 hours
     private val algorithm: Algorithm = Algorithm.HMAC256("secret")
 

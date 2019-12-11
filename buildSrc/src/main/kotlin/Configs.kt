@@ -53,7 +53,6 @@ object Deps {
     const val valiktor_core = "org.valiktor:valiktor-core:${Versions.valiktor_core}"
     const val logback_classic = "ch.qos.logback:logback-classic:${Versions.logback_classic}"
 
-
     const val slf4j_api = "org.slf4j:slf4j-api:${Versions.slf4j_api}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
 
