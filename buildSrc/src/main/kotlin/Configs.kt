@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlin = "1.3.50"
+    const val kotlin = "1.3.60"
     const val ktor = "1.2.3"
     const val junit = "5.4.2"
     const val test_logger = "1.7.0"
@@ -16,6 +16,8 @@ object Versions {
     const val rabbitmq_amqp_client = "5.6.0"
     const val ktlint_gradle = "9.1.1"
     const val exposed = "0.18.1"
+    const val kotlin_serialization = "1.3.60"
+    const val kotlin_serialization_runtime = "0.14.0"
 }
 
 object Deps {
@@ -54,6 +56,8 @@ object Deps {
     const val exposed_dao = "org.jetbrains.exposed:exposed-dao:${Versions.exposed}"
     const val exposed_jdbc = "org.jetbrains.exposed:exposed-jdbc:${Versions.exposed}"
     const val exposed_jodatime = "org.jetbrains.exposed:exposed-jodatime:${Versions.exposed}"
+    const val kotlin_serialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin_serialization}"
+    const val kotlin_serialization_runtime = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlin_serialization_runtime}"
 }
 
 object Plugins {
@@ -63,6 +67,7 @@ object Plugins {
     const val test_logger = "com.adarshr.test-logger"
     const val flyway = "org.flywaydb.flyway"
     const val ktlint_gradle = "org.jlleitschuh.gradle.ktlint"
+    const val kotlin_serialization = "org.jetbrains.kotlin.plugin.serialization"
 }
 
 object Annotations {

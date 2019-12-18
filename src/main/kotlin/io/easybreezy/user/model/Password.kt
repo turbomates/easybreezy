@@ -1,9 +1,10 @@
-package io.easybreezy.user.model_legacy
+package io.easybreezy.user.model
 
 import org.mindrot.jbcrypt.BCrypt
 
 class Password(plainPassword: String) {
-    private var hashedPassword: String = hash(plainPassword)
+    private var hashedPassword: String =
+        hash(plainPassword)
 
     companion object {
         fun verifyPassword(enteredPassword: String, password: String): Boolean {
