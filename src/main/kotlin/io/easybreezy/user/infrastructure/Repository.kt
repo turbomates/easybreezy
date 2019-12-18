@@ -1,22 +1,49 @@
 package io.easybreezy.user.infrastructure
 
-import io.easybreezy.user.model_legacy.User
+import com.google.inject.Inject
+import io.easybreezy.user.model.Email
+import io.easybreezy.user.model.Name
+import io.easybreezy.user.model.User
+import io.easybreezy.user.model.UserGateway
+import io.easybreezy.user.model.Users
 import io.easybreezy.user.model_legacy.UserId
-import java.util.Optional
-import io.easybreezy.user.model_legacy.Repository as RepositoryInterface
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
+import io.easybreezy.user.model.Repository as RepositoryInterface
 
-class Repository : RepositoryInterface {
+class Repository @Inject constructor(private val gateway: UserGateway) : RepositoryInterface {
     override fun addUser(user: User) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        gateway.save(user)
+
+        // Users.insert {
+        //     it[id] = user.id()
+        //     it[email] = user.email()
+        //     it[status] = user.status()
+        //     it[roles] = user.roles()
+        // }
     }
 
-    override fun findUser(id: UserId): User {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
+    // fun findUser(id: UserId): User? =
+    //     Users.select { Users.id eq id }
+    //         .map { it.toUser() }
+    //         .firstOrNull()
 
-    override fun findByToken(token: String): Optional<User> {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
+    // private fun ResultRow.toUser() = User(
+    //     id = this[Users.id],
+    //     email = Email(this[Users.email]),
+    //     roles = this[Users.roles],
+    //     status = this[Users.status],
+    //     token = this[Users.token],
+    //     name = Name(this[Users.firstName], this[Users.lastName])
+    // )
+
+    // override fun findUser(id: UserId): User {
+    //     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    // }
+    //
+    // override fun findByToken(token: String): Optional<User> {
+    //     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    // }
     // override fun addUser(user: User) {
     //     session.persist(user)
     // }

@@ -18,18 +18,12 @@ buildscript {
 
     dependencies {
         classpath(Deps.postgresqlJDBC)
+        classpath(Deps.kotlin_serialization)
     }
 }
 
 sourceSets.create("migrations") {
     java.srcDir("src/migrations/kotlin")
-}
-
-sourceSets {
-    main {
-        java.srcDirs("src/main/generated")
-        compileClasspath += getByName("migrations").output
-    }
 }
 
 repositories {
@@ -44,7 +38,7 @@ plugins {
     id(Plugins.kotlin_jpa).version(Versions.kotlin)
     id(Plugins.flyway).version(Versions.flyway)
     id(Plugins.ktlint_gradle).version(Versions.ktlint_gradle)
-    id(Plugins.kotlin_serialization).version(Versions.kotlin_serialization_plugin)
+    id(Plugins.kotlin_serialization).version(Versions.kotlin_serialization)
 
     java
     application
@@ -77,6 +71,7 @@ dependencies {
     implementation(Deps.exposed_dao)
     implementation(Deps.exposed_jdbc)
     implementation(Deps.exposed_time)
+    implementation(Deps.kotlin_serialization_runtime)
 
     runtimeOnly(Deps.logback_classic)
 

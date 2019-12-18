@@ -1,4 +1,4 @@
-package io.easybreezy.user.model_legacy
+package io.easybreezy.user.model
 
 class Email(
     private val address: String

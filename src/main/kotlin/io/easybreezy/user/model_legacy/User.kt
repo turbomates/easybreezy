@@ -4,15 +4,16 @@ import io.easybreezy.infrastructure.domain.AggregateRoot
 import io.easybreezy.infrastructure.events.user.UserConfirmed
 import io.easybreezy.infrastructure.events.user.UserCreated
 import io.easybreezy.infrastructure.events.user.UserInvited
+import io.easybreezy.user.model.Email
+import io.easybreezy.user.model.Name
+import io.easybreezy.user.model.Password
 import java.util.UUID
 
 typealias UserId = UUID
 
 class User(
     private val email: Email,
-
-    protected var roles: MutableSet<Role>,
-
+    private var roles: MutableSet<Role>,
     private var status: Status
 ) : AggregateRoot() {
 
