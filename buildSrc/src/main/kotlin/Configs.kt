@@ -16,6 +16,7 @@ object Versions {
     const val rabbitmq_amqp_client = "5.6.0"
     const val ktlint_gradle = "9.1.1"
     const val exposed = "0.18.1"
+    const val kotlin_serialization_plugin ="1.3.60"
 }
 
 object Deps {
@@ -53,7 +54,7 @@ object Deps {
     const val exposed_core = "org.jetbrains.exposed:exposed-core:${Versions.exposed}"
     const val exposed_dao = "org.jetbrains.exposed:exposed-dao:${Versions.exposed}"
     const val exposed_jdbc = "org.jetbrains.exposed:exposed-jdbc:${Versions.exposed}"
-    const val exposed_jodatime = "org.jetbrains.exposed:exposed-jodatime:${Versions.exposed}"
+    const val exposed_time = "org.jetbrains.exposed:exposed-java-time:${Versions.exposed}"
 }
 
 object Plugins {
@@ -63,6 +64,7 @@ object Plugins {
     const val test_logger = "com.adarshr.test-logger"
     const val flyway = "org.flywaydb.flyway"
     const val ktlint_gradle = "org.jlleitschuh.gradle.ktlint"
+    const val kotlin_serialization = "org.jetbrains.kotlin.plugin.serialization"
 }
 
 object Annotations {

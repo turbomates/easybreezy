@@ -44,6 +44,7 @@ plugins {
     id(Plugins.kotlin_jpa).version(Versions.kotlin)
     id(Plugins.flyway).version(Versions.flyway)
     id(Plugins.ktlint_gradle).version(Versions.ktlint_gradle)
+    id(Plugins.kotlin_serialization).version(Versions.kotlin_serialization_plugin)
 
     java
     application
@@ -75,7 +76,7 @@ dependencies {
     implementation(Deps.exposed_core)
     implementation(Deps.exposed_dao)
     implementation(Deps.exposed_jdbc)
-    implementation(Deps.exposed_jodatime)
+    implementation(Deps.exposed_time)
 
     runtimeOnly(Deps.logback_classic)
 
