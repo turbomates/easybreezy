@@ -31,7 +31,6 @@ enum class Role() {
 
 // object Users : Table() {
 object Users : UUIDTable() {
-    // val id = uuid("id").primaryKey()
     val password = varchar("password", 255).nullable()
     val email = varchar("email_address", 255)
     val firstName = varchar("first_name", 255).nullable()
