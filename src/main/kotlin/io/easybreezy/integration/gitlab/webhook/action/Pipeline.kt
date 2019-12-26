@@ -1,8 +1,13 @@
+@file:UseSerializers(LocalDateSerializer::class)
 package io.easybreezy.integration.gitlab.webhook.action
 
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import java.time.LocalDate
 
-data class Pipline(
+@Serializable
+data class Pipeline(
     val objectKind: ObjectKind,
     val objectAttributes: ObjectAttributes,
     val user: User,
@@ -10,6 +15,7 @@ data class Pipline(
     val commit: Commit,
     val jobs: List<Job>
 ) {
+    @Serializable
     data class ObjectAttributes(
         val id: Int,
         val ref: String,
@@ -24,6 +30,7 @@ data class Pipline(
         val variables: List<Map<String, String>>
     )
 
+    @Serializable
     data class Job(
         val id: Int,
         val stage: String,
@@ -38,6 +45,7 @@ data class Pipline(
         val runner: Runner?,
         val artifactsFile: Map<String, String>
     ) {
+        @Serializable
         data class Runner(
             val id: Int,
             val description: String,

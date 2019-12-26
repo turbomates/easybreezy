@@ -1,5 +1,8 @@
 package io.easybreezy.integration.gitlab.webhook.action
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class WikiPage(
     val objectKind: ObjectKind,
     val user: User,
@@ -8,6 +11,7 @@ data class WikiPage(
     val objectAttributes: ObjectAttributes
 
 ) {
+    @Serializable
     data class Wiki(
         val webURL: String,
         val gitSSHURL: String,
@@ -16,6 +20,7 @@ data class WikiPage(
         val defaultBranch: String
     )
 
+    @Serializable
     data class ObjectAttributes(
         val title: String,
         val content: String,

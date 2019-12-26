@@ -1,8 +1,13 @@
+@file:UseSerializers(LocalDateSerializer::class)
 package io.easybreezy.integration.gitlab.webhook.action
 
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import java.time.LocalDate
 
-data class JobHook(
+@Serializable
+data class Job(
     val objectKind: ObjectKind,
     val ref: String,
     val tag: Boolean,

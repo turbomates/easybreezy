@@ -18,7 +18,6 @@ buildscript {
 
     dependencies {
         classpath(Deps.postgresqlJDBC)
-        classpath(Deps.kotlin_serialization)
     }
 }
 

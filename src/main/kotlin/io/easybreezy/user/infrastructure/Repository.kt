@@ -11,9 +11,9 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import io.easybreezy.user.model.Repository as RepositoryInterface
 
-class Repository @Inject constructor(private val gateway: UserGateway) : RepositoryInterface {
+class Repository @Inject constructor() : RepositoryInterface {
     override fun addUser(user: User) {
-        gateway.save(user)
+      //  gateway.save(user)
 
         // Users.insert {
         //     it[id] = user.id()

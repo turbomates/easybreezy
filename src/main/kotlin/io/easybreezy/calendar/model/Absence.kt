@@ -10,7 +10,7 @@ typealias AbsenceId = UUID
 class Absence(
     private val startedAt: Date,
     private val endedAt: Date,
-    private val comment: String,
+    private val comment: String?,
     private val reason: Reason,
     private val userId: UserId,
     private val id: AbsenceId = UUID.randomUUID()

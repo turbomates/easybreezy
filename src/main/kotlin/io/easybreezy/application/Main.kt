@@ -16,6 +16,7 @@ import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Session
+import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
@@ -55,6 +56,7 @@ fun main() {
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)
+            bind(Database::class.java).toInstance(database)
         }
     })
 
@@ -121,6 +123,7 @@ fun main() {
         }
 
         ktorInjector.createChildInjector(UserModule())
+        ktorInjector.createChildInjector(ProjectModule())
         ktorInjector.createChildInjector(CalendarModule())
     }.start()
 }

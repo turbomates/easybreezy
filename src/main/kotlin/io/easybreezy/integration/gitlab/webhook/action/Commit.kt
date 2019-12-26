@@ -1,9 +1,13 @@
+@file:UseSerializers(LocalDateSerializer::class)
 package io.easybreezy.integration.gitlab.webhook.action
 
-import io.easybreezy.integration.gitlab.webhook.action.Author
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import java.time.LocalDate
 
-class Commit(
+@Serializable
+data class Commit(
     val id: String,
     val message: String,
     val timestamp: LocalDate,

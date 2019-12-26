@@ -1,7 +1,12 @@
+@file:UseSerializers(LocalDateSerializer::class)
 package io.easybreezy.integration.gitlab.webhook.action
 
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import java.time.LocalDate
 
+@Serializable
 data class MergeRequest(
     val objectKind: ObjectKind,
     val user: User,
@@ -9,6 +14,7 @@ data class MergeRequest(
     val repository: Repository,
     val objectAttributes: ObjectAttributes
 ) {
+    @Serializable
     data class ObjectAttributes(
         val id: Int,
         val targetBranch: String,
@@ -35,6 +41,7 @@ data class MergeRequest(
         val labels: List<Label>,
         val changes: Changes
     ) {
+        @Serializable
         data class Description(
             val name: String,
             val description: String,

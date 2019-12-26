@@ -9,15 +9,10 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.PGobject
 
-// fun <T : Any, KT> Table.jsonb(name: String, klass: Class<T>, serializer: KSerializer<KT>): Column<T> {
-//     return registerColumn(name, PostgreSQLJson(klass, serializer))
-// }
-
 fun <T: Any> Table.jsonb(name: String, serializer: KSerializer<T>): Column<T> {
     return registerColumn(name, PostgreSQLJson(serializer))
 }
 
-// private class PostgreSQLJson<out T : Any, KT>(private val klass: Class<T>, private val serializer: KSerializer<KT>) :
 private class PostgreSQLJson<out T : Any>(private val serializer: KSerializer<T>) :
     ColumnType() {
     private val json = Json(JsonConfiguration.Stable)
@@ -37,8 +32,6 @@ private class PostgreSQLJson<out T : Any>(private val serializer: KSerializer<T>
     override fun valueFromDB(value: Any): Any {
         if (value is PGobject) {
             return json.parse(serializer, value.value)
-
-            // return json.fromJson(serializer, json.parseJson(value.value)) as Any
         }
         return value
     }

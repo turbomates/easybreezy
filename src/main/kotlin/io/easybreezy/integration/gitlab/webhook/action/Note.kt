@@ -1,7 +1,12 @@
+@file:UseSerializers(LocalDateSerializer::class)
 package io.easybreezy.integration.gitlab.webhook.action
 
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import java.time.LocalDate
 
+@Serializable
 data class Note(
     val objectKind: ObjectKind,
     val user: User,
@@ -17,6 +22,7 @@ data class Note(
     val assignee: Author?
 
 ) {
+    @Serializable
     data class ObjectAttributes(
         val id: Int,
         val note: String,
@@ -33,6 +39,7 @@ data class Note(
         val url: String
     )
 
+    @Serializable
     data class SfDiff(
         val diff: String,
         val newPath: String,
@@ -44,6 +51,7 @@ data class Note(
         val deletedFile: Boolean
     )
 
+    @Serializable
     data class Snippet(
         val id: Int,
         val title: String,
@@ -58,6 +66,7 @@ data class Note(
         val visibilityLevel: Int
     )
 
+    @Serializable
     data class Issue(
         val id: Int,
         val title: String,
@@ -75,6 +84,7 @@ data class Note(
         val iid: Int
     )
 
+    @Serializable
     data class MergeRequest(
         val id: Int,
         val targetBranch: String,
@@ -97,6 +107,7 @@ data class Note(
         val lastCommit: Commit
 
     ) {
+        @Serializable
         data class Description(
             val name: String,
             val description: String,
