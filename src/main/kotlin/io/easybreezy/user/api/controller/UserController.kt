@@ -29,9 +29,9 @@ class UserController @Inject constructor(
     }
 
     suspend fun confirm(command: Confirm) {
-        // transaction {
-        //     handler.handleConfirm(command)
-        // }
+        transaction {
+            handler.handleConfirm(command)
+        }
 
         call.respondOk()
     }

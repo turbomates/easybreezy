@@ -13,7 +13,6 @@ open class PrivateEntityClass<ID : Comparable<ID>, out T : Entity<ID>>(private v
 
     internal operator fun get(id: ID): T = base[id]
 
-
     infix fun <REF : Comparable<REF>> referencedOn(column: Column<REF>) = base.referencedOn(column)
 
     infix fun <REF : Comparable<REF>> optionalReferencedOn(column: Column<REF?>) = base.optionalReferencedOn(column)
