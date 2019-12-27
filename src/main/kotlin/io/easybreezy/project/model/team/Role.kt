@@ -11,7 +11,6 @@ import java.util.*
 class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var project by Roles.project
     private var name by Roles.name
-    private val members by Member referrersOn Members.role
 
     companion object : PrivateEntityClass<UUID, Role>(RoleRepository) {
         fun create(project: UUID, name: String): Role {

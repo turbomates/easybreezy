@@ -11,7 +11,9 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var user by Members.user
     private var role by Role referencedOn Members.role
     private var info by Members.info
-
+    fun info(): Info {
+        return this.info
+    }
 
     class Info(name: String, username: String, avatar: String) : Embeddable() {
         private var name by Members.Info.name
@@ -25,7 +27,7 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         }
     }
 
-    companion object : PrivateEntityClass<UUID, Member>(MemberRepository) {
+    companion object : PrivateEntityClass<UUID, Member>(object : Repository() {}) {
         fun create(user: UUID, role: Role, info: Info): Member {
             return Member.new {
                 this.user = user
@@ -37,27 +39,36 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     abstract class Repository : UUIDEntityClass<Member>(Members, Member::class.java) {
-        protected override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Member {
+        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Member {
             return Member(entityId)
         }
     }
 }
 
 
-object MemberRepository : Member.Repository() {
+class MemberRepository : Member.Repository() {
 
 }
 
 object Members : UUIDTable() {
     val user = uuid("user_id")
-    val role = reference("roles", Roles)
-    val name = varchar("name", 25)
+    val role = reference("role", Roles)
     val info = Info
 
-    object Info : EmbeddableColumns() {
-        val name = varchar("info_name", 25).nullable()
-        val username = varchar("info_username", 25).nullable()
-        val avatar = varchar("info_avatar", 25).nullable()
+    object Info : EmbeddableColumn<Member.Info, UUID>() {
+        val name = varchar("info_name", 25)
+        val username = varchar("info_username", 25)
+        val avatar = varchar("info_avatar", 25)
+        override val initializer: Entity<UUID>.(KProperty<*>) -> Member.Info =
+            { property ->
+                val member = Member.Info(
+                    name.getValue(this, property),
+                    username.getValue(this, property),
+                    avatar.getValue(this, property)
+                )
+                member.readValues = this._readValues
+                member
+            }
     }
 }
 
@@ -81,14 +92,20 @@ open class Embeddable {
     }
 }
 
-open class EmbeddableColumns {
-    operator fun getValue(embeddable: Entity<*>, property: KProperty<*>): Any {
-        return ""
+abstract class EmbeddableColumn<T, ID : Comparable<ID>> {
+    internal abstract val initializer: Entity<ID>.(property: KProperty<*>) -> T
+    operator fun getValue(embeddable: Entity<ID>, property: KProperty<*>): T {
+        return embeddable.initializer(property)
     }
 
-    operator fun setValue(embeddable: Entity<*>, property: KProperty<*>, any: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    operator fun setValue(embeddable: Entity<ID>, property: KProperty<*>, any: T) {
+        if (any is Embeddable) {
+            with(embeddable) {
+                any.writeValues.forEach {
+                    it.key.setValue(embeddable, property, it.value)
+                }
+            }
+        }
     }
-
 }
 

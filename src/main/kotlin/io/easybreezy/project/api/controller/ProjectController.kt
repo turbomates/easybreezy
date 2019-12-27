@@ -17,10 +17,12 @@ class ProjectController @Inject constructor(private val database: Database) : Co
     suspend fun index() {
         transaction(database) {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.createMissingTablesAndColumns(Members)
-            val role = Role.create(UUID.randomUUID(), "Test")
-            Member.create(UUID.randomUUID(), role, Member.Info("", "", ""))
-            MemberRepository.wrapRows(Members.selectAll())
+            val memberRepository= MemberRepository()
+//            SchemaUtils.createMissingTablesAndColumns(Members)
+//            val role = Role.create(UUID.randomUUID(), "Test")
+//            Member.create(UUID.randomUUID(), role, Member.Info("test", "test", "test"))
+            val memebers= memberRepository.wrapRows(Members.selectAll()).toList()
+            print(memebers.first().info())
         }
         call.respondText("USERS")
     }
