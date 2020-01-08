@@ -18,9 +18,9 @@ class ProjectController @Inject constructor(private val database: Database) : Co
         transaction(database) {
             addLogger(StdOutSqlLogger)
             val memberRepository= MemberRepository()
-//            SchemaUtils.createMissingTablesAndColumns(Members)
-//            val role = Role.create(UUID.randomUUID(), "Test")
-//            Member.create(UUID.randomUUID(), role, Member.Info("test", "test", "test"))
+            SchemaUtils.createMissingTablesAndColumns(Members)
+            val role = Role.create(UUID.randomUUID(), "Test")
+            Member.create(UUID.randomUUID(), role, Member.Info.create("test", "test", "test"))
             val memebers= memberRepository.wrapRows(Members.selectAll()).toList()
             print(memebers.first().info())
         }
