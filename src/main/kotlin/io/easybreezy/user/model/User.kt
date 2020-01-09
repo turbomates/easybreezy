@@ -153,6 +153,12 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         return this.email.address()
     }
 
+    fun name() = name
+    fun token() = token
+    fun roles() = roles
+    fun status() = status
+    fun password() = password
+
     fun confirm(password: Password, name: Name) {
         this.password = password
         this.name = name
