@@ -2,14 +2,16 @@ package io.easybreezy.infrastructure.ktor.auth
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.easybreezy.user.model_legacy.User
+import io.easybreezy.user.model.Role
+// import io.easybreezy.user.model_legacy.User
 import io.ktor.sessions.SessionSerializer
+import org.jetbrains.exposed.dao.EntityID
 import java.lang.reflect.Type
 import java.util.UUID
 
 data class Session(val principal: UserPrincipal? = null, val attributes: MutableMap<String, String> = mutableMapOf(), val ttl: Int = 3600)
 
-data class UserPrincipal(override val id: UUID, val roles: Set<User.Role>) : Principal
+data class UserPrincipal(override val id: UUID, val roles: Set<Role>) : Principal
 
 interface Principal : io.ktor.auth.Principal {
     val id: UUID

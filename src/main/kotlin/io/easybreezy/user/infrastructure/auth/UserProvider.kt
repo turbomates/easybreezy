@@ -1,28 +1,29 @@
 package io.easybreezy.user.infrastructure.auth
 
-import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.auth.PrincipalProvider
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
-import io.easybreezy.user.model_legacy.UserId
+import io.easybreezy.user.model.Status
+import io.easybreezy.user.model.User
+import io.easybreezy.user.model.Users
 import io.ktor.auth.UserPasswordCredential
 import io.ktor.auth.jwt.JWTCredential
-import javax.sql.DataSource
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 
-class UserProvider @Inject constructor(private val dataSource: DataSource) : PrincipalProvider<UserPrincipal> {
+class UserProvider : PrincipalProvider<UserPrincipal> {
     override fun load(credential: UserPasswordCredential, clientIp: String): UserPrincipal? {
-        // val user = dataSource.jooqDSL {
-        //     it.fetchOne(USERS,
-        //         (USERS.EMAIL_ADDRESS.eq(credential.name)))
-        // }
-        //
-        // if (user is UsersRecord) {
-        //     val isSuccessful = Password.verifyPassword(credential.password, user.password)
-        //     val roles = Gson().fromJson<Set<User.Role>>(user.roles, object : TypeToken<Set<String>>() {}.type)
-        //
-        //     if (isSuccessful) return UserPrincipal(user.id, roles)
-        // }
+        return transaction {
+            val resultRow = Users.select { (Users.email.address eq credential.name) and (Users.status eq Status.ACTIVE)}.singleOrNull()
 
-        return null
+            if (resultRow is ResultRow
+                && User.Password.verifyPassword(credential.password, resultRow[Users.password.hashedPassword]!!)
+            ) {
+                return@transaction UserPrincipal(UUID.fromString(resultRow[Users.id].toString()), setOf())
+            } else null
+        }
     }
 
     override fun refresh(principal: UserPrincipal): UserPrincipal? {
@@ -30,6 +31,6 @@ class UserProvider @Inject constructor(private val dataSource: DataSource) : Pri
     }
 
     fun load(credential: JWTCredential): UserPrincipal? {
-        return UserPrincipal(UserId.fromString(credential.payload.subject), setOf())
+        return UserPrincipal(UUID.fromString(credential.payload.subject), setOf())
     }
 }

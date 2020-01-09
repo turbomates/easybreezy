@@ -13,7 +13,7 @@ import io.easybreezy.user.model.Repository
 class UserModule : AbstractModule() {
     override fun configure() {
         bind(Router::class.java).asEagerSingleton()
-        bind(Repository::class.java).to(io.easybreezy.user.model.UserRepository::class.java)
+        bind(Repository::class.java).to(io.easybreezy.user.infrastructure.Repository::class.java)
     }
 
     @Provides

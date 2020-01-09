@@ -12,6 +12,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveOrNull
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * Represents a form-based authentication provider
@@ -59,6 +60,7 @@ fun <T : Principal> Authentication.Configuration.jsonForm(
         val email = postParameters?.get(emailParamName)
         val password = postParameters?.get(passwordParamName)
         val credentials = if (email != null && password != null) UserPasswordCredential(email, password) else null
+
         val principal = credentials?.let { authProvider.load(it, call.request.origin.remoteHost) }
 
         if (principal != null) {
@@ -71,6 +73,8 @@ fun <T : Principal> Authentication.Configuration.jsonForm(
                 it.complete()
             }
         }
+
+
     }
     register(provider)
 }

@@ -23,9 +23,9 @@ class Router @Inject constructor(
     init {
         application.routing {
             route("/api") {
-                // authenticate(*Auth.user) {
+                authenticate(*Auth.user) {
                     userRouting(this)
-                // }
+                }
             }
         }
     }

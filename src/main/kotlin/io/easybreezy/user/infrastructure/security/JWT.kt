@@ -3,8 +3,9 @@ package io.easybreezy.user.infrastructure.security
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.easybreezy.user.model_legacy.UserId
+import org.jetbrains.exposed.dao.EntityID
 import java.util.Date
+import java.util.UUID
 
 object JWT {
     const val audience = "easybreezy"
@@ -15,7 +16,7 @@ object JWT {
         .require(algorithm)
         .build()
 
-    fun create(id: UserId, ttl: Int = this.ttl, once: Boolean = false): String = JWT
+    fun create(id: UUID, ttl: Int = this.ttl, once: Boolean = false): String = JWT
         .create()
         .withSubject(id.toString())
         .withExpiresAt(Date(System.currentTimeMillis() + ttl))

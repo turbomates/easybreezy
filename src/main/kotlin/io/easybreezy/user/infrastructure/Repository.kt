@@ -8,4 +8,8 @@ class Repository : User.Repository(), RepositoryInterface {
     override fun findByToken(token: String): User {
         return find { Users.token eq token }.first()
     }
+
+    override fun findByEmail(email: User.Email): User {
+        return find { Users.email.address eq email.address() }.first()
+    }
 }

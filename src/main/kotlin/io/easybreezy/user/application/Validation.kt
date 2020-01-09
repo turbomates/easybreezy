@@ -1,13 +1,15 @@
 package io.easybreezy.user.application
 
-import com.google.inject.Inject
+import io.easybreezy.user.model.Users
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.valiktor.Constraint
+import org.valiktor.Validator
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotNull
 import org.valiktor.validate
-import javax.sql.DataSource
 
-class Validation @Inject constructor(private val dataSource: DataSource) {
+class Validation  {
 
     object Unique : Constraint {
         override val name: String
@@ -16,15 +18,20 @@ class Validation @Inject constructor(private val dataSource: DataSource) {
 
     // private fun <E> Validator<E>.Property<String?>.isUnique(name: String): Validator<E>.Property<String?> =
     //     this.validate(Unique) { value ->
-    //         dataSource.jooqDSL { ctx ->
-    //             !ctx.fetchExists(
-    //                 DSL.select()
-    //                     .from(USERS)
-    //                     .where(
-    //                         DSL.field(name.toUpperCase()).eq(value)
-    //                     )
-    //             )
+    //
+    //         transaction {
+    //             Users.select{ Users.email.address eq name }.
     //         }
+    //         //
+    //         // dataSource.jooqDSL { ctx ->
+    //         //     !ctx.fetchExists(
+    //         //         DSL.select()
+    //         //             .from(USERS)
+    //         //             .where(
+    //         //                 DSL.field(name.toUpperCase()).eq(value)
+    //         //             )
+    //         //     )
+    //         // }
     //     }
 
     fun onInvite(command: Invite) {
