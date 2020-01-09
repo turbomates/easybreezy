@@ -9,7 +9,7 @@ class Handler @Inject constructor(private val repository: Repository) {
 
     fun handleInvite(command: Invite) {
         User.invite(
-            User.Email(command.email),
+            User.Email.create(command.email),
             mutableSetOf(Role.valueOf(command.role))
         )
     }
@@ -17,6 +17,6 @@ class Handler @Inject constructor(private val repository: Repository) {
     fun handleConfirm(command: Confirm) {
         val user = repository.findByToken(command.token)
 
-        user.confirm(User.Password(command.password), User.Name(command.firstName, command.lastName))
+        user?.confirm(User.Password.create(command.password), User.Name.create(command.firstName, command.lastName))
     }
 }

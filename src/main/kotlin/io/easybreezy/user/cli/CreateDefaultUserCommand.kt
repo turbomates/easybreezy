@@ -17,10 +17,13 @@ class CreateDefaultUserCommand {
             val dataSource = HikariDataSource(configProvider)
             Database.connect(dataSource)
 
-
             transaction {
                 if (Users.select { Users.email.address eq "admin@admin.my" }.count() == 0) {
-                    User.createAdmin(User.Email("admin@admin.my"), User.Password("123"), User.Name("admin", "admin"))
+                    User.createAdmin(
+                        User.Email.create("admin@admin.my"),
+                        User.Password.create("123"),
+                        User.Name.create("admin", "admin")
+                    )
                 }
             }
         }

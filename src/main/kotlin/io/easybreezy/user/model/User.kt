@@ -1,12 +1,11 @@
 package io.easybreezy.user.model
 
+import io.easybreezy.infrastructure.exposed.dao.Embeddable
+import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
-import io.easybreezy.project.model.team.Embeddable
-import io.easybreezy.project.model.team.EmbeddableColumn
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
-import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -15,7 +14,6 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
 import org.postgresql.util.PGobject
 import java.util.UUID
-import kotlin.reflect.KProperty
 
 class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
     init {
@@ -46,44 +44,16 @@ object Users : UUIDTable() {
     val roles = jsonb("roles", Role.serializer().set)
 
     object Name : EmbeddableColumn<User.Name, UUID>() {
-        val firstName = Users.varchar("first_name", 25).nullable()
-        val lastName = Users.varchar("last_name", 25).nullable()
-        override val initializer: Entity<UUID>.(KProperty<*>) -> User.Name =
-            { property ->
-                val name = User.Name(
-                    firstName.getValue(this, property)!!,
-                    lastName.getValue(this, property)!!
-                )
-                name.readValues = this._readValues
-                name
-            }
+        val firstName = varchar("first_name", 25).nullable()
+        val lastName = varchar("last_name", 25).nullable()
     }
 
     object Password : EmbeddableColumn<User.Password, UUID>() {
-        val hashedPassword = Users.varchar("password", 255).nullable()
-
-        override val initializer: Entity<UUID>.(KProperty<*>) -> User.Password =
-            { property ->
-                val password = User.Password(
-
-                    hashedPassword.getValue(this, property)!!
-                )
-                password.readValues = this._readValues
-                password
-            }
+        val hashedPassword = varchar("password", 255).nullable()
     }
 
     object Email : EmbeddableColumn<User.Email, UUID>() {
-        val address = Users.varchar("email_address", 255)
-
-        override val initializer: Entity<UUID>.(KProperty<*>) -> User.Email =
-            { property ->
-                val email = User.Email(
-                    address.getValue(this, property)
-                )
-                email.readValues = this._readValues
-                email
-            }
+        val address = varchar("email_address", 255)
     }
 }
 
@@ -95,32 +65,57 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var status by Users.status
     private var token by Users.token
 
-    class Email(address: String) : Embeddable() {
+    class Email private constructor() : Embeddable() {
         private var address by Users.Email.address
 
-        init {
-            this.address = address
+        companion object : EmbeddableClass<Email>() {
+            override fun createInstance(): Email {
+                return Email()
+            }
+
+            fun create(address: String): Email {
+                val email = createInstance()
+                email.address = address
+                return email
+            }
         }
+
+        fun address() = address
     }
 
-    class Name(firstName: String, lastName: String) : Embeddable() {
+    class Name private constructor() : Embeddable() {
         private var firstName by Users.Name.firstName
         private var lastName by Users.Name.lastName
 
-        init {
-            this.firstName = firstName
-            this.lastName = lastName
+        companion object : EmbeddableClass<Name>() {
+            override fun createInstance(): Name {
+                return Name()
+            }
+
+            fun create(firstName: String, lastName: String): Name {
+                val name = createInstance()
+                name.firstName = firstName
+                name.lastName = lastName
+                return name
+            }
         }
     }
 
-    class Password(plainPassword: String) : Embeddable() {
+    class Password private constructor() : Embeddable() {
         private var hashedPassword by Users.Password.hashedPassword
 
-        init {
-            this.hashedPassword = hash(plainPassword)
-        }
+        companion object : EmbeddableClass<Password>() {
 
-        companion object {
+            override fun createInstance(): Password {
+                return Password()
+            }
+
+            fun create(plainPassword: String): Password {
+                val password = createInstance()
+                password.hashedPassword = hash(plainPassword)
+                return password
+            }
+
             fun verifyPassword(enteredPassword: String, password: String): Boolean {
                 return BCrypt.checkpw(enteredPassword, password)
             }
@@ -158,6 +153,10 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 this.status = Status.ACTIVE
             }
         }
+    }
+
+    fun email(): String? {
+        return this.email.address()
     }
 
     fun confirm(password: Password, name: Name) {

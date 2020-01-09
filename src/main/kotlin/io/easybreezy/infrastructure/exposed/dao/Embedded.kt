@@ -8,7 +8,6 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.jvm.jvmErasure
 
-
 abstract class Embeddable {
     internal val writeValues = LinkedHashMap<Column<Any?>, Any?>()
     internal var readValues: ResultRow? = null
@@ -16,12 +15,16 @@ abstract class Embeddable {
     operator fun <T> Column<T>.getValue(info: Embeddable, property: KProperty<*>): T? {
         return when {
             writeValues.containsKey(this as Column<out Any?>) -> writeValues[this as Column<out Any?>] as T
-            columnType.nullable -> readValues?.get(this)
-            else -> readValues?.get(this)
+            // columnType.nullable -> readValues?.get(this)
+            // else -> readValues?.get(this)
+            columnType.nullable -> readValues!![this]
+            else -> readValues!![this]!!
         }
     }
 
     operator fun <T> Column<T>.setValue(info: Embeddable, property: KProperty<*>, value: Any?) {
+
+
         val currentValue = readValues?.getOrNull(this)
         if (writeValues.containsKey(this as Column<out Any?>) || currentValue != value) {
             writeValues[this as Column<Any?>] = value
@@ -29,7 +32,7 @@ abstract class Embeddable {
     }
 
     abstract class EmbeddableClass<T : Embeddable> {
-        abstract fun createInstance(): T
+        protected abstract fun createInstance(): T
         internal fun createFromResult(resultRow: ResultRow): T {
             val instance = this.createInstance()
             instance.readValues = resultRow
