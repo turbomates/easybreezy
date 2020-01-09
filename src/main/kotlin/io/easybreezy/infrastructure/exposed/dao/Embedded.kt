@@ -15,10 +15,8 @@ abstract class Embeddable {
     operator fun <T> Column<T>.getValue(info: Embeddable, property: KProperty<*>): T? {
         return when {
             writeValues.containsKey(this as Column<out Any?>) -> writeValues[this as Column<out Any?>] as T
-            // columnType.nullable -> readValues?.get(this)
-            // else -> readValues?.get(this)
-            columnType.nullable -> readValues!![this]
-            else -> readValues!![this]!!
+            columnType.nullable -> readValues?.get(this)
+            else -> readValues?.get(this)
         }
     }
 
@@ -32,7 +30,7 @@ abstract class Embeddable {
     }
 
     abstract class EmbeddableClass<T : Embeddable> {
-        protected abstract fun createInstance(): T
+        abstract fun createInstance(): T
         internal fun createFromResult(resultRow: ResultRow): T {
             val instance = this.createInstance()
             instance.readValues = resultRow
