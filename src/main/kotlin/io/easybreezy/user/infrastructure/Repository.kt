@@ -14,7 +14,7 @@ class Repository : User.Repository(), RepositoryInterface {
 
     override fun findByEmail(email: User.Email): User? {
         return transaction {
-            find { Users.email.address eq email.address()!! }.firstOrNull()
+            find { Users.email.address eq email.address() }.firstOrNull()
         }
     }
 }
