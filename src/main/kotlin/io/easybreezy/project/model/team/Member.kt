@@ -20,17 +20,17 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         private var username by Members.Info.username
         private var avatar by Members.Info.avatar
 
-        companion object: EmbeddableClass<Info>() {
+        companion object : EmbeddableClass<Info>(Members) {
             override fun createInstance(): Info {
                 return Info()
             }
 
             fun create(name: String, username: String, avatar: String): Info {
-                val info = createInstance()
-                info.name = name
-                info.username = username
-                info.avatar = avatar
-                return info
+                return Info.new {
+                    this.name = name
+                    this.username = username
+                    this.avatar = avatar
+                }
             }
         }
     }
@@ -63,7 +63,7 @@ object Members : UUIDTable() {
     val role = reference("role", Roles)
     val info = Info
 
-    object Info : EmbeddableColumn<Member.Info, UUID>() {
+    object Info : EmbeddableColumn<Member.Info>() {
         val name = varchar("info_name", 25)
         val username = varchar("info_username", 25)
         val avatar = varchar("info_avatar", 25)
