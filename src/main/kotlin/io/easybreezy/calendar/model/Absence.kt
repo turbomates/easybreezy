@@ -1,7 +1,6 @@
 package io.easybreezy.calendar.model
 
 import io.easybreezy.infrastructure.domain.AggregateRoot
-import io.easybreezy.user.model_legacy.UserId
 import java.util.Date
 import java.util.UUID
 
@@ -12,7 +11,7 @@ class Absence(
     private val endedAt: Date,
     private val comment: String?,
     private val reason: Reason,
-    private val userId: UserId,
+    private val userId: UUID,
     private val id: AbsenceId = UUID.randomUUID()
 ) : AggregateRoot()
 

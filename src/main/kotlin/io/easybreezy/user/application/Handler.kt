@@ -15,8 +15,8 @@ class Handler @Inject constructor(private val repository: Repository) {
     }
 
     fun handleConfirm(command: Confirm) {
-        val user = repository.findByToken(command.token)
+        val user = repository.getByToken(command.token)
 
-        user?.confirm(User.Password.create(command.password), User.Name.create(command.firstName, command.lastName))
+        user.confirm(User.Password.create(command.password), User.Name.create(command.firstName, command.lastName))
     }
 }

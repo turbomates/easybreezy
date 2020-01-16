@@ -73,10 +73,8 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 return Email()
             }
 
-            fun create(address: String): Email {
-                val email = createInstance()
-                email.address = address
-                return email
+            fun create(address: String): Email = Email.new {
+                this.address = address
             }
         }
 
@@ -92,11 +90,9 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 return Name()
             }
 
-            fun create(firstName: String, lastName: String): Name {
-                val name = createInstance()
-                name.firstName = firstName
-                name.lastName = lastName
-                return name
+            fun create(firstName: String, lastName: String) = Name.new {
+                this.firstName = firstName
+                this.lastName = lastName
             }
         }
     }
@@ -110,10 +106,8 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 return Password()
             }
 
-            fun create(plainPassword: String): Password {
-                val password = createInstance()
-                password.hashedPassword = hash(plainPassword)
-                return password
+            fun create(plainPassword: String) = Password.new {
+                this.hashedPassword = hash(plainPassword)
             }
 
             fun verifyPassword(enteredPassword: String, password: String): Boolean {
@@ -155,9 +149,15 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         }
     }
 
-    fun email(): String? {
+    fun email(): String {
         return this.email.address()
     }
+
+    fun name() = name
+    fun token() = token
+    fun roles() = roles
+    fun status() = status
+    fun password() = password
 
     fun confirm(password: Password, name: Name) {
         this.password = password
