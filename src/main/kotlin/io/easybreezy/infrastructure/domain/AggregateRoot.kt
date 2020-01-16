@@ -1,6 +1,6 @@
 package io.easybreezy.infrastructure.domain
 
-import io.easybreezy.infrastructure.events.Event
+import io.easybreezy.infrastructure.event.Event
 
 abstract class AggregateRoot {
     @Transient

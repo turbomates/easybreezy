@@ -40,7 +40,6 @@ import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
 import java.io.File
@@ -52,7 +51,6 @@ fun main() {
     val configProvider = SystemConfiguration
     val dataSource = HikariDataSource(configProvider)
     val database = Database.connect(dataSource)
-
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)

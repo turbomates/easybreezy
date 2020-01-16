@@ -10,7 +10,7 @@ class Issue(
     private val description: String,
     private val author: Member,
     private val status: Status,
-    private val level: CategoryValue
+    private val level: LevelValue
 ) {
     private val id: UUID = UUID.randomUUID()
     private val comments: List<Comment> = emptyList()

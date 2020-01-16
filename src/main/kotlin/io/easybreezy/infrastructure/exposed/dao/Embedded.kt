@@ -28,7 +28,7 @@ abstract class Embeddable {
         }
     }
 
-    abstract class EmbeddableClass<T : Embeddable>(val table: Table) {
+    abstract class EmbeddableClass<T : Embeddable>(private val table: Table) {
         abstract fun createInstance(): T
         internal fun createFromResult(resultRow: ResultRow): T {
             val instance = this.createInstance()

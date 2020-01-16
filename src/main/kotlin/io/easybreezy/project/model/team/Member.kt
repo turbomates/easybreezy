@@ -11,9 +11,7 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var user by Members.user
     private var role by Role referencedOn Members.role
     private var info by Members.info
-    fun info(): Info {
-        return this.info
-    }
+    private var team by Members.team
 
     class Info private constructor() : Embeddable() {
         private var name by Members.Info.name
@@ -36,9 +34,10 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     companion object : PrivateEntityClass<UUID, Member>(object : Repository() {}) {
-        fun create(user: UUID, role: Role, info: Info): Member {
+        fun create(team: Team, user: UUID, role: Role, info: Info): Member {
             return Member.new {
                 this.user = user
+                this.team = team.id
                 this.role = role
                 this.info = info
             }
@@ -53,12 +52,8 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 }
 
-
-class MemberRepository : Member.Repository() {
-
-}
-
 object Members : UUIDTable() {
+    val team = reference("team", Teams)
     val user = uuid("user_id")
     val role = reference("role", Roles)
     val info = Info

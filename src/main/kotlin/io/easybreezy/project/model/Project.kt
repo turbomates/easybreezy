@@ -1,18 +1,96 @@
 package io.easybreezy.project.model
 
-import io.easybreezy.project.model.team.Team
+import io.easybreezy.infrastructure.event.project.project.*
+import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
+import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.project.model.team.Role
+import io.easybreezy.project.model.team.Roles
+import io.easybreezy.project.model.team.Teams
+import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.datetime
+import java.text.Normalizer
+import java.time.LocalDateTime
 import java.util.*
 
-class Project(
-    private val name: String
-) {
-    private val id: UUID = UUID.randomUUID()
-    private val slug: Slug = Slug()
-    private val description: String = ""
-    private val roles: List<String> = emptyList()
-    private val statuses: List<Status> = emptyList()
-    private val teams: List<Team> = emptyList()
-    private val status: Status = Status.Active
+class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
+    private var name by Projects.name
+    private var author by Projects.author
+    private var slug by Projects.slug
+    private var description by Projects.description
+    private var status by Projects.status
+    private var updatedAt by Projects.updatedAt
+    private var roles by Role via Roles
+    private var teams by Team via Teams
+
+    fun writeDescription(description: String) {
+        this.description = description
+    }
+
+    fun close() {
+        this.status = Status.Closed
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(Closed(id.value, this.updatedAt))
+    }
+
+    fun suspend() {
+        this.status = Status.Suspended
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(Suspended(id.value, this.updatedAt))
+    }
+
+    fun activate() {
+        this.status = Status.Active
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(Activated(id.value, this.updatedAt))
+    }
+
+    fun addRole(name: String, permissions: List<String>) {
+        val newRole = Role.new(this.id.value, name, permissions)
+        roles = SizedCollection(roles + newRole)
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(RoleAdded(id.value, newRole.id.value, newRole.name, permissions))
+    }
+
+    fun changeRole(name: String, permissions: List<String>, newName: String? = null) {
+        val role = roles.first { it.name == name }
+        newName?.let { role.rename(it) }
+        role.changePermissions(permissions)
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(RoleChanged(id.value, role.id.value, role.name, permissions))
+    }
+
+    fun removeRole(name: String) {
+        val role = roles.first { it.name == name }
+        if (role.membersCount() > 0) {
+            throw Exception("can't remove role with active members")
+        }
+        roles = SizedCollection(roles.filter { it.name != name })
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(RoleRemoved(id.value, role.id.value, role.name))
+    }
+
+    fun createTeam(name: String) {
+        val newTeam = Team.new { this.name = name }
+        teams = SizedCollection(teams + newTeam)
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(NewTeamAdded(id.value, newTeam.id.value, newTeam.name))
+    }
+
+    fun closeTeam(name: String) {
+        val team = teams.first { it.name == name }
+        team.close()
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(TeamClosed(id.value, team.id.value, team.name))
+    }
+
+    fun activateTeam(name: String) {
+        val team = teams.first { it.name == name }
+        team.activate()
+        this.updatedAt = LocalDateTime.now()
+        this.addEvent(TeamActivated(id.value, team.id.value, team.name))
+    }
 
     enum class Status {
         Active,
@@ -20,7 +98,63 @@ class Project(
         Suspended
     }
 
-    class Slug {
+    companion object : PrivateEntityClass<UUID, Project>(object : Repository() {}) {
+        fun new(name: String): Project {
+            return Project.new {
+                this.name = name
+                this.status = Status.Active
+                this.slug = slugify(name)
+                this.roles = SizedCollection(defaultRoles(this))
+                this.addEvent(Created(this.id.value, this.name))
+            }
+        }
+
+        private fun defaultRoles(project: Project): List<Role> {
+            return listOf("Project Manager", "Team Lead", "Developer").map {
+                Role.new(project.id.value, it, emptyList())
+            }
+        }
+
+        private fun slugify(name: String): String {
+            return Normalizer
+                .normalize(name, Normalizer.Form.NFD)
+                .replace("[^\\p{ASCII}]".toRegex(), "")
+                .replace("[^a-zA-Z0-9\\s]+".toRegex(), "").trim()
+                .replace("\\s+".toRegex(), "-")
+                .toLowerCase()
+        }
 
     }
+
+    abstract class Repository : EntityClass<UUID, Project>(Projects, Project::class.java) {
+        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Project {
+            return Project(entityId)
+        }
+    }
+
+    private class Team constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+        var name by Teams.name
+        var status by Teams.status
+
+        fun close() {
+            status = io.easybreezy.project.model.team.Status.CLOSED
+        }
+
+        fun activate() {
+            status = io.easybreezy.project.model.team.Status.ACTIVE
+        }
+
+        companion object : UUIDEntityClass<Team>(Teams)
+    }
+}
+
+
+object Projects : UUIDTable() {
+    val name = varchar("name", 255)
+    val author = uuid("author")
+    val description = text("name")
+    val status = enumerationByName("status", 25, Project.Status::class)
+    val createdAt = datetime("created_at").default(LocalDateTime.now())
+    val updatedAt = datetime("updated_at").default(LocalDateTime.now())
+    val slug = varchar("slug", 255)
 }

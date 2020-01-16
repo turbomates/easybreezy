@@ -6,6 +6,7 @@ import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.project.api.controller.ProjectController
 import io.ktor.application.Application
 import io.ktor.routing.*
+import kotlinx.serialization.ImplicitReflectionSerializer
 
 class Router @Inject constructor(
     application: Application,
@@ -22,9 +23,8 @@ class Router @Inject constructor(
 
     private fun userRouting(route: Route) {
         route.route("/projects") {
-            get("") { controller<ProjectController>(this).index() }
+            get("") { controller<ProjectController>(this).create() }
 
-            post("/members/add") { controller<ProjectController>(this).invite() }
         }
     }
 }

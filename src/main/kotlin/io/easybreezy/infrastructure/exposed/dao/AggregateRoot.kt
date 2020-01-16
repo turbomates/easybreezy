@@ -1,6 +1,6 @@
 package io.easybreezy.infrastructure.exposed.dao
 
-import io.easybreezy.infrastructure.events.Event
+import io.easybreezy.infrastructure.event.Event
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityID
 

@@ -43,16 +43,16 @@ object Users : UUIDTable() {
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
     val roles = jsonb("roles", Role.serializer().set)
 
-    object Name : EmbeddableColumn<User.Name, UUID>() {
+    object Name : EmbeddableColumn<User.Name>() {
         val firstName = varchar("first_name", 25).nullable()
         val lastName = varchar("last_name", 25).nullable()
     }
 
-    object Password : EmbeddableColumn<User.Password, UUID>() {
+    object Password : EmbeddableColumn<User.Password>() {
         val hashedPassword = varchar("password", 255).nullable()
     }
 
-    object Email : EmbeddableColumn<User.Email, UUID>() {
+    object Email : EmbeddableColumn<User.Email>() {
         val address = varchar("email_address", 255)
     }
 }
@@ -68,7 +68,7 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     class Email private constructor() : Embeddable() {
         private var address by Users.Email.address
 
-        companion object : EmbeddableClass<Email>() {
+        companion object : EmbeddableClass<Email>(Users) {
             override fun createInstance(): Email {
                 return Email()
             }
@@ -87,7 +87,7 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         private var firstName by Users.Name.firstName
         private var lastName by Users.Name.lastName
 
-        companion object : EmbeddableClass<Name>() {
+        companion object : EmbeddableClass<Name>(Users) {
             override fun createInstance(): Name {
                 return Name()
             }
@@ -104,7 +104,7 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     class Password private constructor() : Embeddable() {
         private var hashedPassword by Users.Password.hashedPassword
 
-        companion object : EmbeddableClass<Password>() {
+        companion object : EmbeddableClass<Password>(Users) {
 
             override fun createInstance(): Password {
                 return Password()

@@ -126,6 +126,7 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "1.8"
         freeCompilerArgs = listOf(
             "-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI",
+            "-Xuse-experimental=kotlinx.serialization.ImplicitReflectionSerializer",
             "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI"
         )
     }

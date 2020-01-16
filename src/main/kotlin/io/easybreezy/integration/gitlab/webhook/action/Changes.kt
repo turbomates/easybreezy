@@ -6,6 +6,7 @@ import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Serializable
 data class Changes(

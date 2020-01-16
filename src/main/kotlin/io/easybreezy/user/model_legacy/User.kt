@@ -1,10 +1,5 @@
 package io.easybreezy.user.model_legacy
 
-import io.easybreezy.infrastructure.domain.AggregateRoot
-import io.easybreezy.infrastructure.events.user.UserConfirmed
-import io.easybreezy.infrastructure.events.user.UserCreated
-import io.easybreezy.infrastructure.events.user.UserInvited
-import io.easybreezy.user.model.Token
 import java.util.UUID
 
 typealias UserId = UUID

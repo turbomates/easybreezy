@@ -9,7 +9,6 @@ import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Principal
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
-import io.easybreezy.user.model_legacy.User
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
