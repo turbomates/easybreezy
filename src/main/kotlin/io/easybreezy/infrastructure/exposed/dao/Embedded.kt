@@ -30,13 +30,14 @@ abstract class Embeddable {
 
     abstract class EmbeddableClass<T : Embeddable>(private val table: Table) {
         abstract fun createInstance(): T
+
         internal fun createFromResult(resultRow: ResultRow): T {
             val instance = this.createInstance()
             instance.readValues = resultRow
             return instance
         }
 
-        fun new(init: T.() -> Unit): T {
+        protected fun new(init: T.() -> Unit): T {
             val instance = createInstance()
             instance.readValues = ResultRow.createAndFillDefaults(table.columns)
             instance.init()

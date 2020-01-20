@@ -12,6 +12,7 @@ import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ConfigSource
 import com.zaxxer.hikari.HikariConfig
 import io.easybreezy.calendar.CalendarModule
+import io.easybreezy.hr.HRModule
 import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
@@ -123,6 +124,7 @@ fun main() {
         ktorInjector.createChildInjector(UserModule())
         ktorInjector.createChildInjector(ProjectModule())
         ktorInjector.createChildInjector(CalendarModule())
+        ktorInjector.createChildInjector(HRModule())
     }.start()
 }
 
