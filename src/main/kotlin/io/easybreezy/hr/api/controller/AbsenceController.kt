@@ -1,11 +1,11 @@
-package io.easybreezy.calendar.api.controller
+package io.easybreezy.hr.api.controller
 
 import com.google.inject.Inject
-import io.easybreezy.calendar.application.absence.Create
-import io.easybreezy.calendar.application.absence.Handler
-import io.easybreezy.calendar.application.absence.Update
-import io.easybreezy.calendar.application.absence.Validation
-import io.easybreezy.calendar.model.AbsenceId
+import io.easybreezy.hr.application.absence.Create
+import io.easybreezy.hr.application.absence.Handler
+import io.easybreezy.hr.application.absence.Update
+import io.easybreezy.hr.application.absence.Validation
+import io.easybreezy.hr.model.absence.AbsenceId
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.respondOk
 import org.jetbrains.exposed.sql.transactions.transaction

@@ -4,7 +4,7 @@ import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
-import io.easybreezy.user.model.PGEnum
+import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
 import org.jetbrains.exposed.dao.EntityID

@@ -4,6 +4,7 @@ import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
 import org.jetbrains.exposed.dao.EntityID
@@ -14,13 +15,6 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
 import org.postgresql.util.PGobject
 import java.util.UUID
-
-class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
-    init {
-        value = enumValue?.name
-        type = enumTypeName
-    }
-}
 
 enum class Status {
     ACTIVE, WAIT_CONFIRM

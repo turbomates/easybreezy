@@ -1,4 +1,4 @@
-package io.easybreezy.calendar.application.absence
+package io.easybreezy.hr.application.absence
 
 import java.util.Date
 
