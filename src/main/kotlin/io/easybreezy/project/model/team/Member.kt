@@ -4,6 +4,8 @@ import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.*
 

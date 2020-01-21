@@ -1,15 +1,14 @@
 package io.easybreezy.infrastructure.ktor.auth
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import io.easybreezy.user.model.Role
 // import io.easybreezy.user.model_legacy.User
-import io.ktor.sessions.SessionSerializer
-import org.jetbrains.exposed.dao.EntityID
-import java.lang.reflect.Type
-import java.util.UUID
+import io.easybreezy.user.model.Role
+import java.util.*
 
-data class Session(val principal: UserPrincipal? = null, val attributes: MutableMap<String, String> = mutableMapOf(), val ttl: Int = 3600)
+data class Session(
+    val principal: UserPrincipal? = null,
+    val attributes: MutableMap<String, String> = mutableMapOf(),
+    val ttl: Int = 3600
+)
 
 data class UserPrincipal(override val id: UUID, val roles: Set<Role>) : Principal
 
@@ -17,18 +16,8 @@ interface Principal : io.ktor.auth.Principal {
     val id: UUID
 }
 
-class GsonSessionSerializer(
-    private val type: Type,
-    builder: GsonBuilder = GsonBuilder(),
-    configure: GsonBuilder.() -> Unit = {}
-) : SessionSerializer {
-    private var gson: Gson
-
-    init {
-        configure(builder)
-        gson = builder.create()
-    }
-
-    override fun serialize(session: Any): String = gson.toJson(session)
-    override fun deserialize(text: String): Any = gson.fromJson(text, type)
-}
+//object SessionSerializer : SessionSerializer<Principal> {
+//    val serializer: Json = Json(configuration = JsonConfiguration(useArrayPolymorphism = true))
+//    override fun serialize(session: Principal): String = gson.toJson(session)
+//    override fun deserialize(text: String): Principal = gson.fromJson(text, type)
+//}

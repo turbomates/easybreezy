@@ -1,6 +1,7 @@
 package io.easybreezy.infrastructure.exposed.dao
 
 import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import kotlin.properties.ReadOnlyProperty
@@ -105,7 +106,7 @@ open class PrivateEntityClass<ID : Comparable<ID>, out T : Entity<ID>>(private v
         return optionalBackReferencedOn(column)
     }
 
-    private fun <TargetID : Comparable<TargetID>, Target : Entity<TargetID>, REF : Comparable<REF>> EntityClass<TargetID, Target>.referrersOn(
+    infix fun <TargetID : Comparable<TargetID>, Target : Entity<TargetID>, REF : Comparable<REF>> EntityClass<TargetID, Target>.referrersOn(
         column: Column<REF>
     ): Referrers<TargetID, Entity<TargetID>, TargetID, Target, REF> {
         return referrersOn(column)

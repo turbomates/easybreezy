@@ -12,9 +12,8 @@ import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ConfigSource
 import com.zaxxer.hikari.HikariConfig
 import io.easybreezy.calendar.CalendarModule
-import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
-import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
@@ -22,32 +21,29 @@ import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.auth.Principal
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DataConversion
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
-import io.ktor.gson.GsonConverter
+import io.ktor.features.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.routing.routing
+import io.ktor.serialization.DefaultJsonConfiguration
+import io.ktor.serialization.serialization
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
 import java.io.File
 import java.io.InputStream
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
 
-fun main() {
+suspend fun main() {
     val configProvider = SystemConfiguration
     val dataSource = HikariDataSource(configProvider)
     val database = Database.connect(dataSource)
@@ -55,8 +51,10 @@ fun main() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)
             bind(Database::class.java).toInstance(database)
+            bind(TransactionManager::class.java).toInstance(TransactionManager(database))
         }
     })
+
 
     embeddedServer(Netty, port = 3000) {
         val application = this
@@ -92,9 +90,6 @@ fun main() {
                 directorySessionStorage(File(".sessions"), cached = false)
 
             ) {
-                serializer = GsonSessionSerializer(Session::class.java) {
-                    registerTypeAdapter(Principal::class.java, AbstractTypeAdapter<Principal>())
-                }
                 cookie.path = "/"
             }
         }
@@ -106,9 +101,15 @@ fun main() {
             }
             exception<Exception> { ErrorRenderer.render(call, it) }
         }
-
         install(ContentNegotiation) {
-            register(ContentType.Application.Json, GsonConverter())
+            serialization(
+                contentType = ContentType.Application.Json,
+                json = Json(
+                    DefaultJsonConfiguration.copy(
+                        prettyPrint = true
+                    )
+                )
+            )
         }
 
         val ktorInjector = injector.createChildInjector(object : AbstractModule() {

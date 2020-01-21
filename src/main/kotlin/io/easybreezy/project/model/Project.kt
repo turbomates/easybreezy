@@ -7,9 +7,11 @@ import io.easybreezy.project.model.team.Role
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
 import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SizedCollection
-import org.jetbrains.exposed.sql.datetime
+import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.text.Normalizer
 import java.time.LocalDateTime
 import java.util.*
@@ -21,8 +23,8 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var description by Projects.description
     private var status by Projects.status
     private var updatedAt by Projects.updatedAt
-    private var roles by Role via Roles
-    private var teams by Team via Teams
+    private val roles by Role referrersOn Roles.project
+    private val teams by Team referrersOn Teams.project
 
     fun writeDescription(description: String) {
         this.description = description
@@ -47,8 +49,7 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     fun addRole(name: String, permissions: List<String>) {
-        val newRole = Role.new(this.id.value, name, permissions)
-        roles = SizedCollection(roles + newRole)
+        val newRole = Role.new(this, name, permissions)
         this.updatedAt = LocalDateTime.now()
         this.addEvent(RoleAdded(id.value, newRole.id.value, newRole.name, permissions))
     }
@@ -66,14 +67,13 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         if (role.membersCount() > 0) {
             throw Exception("can't remove role with active members")
         }
-        roles = SizedCollection(roles.filter { it.name != name })
+        role.delete()
         this.updatedAt = LocalDateTime.now()
         this.addEvent(RoleRemoved(id.value, role.id.value, role.name))
     }
 
     fun createTeam(name: String) {
-        val newTeam = Team.new { this.name = name }
-        teams = SizedCollection(teams + newTeam)
+        val newTeam = Team.new { this.name = name; this.project = this@Project.id }
         this.updatedAt = LocalDateTime.now()
         this.addEvent(NewTeamAdded(id.value, newTeam.id.value, newTeam.name))
     }
@@ -99,19 +99,21 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     companion object : PrivateEntityClass<UUID, Project>(object : Repository() {}) {
-        fun new(name: String): Project {
+        fun new(name: String, description: String): Project {
             return Project.new {
                 this.name = name
+                this.author = UUID.randomUUID()
                 this.status = Status.Active
                 this.slug = slugify(name)
-                this.roles = SizedCollection(defaultRoles(this))
+                this.description = description
+                defaultRoles(this)
                 this.addEvent(Created(this.id.value, this.name))
             }
         }
 
         private fun defaultRoles(project: Project): List<Role> {
             return listOf("Project Manager", "Team Lead", "Developer").map {
-                Role.new(project.id.value, it, emptyList())
+                Role.new(project, it, emptyList())
             }
         }
 
@@ -132,8 +134,9 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         }
     }
 
-    private class Team constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+    internal class Team constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         var name by Teams.name
+        var project by Teams.project
         var status by Teams.status
 
         fun close() {
@@ -149,12 +152,12 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 }
 
 
-object Projects : UUIDTable() {
+object Projects : UUIDTable("projects") {
     val name = varchar("name", 255)
     val author = uuid("author")
-    val description = text("name")
+    val description = text("description")
     val status = enumerationByName("status", 25, Project.Status::class)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
-    val slug = varchar("slug", 255)
+    val slug = varchar("slug", 25)
 }
