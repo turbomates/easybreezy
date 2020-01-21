@@ -12,6 +12,7 @@ import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ConfigSource
 import com.zaxxer.hikari.HikariConfig
 import io.easybreezy.calendar.CalendarModule
+import io.easybreezy.hr.HRModule
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Session
@@ -40,7 +41,7 @@ import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
 import java.io.File
 import java.io.InputStream
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
 
 suspend fun main() {
@@ -124,6 +125,7 @@ suspend fun main() {
         ktorInjector.createChildInjector(UserModule())
         ktorInjector.createChildInjector(ProjectModule())
         ktorInjector.createChildInjector(CalendarModule())
+        ktorInjector.createChildInjector(HRModule())
     }.start()
 }
 
