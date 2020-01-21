@@ -1,63 +1,23 @@
 package io.easybreezy.user.model
 
+import io.easybreezy.infrastructure.event.user.Confirmed
+import io.easybreezy.infrastructure.event.user.Invited
+import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
-import org.jetbrains.exposed.dao.UUIDEntity
-import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
 import org.postgresql.util.PGobject
 import java.util.UUID
 
-class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
-    init {
-        value = enumValue?.name
-        type = enumTypeName
-    }
-}
-
-enum class Status {
-    ACTIVE, WAIT_CONFIRM
-}
-
-@Serializable
-enum class Role {
-    ADMIN, MEMBER
-}
-
-object Users : UUIDTable() {
-    val password = Password
-    val email = Email
-    val name = Name
-    val token = varchar("token", 255).nullable()
-    val status = customEnumeration(
-        "status",
-        "user_status",
-        { value -> Status.valueOf(value as String) },
-        { PGEnum("user_status", it) }).default(Status.ACTIVE)
-    val roles = jsonb("roles", Role.serializer().set)
-
-    object Name : EmbeddableColumn<User.Name>() {
-        val firstName = varchar("first_name", 25).nullable()
-        val lastName = varchar("last_name", 25).nullable()
-    }
-
-    object Password : EmbeddableColumn<User.Password>() {
-        val hashedPassword = varchar("password", 255).nullable()
-    }
-
-    object Email : EmbeddableColumn<User.Email>() {
-        val address = varchar("email_address", 255)
-    }
-}
-
-class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var email by Users.email
     private var password by Users.password
     private var roles by Users.roles
@@ -135,6 +95,7 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 this.roles = roles
                 this.status = Status.WAIT_CONFIRM
                 this.token = Token.generate()
+                this.addEvent(Invited(this.id.value))
             }
         }
 
@@ -164,15 +125,59 @@ class User private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         this.name = name
         this.status = Status.ACTIVE
         resetToken()
+
+        this.addEvent(Confirmed(this.id.value))
     }
 
     private fun resetToken() {
         token = null
     }
 
-    abstract class Repository : UUIDEntityClass<User>(Users, User::class.java) {
+    abstract class Repository : EntityClass<UUID, User>(Users, User::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): User {
             return User(entityId)
         }
+    }
+}
+
+class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
+    init {
+        value = enumValue?.name
+        type = enumTypeName
+    }
+}
+
+enum class Status {
+    ACTIVE, WAIT_CONFIRM
+}
+
+@Serializable
+enum class Role {
+    ADMIN, MEMBER
+}
+
+object Users : UUIDTable() {
+    val password = Password
+    val email = Email
+    val name = Name
+    val token = varchar("token", 255).nullable()
+    val status = customEnumeration(
+        "status",
+        "user_status",
+        { value -> Status.valueOf(value as String) },
+        { PGEnum("user_status", it) }).default(Status.ACTIVE)
+    val roles = jsonb("roles", Role.serializer().set)
+
+    object Name : EmbeddableColumn<User.Name>() {
+        val firstName = varchar("first_name", 25).nullable()
+        val lastName = varchar("last_name", 25).nullable()
+    }
+
+    object Password : EmbeddableColumn<User.Password>() {
+        val hashedPassword = varchar("password", 255).nullable()
+    }
+
+    object Email : EmbeddableColumn<User.Email>() {
+        val address = varchar("email_address", 255)
     }
 }
