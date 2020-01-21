@@ -3,7 +3,6 @@ package io.easybreezy.user.infrastructure.security
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import org.jetbrains.exposed.dao.EntityID
 import java.util.Date
 import java.util.UUID
 

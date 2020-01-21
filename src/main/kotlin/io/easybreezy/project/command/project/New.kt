@@ -1,4 +1,6 @@
 package io.easybreezy.project.command.project
 
-class New{
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class New(val name: String, val description: String)

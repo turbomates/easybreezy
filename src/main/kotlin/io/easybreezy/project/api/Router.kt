@@ -5,6 +5,8 @@ import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.project.api.controller.ProjectController
 import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.request.receive
 import io.ktor.routing.*
 import kotlinx.serialization.ImplicitReflectionSerializer
 
@@ -23,7 +25,7 @@ class Router @Inject constructor(
 
     private fun userRouting(route: Route) {
         route.route("/projects") {
-            get("") { controller<ProjectController>(this).create() }
+            get("") { controller<ProjectController>(this).create(call.receive()) }
 
         }
     }

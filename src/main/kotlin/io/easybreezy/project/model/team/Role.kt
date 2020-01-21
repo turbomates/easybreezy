@@ -2,17 +2,22 @@ package io.easybreezy.project.model.team
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.project.model.Project
+import io.easybreezy.project.model.Projects
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
-import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.UUIDTable
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.Table
 import java.util.*
 
 class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
-    private var project by Roles.project
+    private var project by Project referencedOn Roles.project
     var name by Roles.name
         private set
     private var permissions by Roles.permissions
@@ -29,7 +34,7 @@ class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     companion object : PrivateEntityClass<UUID, Role>(object : Repository() {}) {
-        fun new(project: UUID, name: String, permissions: List<String>): Role {
+        fun new(project: Project, name: String, permissions: List<String>): Role {
             return Role.new {
                 this.project = project
                 this.name = name
@@ -46,8 +51,8 @@ class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 }
 
-object Roles : UUIDTable() {
-    val project = uuid("project")
+object Roles : UUIDTable("project_roles") {
+    val project = reference("project", Projects)
     val name = varchar("name", 25)
     val permissions = jsonb("permissions", String.serializer().list)
 }

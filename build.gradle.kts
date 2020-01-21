@@ -51,7 +51,7 @@ dependencies {
     implementation(Deps.ktor_server_netty)
     implementation(Deps.ktor_server_sessions)
     implementation(Deps.ktor_locations)
-    implementation(Deps.ktor_gson)
+    implementation(Deps.ktor_serialization)
     implementation(Deps.cfg4k_core)
     implementation(Deps.hikaricp)
     implementation(Deps.gson)

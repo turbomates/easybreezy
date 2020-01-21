@@ -2,13 +2,15 @@ package io.easybreezy.project.model.team
 
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
-import org.jetbrains.exposed.dao.*
+import io.easybreezy.project.model.team.Roles.references
+import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.UUIDEntity
+import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SizedCollection
-import org.jetbrains.exposed.sql.SizedIterable
-import org.jetbrains.exposed.sql.Table
 import java.util.*
 
 class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
@@ -58,7 +60,7 @@ enum class Status {
     CLOSED
 }
 
-class Repository : UUIDEntity(EntityID(UUID.randomUUID(), Repositories)) {
+open class Repository : UUIDEntity(EntityID(UUID.randomUUID(), Repositories)) {
     companion object : PrivateEntityClass<UUID, Repository>(object : UUIDEntityClass<Repository>(Repositories) {})
     enum class Type {
         GITLAB,
@@ -66,8 +68,9 @@ class Repository : UUIDEntity(EntityID(UUID.randomUUID(), Repositories)) {
     }
 }
 
-object Teams : UUIDTable() {
+object Teams : UUIDTable("project_teams") {
     val name = varchar("name", 25)
+    val project = reference("project", Projects)
     val status = enumerationByName("status", 25, Status::class).default(Status.ACTIVE)
 }
 

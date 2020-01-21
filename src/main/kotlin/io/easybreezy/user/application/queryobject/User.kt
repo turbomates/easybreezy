@@ -9,11 +9,11 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
-class UserQO(private val id: UUID) : QueryObject<User> {
+class UserQO(private val userId: UUID) : QueryObject<User> {
     override fun getData() =
         transaction {
             Users.select {
-                Users.id eq id
+                Users.id eq userId
             }.first().toUser()
         }
 }

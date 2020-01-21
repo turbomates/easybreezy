@@ -1,3 +1,0 @@
-package io.easybreezy.infrastructure.exposed
-
-class EventStatementInterceptor

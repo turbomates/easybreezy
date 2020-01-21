@@ -1,6 +1,6 @@
 object Versions {
     const val kotlin = "1.3.60"
-    const val ktor = "1.2.3"
+    const val ktor = "1.3.0"
     const val junit = "5.4.2"
     const val test_logger = "1.7.0"
     const val flyway = "6.0.0-beta"
@@ -15,14 +15,14 @@ object Versions {
     const val mindrot_jbcrypt = "0.4"
     const val rabbitmq_amqp_client = "5.6.0"
     const val ktlint_gradle = "9.1.1"
-    const val exposed = "0.18.1"
+    const val exposed = "0.20.3"
     const val kotlin_serialization = "1.3.60"
     const val kotlin_serialization_runtime = "0.14.0"
 }
 
 object Deps {
     const val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
-    const val ktor_gson = "io.ktor:ktor-gson:${Versions.ktor}"
+    const val ktor_serialization = "io.ktor:ktor-serialization:${Versions.ktor}"
     const val ktor_locations = "io.ktor:ktor-locations:${Versions.ktor}"
     const val ktor_server_sessions = "io.ktor:ktor-server-sessions:${Versions.ktor}"
     const val ktor_server_test_host = "io.ktor:ktor-server-test-host:${Versions.ktor}"
