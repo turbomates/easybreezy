@@ -1,18 +1,16 @@
 package io.easybreezy.infrastructure.serialization
 
 import kotlinx.serialization.*
-import kotlinx.serialization.internal.StringDescriptor
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @Serializer(forClass = LocalDate::class)
 object LocalDateSerializer : KSerializer<LocalDate> {
     private val df: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")
 
-    override fun serialize(output: Encoder, obj: LocalDate) {
-        output.encodeString(obj.format(df))
+    override fun serialize(encoder: Encoder, obj: LocalDate) {
+        encoder.encodeString(obj.format(df))
     }
 
     override fun deserialize(decoder: Decoder): LocalDate {
@@ -24,8 +22,8 @@ object LocalDateSerializer : KSerializer<LocalDate> {
 object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     private val df: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")
 
-    override fun serialize(output: Encoder, obj: LocalDateTime) {
-        output.encodeString(obj.format(df))
+    override fun serialize(encoder: Encoder, obj: LocalDateTime) {
+        encoder.encodeString(obj.format(df))
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {

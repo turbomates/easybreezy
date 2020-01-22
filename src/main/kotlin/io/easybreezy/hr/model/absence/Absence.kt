@@ -5,12 +5,12 @@ import io.easybreezy.infrastructure.postgresql.PGEnum
 import io.easybreezy.user.model.User
 import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
-import org.jetbrains.exposed.dao.UUIDTable
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.date
+import org.jetbrains.exposed.sql.`java-time`.date
 import java.time.LocalDate
 import java.util.UUID
 

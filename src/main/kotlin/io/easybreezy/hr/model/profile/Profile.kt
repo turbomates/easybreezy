@@ -1,5 +1,6 @@
 package io.easybreezy.hr.model.profile
 
+import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
@@ -7,12 +8,11 @@ import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
-import org.jetbrains.exposed.dao.UUIDEntity
-import org.jetbrains.exposed.dao.UUIDEntityClass
+import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.`java-time`.date
+// import org.jetbrains.exposed.sql.date
 import java.time.LocalDate
 import java.util.UUID
 
@@ -37,7 +37,7 @@ object Profiles : UUIDTable() {
     val userId = uuid("user_id")
 
     object PersonalData : EmbeddableColumn<Profile.PersonalData>() {
-        val birthday = date("birthday").nullable()
+        // val birthday = date("birthday").nullable()
         val gender = customEnumeration(
             "gender",
             "profile_gender",
@@ -58,12 +58,12 @@ object Profiles : UUIDTable() {
     }
 }
 
-class Profile private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var personalData by Profiles.personalData
     private var contactDetails by Profiles.contactDetails
 
     class PersonalData private constructor() : Embeddable() {
-        private var birthday by Profiles.PersonalData.birthday
+        // private var birthday by Profiles.PersonalData.birthday
         private var gender by Profiles.PersonalData.gender
         private var about by Profiles.PersonalData.about
         // private var name by Profiles.PersonalData.name
@@ -74,7 +74,7 @@ class Profile private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             }
 
             fun create(birthday: LocalDate, gender: Gender, about: String) = PersonalData.new {
-                this.birthday = birthday
+                // this.birthday = birthday
                 this.gender = gender
                 this.about = about
             }
@@ -111,7 +111,6 @@ class Profile private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 this.phones = phones
             }
         }
-
     }
 
     companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
@@ -125,7 +124,7 @@ class Profile private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         this.contactDetails = contactDetails
     }
 
-    abstract class Repository : UUIDEntityClass<Profile>(
+    abstract class Repository : EntityClass<UUID, Profile>(
         Profiles, Profile::class.java
     ) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Profile {

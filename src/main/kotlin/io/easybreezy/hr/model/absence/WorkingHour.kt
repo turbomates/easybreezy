@@ -1,8 +1,8 @@
 package io.easybreezy.hr.model.absence
 
 import io.easybreezy.user.model.Users
-import org.jetbrains.exposed.dao.UUIDTable
-import org.jetbrains.exposed.sql.date
+import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.`java-time`.date
 import java.util.Date
 import java.util.UUID
 

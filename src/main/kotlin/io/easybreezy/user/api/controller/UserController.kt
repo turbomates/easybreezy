@@ -11,7 +11,6 @@ import io.easybreezy.user.application.Invite
 import io.easybreezy.user.application.Validation
 import io.easybreezy.user.application.queryobject.UserQO
 import io.easybreezy.user.application.queryobject.UsersQO
-import io.ktor.response.respondText
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 

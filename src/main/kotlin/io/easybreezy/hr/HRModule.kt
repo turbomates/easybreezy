@@ -6,6 +6,9 @@ import com.google.inject.Provides
 import io.easybreezy.hr.api.Router
 import io.easybreezy.hr.infrastructure.ProfileRepository
 import io.easybreezy.hr.model.profile.Repository
+import io.easybreezy.infrastructure.event.EventSubscriber
+import io.easybreezy.infrastructure.event.EventSystem
+import io.easybreezy.infrastructure.event.user.Invited
 import io.easybreezy.infrastructure.ktor.ControllerPipeline
 import io.easybreezy.infrastructure.ktor.ControllerPipelineFactory
 import io.easybreezy.infrastructure.ktor.InterceptorPipeline
@@ -27,3 +30,4 @@ class HRModule : AbstractModule() {
         return InterceptorPipelineFactory(injector)
     }
 }
+
