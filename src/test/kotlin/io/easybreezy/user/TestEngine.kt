@@ -5,7 +5,6 @@ import com.google.inject.Guice
 import io.easybreezy.infrastructure.gson.AbstractTypeAdapter
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Auth
-import io.easybreezy.infrastructure.ktor.auth.GsonSessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.Principal
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
@@ -19,7 +18,6 @@ import io.ktor.auth.session
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DataConversion
 import io.ktor.features.StatusPages
-import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
