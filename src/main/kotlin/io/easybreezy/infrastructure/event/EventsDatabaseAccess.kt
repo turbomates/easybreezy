@@ -31,12 +31,12 @@ class EventsDatabaseAccess(private val database: Database) {
 }
 
 internal fun EventStore.save() {
-    Events.batchInsert(this.raiseEvents()) { event ->
+    Events.batchInsert(this.raiseEvents().toList()) { event ->
         this[Events.event] = EventWrapper(event)
     }
 }
 
-private object Events : UUIDTable("domain_events") {
+internal object Events : UUIDTable("domain_events") {
     val event = jsonb("event", EventWrapper.serializer())
     val publishedAt = datetime("published_at").nullable()
     val createdAt = datetime("created_at").default(LocalDateTime.now())

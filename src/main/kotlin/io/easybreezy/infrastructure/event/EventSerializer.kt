@@ -2,10 +2,7 @@ package io.easybreezy.infrastructure.event
 
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonInput
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
 object EventSerializer {
@@ -30,13 +27,7 @@ object EventSerializer {
 internal data class EventWrapper(@Polymorphic val event: Event)
 
 internal object EventWrapperSerializer : KSerializer<EventWrapper> {
-    override val descriptor: SerialDescriptor = object : SerialClassDescImpl("EventDescriptor") {
-        init {
-            addElement("type") // req will have index 0
-            addElement("body") // res will have index 1
-        }
-    }
-
+    override val descriptor: SerialDescriptor = SerialClassDescImpl("EventDescriptor")
     override fun deserialize(decoder: Decoder): EventWrapper {
         val input = decoder as? JsonInput ?: throw SerializationException("This class can be loaded only by Json")
         val tree = input.decodeJson() as? JsonObject ?: throw SerializationException("Expected JsonObject")
@@ -47,14 +38,13 @@ internal object EventWrapperSerializer : KSerializer<EventWrapper> {
     }
 
     override fun serialize(encoder: Encoder, obj: EventWrapper) {
-        val compositeOutput = encoder.beginStructure(descriptor)
-        compositeOutput.encodeStringElement(descriptor, 0, obj.event::class.qualifiedName!!)
-        compositeOutput.encodeSerializableElement(
-            descriptor,
-            1,
-            obj.event::class.serializer() as KSerializer<Event>,
-            obj.event
+        val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
+        val tree = JsonObject(
+            mapOf(
+                "type" to JsonLiteral(obj.event::class.qualifiedName!!),
+                "body" to output.json.toJson(obj.event::class.serializer() as KSerializer<Event>, obj.event)
+            )
         )
-        compositeOutput.endStructure(descriptor)
+        output.encodeJson(tree)
     }
 }
