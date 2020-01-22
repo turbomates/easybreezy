@@ -16,6 +16,7 @@ import io.easybreezy.hr.HRModule
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Session
+import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
@@ -91,6 +92,8 @@ suspend fun main() {
                 directorySessionStorage(File(".sessions"), cached = false)
 
             ) {
+                serializer = SessionSerializer()
+
                 cookie.path = "/"
             }
         }

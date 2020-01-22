@@ -10,8 +10,8 @@ import io.easybreezy.infrastructure.exposed.type.jsonb
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
 import org.jetbrains.exposed.dao.EntityClass
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.UUIDTable
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
 import org.postgresql.util.PGobject
