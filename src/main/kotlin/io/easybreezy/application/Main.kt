@@ -13,6 +13,9 @@ import com.jdiazcano.cfg4k.sources.ConfigSource
 import com.zaxxer.hikari.HikariConfig
 import io.easybreezy.calendar.CalendarModule
 import io.easybreezy.hr.HRModule
+import io.easybreezy.infrastructure.event.SubscriberWorker
+import io.easybreezy.infrastructure.event.EventSubscribers
+import io.easybreezy.infrastructure.event.EventsDatabaseAccess
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Session
@@ -35,6 +38,8 @@ import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.event.Level
@@ -44,19 +49,22 @@ import java.io.InputStream
 import java.util.UUID
 import javax.sql.DataSource
 
-suspend fun main() {
+suspend fun main()  {
     val configProvider = SystemConfiguration
     val dataSource = HikariDataSource(configProvider)
     val database = Database.connect(dataSource)
+    val eventSubscribers = EventSubscribers()
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)
             bind(Database::class.java).toInstance(database)
             bind(TransactionManager::class.java).toInstance(TransactionManager(database))
+            bind(EventSubscribers::class.java).toInstance(eventSubscribers)
         }
     })
 
-
+    val subscriberWorker = SubscriberWorker(EventsDatabaseAccess(database), eventSubscribers)
+    subscriberWorker.start(1)
     embeddedServer(Netty, port = 3000) {
         val application = this
         install(DefaultHeaders)

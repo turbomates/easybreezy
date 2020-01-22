@@ -1,7 +1,7 @@
 package io.easybreezy.infrastructure.exposed
 
 import io.easybreezy.infrastructure.event.EventStore
-import io.easybreezy.infrastructure.event.EventsDatabaseAccess
+import io.easybreezy.infrastructure.event.save
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
@@ -19,7 +19,7 @@ class TransactionManager(private val database: Database) {
 
 class EventListenerInterceptor() : GlobalStatementInterceptor {
     override fun beforeCommit(transaction: Transaction) {
-        EventsDatabaseAccess.save(transaction.events.raiseEvents())
+        transaction.events.save()
     }
 }
 

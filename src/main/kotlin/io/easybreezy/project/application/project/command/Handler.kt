@@ -1,4 +1,4 @@
-package io.easybreezy.project.command.project
+package io.easybreezy.project.application.project.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager

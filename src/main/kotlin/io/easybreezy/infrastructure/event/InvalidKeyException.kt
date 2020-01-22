@@ -1,4 +1,4 @@
 package io.easybreezy.infrastructure.event
 
-class InvalidKeyException : Exception() {
+class InvalidKeyException(message: String) : Exception(message) {
 }
