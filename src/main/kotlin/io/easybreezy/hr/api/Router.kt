@@ -14,6 +14,11 @@ import io.ktor.locations.*
 import io.ktor.routing.*
 import io.ktor.request.receive
 import java.util.UUID
+import io.ktor.request.receiveText
+import io.ktor.routing.Route
+import io.ktor.routing.post
+import io.ktor.routing.route
+import io.ktor.routing.routing
 
 class Router @Inject constructor(
     application: Application,
@@ -39,12 +44,18 @@ class Router @Inject constructor(
                     call.receive()
                 )
             }
-            post("/contact-details") {
-                controller<ProfileController>(this).updateContactDetails(
+            post("/add-messengers") {
+                controller<ProfileController>(this).addMessengers(
                     resolveUserId<UserPrincipal>(),
                     call.receive()
                 )
             }
+            // post("/contact-details") {
+            //     controller<ProfileController>(this).updateContactDetails(
+            //         resolveUserId<UserPrincipal>(),
+            //         call.receive()
+            //     )
+            // }
         }
     }
 

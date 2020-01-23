@@ -5,11 +5,10 @@ import kotlinx.serialization.Transient
 import java.util.UUID
 
 @Serializable
-data class UpdatePersonalData(
-    val birthday: String,
-    val gender: String,
-    val about: String
-) {
+data class AddMessengers(val messengers: List<Messenger>) {
     @Transient
     lateinit var id: UUID
 }
+
+@Serializable
+data class Messenger(val type: String, val username: String)

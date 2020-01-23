@@ -1,6 +1,7 @@
 package io.easybreezy.hr.api.controller
 
 import com.google.inject.Inject
+import io.easybreezy.hr.application.profile.AddMessengers
 import io.easybreezy.hr.application.profile.Handler
 import io.easybreezy.hr.application.profile.UpdateContactDetails
 import io.easybreezy.hr.application.profile.UpdatePersonalData
@@ -27,11 +28,21 @@ class ProfileController @Inject constructor(
         call.respondOk()
     }
 
-    suspend fun updateContactDetails(id: UUID, command: UpdateContactDetails) {
+    // suspend fun updateContactDetails(id: UUID, command: UpdateContactDetails) {
+    //     command.id = id
+    //     // validation.onUpdateContactDetails(command)
+    //     transaction {
+    //         handler.handleUpdateContactDetails(command)
+    //     }
+    //
+    //     call.respondOk()
+    // }
+
+    suspend fun addMessengers(id: UUID, command: AddMessengers) {
         command.id = id
         // validation.onUpdateContactDetails(command)
         transaction {
-            handler.handleUpdateContactDetails(command)
+            handler.handleAddMessengers(command)
         }
 
         call.respondOk()

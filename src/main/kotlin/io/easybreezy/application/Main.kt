@@ -100,7 +100,6 @@ suspend fun main()  {
 
             ) {
                 serializer = SessionSerializer()
-
                 cookie.path = "/"
             }
         }
@@ -128,6 +127,7 @@ suspend fun main()  {
                 bind(Application::class.java).toInstance(application)
             }
         })
+
         routing {
             injector.getInstance(Auth::class.java).intercept(this)
         }
