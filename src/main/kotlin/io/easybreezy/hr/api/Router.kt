@@ -2,7 +2,6 @@ package io.easybreezy.hr.api
 
 import com.google.inject.Inject
 import io.easybreezy.hr.api.controller.AbsenceController
-import io.easybreezy.hr.model.absence.AbsenceId
 import io.easybreezy.hr.api.controller.ProfileController
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Router
@@ -11,14 +10,10 @@ import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.auth.authenticate
-import io.ktor.locations.Location
-import io.ktor.locations.get
+import io.ktor.locations.*
+import io.ktor.routing.*
 import io.ktor.request.receive
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
-import io.ktor.routing.routing
+import java.util.UUID
 
 class Router @Inject constructor(
     application: Application,
@@ -56,12 +51,24 @@ class Router @Inject constructor(
     private fun absencesRouting(route: Route) {
         route.route("/absences") {
             @Location("/{id}")
-            data class Show(val id: AbsenceId)
+            data class Absence(val id: UUID)
 
-            get<Show> { controller<AbsenceController>(this).show(it.id) }
-            get("") { controller<AbsenceController>(this).absences() }
-            post("") { controller<AbsenceController>(this).create(call.receive()) }
-            post("/update") { controller<AbsenceController>(this).update(call.receive()) }
+            @Location("/{id}")
+            data class WorkingHour(val id: UUID)
+
+            post("") { controller<AbsenceController>(this).createAbsence(call.receive()) }
+            post<Absence> { controller<AbsenceController>(this).updateAbsence(it.id, call.receive()) }
+            delete<Absence> { controller<AbsenceController>(this).removeAbsence(it.id) }
+            get<Absence> { controller<AbsenceController>(this).showAbsence(it.id) }
+            get("") { controller<AbsenceController>(this).absences(resolveUserId<UserPrincipal>()) }
+
+            route("/working-hours") {
+                post("") { controller<AbsenceController>(this).noteWorkingHours(call.receive()) }
+                put("") { controller<AbsenceController>(this).editWorkingHours(call.receive()) }
+                delete("") { controller<AbsenceController>(this).removeWorkingHours(call.receive()) }
+                get<WorkingHour> { controller<AbsenceController>(this).showWorkingHour(it.id) }
+                get("") { controller<AbsenceController>(this).workingHours(resolveUserId<UserPrincipal>()) }
+            }
         }
     }
 }

@@ -15,7 +15,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
-import org.postgresql.util.PGobject
 import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {

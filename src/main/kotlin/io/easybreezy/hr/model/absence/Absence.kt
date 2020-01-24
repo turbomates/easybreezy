@@ -4,7 +4,6 @@ import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import io.easybreezy.user.model.User
 import io.easybreezy.user.model.Users
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -14,17 +13,15 @@ import org.jetbrains.exposed.sql.`java-time`.date
 import java.time.LocalDate
 import java.util.UUID
 
-typealias AbsenceId = UUID
-
 object Absences : UUIDTable("absences") {
-    val startedAt = date("from")
-    val endedAt = date("to")
+    val startedAt = date("started_at").uniqueIndex()
+    val endedAt = date("ended_at").uniqueIndex()
     val comment = text("comment").nullable()
     val reason = customEnumeration(
         "reason",
         "reason",
         { Reason.valueOf(it as String) },
-        { PGEnum("reason", it) }
+        { PGEnum("absence_reason", it) }
     )
     val userId = reference("user_id", Users)
 }
@@ -48,6 +45,13 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         }
     }
 
+    fun edit(startedAt: LocalDate, endedAt: LocalDate, reason: Reason, comment: String? = null) {
+        this.startedAt = startedAt
+        this.endedAt = endedAt
+        this.reason = reason
+        this.comment = comment
+    }
+
     abstract class Repository : UUIDEntityClass<Absence>(Absences, Absence::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Absence {
             return Absence(entityId)
@@ -55,7 +59,6 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 }
 
-@Serializable
 enum class Reason {
     VACATION, SICK, DAYON, PERSONAL
 }

@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 
 @Serializer(forClass = LocalDate::class)
 object LocalDateSerializer : KSerializer<LocalDate> {
-    private val df: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")
+    private val df: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     override fun serialize(encoder: Encoder, obj: LocalDate) {
         encoder.encodeString(obj.format(df))
