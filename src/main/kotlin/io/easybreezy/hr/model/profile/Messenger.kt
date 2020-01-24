@@ -2,23 +2,26 @@ package io.easybreezy.hr.model.profile
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.user.model.PGEnum
-import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
 
-class Messenger private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
-    private var type by Messengers.type
-    private var username by Messengers.username
-    private var profile by Messengers.profile
+class Messenger private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+    var type by Messengers.type
+        private set
+    var username by Messengers.username
+        private set
+    var profile by Profile referencedOn Messengers.profile
+        private set
 
     companion object : PrivateEntityClass<UUID, Messenger>(object : Repository() {}) {
         fun create(profile: Profile, type: Messengers.Type, username: String) = Messenger.new {
             this.type = type
             this.username = username
-            this.profile = profile.id
+            this.profile = profile
         }
     }
 
@@ -26,6 +29,10 @@ class Messenger private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Messenger {
             return Messenger(entityId)
         }
+    }
+
+    fun changeUsername(username: String) {
+        this.username = username
     }
 }
 
@@ -39,6 +46,6 @@ object Messengers : UUIDTable() {
     val username = varchar("username", 255)
 
     enum class Type {
-        SKYPE, TELEGRAM
+        SKYPE, TELEGRAM, SLACK
     }
 }

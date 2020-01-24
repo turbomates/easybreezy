@@ -1,11 +1,11 @@
 package io.easybreezy.hr.api.controller
 
 import com.google.inject.Inject
-import io.easybreezy.hr.application.profile.AddMessengers
-import io.easybreezy.hr.application.profile.Handler
-import io.easybreezy.hr.application.profile.UpdateContactDetails
-import io.easybreezy.hr.application.profile.UpdatePersonalData
-import io.easybreezy.hr.application.profile.Validation
+import io.easybreezy.hr.application.profile.command.UpdateMessengers
+import io.easybreezy.hr.application.profile.command.Handler
+import io.easybreezy.hr.application.profile.command.UpdateContactDetails
+import io.easybreezy.hr.application.profile.command.UpdatePersonalData
+import io.easybreezy.hr.application.profile.command.Validation
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.respondOk
 import io.easybreezy.infrastructure.query.QueryExecutor
@@ -28,21 +28,21 @@ class ProfileController @Inject constructor(
         call.respondOk()
     }
 
-    // suspend fun updateContactDetails(id: UUID, command: UpdateContactDetails) {
-    //     command.id = id
-    //     // validation.onUpdateContactDetails(command)
-    //     transaction {
-    //         handler.handleUpdateContactDetails(command)
-    //     }
-    //
-    //     call.respondOk()
-    // }
-
-    suspend fun addMessengers(id: UUID, command: AddMessengers) {
+    suspend fun updateContactDetails(id: UUID, command: UpdateContactDetails) {
         command.id = id
         // validation.onUpdateContactDetails(command)
         transaction {
-            handler.handleAddMessengers(command)
+            handler.handleUpdateContactDetails(command)
+        }
+
+        call.respondOk()
+    }
+
+    suspend fun updateMessengers(id: UUID, command: UpdateMessengers) {
+        command.id = id
+        // validation.onUpdateContactDetails(command)
+        transaction {
+            handler.handleUpdateMessengers(command)
         }
 
         call.respondOk()

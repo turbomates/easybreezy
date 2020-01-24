@@ -45,17 +45,17 @@ class Router @Inject constructor(
                 )
             }
             post("/add-messengers") {
-                controller<ProfileController>(this).addMessengers(
+                controller<ProfileController>(this).updateMessengers(
                     resolveUserId<UserPrincipal>(),
                     call.receive()
                 )
             }
-            // post("/contact-details") {
-            //     controller<ProfileController>(this).updateContactDetails(
-            //         resolveUserId<UserPrincipal>(),
-            //         call.receive()
-            //     )
-            // }
+            post("/contact-details") {
+                controller<ProfileController>(this).updateContactDetails(
+                    resolveUserId<UserPrincipal>(),
+                    call.receive()
+                )
+            }
         }
     }
 

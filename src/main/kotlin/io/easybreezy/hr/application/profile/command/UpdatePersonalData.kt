@@ -1,4 +1,4 @@
-package io.easybreezy.hr.application.profile
+package io.easybreezy.hr.application.profile.command
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

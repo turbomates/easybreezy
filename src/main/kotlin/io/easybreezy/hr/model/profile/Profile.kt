@@ -1,5 +1,8 @@
 package io.easybreezy.hr.model.profile
 
+import io.easybreezy.infrastructure.event.profile.MessengerAdded
+import io.easybreezy.infrastructure.event.profile.MessengerRemoved
+import io.easybreezy.infrastructure.event.profile.MessengerUsernameChanged
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
@@ -12,7 +15,6 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.`java-time`.date
 import java.time.LocalDate
 import java.util.UUID
@@ -20,7 +22,8 @@ import java.util.UUID
 class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var personalData by Profiles.personalData
     private var contactDetails by Profiles.contactDetails
-    private var messengers by Messenger via Messengers
+    private var userId by Profiles.userId
+    private val messengers by Messenger referrersOn Messengers.profile
 
     class PersonalData private constructor() : Embeddable() {
         private var birthday by Profiles.PersonalData.birthday
@@ -59,24 +62,50 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 
     class ContactDetails private constructor() : Embeddable() {
         private var phones by Profiles.ContactDetails.phones
+        private var emails by Profiles.ContactDetails.emails
 
         companion object : EmbeddableClass<ContactDetails>(Profiles) {
             override fun createInstance(): ContactDetails {
                 return ContactDetails()
             }
 
-            fun create( phones: Set<Phone>) = ContactDetails.new {
+            fun create(phones: Set<Profiles.Phone>, emails: Set<Profiles.Email>) = ContactDetails.new {
                 this.phones = phones
+                this.emails = emails
             }
         }
     }
 
     companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
+        fun create(userId: UUID) = Profile.new {
+            this.userId = userId
+        }
     }
 
     fun addMessenger(type: String, username: String) {
-        messengers = SizedCollection(messengers + Messenger.create(this, Messengers.Type.valueOf(type.toLowerCase()), username))
+        if (hasMessenger(type)) throw Exception("Messenger with $type already exist")
+        Messenger.create(this, Messengers.Type.valueOf(type.toUpperCase()), username)
+        this.addEvent(MessengerAdded(id.value, type))
     }
+
+    fun hasMessenger(type: String): Boolean = messengers.any {
+        it.type == Messengers.Type.valueOf(type.toUpperCase()) && it.profile == this
+    }
+
+    fun removeMessenger(messenger: Messenger) {
+        messenger.delete()
+        this.addEvent(MessengerRemoved(id.value, messenger.type.name))
+    }
+
+    fun renameMessengerUsername(type: String, username: String) {
+        if (!hasMessenger(type)) throw Exception("Messenger with $type doesn't exist")
+        val messenger =
+            messengers.first { it.type == Messengers.Type.valueOf(type.toUpperCase()) && it.profile == this }
+        messenger.changeUsername(username)
+        this.addEvent(MessengerUsernameChanged(id.value, type))
+    }
+
+    fun messengers() = messengers
 
     fun updatePersonalData(personalData: PersonalData) {
         this.personalData = personalData
@@ -94,20 +123,6 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         }
     }
 }
-
-
-
-
-// @Serializable
-// class MessengerInfo(val messenger: Messenger, val username: String)
-
-// @Serializable
-// enum class Messenger {
-//     SLACK, TELEGRAM, TWITTER, SKYPE
-// }
-
-@Serializable
-class Phone(val number: String)
 
 object Profiles : UUIDTable() {
 
@@ -132,10 +147,17 @@ object Profiles : UUIDTable() {
     }
 
     object ContactDetails : EmbeddableColumn<Profile.ContactDetails>() {
-        val phones = jsonb("phones", Phone.serializer().set)
+        val phones = jsonb("phones", Phone.serializer().set).nullable()
+        val emails = jsonb("emails", Email.serializer().set).nullable()
     }
 
     enum class Gender {
         MALE, FEMALE
     }
+
+    @Serializable
+    class Phone(val number: String)
+
+    @Serializable
+    class Email(val address: String)
 }

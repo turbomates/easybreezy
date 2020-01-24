@@ -33,8 +33,8 @@ class UserController @Inject constructor(
     }
 
     suspend fun invite(command: Invite) {
-        validation.onInvite(command)
         transaction {
+            validation.onInvite(command)
             handler.handleInvite(command)
         }
 
