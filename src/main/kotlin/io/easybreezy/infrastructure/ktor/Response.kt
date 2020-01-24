@@ -2,6 +2,7 @@ package io.easybreezy.infrastructure.ktor
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.easybreezy.infrastructure.query.ContinuousList
 import io.ktor.application.ApplicationCall
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -30,6 +31,18 @@ suspend fun ApplicationCall.respondWith(
         "pageSize" to response.pageSize,
         "currentPage" to response.currentPage
     ).filterValues { it != null }
+
+    this.response.status(status)
+    this.respondText(toJson(jsonObject), ContentType.Application.Json)
+}
+
+suspend fun ApplicationCall.respondListing(list: ContinuousList<*>, status: HttpStatusCode = HttpStatusCode.OK) {
+    val jsonObject = mapOf(
+        "data" to list,
+        "hasMore" to list.hasMore,
+        "pageSize" to list.pageSize,
+        "currentPage" to list.currentPage
+    )
 
     this.response.status(status)
     this.respondText(toJson(jsonObject), ContentType.Application.Json)

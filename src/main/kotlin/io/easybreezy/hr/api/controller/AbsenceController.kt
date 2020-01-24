@@ -14,9 +14,11 @@ import io.easybreezy.hr.application.absence.queryobject.WorkingHourQO
 import io.easybreezy.hr.application.absence.queryobject.WorkingHoursQO
 import io.easybreezy.hr.infrastructure.AbsenceRepository
 import io.easybreezy.infrastructure.ktor.Controller
+import io.easybreezy.infrastructure.ktor.respondListing
 import io.easybreezy.infrastructure.ktor.respondOk
 import io.easybreezy.infrastructure.ktor.respondWith
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.infrastructure.query.pagingParameters
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
@@ -86,9 +88,9 @@ class AbsenceController @Inject constructor(
     }
 
     suspend fun absences(userId: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(AbsencesQO(userId))
-        }
+        call.respondListing(
+            queryExecutor.execute(AbsencesQO(userId, call.request.pagingParameters()))
+        )
     }
 
     suspend fun showWorkingHour(id: UUID) {
@@ -98,8 +100,8 @@ class AbsenceController @Inject constructor(
     }
 
     suspend fun workingHours(userId: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(WorkingHoursQO(userId))
-        }
+        call.respondListing(
+            queryExecutor.execute(WorkingHoursQO(userId, call.request.pagingParameters()))
+        )
     }
 }
