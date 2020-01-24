@@ -6,10 +6,11 @@ class EventStore {
         events.add(event)
     }
 
-    fun raiseEvents(): List<Event> {
-        val result = events;
+    fun raiseEvents(): Sequence<Event> = sequence {
+        events.forEach {
+            yield(it)
+        }
         events.clear()
-        return result
     }
 }
 

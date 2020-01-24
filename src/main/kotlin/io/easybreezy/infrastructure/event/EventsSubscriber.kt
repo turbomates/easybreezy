@@ -1,5 +1,7 @@
 package io.easybreezy.infrastructure.event
 
+import kotlin.reflect.full.companionObjectInstance
+
 interface EventsSubscriber {
     fun subscribers(): List<EventSubscriberItem<out Event>>
     data class EventSubscriberItem<T : Event>(val key: Event.Key<T>, val subscriber: EventSubscriber<T>)
@@ -12,13 +14,21 @@ interface EventSubscriber<T : Event> {
     operator fun invoke(event: T)
 }
 
-class EventSystem {
+class EventSubscribers {
     private val subscribers: MutableMap<Event.Key<out Event>, MutableList<EventSubscriber<out Event>>> =
         mutableMapOf()
 
     fun subscribe(subscriber: EventsSubscriber) {
         subscriber.subscribers().forEach {
             addToMap(it.key, it.subscriber)
+        }
+    }
+
+    inline fun <reified T : Event> subscribe(subscriber: EventSubscriber<T>) {
+        val key = T::class.companionObjectInstance as? Event.Key<T>
+        key?.let { subscribe(it, subscriber) }
+        if (key == null) {
+            throw  InvalidKeyException("wrong subscriber")
         }
     }
 
@@ -40,14 +50,3 @@ class EventSystem {
         list.add(subscriber)
     }
 }
-//class GuiceSubscriber(val test: String, val test1: KClass<EventSubscriber>) : EventSubscriber {
-//    override fun subscribers(): List<Pair<KClass<out Event>, Subscriber<out Event>>> {
-//        val subscriber = PlayerSubscriber("string")
-//        return listOf(Activated::class to object : Subscriber<Activated> {
-//            override fun invoke(event: Activated) {
-//                test.length
-//            }
-//        })
-//    }
-//
-//}

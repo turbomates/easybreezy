@@ -10,7 +10,6 @@ import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.text.Normalizer
 import java.time.LocalDateTime
@@ -23,6 +22,7 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var description by Projects.description
     private var status by Projects.status
     private var updatedAt by Projects.updatedAt
+//    private var roles by Role.via(Roles.project, Roles.id)
     private val roles by Role referrersOn Roles.project
     private val teams by Team referrersOn Teams.project
 

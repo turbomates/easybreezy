@@ -2,8 +2,7 @@ package io.easybreezy.infrastructure.event
 
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.SerialClassDescImpl
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
 object EventSerializer {
@@ -25,44 +24,27 @@ object EventSerializer {
 }
 
 @Serializable(with = EventWrapperSerializer::class)
-internal data class EventWrapper(val event: Event)
+internal data class EventWrapper(@Polymorphic val event: Event)
 
 internal object EventWrapperSerializer : KSerializer<EventWrapper> {
-    override val descriptor: SerialDescriptor = object : SerialClassDescImpl("EventDescriptor") {
-        init {
-            addElement("type") // req will have index 0
-            addElement("body") // res will have index 1
-        }
-    }
-
+    override val descriptor: SerialDescriptor = SerialClassDescImpl("EventDescriptor")
     override fun deserialize(decoder: Decoder): EventWrapper {
-        val dec: CompositeDecoder = decoder.beginStructure(descriptor)
-        var type: KClass<Event>? = null // consider using flags or bit mask if you
-        var body: Event? = null // need to read nullable non-optional properties
-        loop@ while (true) {
-            when (val i = dec.decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_DONE -> break@loop
-                0 -> type = Class.forName(dec.decodeStringElement(descriptor, i)).kotlin as KClass<Event>
-                1 -> if (type != null) {
-                    body = dec.decodeSerializableElement(descriptor, i, type.serializer())
-                }
-                else -> throw SerializationException("Unknown index $i")
-            }
-        }
-        dec.endStructure(descriptor)
+        val input = decoder as? JsonInput ?: throw SerializationException("This class can be loaded only by Json")
+        val tree = input.decodeJson() as? JsonObject ?: throw SerializationException("Expected JsonObject")
+        var type: KClass<Event> = Class.forName(tree.getPrimitive("type").content).kotlin as KClass<Event>
+        var body: Event = input.json.fromJson(type.serializer(), tree.getObject("body"))
 
-        return EventWrapper(body!!)
+        return EventWrapper(body)
     }
 
     override fun serialize(encoder: Encoder, obj: EventWrapper) {
-        val compositeOutput = encoder.beginStructure(descriptor)
-        compositeOutput.encodeStringElement(descriptor, 0, obj.event::class.qualifiedName!!)
-        compositeOutput.encodeSerializableElement(
-            descriptor,
-            1,
-            obj.event::class.serializer() as KSerializer<Event>,
-            obj.event
+        val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
+        val tree = JsonObject(
+            mapOf(
+                "type" to JsonLiteral(obj.event::class.qualifiedName!!),
+                "body" to output.json.toJson(obj.event::class.serializer() as KSerializer<Event>, obj.event)
+            )
         )
-        compositeOutput.endStructure(descriptor)
+        output.encodeJson(tree)
     }
 }
