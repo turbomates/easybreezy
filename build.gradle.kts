@@ -76,6 +76,7 @@ dependencies {
 
     testImplementation(Deps.ktor_server_test_host)
     testImplementation(Deps.junit_juiter_api)
+    testImplementation("com.h2database:h2:1.4.200")
     testRuntimeOnly(Deps.junit_jupiter_engine)
 
     dependencies.add("migrationsImplementation", Deps.flywaydb_flyway_core)

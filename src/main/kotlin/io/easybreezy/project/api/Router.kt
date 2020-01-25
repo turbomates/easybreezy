@@ -8,7 +8,7 @@ import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.request.receive
 import io.ktor.routing.*
-import kotlinx.serialization.ImplicitReflectionSerializer
+import java.util.*
 
 class Router @Inject constructor(
     application: Application,
@@ -18,15 +18,27 @@ class Router @Inject constructor(
     init {
         application.routing {
             route("/api") {
-                userRouting(this)
+                projectRoutes(this)
             }
         }
     }
 
-    private fun userRouting(route: Route) {
+    private fun projectRoutes(route: Route) {
         route.route("/projects") {
-            get("") { controller<ProjectController>(this).create(call.receive()) }
-
+            post("") { controller<ProjectController>(this).create(call.receive()) }
+            get("/{id}") { controller<ProjectController>(this).show(UUID.fromString(call.parameters["id"])) }
+            post("/{id}/add/role") {
+                controller<ProjectController>(this).addRole(
+                    UUID.fromString(call.parameters["id"]),
+                    call.receive()
+                )
+            }
+            get("/{id}/remove/role/{role_id}") {
+                controller<ProjectController>(this).removeRole(
+                    UUID.fromString(call.parameters["id"]),
+                    UUID.fromString(call.parameters["role_id"])
+                )
+            }
         }
     }
 }

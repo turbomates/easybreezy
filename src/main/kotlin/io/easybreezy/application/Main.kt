@@ -13,9 +13,9 @@ import com.jdiazcano.cfg4k.sources.ConfigSource
 import com.zaxxer.hikari.HikariConfig
 import io.easybreezy.calendar.CalendarModule
 import io.easybreezy.hr.HRModule
-import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.event.EventsDatabaseAccess
+import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Session
@@ -39,15 +39,13 @@ import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
 import java.io.File
 import java.io.InputStream
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
 
 suspend fun main()  {

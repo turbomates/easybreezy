@@ -1,9 +1,7 @@
 package io.easybreezy.hr.model.profile
 
-import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
-import io.easybreezy.infrastructure.exposed.dao.Embeddable
-import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
-import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.dao.*
+//import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.user.model.PGEnum
 import kotlinx.serialization.Serializable
@@ -32,83 +30,76 @@ enum class Messenger {
 class Phone(val number: String)
 
 object Profiles : UUIDTable() {
-    val personalData = PersonalData
-    val contactDetails = ContactDetails
     val userId = uuid("user_id")
-
-    object PersonalData : EmbeddableColumn<Profile.PersonalData>() {
-        // val birthday = date("birthday").nullable()
-        val gender = customEnumeration(
-            "gender",
-            "profile_gender",
-            { value -> Gender.valueOf(value as String) },
-            { PGEnum("profile_gender", it) }).nullable()
-        val about = text("about").nullable()
-        // val name = Name
-
-        // object Name : EmbeddableColumn<Profile.PersonalData.Name>() {
-        //     val firstName = varchar("first_name", 25).nullable()
-        //     val lastName = varchar("last_name", 25).nullable()
-        // }
-    }
-
-    object ContactDetails : EmbeddableColumn<Profile.ContactDetails>() {
-        val messengers = jsonb("messengers", MessengerInfo.serializer().set)
-        val phones = jsonb("phones", Phone.serializer().set)
-    }
+    val gender = customEnumeration(
+        "gender",
+        "profile_gender",
+        { value -> Gender.valueOf(value as String) },
+        { PGEnum("profile_gender", it) }).nullable()
+    val about = text("about").nullable()
+    val firstName = varchar("first_name", 25).nullable()
+    val lastName = varchar("last_name", 25).nullable()
+    val messengers = jsonb("messengers", MessengerInfo.serializer().set)
+    val phones = jsonb("phones", Phone.serializer().set)
 }
 
 class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var personalData by Profiles.personalData
-    private var contactDetails by Profiles.contactDetails
+    private var personalData by Embedded(PersonalData)
+    private var contactDetails by Embedded(ContactDetails)
 
     class PersonalData private constructor() : Embeddable() {
-        // private var birthday by Profiles.PersonalData.birthday
-        private var gender by Profiles.PersonalData.gender
-        private var about by Profiles.PersonalData.about
-        // private var name by Profiles.PersonalData.name
+        //        private var birthday by Profiles.birthday
+        private var gender by Profiles.gender
+        private var about by Profiles.about
+        private var name by Embedded(Name)
 
-        companion object : EmbeddableClass<PersonalData>(Profiles) {
-            override fun createInstance(): PersonalData {
+        companion object : EmbeddableClass<PersonalData>(PersonalData::class) {
+            override fun createInstance(resultRow: ResultRow?): PersonalData {
                 return PersonalData()
             }
 
-            fun create(birthday: LocalDate, gender: Gender, about: String) = PersonalData.new {
+            fun create(birthday: LocalDate, gender: Gender, about: String): PersonalData {
+                val data = PersonalData()
                 // this.birthday = birthday
-                this.gender = gender
-                this.about = about
+                data.gender = gender
+                data.about = about
+                return data
             }
         }
 
-        // class Name private constructor() : Embeddable() {
-        //     private var firstName by Profiles.PersonalData.Name.firstName
-        //     private var lastName by Profiles.PersonalData.Name.lastName
-        //
-        //     companion object : EmbeddableClass<Name>(Profiles) {
-        //         override fun createInstance(): Name {
-        //             return Name()
-        //         }
-        //
-        //         fun create(firstName: String, lastName: String) = Name.new {
-        //             this.firstName = firstName
-        //             this.lastName = lastName
-        //         }
-        //     }
-        // }
+        class Name private constructor() : Embeddable() {
+            private var firstName by Profiles.firstName
+            private var lastName by Profiles.lastName
+
+            companion object : EmbeddableClass<Name>(Name::class) {
+                override fun createInstance(resultRow: ResultRow?): Name {
+                    return Name()
+                }
+
+                fun create(firstName: String, lastName: String): Name {
+                    val name = Name()
+                    name.firstName = firstName
+                    name.lastName = lastName
+                    return name
+                }
+            }
+        }
     }
 
     class ContactDetails private constructor() : Embeddable() {
-        private var messengers by Profiles.ContactDetails.messengers
-        private var phones by Profiles.ContactDetails.phones
+        private var messengers by Profiles.messengers
+        private var phones by Profiles.phones
 
-        companion object : EmbeddableClass<ContactDetails>(Profiles) {
-            override fun createInstance(): ContactDetails {
+        companion object : EmbeddableClass<ContactDetails>(ContactDetails::class) {
+            override fun createInstance(resultRow: ResultRow?): ContactDetails {
                 return ContactDetails()
             }
 
-            fun create(messengers: Set<MessengerInfo>, phones: Set<Phone>) = ContactDetails.new {
-                this.messengers = messengers
-                this.phones = phones
+            fun create(messengers: Set<MessengerInfo>, phones: Set<Phone>): ContactDetails {
+                val details = ContactDetails()
+                details.messengers = messengers
+                details.phones = phones
+                return details
             }
         }
     }

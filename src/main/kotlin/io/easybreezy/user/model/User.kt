@@ -2,10 +2,7 @@ package io.easybreezy.user.model
 
 import io.easybreezy.infrastructure.event.user.Confirmed
 import io.easybreezy.infrastructure.event.user.Invited
-import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
-import io.easybreezy.infrastructure.exposed.dao.Embeddable
-import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
-import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.dao.*
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
@@ -18,23 +15,25 @@ import org.postgresql.util.PGobject
 import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var email by Users.email
-    private var password by Users.password
+    private var email by Embedded(Email)
+    private var password by Embedded(Password)
     private var roles by Users.roles
-    private var name by Users.name
+    private var name by Embedded(Name)
     private var status by Users.status
     private var token by Users.token
 
     class Email private constructor() : Embeddable() {
-        private var address by Users.Email.address
+        private var address by Users.address
 
-        companion object : EmbeddableClass<Email>(Users) {
-            override fun createInstance(): Email {
+        companion object : EmbeddableClass<Email>(Email::class) {
+            override fun createInstance(resultRow: ResultRow?): Email {
                 return Email()
             }
 
-            fun create(address: String): Email = Email.new {
-                this.address = address
+            fun create(address: String): Email {
+                val email = Email()
+                email.address = address
+                return email
             }
         }
 
@@ -42,32 +41,35 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     class Name private constructor() : Embeddable() {
-        private var firstName by Users.Name.firstName
-        private var lastName by Users.Name.lastName
+        private var firstName by Users.firstName
+        private var lastName by Users.lastName
 
-        companion object : EmbeddableClass<Name>(Users) {
-            override fun createInstance(): Name {
+        companion object : EmbeddableClass<Name>(Name::class) {
+            override fun createInstance(resultRow: ResultRow?): Name {
                 return Name()
             }
 
-            fun create(firstName: String, lastName: String) = Name.new {
-                this.firstName = firstName
-                this.lastName = lastName
+            fun create(firstName: String, lastName: String): Name {
+                val name = Name()
+                name.firstName = firstName
+                name.lastName = lastName
+                return name
             }
         }
     }
 
     class Password private constructor() : Embeddable() {
-        private var hashedPassword by Users.Password.hashedPassword
+        private var hashedPassword by Users.hashedPassword
 
-        companion object : EmbeddableClass<Password>(Users) {
-
-            override fun createInstance(): Password {
+        companion object : EmbeddableClass<Password>(Password::class) {
+            override fun createInstance(resultRow: ResultRow?): Password {
                 return Password()
             }
 
-            fun create(plainPassword: String) = Password.new {
-                this.hashedPassword = hash(plainPassword)
+            fun create(plainPassword: String): Password {
+                val password = Password()
+                password.hashedPassword = hash(plainPassword)
+                return password
             }
 
             fun verifyPassword(enteredPassword: String, password: String): Boolean {
@@ -116,6 +118,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
     fun name() = name
     fun token() = token
+
     fun roles() = roles
     fun status() = status
     fun password() = password
@@ -157,9 +160,6 @@ enum class Role {
 }
 
 object Users : UUIDTable() {
-    val password = Password
-    val email = Email
-    val name = Name
     val token = varchar("token", 255).nullable()
     val status = customEnumeration(
         "status",
@@ -167,17 +167,8 @@ object Users : UUIDTable() {
         { value -> Status.valueOf(value as String) },
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
     val roles = jsonb("roles", Role.serializer().set)
-
-    object Name : EmbeddableColumn<User.Name>() {
-        val firstName = varchar("first_name", 25).nullable()
-        val lastName = varchar("last_name", 25).nullable()
-    }
-
-    object Password : EmbeddableColumn<User.Password>() {
-        val hashedPassword = varchar("password", 255).nullable()
-    }
-
-    object Email : EmbeddableColumn<User.Email>() {
-        val address = varchar("email_address", 255)
-    }
+    val firstName = varchar("first_name", 25).nullable()
+    val lastName = varchar("last_name", 25).nullable()
+    val hashedPassword = varchar("password", 255).nullable()
+    val address = varchar("email_address", 255)
 }

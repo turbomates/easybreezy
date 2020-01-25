@@ -10,30 +10,31 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class UserQO(private val userId: UUID) : QueryObject<User> {
-    override fun getData() =
-        transaction {
-            Users.select {
-                Users.id eq userId
-            }.first().toUser()
-        }
+    override fun getData() = User(UUID.randomUUID(),"", "", emptySet(), "", "")
+//        transaction {
+//            Users.select {
+//                Users.id eq userId
+//            }.first()
+//        }
 }
 
 //toDO сделать с пейджингом
 class UsersQO : QueryObject<List<User>> {
     override fun getData() =
         transaction {
-            Users.selectAll().map { it.toUser() }
+            emptyList<User>()
+//            Users.selectAll().map { it.toUser() }
         }
 }
 
-private fun ResultRow.toUser() = User(
-    id = UUID.fromString(this[Users.id].toString()),
-    email = this[Users.email.address],
-    status = this[Users.status].toString(),
-    roles = this[Users.roles],
-    firstName = this[Users.name.firstName],
-    lastName = this[Users.name.lastName]
-)
+//private fun ResultRow.toUser() = User(
+//    id = UUID.fromString(this[Users.id].toString()),
+//    email = this[Users.email.address],
+//    status = this[Users.status].toString(),
+//    roles = this[Users.roles]
+//    firstName = this[Users.name.firstName],
+//    lastName = this[Users.name.lastName]
+//)
 
 data class User(
     val id: UUID,

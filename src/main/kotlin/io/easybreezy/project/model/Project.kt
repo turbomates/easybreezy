@@ -22,9 +22,8 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var description by Projects.description
     private var status by Projects.status
     private var updatedAt by Projects.updatedAt
-//    private var roles by Role.via(Roles.project, Roles.id)
-    private val roles by Role referrersOn Roles.project
-    private val teams by Team referrersOn Teams.project
+    private val roles by Role.referrersOn(Roles.project, true)
+    private val teams by Team.referrersOn(Teams.project, true)
 
     fun writeDescription(description: String) {
         this.description = description
@@ -159,5 +158,5 @@ object Projects : UUIDTable("projects") {
     val status = enumerationByName("status", 25, Project.Status::class)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
-    val slug = varchar("slug", 25)
+    val slug = varchar("slug", 25).uniqueIndex("projects_slug_idx")
 }

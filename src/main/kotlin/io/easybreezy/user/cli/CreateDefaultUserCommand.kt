@@ -18,13 +18,13 @@ class CreateDefaultUserCommand {
             Database.connect(dataSource)
 
             transaction {
-                if (Users.select { Users.email.address eq "admin@admin.my" }.count() == 0) {
-                    User.createAdmin(
-                        User.Email.create("admin@admin.my"),
-                        User.Password.create("123"),
-                        User.Name.create("admin", "admin")
-                    )
-                }
+//                if (Users.select { Users.email.address eq "admin@admin.my" }.count() == 0) {
+//                    User.createAdmin(
+//                        User.Email.create("admin@admin.my"),
+//                        User.Password.create("123"),
+//                        User.Name.create("admin", "admin")
+//                    )
+//                }
             }
         }
     }

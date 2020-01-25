@@ -3,11 +3,17 @@ package io.easybreezy.infrastructure.exposed.dao
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.SizedIterable
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.emptySized
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import java.util.HashMap
 import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 open class PrivateEntityClass<ID : Comparable<ID>, out T : Entity<ID>>(private val base: EntityClass<ID, T>) {
-
     open fun new(init: T.() -> Unit) = base.new(null, init)
 
     internal operator fun get(id: EntityID<ID>): T = base[id]
@@ -57,6 +63,7 @@ open class PrivateEntityClass<ID : Comparable<ID>, out T : Entity<ID>>(private v
     ): Referrers<TargetID, Entity<TargetID>, TargetID, Target, REF> {
         return base.referrersOn(column, cache)
     }
+
 
     infix fun <TargetID : Comparable<TargetID>, Target : Entity<TargetID>, REF : Comparable<REF>> PrivateEntityClass<TargetID, Target>.optionalReferrersOn(
         column: Column<REF?>
@@ -112,7 +119,7 @@ open class PrivateEntityClass<ID : Comparable<ID>, out T : Entity<ID>>(private v
         return referrersOn(column)
     }
 
-    private fun <TargetID : Comparable<TargetID>, Target : Entity<TargetID>, REF : Comparable<REF>> EntityClass<TargetID, Target>.referrersOn(
+    fun <TargetID : Comparable<TargetID>, Target : Entity<TargetID>, REF : Comparable<REF>> EntityClass<TargetID, Target>.referrersOn(
         column: Column<REF>,
         cache: Boolean
     ): Referrers<TargetID, Entity<TargetID>, TargetID, Target, REF> {
@@ -131,7 +138,6 @@ open class PrivateEntityClass<ID : Comparable<ID>, out T : Entity<ID>>(private v
     ): OptionalReferrers<TargetID, Entity<TargetID>, TargetID, Target, REF> {
         return optionalReferrersOn(column, cache)
     }
-
 }
 
 
