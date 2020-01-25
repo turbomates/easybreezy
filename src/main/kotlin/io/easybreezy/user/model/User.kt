@@ -4,6 +4,7 @@ import io.easybreezy.infrastructure.event.user.Confirmed
 import io.easybreezy.infrastructure.event.user.Invited
 import io.easybreezy.infrastructure.exposed.dao.*
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
 import org.jetbrains.exposed.dao.EntityClass
@@ -11,7 +12,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.mindrot.jbcrypt.BCrypt
-import org.postgresql.util.PGobject
 import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
@@ -23,7 +23,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var token by Users.token
 
     class Email private constructor() : Embeddable() {
-        private var address by Users.address
+        private var address by Users.email
 
         companion object : EmbeddableClass<Email>(Email::class) {
             override fun createInstance(resultRow: ResultRow?): Email {
@@ -143,13 +143,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 }
 
-class PGEnum<T : Enum<T>>(enumTypeName: String, enumValue: T?) : PGobject() {
-    init {
-        value = enumValue?.name
-        type = enumTypeName
-    }
-}
-
 enum class Status {
     ACTIVE, WAIT_CONFIRM
 }
@@ -170,5 +163,5 @@ object Users : UUIDTable() {
     val firstName = varchar("first_name", 25).nullable()
     val lastName = varchar("last_name", 25).nullable()
     val hashedPassword = varchar("password", 255).nullable()
-    val address = varchar("email_address", 255)
+    val email = varchar("email_address", 255)
 }

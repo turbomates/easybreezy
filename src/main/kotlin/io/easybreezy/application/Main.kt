@@ -11,7 +11,6 @@ import com.jdiazcano.cfg4k.providers.ProxyConfigProvider
 import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ConfigSource
 import com.zaxxer.hikari.HikariConfig
-import io.easybreezy.calendar.CalendarModule
 import io.easybreezy.hr.HRModule
 import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.event.EventsDatabaseAccess
@@ -99,7 +98,6 @@ suspend fun main()  {
 
             ) {
                 serializer = SessionSerializer()
-
                 cookie.path = "/"
             }
         }
@@ -127,13 +125,13 @@ suspend fun main()  {
                 bind(Application::class.java).toInstance(application)
             }
         })
+
         routing {
             injector.getInstance(Auth::class.java).intercept(this)
         }
 
         ktorInjector.createChildInjector(UserModule())
         ktorInjector.createChildInjector(ProjectModule())
-        ktorInjector.createChildInjector(CalendarModule())
         ktorInjector.createChildInjector(HRModule())
     }.start()
 }
