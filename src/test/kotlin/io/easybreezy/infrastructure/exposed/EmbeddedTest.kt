@@ -3,7 +3,6 @@ package io.easybreezy.infrastructure.exposed
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
 import io.easybreezy.infrastructure.exposed.dao.Embedded
-import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -11,12 +10,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
-import java.util.LinkedHashMap
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.primaryConstructor
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 
@@ -70,7 +64,6 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     }
 }
 
-
 @Test
 fun main() {
     Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver", user = "root", password = "")
@@ -91,7 +84,5 @@ fun main() {
         assertNotEquals(name, nextName)
         assertEquals(name, eqName)
         assertEquals(name, name)
-
     }
 }
-

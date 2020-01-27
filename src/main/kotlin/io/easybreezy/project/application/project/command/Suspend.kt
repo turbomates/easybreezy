@@ -1,4 +1,3 @@
 package io.easybreezy.project.application.project.command
 
-class Suspend {
-}
+class Suspend

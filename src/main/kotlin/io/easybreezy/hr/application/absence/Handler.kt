@@ -44,7 +44,6 @@ class Handler @Inject constructor(
                 userRepository.getOne(command.userId)
             )
         }
-
     }
 
     fun handleEditWorkingHours(command: EditWorkingHours) {

@@ -9,7 +9,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.*
-import kotlin.reflect.full.createInstance
 
 class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var user by Members.user
@@ -46,7 +45,6 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 this.info = info
             }
         }
-
     }
 
     abstract class Repository : UUIDEntityClass<Member>(Members, Member::class.java) {
@@ -64,5 +62,3 @@ object Members : UUIDTable() {
     val username = varchar("info_username", 25)
     val avatar = varchar("info_avatar", 25)
 }
-
-

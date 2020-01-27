@@ -1,6 +1,5 @@
 package io.easybreezy.integration.inner.message
 
-import io.easybreezy.integration.inner.message.Author
 import kotlinx.serialization.Serializable
 
 @Serializable

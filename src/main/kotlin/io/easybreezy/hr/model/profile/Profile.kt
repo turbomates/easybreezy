@@ -4,7 +4,7 @@ import io.easybreezy.infrastructure.event.profile.MessengerAdded
 import io.easybreezy.infrastructure.event.profile.MessengerRemoved
 import io.easybreezy.infrastructure.event.profile.MessengerUsernameChanged
 import io.easybreezy.infrastructure.exposed.dao.*
-//import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
+// import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable

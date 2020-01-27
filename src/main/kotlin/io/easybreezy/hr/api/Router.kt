@@ -14,7 +14,6 @@ import io.ktor.locations.*
 import io.ktor.routing.*
 import io.ktor.request.receive
 import java.util.UUID
-import io.ktor.request.receiveText
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route

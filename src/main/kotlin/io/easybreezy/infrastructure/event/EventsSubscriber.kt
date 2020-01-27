@@ -28,7 +28,7 @@ class EventSubscribers {
         val key = T::class.companionObjectInstance as? Event.Key<T>
         key?.let { subscribe(it, subscriber) }
         if (key == null) {
-            throw  InvalidKeyException("wrong subscriber")
+            throw InvalidKeyException("wrong subscriber")
         }
     }
 

@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class User(
     val name: String,
     val username: String,
-    val avatar: String//avatar_url
+    val avatar: String // avatar_url
 )

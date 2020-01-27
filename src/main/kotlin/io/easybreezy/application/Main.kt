@@ -47,7 +47,7 @@ import java.io.InputStream
 import java.util.*
 import javax.sql.DataSource
 
-suspend fun main()  {
+suspend fun main() {
     val configProvider = SystemConfiguration
     val dataSource = HikariDataSource(configProvider)
     val database = Database.connect(dataSource)

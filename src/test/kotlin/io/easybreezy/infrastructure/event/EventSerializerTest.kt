@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-
 class EventSerializerTest {
     @Test
     fun testSerialize() {
@@ -19,7 +18,7 @@ class EventSerializerTest {
         val event = TestEvent("test_value")
         val result = EventSerializer.serialize(event)
         val deserializeEvent = EventSerializer.deserialize(result)
-        assert(event is TestEvent)
+        assert(deserializeEvent is TestEvent)
         assertEquals(event.test, (deserializeEvent as TestEvent).test)
     }
 }

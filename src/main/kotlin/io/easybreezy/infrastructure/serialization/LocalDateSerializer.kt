@@ -30,4 +30,3 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
         return LocalDateTime.parse(decoder.decodeString(), df)
     }
 }
-

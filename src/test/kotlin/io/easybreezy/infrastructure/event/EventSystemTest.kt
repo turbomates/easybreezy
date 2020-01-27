@@ -30,7 +30,6 @@ class EventSystemTest {
     }
 }
 
-
 @Serializable
 data class TestEventForSubscriber(val test: String) : Event {
     override val key

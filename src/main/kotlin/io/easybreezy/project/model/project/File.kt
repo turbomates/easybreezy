@@ -1,4 +1,3 @@
 package io.easybreezy.project.model.project
 
-class File {
-}
+class File

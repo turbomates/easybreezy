@@ -2,8 +2,7 @@ package io.easybreezy.integration.inner.message
 
 import kotlinx.serialization.Serializable
 
-sealed class Comment() {
-}
+sealed class Comment()
 
 @Serializable
 data class IssueComment(

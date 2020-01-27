@@ -3,7 +3,6 @@ package io.easybreezy.project.model.team
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.Projects
-import io.easybreezy.project.model.team.Roles.references
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -31,28 +30,22 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     fun changeMemberRole(member: UUID, role: Role) {
-
     }
 
     fun removeMember(member: UUID) {
-
     }
 
     fun addRepository(url: String, type: io.easybreezy.project.model.team.Repository.Type) {
-
     }
 
     fun removeRepository(url: String) {
-
     }
-
 
     abstract class Repository : EntityClass<UUID, Team>(Teams, Team::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Team {
             return Team(entityId)
         }
     }
-
 }
 
 enum class Status {
@@ -74,6 +67,4 @@ object Teams : UUIDTable("project_teams") {
     val status = enumerationByName("status", 25, Status::class).default(Status.ACTIVE)
 }
 
-object Repositories : UUIDTable() {
-
-}
+object Repositories : UUIDTable()

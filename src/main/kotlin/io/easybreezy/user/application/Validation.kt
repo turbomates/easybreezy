@@ -2,11 +2,7 @@ package io.easybreezy.user.application
 
 import com.google.inject.Inject
 import io.easybreezy.user.model.Repository
-import io.easybreezy.user.model.User
 import org.valiktor.Constraint
-import org.valiktor.Validator
-import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.isNotNull
 import org.valiktor.validate
 
 class Validation @Inject constructor(private val repository: Repository) {

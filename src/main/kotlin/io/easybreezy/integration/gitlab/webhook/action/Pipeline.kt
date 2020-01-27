@@ -39,7 +39,7 @@ data class Pipeline(
         val startedAt: LocalDate,
         val createdAt: LocalDate,
         val finishedAt: LocalDate,
-        val whenStart: String, //when
+        val whenStart: String, // when
         val manual: Boolean,
         val user: User,
         val runner: Runner?,

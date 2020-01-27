@@ -38,4 +38,3 @@ data class Issue(
         val action: String
     )
 }
-

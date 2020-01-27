@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.createInstance
 
-//abstract class Embeddable {
+// abstract class Embeddable {
 //    internal val writeValues = LinkedHashMap<Column<Any?>, Any?>()
 //    internal lateinit var readValues: ResultRow
 //
@@ -45,9 +45,9 @@ import kotlin.reflect.full.createInstance
 //            return instance
 //        }
 //    }
-//}
+// }
 //
-//abstract class EmbeddableColumn<T : Embeddable> {
+// abstract class EmbeddableColumn<T : Embeddable> {
 //    operator fun <TC : Comparable<TC>> getValue(embeddable: Entity<TC>, property: KProperty<*>): T {
 //        val companion = property.returnType.jvmErasure.companionObjectInstance
 //        if (companion is Embeddable.EmbeddableClass<*>) {
@@ -66,7 +66,7 @@ import kotlin.reflect.full.createInstance
 //            }
 //        }
 //    }
-//}
+// }
 
 open class Embeddable {
     internal var readValues: ResultRow? = null

@@ -23,5 +23,4 @@ object TestConnection : TestConnectionBase(lookupDataSource().connection) {
         // println(super.getTransactionIsolation())
         // println(level)
     }
-
 }

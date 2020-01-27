@@ -3,15 +3,12 @@ package io.easybreezy.user
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.easybreezy.TestDataSource
-import io.easybreezy.application.HikariDataSource
-import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.user.model.Role
-import io.easybreezy.user.model.User
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
@@ -55,7 +52,6 @@ class TestEngine {
                     bind(Database::class.java).toInstance(database)
                 }
             })
-
 
             val engine = TestApplicationEngine(createTestEnvironment())
             engine.start(wait = false)

@@ -15,7 +15,7 @@ import java.util.UUID
 class UserProvider : PrincipalProvider<UserPrincipal> {
     override fun load(credential: UserPasswordCredential, clientIp: String): UserPrincipal? {
         return transaction {
-            val resultRow = Users.select { (Users.email eq credential.name) and (Users.status eq Status.ACTIVE)}.singleOrNull()
+            val resultRow = Users.select { (Users.email eq credential.name) and (Users.status eq Status.ACTIVE) }.singleOrNull()
 
             if (resultRow is ResultRow
 //                && User.Password.verifyPassword(credential.password, resultRow[Users.password.hashedPassword]!!)

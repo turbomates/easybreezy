@@ -3,5 +3,4 @@ package io.easybreezy.integration.inner.message
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Issue(val name: String) {
-}
+data class Issue(val name: String)

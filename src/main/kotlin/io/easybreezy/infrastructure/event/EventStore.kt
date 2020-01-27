@@ -13,4 +13,3 @@ class EventStore {
         events.clear()
     }
 }
-

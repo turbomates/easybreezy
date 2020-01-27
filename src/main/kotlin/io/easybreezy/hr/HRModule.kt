@@ -43,5 +43,3 @@ class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers, s
         eventSystem.subscribe(subscriberFactory.get(ProfileSubscriber::class))
     }
 }
-
-

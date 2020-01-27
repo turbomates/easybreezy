@@ -1,4 +1,3 @@
 package io.easybreezy.project.model
 
-class Wiki {
-}
+class Wiki
