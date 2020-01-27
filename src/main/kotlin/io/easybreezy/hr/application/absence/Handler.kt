@@ -20,7 +20,8 @@ class Handler @Inject constructor(
             command.endedAt,
             Reason.valueOf(command.reason),
             userRepository.getOne(command.userId),
-            command.comment
+            command.comment,
+            command.location
         )
     }
 
@@ -30,7 +31,8 @@ class Handler @Inject constructor(
             command.startedAt,
             command.endedAt,
             Reason.valueOf(command.reason),
-            command.comment
+            command.comment,
+            command.location
         )
     }
 

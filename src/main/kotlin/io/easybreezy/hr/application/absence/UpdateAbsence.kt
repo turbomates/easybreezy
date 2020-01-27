@@ -13,7 +13,8 @@ data class UpdateAbsence(
     @Serializable(with = LocalDateSerializer::class)
     val endedAt: LocalDate,
     val reason: String,
-    val comment: String? = null
+    val comment: String? = null,
+    val location: String? = null
 ) {
     @Transient
     lateinit var id: UUID

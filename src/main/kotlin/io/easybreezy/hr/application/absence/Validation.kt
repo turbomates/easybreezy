@@ -30,7 +30,7 @@ class Validation @Inject constructor(private val repository: UserRepository) {
 
     fun onCreateAbsence(command: CreateAbsence) {
         validate(command) {
-            validate(CreateAbsence::startedAt).isNotNull()
+            validate(CreateAbsence::startedAt).isNotNull().isLessThan(command.endedAt)
             validate(CreateAbsence::endedAt).isNotNull()
             validate(CreateAbsence::comment).isNotBlank()
             validate(CreateAbsence::reason).isNotNull().isNotBlank()
@@ -40,7 +40,7 @@ class Validation @Inject constructor(private val repository: UserRepository) {
 
     fun onUpdateAbsence(command: UpdateAbsence) {
         validate(command) {
-            validate(UpdateAbsence::startedAt).isNotNull()
+            validate(UpdateAbsence::startedAt).isNotNull().isLessThan(command.endedAt)
             validate(UpdateAbsence::endedAt).isNotNull()
             validate(UpdateAbsence::comment).isNotBlank()
             validate(UpdateAbsence::reason).isNotNull().isNotBlank()
