@@ -5,7 +5,7 @@ import io.easybreezy.infrastructure.event.EventSubscriber
 import io.easybreezy.infrastructure.event.user.Invited
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class ProfileSubscriber : EventSubscriber<Invited> {
+class UserInvitedSubscriber : EventSubscriber<Invited> {
     override fun invoke(event: Invited) {
         transaction {
             Profile.create(event.user)

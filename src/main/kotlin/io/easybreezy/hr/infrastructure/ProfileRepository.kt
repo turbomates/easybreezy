@@ -8,8 +8,6 @@ import io.easybreezy.hr.model.profile.Repository as RepositoryInterface
 
 class ProfileRepository : Profile.Repository(), RepositoryInterface {
     override fun getByUser(id: UUID): Profile {
-        return transaction {
-            find { Profiles.userId eq id }.first()
-        }
+        return find { Profiles.userId eq id }.first()
     }
 }

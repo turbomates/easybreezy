@@ -8,7 +8,9 @@ import java.util.UUID
 data class UpdatePersonalData(
     val birthday: String,
     val gender: String,
-    val about: String
+    val about: String,
+    val firstName: String,
+    val lastName: String
 ) {
     @Transient
     lateinit var id: UUID

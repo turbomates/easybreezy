@@ -7,5 +7,5 @@ interface Repository {
     fun find(id: UUID): User?
     fun findByToken(token: String): User?
     fun getByToken(token: String): User
-    fun findByEmail(email: User.Email): User?
+    fun findByEmail(email: Email): User?
 }
