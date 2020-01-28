@@ -2,6 +2,7 @@ package io.easybreezy.hr.application.absence.queryobject
 
 import io.easybreezy.hr.model.absence.Absences
 import io.easybreezy.hr.model.absence.Reason
+import io.easybreezy.infrastructure.extensions.toUUID
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
@@ -35,12 +36,12 @@ class AbsencesQO(private val userId: UUID, private val paging: PagingParameters)
 }
 
 private fun ResultRow.toAbsence() = Absence(
-    id = UUID.fromString(this[Absences.id].toString()),
+    id = this[Absences.id].toUUID(),
     startedAt = this[Absences.startedAt].toString(),
     endedAt = this[Absences.endedAt].toString(),
     comment = this[Absences.comment],
     reason = this[Absences.reason],
-    userId = UUID.fromString(this[Absences.userId].toString())
+    userId = this[Absences.userId].toUUID()
 )
 
 data class Absence(

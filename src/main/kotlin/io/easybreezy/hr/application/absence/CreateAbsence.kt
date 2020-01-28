@@ -15,6 +15,5 @@ data class CreateAbsence(
     val reason: String,
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
-    val comment: String? = null,
-    val location: String? = null
+    val comment: String? = null
 )

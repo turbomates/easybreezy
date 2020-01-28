@@ -15,14 +15,13 @@ class Handler @Inject constructor(
 ) {
 
     fun handleCreateAbsence(command: CreateAbsence) {
-        Absence.create(
+        val absence = Absence.create(
             command.startedAt,
             command.endedAt,
             Reason.valueOf(command.reason),
-            userRepository.getOne(command.userId),
-            command.comment,
-            command.location
+            userRepository.getOne(command.userId)
         )
+        absence.comment = command.comment
     }
 
     fun handleUpdateAbsence(command: UpdateAbsence) {
@@ -30,10 +29,9 @@ class Handler @Inject constructor(
         absence.edit(
             command.startedAt,
             command.endedAt,
-            Reason.valueOf(command.reason),
-            command.comment,
-            command.location
+            Reason.valueOf(command.reason)
         )
+        absence.comment = command.comment
     }
 
     fun handleNoteWorkingHours(command: NoteWorkingHours) {

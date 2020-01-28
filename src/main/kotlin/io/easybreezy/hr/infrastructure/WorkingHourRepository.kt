@@ -1,8 +1,8 @@
 package io.easybreezy.hr.infrastructure
 
 import io.easybreezy.hr.model.absence.WorkingHour
+import io.easybreezy.hr.model.absence.WorkingHourNotFoundException
 import io.easybreezy.hr.model.absence.WorkingHours
-import io.easybreezy.hr.model.exception.WorkingHourNotFoundException
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID

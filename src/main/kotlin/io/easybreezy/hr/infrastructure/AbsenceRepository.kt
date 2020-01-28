@@ -1,8 +1,8 @@
 package io.easybreezy.hr.infrastructure
 
 import io.easybreezy.hr.model.absence.Absence
+import io.easybreezy.hr.model.absence.AbsenceNotFoundException
 import io.easybreezy.hr.model.absence.Absences
-import io.easybreezy.hr.model.exception.AbsenceNotFoundException
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 

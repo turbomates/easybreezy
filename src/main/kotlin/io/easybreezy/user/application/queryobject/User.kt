@@ -24,7 +24,7 @@ class UsersQO : QueryObject<List<User>> {
 }
 
 // private fun ResultRow.toUser() = User(
-//    id = UUID.fromString(this[Users.id].toString()),
+//    id = this[Users.id].toUUID(),
 //    email = this[Users.email.address],
 //    status = this[Users.status].toString(),
 //    roles = this[Users.roles]

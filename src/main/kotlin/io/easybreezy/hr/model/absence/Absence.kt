@@ -13,60 +13,28 @@ import org.jetbrains.exposed.sql.`java-time`.date
 import java.time.LocalDate
 import java.util.UUID
 
-object Absences : UUIDTable("absences") {
-    val startedAt = date("started_at").uniqueIndex()
-    val endedAt = date("ended_at").uniqueIndex()
-    val comment = text("comment").nullable()
-    val location = text("location").nullable()
-    val reason = customEnumeration(
-        "reason",
-        "reason",
-        { Reason.valueOf(it as String) },
-        { PGEnum("absence_reason", it) }
-    )
-    val userId = reference("user_id", Users)
-}
-
 class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var startedAt by Absences.startedAt
     private var endedAt by Absences.endedAt
-    private var comment by Absences.comment
-    private var location by Absences.location
     private var reason by Absences.reason
     private var userId by Absences.userId
+    var comment by Absences.comment
 
     companion object : PrivateEntityClass<UUID, Absence>(object : Absence.Repository() {}) {
-        fun create(
-            startedAt: LocalDate,
-            endedAt: LocalDate,
-            reason: Reason,
-            user: User,
-            comment: String? = null,
-            location: String? = null
-        ): Absence {
+        fun create(startedAt: LocalDate, endedAt: LocalDate, reason: Reason, user: User): Absence {
             return Absence.new {
                 this.startedAt = startedAt
                 this.endedAt = endedAt
                 this.reason = reason
                 this.userId = user.id
-                this.comment = comment
-                this.location = location
             }
         }
     }
 
-    fun edit(
-        startedAt: LocalDate,
-        endedAt: LocalDate,
-        reason: Reason,
-        comment: String? = null,
-        location: String? = null
-    ) {
+    fun edit(startedAt: LocalDate, endedAt: LocalDate, reason: Reason) {
         this.startedAt = startedAt
         this.endedAt = endedAt
         this.reason = reason
-        this.comment = comment
-        this.location = location
     }
 
     abstract class Repository : UUIDEntityClass<Absence>(Absences, Absence::class.java) {
@@ -74,6 +42,19 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             return Absence(entityId)
         }
     }
+}
+
+object Absences : UUIDTable("absences") {
+    val startedAt = date("started_at").uniqueIndex()
+    val endedAt = date("ended_at").uniqueIndex()
+    val comment = text("comment").nullable()
+    val reason = customEnumeration(
+        "reason",
+        "reason",
+        { Reason.valueOf(it as String) },
+        { PGEnum("absence_reason", it) }
+    )
+    val userId = reference("user_id", Users)
 }
 
 enum class Reason {
