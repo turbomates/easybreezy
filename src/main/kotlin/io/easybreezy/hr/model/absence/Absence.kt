@@ -2,8 +2,6 @@ package io.easybreezy.hr.model.absence
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.postgresql.PGEnum
-import io.easybreezy.user.model.User
-import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -21,12 +19,12 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     var comment by Absences.comment
 
     companion object : PrivateEntityClass<UUID, Absence>(object : Repository() {}) {
-        fun create(startedAt: LocalDate, endedAt: LocalDate, reason: Reason, user: User): Absence {
+        fun create(startedAt: LocalDate, endedAt: LocalDate, reason: Reason, userId: UUID): Absence {
             return Absence.new {
                 this.startedAt = startedAt
                 this.endedAt = endedAt
                 this.reason = reason
-                this.userId = user.id
+                this.userId = userId
             }
         }
     }
@@ -54,7 +52,7 @@ object Absences : UUIDTable("absences") {
         { Reason.valueOf(it as String) },
         { PGEnum("absence_reason", it) }
     )
-    val userId = reference("user_id", Users)
+    val userId = uuid("user_id")
 }
 
 enum class Reason {

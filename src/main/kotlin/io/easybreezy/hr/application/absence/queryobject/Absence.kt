@@ -41,7 +41,7 @@ private fun ResultRow.toAbsence() = Absence(
     endedAt = this[Absences.endedAt].toString(),
     comment = this[Absences.comment],
     reason = this[Absences.reason],
-    userId = this[Absences.userId].toUUID()
+    userId = this[Absences.userId]
 )
 
 data class Absence(

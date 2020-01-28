@@ -19,7 +19,7 @@ class Handler @Inject constructor(
             command.startedAt,
             command.endedAt,
             Reason.valueOf(command.reason),
-            userRepository.getOne(command.userId)
+            command.userId
         )
         absence.comment = command.comment
     }
@@ -39,7 +39,7 @@ class Handler @Inject constructor(
             WorkingHour.create(
                 it.day,
                 it.count,
-                userRepository.getOne(command.userId)
+                command.userId
             )
         }
     }

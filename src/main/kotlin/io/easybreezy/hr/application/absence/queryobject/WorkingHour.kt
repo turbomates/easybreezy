@@ -38,7 +38,7 @@ private fun ResultRow.toWorkingHour() = WorkingHour(
     id = this[WorkingHours.id].toUUID(),
     day = this[WorkingHours.day].toString(),
     count = this[WorkingHours.count],
-    userId = this[WorkingHours.userId].toUUID()
+    userId = this[WorkingHours.userId]
 )
 
 data class WorkingHour(
