@@ -20,7 +20,7 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var userId by Absences.userId
     var comment by Absences.comment
 
-    companion object : PrivateEntityClass<UUID, Absence>(object : Absence.Repository() {}) {
+    companion object : PrivateEntityClass<UUID, Absence>(object : Repository() {}) {
         fun create(startedAt: LocalDate, endedAt: LocalDate, reason: Reason, user: User): Absence {
             return Absence.new {
                 this.startedAt = startedAt
