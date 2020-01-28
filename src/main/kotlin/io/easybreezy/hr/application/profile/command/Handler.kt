@@ -11,14 +11,15 @@ class Handler @Inject constructor(private val repository: Repository) {
 
     fun handleUpdatePersonalData(command: UpdatePersonalData) {
         val profile = repository.getByUser(command.id)
+        val personalData = PersonalData.create(
+            PersonalData.Name.create(command.firstName, command.lastName)
+        )
+        personalData.birthday = LocalDate.parse(command.birthday)
+        personalData.about = command.about
+        personalData.gender = Profiles.Gender.valueOf(command.gender)
 
         profile.updatePersonalData(
-            PersonalData.build {
-                birthday = LocalDate.parse(command.birthday)
-                gender = Profiles.Gender.valueOf(command.gender)
-                about = command.about
-                name = PersonalData.Name.create(command.firstName, command.lastName)
-            }
+            personalData
         )
     }
 

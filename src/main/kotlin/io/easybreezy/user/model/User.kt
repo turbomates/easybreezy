@@ -13,6 +13,10 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.`java-time`.date
+import org.jetbrains.exposed.sql.`java-time`.datetime
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
@@ -21,6 +25,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var roles by Users.roles
     private var status by Users.status
     private var token by Users.token
+    private var createdAt by Users.createdAt
 
     fun confirm(password: Password, firstName: String, lastName: String) {
         this.password = password
@@ -45,6 +50,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.roles = roles
                 this.status = Status.WAIT_CONFIRM
                 this.token = Token.generate()
+                this.createdAt = LocalDateTime.now()
                 this.addEvent(Invited(this.id.value))
             }
         }
@@ -84,5 +90,6 @@ object Users : UUIDTable() {
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
     val roles = jsonb("roles", Role.serializer().set)
     val hashedPassword = varchar("password", 255).nullable()
-    val email = varchar("email_address", 255)
+    val email = varchar("email_address", 255).uniqueIndex()
+    val createdAt = datetime("created_at")
 }
