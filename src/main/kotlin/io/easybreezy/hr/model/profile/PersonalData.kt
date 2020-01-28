@@ -23,7 +23,7 @@ class PersonalData private constructor(builder: Builder) : Embeddable() {
 
     companion object : EmbeddableClass<PersonalData>(PersonalData::class) {
         override fun createInstance(resultRow: ResultRow?): PersonalData {
-            return create {}
+            return build {}
         }
 
         inline fun build(block: Builder.() -> Unit) = Builder().apply(block).build()

@@ -4,6 +4,8 @@ import com.google.inject.Inject
 import io.easybreezy.user.model.Email
 import io.easybreezy.user.model.Password
 import io.easybreezy.user.model.Repository
+import io.easybreezy.user.model.Role
+import io.easybreezy.user.model.User
 
 class Handler @Inject constructor(private val repository: Repository) {
 
