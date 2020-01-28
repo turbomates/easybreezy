@@ -4,29 +4,24 @@ import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
 import io.easybreezy.infrastructure.exposed.dao.Embedded
 import org.jetbrains.exposed.sql.ResultRow
-import java.time.LocalDate
 
-class PersonalData private constructor(builder: Builder) : Embeddable() {
-    private var birthday by Profiles.birthday
-    private var gender by Profiles.gender
-    private var about by Profiles.about
-    private var name by Embedded(Name)
-
-    init {
-        this.birthday = builder.birthday
-        this.gender = builder.gender
-        this.about = builder.about
-        builder.name?.let {
-            this.name = it
-        }
-    }
+class PersonalData private constructor() : Embeddable() {
+    var birthday by Profiles.birthday
+    var gender by Profiles.gender
+    var about by Profiles.about
+    var name by Embedded(Name)
 
     companion object : EmbeddableClass<PersonalData>(PersonalData::class) {
         override fun createInstance(resultRow: ResultRow?): PersonalData {
-            return build {}
+            return PersonalData()
         }
 
-        inline fun build(block: Builder.() -> Unit) = Builder().apply(block).build()
+        fun create(name: Name): PersonalData {
+            val personalData = PersonalData()
+            personalData.name = name
+
+            return personalData
+        }
     }
 
     class Name private constructor() : Embeddable() {
@@ -45,14 +40,5 @@ class PersonalData private constructor(builder: Builder) : Embeddable() {
                 return name
             }
         }
-    }
-
-    class Builder {
-        var name: Name? = null
-        var birthday: LocalDate? = null
-        var gender: Profiles.Gender? = null
-        var about: String? = null
-
-        fun build() = PersonalData(this)
     }
 }

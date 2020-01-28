@@ -57,8 +57,9 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
-        fun create(userId: UUID) = Profile.new {
+        fun create(userId: UUID, personalData: PersonalData) = Profile.new {
             this.userId = userId
+            this.personalData = personalData
         }
     }
 
