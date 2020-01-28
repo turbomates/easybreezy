@@ -5,8 +5,9 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.google.inject.Provides
 import io.easybreezy.hr.api.Router
+import io.easybreezy.hr.application.profile.subscriber.UserConfirmedSubscriber
 import io.easybreezy.hr.infrastructure.ProfileRepository
-import io.easybreezy.hr.application.profile.subscriber.ProfileSubscriber
+import io.easybreezy.hr.application.profile.subscriber.UserInvitedSubscriber
 import io.easybreezy.hr.model.profile.Repository
 import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.event.GuiceSubscriberFactory
@@ -40,6 +41,7 @@ class HRModule : AbstractModule() {
 
 class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers, subscriberFactory: GuiceSubscriberFactory) {
     init {
-        eventSystem.subscribe(subscriberFactory.get(ProfileSubscriber::class))
+        eventSystem.subscribe(subscriberFactory.get(UserConfirmedSubscriber::class))
+        eventSystem.subscribe(subscriberFactory.get(UserInvitedSubscriber::class))
     }
 }

@@ -1,7 +1,8 @@
 package io.easybreezy.hr.application.profile.command
 
 import com.google.inject.Inject
-import io.easybreezy.hr.model.profile.Profile
+import io.easybreezy.hr.model.profile.ContactDetails
+import io.easybreezy.hr.model.profile.PersonalData
 import io.easybreezy.hr.model.profile.Profiles
 import io.easybreezy.hr.model.profile.Repository
 import java.time.LocalDate
@@ -12,11 +13,12 @@ class Handler @Inject constructor(private val repository: Repository) {
         val profile = repository.getByUser(command.id)
 
         profile.updatePersonalData(
-            Profile.PersonalData.create(
-                LocalDate.parse(command.birthday),
-                Profiles.Gender.valueOf(command.gender),
-                command.about
-            )
+            PersonalData.build {
+                birthday = LocalDate.parse(command.birthday)
+                gender = Profiles.Gender.valueOf(command.gender)
+                about = command.about
+                name = PersonalData.Name.create(command.firstName, command.lastName)
+            }
         )
     }
 
@@ -50,6 +52,6 @@ class Handler @Inject constructor(private val repository: Repository) {
             emails.add(Profiles.Email(it))
         }
 
-        profile.updateContactDetails(Profile.ContactDetails.create(phones, emails))
+        profile.updateContactDetails(ContactDetails.create(phones, emails))
     }
 }

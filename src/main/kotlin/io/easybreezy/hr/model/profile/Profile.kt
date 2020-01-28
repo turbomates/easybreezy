@@ -23,69 +23,6 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var userId by Profiles.userId
     private val messengers by Messenger referrersOn Messengers.profile
 
-    class PersonalData private constructor() : Embeddable() {
-        private var birthday by Profiles.birthday
-        private var gender by Profiles.gender
-        private var about by Profiles.about
-        private var name by Embedded(Name)
-
-        companion object : EmbeddableClass<PersonalData>(PersonalData::class) {
-            override fun createInstance(resultRow: ResultRow?): PersonalData {
-                return PersonalData()
-            }
-
-            fun create(birthday: LocalDate, gender: Profiles.Gender, about: String): PersonalData {
-                val data = PersonalData()
-                data.birthday = birthday
-                data.gender = gender
-                data.about = about
-                return data
-            }
-        }
-
-        class Name private constructor() : Embeddable() {
-            private var firstName by Profiles.firstName
-            private var lastName by Profiles.lastName
-
-            companion object : EmbeddableClass<Name>(Name::class) {
-                override fun createInstance(resultRow: ResultRow?): Name {
-                    return Name()
-                }
-
-                fun create(firstName: String, lastName: String): Name {
-                    val name = Name()
-                    name.firstName = firstName
-                    name.lastName = lastName
-                    return name
-                }
-            }
-        }
-    }
-
-    class ContactDetails private constructor() : Embeddable() {
-        private var phones by Profiles.phones
-        private var emails by Profiles.emails
-
-        companion object : EmbeddableClass<ContactDetails>(ContactDetails::class) {
-            override fun createInstance(resultRow: ResultRow?): ContactDetails {
-                return ContactDetails()
-            }
-
-            fun create(phones: Set<Profiles.Phone>, emails: Set<Profiles.Email>): ContactDetails {
-                val details = ContactDetails()
-                details.phones = phones
-                details.emails = emails
-                return details
-            }
-        }
-    }
-
-    companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
-        fun create(userId: UUID) = Profile.new {
-            this.userId = userId
-        }
-    }
-
     fun addMessenger(type: String, username: String) {
         if (hasMessenger(type)) throw Exception("Messenger with $type already exist")
         Messenger.create(this, Messengers.Type.valueOf(type.toUpperCase()), username)
@@ -117,6 +54,12 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 
     fun updateContactDetails(contactDetails: ContactDetails) {
         this.contactDetails = contactDetails
+    }
+
+    companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
+        fun create(userId: UUID) = Profile.new {
+            this.userId = userId
+        }
     }
 
     abstract class Repository : EntityClass<UUID, Profile>(

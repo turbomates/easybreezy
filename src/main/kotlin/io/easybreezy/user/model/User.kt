@@ -2,7 +2,9 @@ package io.easybreezy.user.model
 
 import io.easybreezy.infrastructure.event.user.Confirmed
 import io.easybreezy.infrastructure.event.user.Invited
-import io.easybreezy.infrastructure.exposed.dao.*
+import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
+import io.easybreezy.infrastructure.exposed.dao.Embedded
+import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
@@ -11,83 +13,29 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.mindrot.jbcrypt.BCrypt
 import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var email by Embedded(Email)
     private var password by Embedded(Password)
     private var roles by Users.roles
-    private var name by Embedded(Name)
     private var status by Users.status
     private var token by Users.token
 
-    class Email private constructor() : Embeddable() {
-        private var address by Users.email
+    fun confirm(password: Password, firstName: String, lastName: String) {
+        this.password = password
+        this.status = Status.ACTIVE
+        resetToken()
 
-        companion object : EmbeddableClass<Email>(Email::class) {
-            override fun createInstance(resultRow: ResultRow?): Email {
-                return Email()
-            }
-
-            fun create(address: String): Email {
-                val email = Email()
-                email.address = address
-                return email
-            }
-        }
-
-        fun address() = address
+        this.addEvent(Confirmed(this.id.value, firstName, lastName))
     }
 
-    class Name private constructor() : Embeddable() {
-        private var firstName by Users.firstName
-        private var lastName by Users.lastName
-
-        companion object : EmbeddableClass<Name>(Name::class) {
-            override fun createInstance(resultRow: ResultRow?): Name {
-                return Name()
-            }
-
-            fun create(firstName: String, lastName: String): Name {
-                val name = Name()
-                name.firstName = firstName
-                name.lastName = lastName
-                return name
-            }
-        }
+    fun email(): String {
+        return this.email.address
     }
 
-    class Password private constructor() : Embeddable() {
-        private var hashedPassword by Users.hashedPassword
-
-        companion object : EmbeddableClass<Password>(Password::class) {
-            override fun createInstance(resultRow: ResultRow?): Password {
-                return Password()
-            }
-
-            fun create(plainPassword: String): Password {
-                val password = Password()
-                password.hashedPassword = hash(plainPassword)
-                return password
-            }
-
-            fun verifyPassword(enteredPassword: String, password: String): Boolean {
-                return BCrypt.checkpw(enteredPassword, password)
-            }
-
-            fun hash(plainPassword: String): String {
-                return BCrypt.hashpw(plainPassword, BCrypt.gensalt())
-            }
-        }
-
-        fun change(newPassword: String) {
-            hashedPassword = hash(newPassword)
-        }
-
-        fun isValid(enteredPassword: String): Boolean {
-            return BCrypt.checkpw(enteredPassword, hashedPassword)
-        }
+    private fun resetToken() {
+        token = null
     }
 
     companion object : PrivateEntityClass<UUID, User>(object : Repository() {}) {
@@ -101,39 +49,14 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             }
         }
 
-        fun createAdmin(email: Email, password: Password, name: Name): User {
+        fun createAdmin(email: Email, password: Password): User {
             return User.new {
                 this.email = email
                 this.password = password
-                this.name = name
                 this.roles = mutableSetOf(Role.ADMIN)
                 this.status = Status.ACTIVE
             }
         }
-    }
-
-    fun email(): String {
-        return this.email.address()
-    }
-
-    fun name() = name
-    fun token() = token
-
-    fun roles() = roles
-    fun status() = status
-    fun password() = password
-
-    fun confirm(password: Password, name: Name) {
-        this.password = password
-        this.name = name
-        this.status = Status.ACTIVE
-        resetToken()
-
-        this.addEvent(Confirmed(this.id.value))
-    }
-
-    private fun resetToken() {
-        token = null
     }
 
     abstract class Repository : EntityClass<UUID, User>(Users, User::class.java) {
@@ -160,8 +83,6 @@ object Users : UUIDTable() {
         { value -> Status.valueOf(value as String) },
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
     val roles = jsonb("roles", Role.serializer().set)
-    val firstName = varchar("first_name", 25).nullable()
-    val lastName = varchar("last_name", 25).nullable()
     val hashedPassword = varchar("password", 255).nullable()
     val email = varchar("email_address", 255)
 }

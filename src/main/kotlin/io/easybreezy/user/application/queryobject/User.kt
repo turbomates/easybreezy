@@ -7,11 +7,11 @@ import java.util.UUID
 
 class UserQO(private val userId: UUID) : QueryObject<User> {
     override fun getData() = User(UUID.randomUUID(), "", "", emptySet(), "", "")
-//        transaction {
-//            Users.select {
-//                Users.id eq userId
-//            }.first()
-//        }
+       // transaction {
+       //     Users.select {
+       //         Users.id eq userId
+       //     }.first()
+       // }
 }
 
 // toDO сделать с пейджингом
