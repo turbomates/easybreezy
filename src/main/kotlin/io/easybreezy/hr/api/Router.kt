@@ -89,9 +89,20 @@ class Router @Inject constructor(
             @Location("/{id}")
             data class Locations(val id: UUID)
 
+            @Location("/{id}")
+            data class UserLocation(val id: UUID)
+
             post("") { controller<LocationController>(this).createLocation(call.receive()) }
             delete<Locations> { controller<LocationController>(this).removeLocation(it.id) }
             get("") { controller<LocationController>(this).locations() }
+
+            route("/user") {
+                post("") { controller<LocationController>(this).assignLocation(resolveUserId<UserPrincipal>(), call.receive()) }
+                post<UserLocation> { controller<LocationController>(this).editUserLocation(it.id, call.receive()) }
+                delete<UserLocation> { controller<LocationController>(this).removeUserLocation(it.id) }
+                get<UserLocation> { controller<LocationController>(this).showUserLocation(it.id) }
+                get("") { controller<LocationController>(this).userLocations(resolveUserId<UserPrincipal>()) }
+            }
         }
     }
 }
