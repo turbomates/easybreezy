@@ -29,6 +29,7 @@ import io.ktor.serialization.DefaultJsonConfiguration
 import io.ktor.serialization.serialization
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.createTestEnvironment
+import io.ktor.server.testing.withTestApplication
 import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
@@ -45,10 +46,8 @@ class TestEngine {
 
     companion object {
         fun create(userId: UUID? = null, roles: Set<Role> = setOf()): TestApplicationEngine {
-
             val dataSource = TestDataSource
             val database = Database.connect(dataSource)
-
             val injector = Guice.createInjector(object : AbstractModule() {
                 override fun configure() {
                     bind(DataSource::class.java).toInstance(dataSource)

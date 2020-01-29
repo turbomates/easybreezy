@@ -16,10 +16,10 @@ class UserControllerTest {
     fun testUserInvite() {
         val engine = TestEngine.create(UUID.randomUUID())
 
-        with(engine.handleRequest(HttpMethod.Get, "/api/users")) {
-            println(response.content)
-            Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-        }
+                with(engine.handleRequest(HttpMethod.Get, "/api/users")) {
+                    println(response.content)
+                    Assertions.assertEquals(response.status(), HttpStatusCode.OK)
+                }
 
         with(engine.handleRequest(HttpMethod.Post, "/api/users/invite") {
             addHeader("Content-Type", "application/json")
