@@ -1,6 +1,7 @@
 package io.easybreezy.hr.application.absence.queryobject
 
 import io.easybreezy.hr.model.absence.WorkingHours
+import io.easybreezy.infrastructure.extensions.toUUID
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
@@ -34,10 +35,10 @@ class WorkingHoursQO(private val userId: UUID, private val paging: PagingParamet
 }
 
 private fun ResultRow.toWorkingHour() = WorkingHour(
-    id = UUID.fromString(this[WorkingHours.id].toString()),
+    id = this[WorkingHours.id].toUUID(),
     day = this[WorkingHours.day].toString(),
     count = this[WorkingHours.count],
-    userId = UUID.fromString(this[WorkingHours.userId].toString())
+    userId = this[WorkingHours.userId]
 )
 
 data class WorkingHour(

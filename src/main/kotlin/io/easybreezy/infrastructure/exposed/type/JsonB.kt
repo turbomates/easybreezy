@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
 import org.postgresql.util.PGobject
 
-fun <T: Any> Table.jsonb(name: String, serializer: KSerializer<T>): Column<T> {
+fun <T : Any> Table.jsonb(name: String, serializer: KSerializer<T>): Column<T> {
     return registerColumn(name, PostgreSQLJson(serializer))
 }
 

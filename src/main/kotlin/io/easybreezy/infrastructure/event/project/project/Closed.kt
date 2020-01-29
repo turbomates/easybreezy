@@ -11,7 +11,7 @@ import java.util.*
 data class Closed(
     @Serializable(with = UUIDSerializer::class) val project: UUID,
     @Serializable(with = LocalDateSerializer::class) val updatedAt: LocalDateTime
-) : Event{
+) : Event {
     override val key
         get() = Companion
 

@@ -47,5 +47,4 @@ class ProfileController @Inject constructor(
 
         call.respondOk()
     }
-
 }

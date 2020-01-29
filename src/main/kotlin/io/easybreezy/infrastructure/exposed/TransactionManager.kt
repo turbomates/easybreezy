@@ -22,4 +22,3 @@ class EventListenerInterceptor() : GlobalStatementInterceptor {
         transaction.events.save()
     }
 }
-

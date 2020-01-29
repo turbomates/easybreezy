@@ -2,6 +2,7 @@ package io.easybreezy.hr.api
 
 import com.google.inject.Inject
 import io.easybreezy.hr.api.controller.AbsenceController
+import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.api.controller.ProfileController
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Router
@@ -14,7 +15,6 @@ import io.ktor.locations.*
 import io.ktor.routing.*
 import io.ktor.request.receive
 import java.util.UUID
-import io.ktor.request.receiveText
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
@@ -31,6 +31,7 @@ class Router @Inject constructor(
                 authenticate(*Auth.user) {
                     profileRouting(this)
                     absencesRouting(this)
+                    locationsRouting(this)
                 }
             }
         }
@@ -80,6 +81,17 @@ class Router @Inject constructor(
                 get<WorkingHour> { controller<AbsenceController>(this).showWorkingHour(it.id) }
                 get("") { controller<AbsenceController>(this).workingHours(resolveUserId<UserPrincipal>()) }
             }
+        }
+    }
+
+    private fun locationsRouting(route: Route) {
+        route.route("/locations") {
+            @Location("/{id}")
+            data class Locations(val id: UUID)
+
+            post("") { controller<LocationController>(this).createLocation(call.receive()) }
+            delete<Locations> { controller<LocationController>(this).removeLocation(it.id) }
+            get("") { controller<LocationController>(this).locations() }
         }
     }
 }

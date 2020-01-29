@@ -1,8 +1,6 @@
 package io.easybreezy.hr.model.absence
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.user.model.User
-import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -21,11 +19,11 @@ class WorkingHour private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var userId by WorkingHours.userId
 
     companion object : PrivateEntityClass<UUID, WorkingHour>(object : Repository() {}) {
-        fun create(day: LocalDate, count: Int, user: User): WorkingHour {
+        fun create(day: LocalDate, count: Int, userId: UUID): WorkingHour {
             return WorkingHour.new {
                 this.day = day
                 this.count = count
-                this.userId = user.id
+                this.userId = userId
             }
         }
     }
@@ -45,5 +43,5 @@ class WorkingHour private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 object WorkingHours : UUIDTable("working_hours") {
     val day = date("day").uniqueIndex()
     val count = integer("count")
-    val userId = reference("user_id", Users)
+    val userId = uuid("user_id")
 }

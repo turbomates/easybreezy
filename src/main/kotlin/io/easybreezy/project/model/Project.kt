@@ -124,7 +124,6 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
                 .replace("\\s+".toRegex(), "-")
                 .toLowerCase()
         }
-
     }
 
     abstract class Repository : EntityClass<UUID, Project>(Projects, Project::class.java) {
@@ -149,7 +148,6 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         companion object : UUIDEntityClass<Team>(Teams)
     }
 }
-
 
 object Projects : UUIDTable("projects") {
     val name = varchar("name", 255)

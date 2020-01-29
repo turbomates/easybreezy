@@ -12,7 +12,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveOrNull
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
-import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * Represents a form-based authentication provider
@@ -73,8 +72,6 @@ fun <T : Principal> Authentication.Configuration.jsonForm(
                 it.complete()
             }
         }
-
-
     }
     register(provider)
 }

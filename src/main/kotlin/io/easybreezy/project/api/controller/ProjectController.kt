@@ -15,11 +15,9 @@ class ProjectController @Inject constructor(private val handler: Handler) : Cont
     }
 
     suspend fun show(id: UUID) {
-
     }
 
     suspend fun removeRole(id: UUID, roleId: UUID) {
-
     }
 
     suspend fun addRole(id: UUID, role: NewRole) {

@@ -10,7 +10,7 @@ data class NewTeamAdded(
     @Serializable(with = UUIDSerializer::class) val project: UUID,
     @Serializable(with = UUIDSerializer::class) val team: UUID,
     val name: String
-) : Event{
+) : Event {
     override val key
         get() = Companion
 

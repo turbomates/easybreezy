@@ -7,7 +7,9 @@ import java.util.UUID
 
 @Serializable
 data class Confirmed(
-    @Serializable(with = UUIDSerializer::class) val user: UUID
+    @Serializable(with = UUIDSerializer::class) val user: UUID,
+    val firstName: String,
+    val lastName: String
 ) : Event {
     override val key
         get() = Companion

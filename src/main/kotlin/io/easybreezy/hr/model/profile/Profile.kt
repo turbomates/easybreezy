@@ -3,8 +3,9 @@ package io.easybreezy.hr.model.profile
 import io.easybreezy.infrastructure.event.profile.MessengerAdded
 import io.easybreezy.infrastructure.event.profile.MessengerRemoved
 import io.easybreezy.infrastructure.event.profile.MessengerUsernameChanged
-import io.easybreezy.infrastructure.exposed.dao.*
-//import io.easybreezy.infrastructure.exposed.dao.EmbeddableColumn
+import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
+import io.easybreezy.infrastructure.exposed.dao.Embedded
+import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
@@ -14,7 +15,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.date
-import java.time.LocalDate
 import java.util.UUID
 
 class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
@@ -22,69 +22,6 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var contactDetails by Embedded(ContactDetails)
     private var userId by Profiles.userId
     private val messengers by Messenger referrersOn Messengers.profile
-
-    class PersonalData private constructor() : Embeddable() {
-        private var birthday by Profiles.birthday
-        private var gender by Profiles.gender
-        private var about by Profiles.about
-        private var name by Embedded(Name)
-
-        companion object : EmbeddableClass<PersonalData>(PersonalData::class) {
-            override fun createInstance(resultRow: ResultRow?): PersonalData {
-                return PersonalData()
-            }
-
-            fun create(birthday: LocalDate, gender: Profiles.Gender, about: String): PersonalData {
-                val data = PersonalData()
-                data.birthday = birthday
-                data.gender = gender
-                data.about = about
-                return data
-            }
-        }
-
-        class Name private constructor() : Embeddable() {
-            private var firstName by Profiles.firstName
-            private var lastName by Profiles.lastName
-
-            companion object : EmbeddableClass<Name>(Name::class) {
-                override fun createInstance(resultRow: ResultRow?): Name {
-                    return Name()
-                }
-
-                fun create(firstName: String, lastName: String): Name {
-                    val name = Name()
-                    name.firstName = firstName
-                    name.lastName = lastName
-                    return name
-                }
-            }
-        }
-    }
-
-    class ContactDetails private constructor() : Embeddable() {
-        private var phones by Profiles.phones
-        private var emails by Profiles.emails
-
-        companion object : EmbeddableClass<ContactDetails>(ContactDetails::class) {
-            override fun createInstance(resultRow: ResultRow?): ContactDetails {
-                return ContactDetails()
-            }
-
-            fun create(phones: Set<Profiles.Phone>, emails: Set<Profiles.Email>): ContactDetails {
-                val details = ContactDetails()
-                details.phones = phones
-                details.emails = emails
-                return details
-            }
-        }
-    }
-
-    companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
-        fun create(userId: UUID) = Profile.new {
-            this.userId = userId
-        }
-    }
 
     fun addMessenger(type: String, username: String) {
         if (hasMessenger(type)) throw Exception("Messenger with $type already exist")
@@ -117,6 +54,13 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 
     fun updateContactDetails(contactDetails: ContactDetails) {
         this.contactDetails = contactDetails
+    }
+
+    companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
+        fun create(userId: UUID, personalData: PersonalData) = Profile.new {
+            this.userId = userId
+            this.personalData = personalData
+        }
     }
 
     abstract class Repository : EntityClass<UUID, Profile>(

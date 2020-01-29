@@ -10,14 +10,15 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 @Suppress("UNCHECKED_CAST")
-class InnerTableLink<SID:Comparable<SID>, Source: Entity<SID>, ID:Comparable<ID>, Target: Entity<ID>>(
-    val table: Table,//Roles
-    val target: EntityClass<ID, Target>,//Role
-    val sourceColumn: Column<EntityID<SID>>? = null, //Roles.Project
-    _targetColumn: Column<EntityID<ID>>? = null) : ReadWriteProperty<Source, SizedIterable<Target>> {
+class InnerTableLink<SID : Comparable<SID>, Source : Entity<SID>, ID : Comparable<ID>, Target : Entity<ID>>(
+    val table: Table, // Roles
+    val target: EntityClass<ID, Target>, // Role
+    val sourceColumn: Column<EntityID<SID>>? = null, // Roles.Project
+    _targetColumn: Column<EntityID<ID>>? = null
+) : ReadWriteProperty<Source, SizedIterable<Target>> {
     init {
         _targetColumn?.let {
-            requireNotNull(sourceColumn) { "Both source and target columns should be specified"}
+            requireNotNull(sourceColumn) { "Both source and target columns should be specified" }
             require(_targetColumn.referee?.table == target.table) {
                 "Column $_targetColumn point to wrong table, expected ${target.table.tableName}"
             }
@@ -26,7 +27,7 @@ class InnerTableLink<SID:Comparable<SID>, Source: Entity<SID>, ID:Comparable<ID>
             }
         }
         sourceColumn?.let {
-            requireNotNull(_targetColumn) { "Both source and target columns should be specified"}
+            requireNotNull(_targetColumn) { "Both source and target columns should be specified" }
         }
     }
 
@@ -42,13 +43,13 @@ class InnerTableLink<SID:Comparable<SID>, Source: Entity<SID>, ID:Comparable<ID>
     override operator fun getValue(o: Source, unused: KProperty<*>): SizedIterable<Target> {
         if (o.id._value == null) return emptySized()
         val sourceRefColumn = getSourceRefColumn(o)
-        val alreadyInJoin = (target.dependsOnTables as? Join)?.alreadyInJoin(table)?: false
+        val alreadyInJoin = (target.dependsOnTables as? Join)?.alreadyInJoin(table) ?: false
         val entityTables = if (alreadyInJoin) target.dependsOnTables else target.dependsOnTables.join(table, JoinType.INNER, target.table.id, targetColumn)
 
-        val columns = (target.dependsOnColumns + (if (!alreadyInJoin) table.columns else emptyList())
-                - sourceRefColumn).distinct() + sourceRefColumn
+        val columns = (target.dependsOnColumns + (if (!alreadyInJoin) table.columns else emptyList()) -
+                sourceRefColumn).distinct() + sourceRefColumn
 
-        val query = {target.wrapRows(entityTables.slice(columns).select{sourceRefColumn eq o.id})}
+        val query = { target.wrapRows(entityTables.slice(columns).select { sourceRefColumn eq o.id }) }
         return TransactionManager.current().entityCache.getOrPutReferrers(o.id, sourceRefColumn, query)
     }
 
