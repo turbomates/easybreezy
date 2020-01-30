@@ -22,7 +22,7 @@ class LocationsQO(private val paging: PagingParameters) : QueryObject<Continuous
         }
 }
 
-private fun ResultRow.toLocation() = Location(
+internal fun ResultRow.toLocation() = Location(
     id = this[Locations.id].toUUID(),
     name = this[Locations.name]
 )
