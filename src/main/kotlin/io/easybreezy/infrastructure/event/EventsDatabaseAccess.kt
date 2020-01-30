@@ -30,9 +30,9 @@ class EventsDatabaseAccess(private val database: Database) {
 }
 
 internal fun EventStore.save() {
-    Events.batchInsert(this.raiseEvents().toList()) { event ->
-        this[Events.event] = EventWrapper(event)
-    }
+//    Events.batchInsert(this.raiseEvents().toList()) { event ->
+//        this[Events.event] = EventWrapper(event)
+//    }
 }
 
 internal object Events : UUIDTable("domain_events") {

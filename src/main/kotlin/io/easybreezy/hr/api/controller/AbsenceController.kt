@@ -31,9 +31,7 @@ class AbsenceController @Inject constructor(
 
     suspend fun createAbsence(command: CreateAbsence) {
         validation.onCreateAbsence(command)
-        transaction {
-            handler.handleCreateAbsence(command)
-        }
+        handler.handleCreateAbsence(command)
 
         call.respondOk()
     }

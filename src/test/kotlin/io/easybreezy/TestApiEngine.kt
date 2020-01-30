@@ -3,6 +3,8 @@ package io.easybreezy
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import io.easybreezy.hr.HRModule
+import io.easybreezy.infrastructure.event.EventSubscribers
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Session
@@ -35,6 +37,7 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
 import org.junit.jupiter.api.Test
 import org.valiktor.ConstraintViolationException
+import java.sql.Connection
 import java.util.*
 import javax.sql.DataSource
 import kotlin.test.assertEquals
@@ -42,7 +45,10 @@ import kotlin.test.assertEquals
 class TestApiEngine {
     @Test
     fun test() {
-        withTestApplication({ testApplication(UUID.randomUUID(), emptySet()) }) {
+
+        val dataSource = TestDataSource
+        val database = Database.connect(dataSource)
+        withTestApplication({ testApplication(UUID.randomUUID(), emptySet(), database) }) {
             with(handleRequest(HttpMethod.Get, "/api/users")) {
                 assertEquals(response.status(), HttpStatusCode.OK)
             }
@@ -50,13 +56,19 @@ class TestApiEngine {
     }
 }
 
-fun Application.testApplication(userId: UUID, roles: Set<Role>) {
+fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Database) {
     val dataSource = TestDataSource
-    val database = Database.connect(dataSource)
+    val eventSubscribers = EventSubscribers()
+
+    org.jetbrains.exposed.sql.transactions.TransactionManager.managerFor(database)?.defaultIsolationLevel =
+        Connection.TRANSACTION_READ_COMMITTED
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)
             bind(Database::class.java).toInstance(database)
+            bind(TransactionManager::class.java).toInstance(TransactionManager(database))
+            bind(EventSubscribers::class.java).toInstance(eventSubscribers)
+
         }
     })
 
@@ -90,7 +102,7 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>) {
 
     intercept(ApplicationCallPipeline.Call) {
         val session = Session()
-        call.sessions.set(session.copy(principal = UserPrincipal(userId!!, roles)))
+        call.sessions.set(session.copy(principal = UserPrincipal(userId, roles)))
     }
 
     install(Authentication) {
@@ -101,7 +113,7 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>) {
         }
         session<Session>(Auth.UserSessionAuth) {
             validate {
-                UserPrincipal(userId!!, roles)
+                UserPrincipal(userId, roles)
             }
         }
         basic(Auth.JWTAuth) {

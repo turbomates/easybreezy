@@ -91,5 +91,5 @@ object Users : UUIDTable() {
     val roles = jsonb("roles", Role.serializer().set)
     val hashedPassword = varchar("password", 255).nullable()
     val email = varchar("email_address", 255).uniqueIndex()
-    val createdAt = datetime("created_at")
+    val createdAt = datetime("created_at").default(LocalDateTime.now())
 }
