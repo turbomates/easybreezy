@@ -42,20 +42,6 @@ import java.util.*
 import javax.sql.DataSource
 import kotlin.test.assertEquals
 
-class TestApiEngine {
-    @Test
-    fun test() {
-
-        val dataSource = TestDataSource
-        val database = Database.connect(dataSource)
-        withTestApplication({ testApplication(UUID.randomUUID(), emptySet(), database) }) {
-            with(handleRequest(HttpMethod.Get, "/api/users")) {
-                assertEquals(response.status(), HttpStatusCode.OK)
-            }
-        }
-    }
-}
-
 fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Database) {
     val dataSource = TestDataSource
     val eventSubscribers = EventSubscribers()
