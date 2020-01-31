@@ -18,7 +18,5 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12'
-      - name: Install deps
-        run: ./gradlew install
       - name: Run tests
         run: ./gradlew tests
