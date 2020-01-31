@@ -45,9 +45,6 @@ import kotlin.test.assertEquals
 fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Database) {
     val dataSource = TestDataSource
     val eventSubscribers = EventSubscribers()
-
-    org.jetbrains.exposed.sql.transactions.TransactionManager.managerFor(database)?.defaultIsolationLevel =
-        Connection.TRANSACTION_READ_COMMITTED
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)

@@ -124,7 +124,7 @@ tasks.register("createDefaultUser", JavaExec::class) {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "12"
         freeCompilerArgs = listOf(
             "-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI",
             "-Xuse-experimental=kotlinx.serialization.ImplicitReflectionSerializer",
