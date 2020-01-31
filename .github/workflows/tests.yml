@@ -26,14 +26,6 @@ jobs:
         with:
           java-version: '12'
       - name: Run migrations
-        run: ./gradlew migrationsMigrate
-        env:
-          EASYBREEZY_JDBC_URL: jdbc:postgresql://postgres:5432/easybreazy
-          EASYBREEZY_JDBC_USER: webmaster
-          EASYBREEZY_JDBC_PASSWORD: test
+        run: ./gradlew migrationsMigrate -Deasybreezy.jdbc.url=jdbc:postgresql://postgres:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
       - name: Run tests
-        run: ./gradlew test
-        env:
-          EASYBREEZY_JDBC_URL: jdbc:postgresql://postgres:5432/easybreazy
-          EASYBREEZY_JDBC_USER: webmaster
-          EASYBREEZY_JDBC_PASSWORD: test
+        run: ./gradlew test -Deasybreezy.jdbc.url=jdbc:postgresql://postgres:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
