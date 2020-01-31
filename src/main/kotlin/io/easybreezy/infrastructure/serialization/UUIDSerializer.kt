@@ -1,8 +1,13 @@
 package io.easybreezy.infrastructure.serialization
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.internal.StringDescriptor
-import java.util.*
+import kotlinx.serialization.withName
+import java.util.UUID
 
 @Serializer(forClass = UUID::class)
 object UUIDSerializer : KSerializer<UUID> {

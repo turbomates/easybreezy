@@ -1,6 +1,11 @@
 package io.easybreezy.infrastructure.exposed.dao
 
-import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.dao.Entity
+import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.InnerTableLink
+import org.jetbrains.exposed.dao.OptionalBackReference
+import org.jetbrains.exposed.dao.OptionalReferrers
+import org.jetbrains.exposed.dao.Referrers
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table

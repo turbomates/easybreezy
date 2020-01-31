@@ -11,7 +11,7 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class AbsenceControllerTest {
     @Test

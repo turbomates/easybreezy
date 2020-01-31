@@ -6,7 +6,7 @@ import io.easybreezy.infrastructure.ktor.respondOk
 import io.easybreezy.project.application.project.command.Handler
 import io.easybreezy.project.application.project.command.New
 import io.easybreezy.project.application.project.command.NewRole
-import java.util.*
+import java.util.UUID
 
 class ProjectController @Inject constructor(private val handler: Handler) : Controller() {
     suspend fun create(new: New) {

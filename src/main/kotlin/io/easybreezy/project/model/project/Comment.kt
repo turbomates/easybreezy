@@ -1,7 +1,7 @@
 package io.easybreezy.project.model.project
 
 import io.easybreezy.project.model.team.Member
-import java.util.*
+import java.util.UUID
 
 class Comment(
     private val issue: UUID,

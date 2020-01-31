@@ -25,7 +25,11 @@ import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.*
+import io.ktor.features.CallLogging
+import io.ktor.features.DataConversion
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
+import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
@@ -44,7 +48,7 @@ import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
 import java.io.File
 import java.io.InputStream
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
 
 suspend fun main() {

@@ -1,7 +1,7 @@
 package io.easybreezy.hr.application.location.queryobject
 
 import io.easybreezy.hr.model.location.Locations
-import io.easybreezy.infrastructure.extensions.toUUID
+import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject

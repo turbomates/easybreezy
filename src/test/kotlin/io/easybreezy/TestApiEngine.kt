@@ -24,23 +24,21 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.features.DataConversion
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.serialization.DefaultJsonConfiguration
 import io.ktor.serialization.serialization
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.withTestApplication
-import io.ktor.sessions.*
+import io.ktor.sessions.SessionStorageMemory
+import io.ktor.sessions.Sessions
+import io.ktor.sessions.cookie
+import io.ktor.sessions.sessions
+import io.ktor.sessions.set
 import io.ktor.util.DataConversionException
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
-import org.junit.jupiter.api.Test
 import org.valiktor.ConstraintViolationException
-import java.sql.Connection
-import java.util.*
+import java.util.UUID
 import javax.sql.DataSource
-import kotlin.test.assertEquals
 
 fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Database) {
     val dataSource = TestDataSource

@@ -7,8 +7,12 @@ import io.easybreezy.project.api.controller.ProjectController
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.request.receive
-import io.ktor.routing.*
-import java.util.*
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.route
+import io.ktor.routing.routing
+import java.util.UUID
 
 class Router @Inject constructor(
     application: Application,

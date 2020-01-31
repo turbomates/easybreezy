@@ -1,8 +1,21 @@
 package io.easybreezy.infrastructure.event
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.internal.SerialClassDescImpl
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.JsonInput
+import kotlinx.serialization.json.JsonLiteral
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonOutput
+import kotlinx.serialization.serializer
+import kotlinx.serialization.stringify
 import kotlin.reflect.KClass
 
 object EventSerializer {

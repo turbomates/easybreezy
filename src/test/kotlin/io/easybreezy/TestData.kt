@@ -1,13 +1,13 @@
 package io.easybreezy
 
-import io.easybreezy.infrastructure.extensions.toUUID
+import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.user.model.Role
 import io.easybreezy.user.model.Status
 import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import java.util.UUID
 
 internal fun Database.createAdmin(): UUID {
     return transaction(this) {

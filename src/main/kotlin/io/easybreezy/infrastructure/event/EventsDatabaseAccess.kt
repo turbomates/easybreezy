@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class EventsDatabaseAccess(private val database: Database) {
     fun load(): List<Pair<UUID, Event>> {
@@ -30,9 +30,9 @@ class EventsDatabaseAccess(private val database: Database) {
 }
 
 internal fun EventStore.save() {
-//    Events.batchInsert(this.raiseEvents().toList()) { event ->
-//        this[Events.event] = EventWrapper(event)
-//    }
+    Events.batchInsert(this.raiseEvents().toList()) { event ->
+        this[Events.event] = EventWrapper(event)
+    }
 }
 
 internal object Events : UUIDTable("domain_events") {

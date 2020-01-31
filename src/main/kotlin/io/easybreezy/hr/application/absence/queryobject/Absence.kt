@@ -2,7 +2,7 @@ package io.easybreezy.hr.application.absence.queryobject
 
 import io.easybreezy.hr.model.absence.Absences
 import io.easybreezy.hr.model.absence.Reason
-import io.easybreezy.infrastructure.extensions.toUUID
+import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject

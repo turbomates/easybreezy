@@ -1,4 +1,4 @@
-package io.easybreezy.infrastructure.extensions
+package io.easybreezy.infrastructure.exposed
 
 import org.jetbrains.exposed.dao.id.EntityID
 import java.util.UUID

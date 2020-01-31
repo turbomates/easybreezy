@@ -2,7 +2,7 @@ package io.easybreezy.project.model.project
 
 import io.easybreezy.project.model.team.Member
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class Issue(
     private val project: UUID,

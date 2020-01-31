@@ -54,7 +54,6 @@ class ExposedTestTransactionManager(
             connection.setSavepoint(savepointName)
         } else null
 
-
         override fun commit() {
             if (!useSavePoints) {
                 connection.commit()
@@ -85,7 +84,6 @@ class ExposedTestTransactionManager(
             } finally {
                 manager.transaction = outerTransaction
             }
-
         }
 
         private val savepointName: String
@@ -125,7 +123,7 @@ internal val testDatabase by lazy {
     Database.connect(
         TestDataSource,
         manager = { database ->
-            database.useNestedTransactions = true;
+            database.useNestedTransactions = true
             ExposedTestTransactionManager(
                 database,
                 Connection.TRANSACTION_READ_COMMITTED,
