@@ -181,7 +181,7 @@ listOf("", "Test").forEach { testOrNotTest ->
             val jdbcUser = System.getProperties().getOrDefault("easybreezy.jdbc.user", null) as String?
             val jdbcPassword = System.getProperties().getOrDefault("easybreezy.jdbc.password", null) as String?
 
-            logger.lifecycle("Migrating database $jdbcUrl")
+            logger.lifecycle("Migrating database $jdbcUrl $jdbcUser $jdbcPassword")
 
             flyway {
                 validateOnMigrate = false
