@@ -19,4 +19,4 @@ jobs:
         with:
           java-version: '12'
       - name: Run tests
-        run: ./gradlew tests
+        run: ./gradlew test
