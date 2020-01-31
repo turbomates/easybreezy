@@ -1,24 +1,16 @@
 package io.easybreezy.hr.calendar.api.controller
 
 import com.google.gson.Gson
-import io.easybreezy.*
-import io.easybreezy.infrastructure.ktor.auth.Session
-import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
+import io.easybreezy.rollbackTransaction
+import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
-import io.ktor.application.call
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import io.ktor.sessions.sessions
-import io.ktor.sessions.set
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.DEFAULT_REPETITION_ATTEMPTS
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.sql.Connection
 import java.util.*
 
 class AbsenceControllerTest {

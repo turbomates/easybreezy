@@ -13,10 +13,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: webmaster
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: easybreazy
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
           java-version: '12'
+      - name: Run migrations
+        run: ./gradlew migrationsMigrate
+        env:
+          EASYBREEZY_JDBC_URL: jdbc:postgresql://postgres:5432/easybreazy
+          EASYBREEZY_JDBC_USER: webmaster
+          EASYBREEZY_JDBC_PASSWORD: test
       - name: Run tests
         run: ./gradlew test
+        env:
+          EASYBREEZY_JDBC_URL: jdbc:postgresql://postgres:5432/easybreazy
+          EASYBREEZY_JDBC_USER: webmaster
+          EASYBREEZY_JDBC_PASSWORD: test
