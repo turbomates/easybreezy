@@ -6,14 +6,17 @@ import io.easybreezy.user.model.Password
 import io.easybreezy.user.model.Repository
 import io.easybreezy.user.model.Role
 import io.easybreezy.user.model.User
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class Handler @Inject constructor(private val repository: Repository) {
 
     fun handleInvite(command: Invite) {
-        User.invite(
-            Email.create(command.email),
-            mutableSetOf(Role.valueOf(command.role))
-        )
+        transaction {
+            User.invite(
+                Email.create(command.email),
+                mutableSetOf(Role.valueOf(command.role))
+            )
+        }
     }
 
     fun handleConfirm(command: Confirm) {

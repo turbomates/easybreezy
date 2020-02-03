@@ -9,6 +9,7 @@ class PersonalData private constructor() : Embeddable() {
     var birthday by Profiles.birthday
     var gender by Profiles.gender
     var about by Profiles.about
+    var workStack by Profiles.workStack
     var name by Embedded(Name)
 
     companion object : EmbeddableClass<PersonalData>(PersonalData::class) {

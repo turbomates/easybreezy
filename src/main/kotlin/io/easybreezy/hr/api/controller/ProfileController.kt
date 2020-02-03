@@ -6,9 +6,12 @@ import io.easybreezy.hr.application.profile.command.Handler
 import io.easybreezy.hr.application.profile.command.UpdateContactDetails
 import io.easybreezy.hr.application.profile.command.UpdatePersonalData
 import io.easybreezy.hr.application.profile.command.Validation
+import io.easybreezy.hr.application.profile.queryobject.ProfileQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.respondOk
+import io.easybreezy.infrastructure.ktor.respondWith
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.user.application.queryobject.UserQO
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
@@ -17,6 +20,12 @@ class ProfileController @Inject constructor(
     private val validation: Validation,
     private val queryExecutor: QueryExecutor
 ) : Controller() {
+
+    suspend fun show(id: UUID) {
+        call.respondWith {
+            data = queryExecutor.execute(ProfileQO(id))
+        }
+    }
 
     suspend fun updatePersonalData(id: UUID, command: UpdatePersonalData) {
         command.id = id
@@ -30,7 +39,6 @@ class ProfileController @Inject constructor(
 
     suspend fun updateContactDetails(id: UUID, command: UpdateContactDetails) {
         command.id = id
-        // validation.onUpdateContactDetails(command)
         transaction {
             handler.handleUpdateContactDetails(command)
         }
@@ -40,7 +48,6 @@ class ProfileController @Inject constructor(
 
     suspend fun updateMessengers(id: UUID, command: UpdateMessengers) {
         command.id = id
-        // validation.onUpdateContactDetails(command)
         transaction {
             handler.handleUpdateMessengers(command)
         }

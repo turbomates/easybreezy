@@ -9,6 +9,7 @@ data class UpdatePersonalData(
     val birthday: String,
     val gender: String,
     val about: String,
+    val workStack: String,
     val firstName: String,
     val lastName: String
 ) {

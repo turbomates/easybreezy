@@ -16,6 +16,7 @@ class Handler @Inject constructor(private val repository: Repository) {
         )
         personalData.birthday = LocalDate.parse(command.birthday)
         personalData.about = command.about
+        personalData.workStack = command.workStack
         personalData.gender = Profiles.Gender.valueOf(command.gender)
 
         profile.updatePersonalData(

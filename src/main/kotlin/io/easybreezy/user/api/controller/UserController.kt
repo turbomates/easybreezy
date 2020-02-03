@@ -2,9 +2,11 @@ package io.easybreezy.user.api.controller
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
+import io.easybreezy.infrastructure.ktor.respondListing
 import io.easybreezy.infrastructure.ktor.respondOk
 import io.easybreezy.infrastructure.ktor.respondWith
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.user.application.Confirm
 import io.easybreezy.user.application.Handler
 import io.easybreezy.user.application.Invite
@@ -14,6 +16,11 @@ import io.easybreezy.user.application.queryobject.UsersQO
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
+data class ListTest<T>(
+    val list: List<T>,
+    val test: String = "asd"
+)
+
 class UserController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
@@ -21,9 +28,9 @@ class UserController @Inject constructor(
 ) : Controller() {
 
     suspend fun index() {
-        call.respondWith {
-            data = queryExecutor.execute(UsersQO())
-        }
+        call.respondListing(
+            queryExecutor.execute(UsersQO(call.request.pagingParameters()))
+        )
     }
 
     suspend fun me(id: UUID) {
@@ -33,10 +40,8 @@ class UserController @Inject constructor(
     }
 
     suspend fun invite(command: Invite) {
-        transaction {
-            validation.onInvite(command)
-            handler.handleInvite(command)
-        }
+        validation.onInvite(command)
+        handler.handleInvite(command)
 
         call.respondOk()
     }

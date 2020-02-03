@@ -21,7 +21,7 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var personalData by Embedded(PersonalData)
     private var contactDetails by Embedded(ContactDetails)
     private var userId by Profiles.userId
-    private val messengers by Messenger referrersOn Messengers.profile
+    private val messengers by Messenger.referrersOn(Messengers.profile, true)
 
     fun addMessenger(type: String, username: String) {
         if (hasMessenger(type)) throw Exception("Messenger with $type already exist")
@@ -85,6 +85,7 @@ object Profiles : UUIDTable() {
     val lastName = varchar("last_name", 25).nullable()
     val phones = jsonb("phones", Phone.serializer().set).nullable()
     val emails = jsonb("emails", Email.serializer().set).nullable()
+    val workStack = text("work_stack").nullable()
 
     enum class Gender {
         MALE, FEMALE
