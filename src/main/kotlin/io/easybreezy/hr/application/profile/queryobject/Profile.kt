@@ -2,7 +2,7 @@ package io.easybreezy.hr.application.profile.queryobject
 
 import io.easybreezy.hr.model.profile.Messengers
 import io.easybreezy.hr.model.profile.Profiles
-import io.easybreezy.infrastructure.extensions.toUUID
+import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
