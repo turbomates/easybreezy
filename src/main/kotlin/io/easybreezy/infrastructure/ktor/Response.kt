@@ -85,7 +85,7 @@ object ResponseSerializer : KSerializer<Response> {
             map["data"] = output.json.toJson(obj.data!!::class.serializer() as KSerializer<Any>, obj.data!!)
         }
         obj.error?.let { map["error"] = output.json.toJson(obj.error!!) }
-        obj.errors?.let { map["error"] = output.json.toJson(Error.serializer().list, obj.errors!!) }
+        obj.errors?.let { map["errors"] = output.json.toJson(Error.serializer().list, obj.errors!!) }
         val tree = JsonObject(map)
         output.encodeJson(tree)
     }
