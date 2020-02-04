@@ -1,6 +1,5 @@
 package io.easybreezy.user.api.controller
 
-import com.google.gson.Gson
 import io.easybreezy.rollbackTransaction
 import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
@@ -9,6 +8,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import kotlinx.serialization.json.json
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -28,12 +28,10 @@ class UserControllerTest {
                 with(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
                     setBody(
-                        Gson().toJson(
-                            mapOf(
-                                "email" to "testadmin@testadmin.my",
-                                "role" to "MEMBER"
-                            )
-                        )
+                        json {
+                            "email" to "testadmin@testadmin.my"
+                            "role" to "MEMBER"
+                        }.toString()
                     )
                 }) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
@@ -55,12 +53,10 @@ class UserControllerTest {
                 with(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
                     setBody(
-                        Gson().toJson(
-                            mapOf(
-                                "email" to "testadmin@testadmin.my",
-                                "role" to "MEMBER"
-                            )
-                        )
+                        json {
+                            "email" to "testadmin@testadmin.my"
+                            "role" to "MEMBER"
+                        }.toString()
                     )
                 }) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
@@ -69,12 +65,10 @@ class UserControllerTest {
                 with(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
                     setBody(
-                        Gson().toJson(
-                            mapOf(
-                                "email" to "testadmin@testadmin.my",
-                                "role" to "MEMBER"
-                            )
-                        )
+                        json {
+                            "email" to "testadmin@testadmin.my"
+                            "role" to "MEMBER"
+                        }.toString()
                     )
                 }) {
                     Assertions.assertTrue(response.content?.contains("errors") ?: false)

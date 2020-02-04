@@ -70,6 +70,7 @@ dependencies {
     implementation(Deps.exposed_dao)
     implementation(Deps.exposed_jdbc)
     implementation(Deps.exposed_time)
+    implementation(Deps.kotlin_serialization)
     implementation(Deps.kotlin_serialization_runtime)
 
     runtimeOnly(Deps.logback_classic)
