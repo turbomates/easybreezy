@@ -32,9 +32,6 @@ repositories {
 
 plugins {
     kotlin(KotlinModules.jvm).version(Versions.kotlin)
-    id(Plugins.kotlin_allopen).version(Versions.kotlin)
-    id(Plugins.kotlin_noarg).version(Versions.kotlin)
-    id(Plugins.kotlin_jpa).version(Versions.kotlin)
     id(Plugins.flyway).version(Versions.flyway)
     id(Plugins.ktlint_gradle).version(Versions.ktlint_gradle)
     id(Plugins.kotlin_serialization).version(Versions.kotlin_serialization)
@@ -52,20 +49,20 @@ dependencies {
     implementation(Deps.ktor_server_sessions)
     implementation(Deps.ktor_locations)
     implementation(Deps.ktor_serialization)
+    implementation(Deps.ktor_server_core)
+    implementation(Deps.ktor_client_cio)
+    implementation(Deps.ktor_client_serialization)
+    implementation(Deps.ktor_client_auth_jvm)
+    implementation(Deps.ktor_auth_jwt)
+    implementation(Deps.ktor_auth)
     implementation(Deps.cfg4k_core)
     implementation(Deps.hikaricp)
-    implementation(Deps.gson)
     implementation(Deps.valiktor_core)
     implementation(Deps.google_guice)
     implementation(Deps.rabbitmq_amqp_client)
     implementation(Deps.postgresqlJDBC)
     implementation(Deps.flywaydb_flyway_core)
-    implementation(Deps.ktor_server_core)
-    implementation(Deps.ktor_client_cio)
-    implementation(Deps.ktor_client_gson)
-    implementation(Deps.ktor_client_auth_jvm)
     implementation(Deps.mindrot_jbcrypt)
-    implementation(Deps.ktor_auth_jwt)
     implementation(Deps.exposed_core)
     implementation(Deps.exposed_dao)
     implementation(Deps.exposed_jdbc)
@@ -109,12 +106,6 @@ ktlint {
 
 application {
     mainClassName = "io.easybreezy.application.MainKt"
-}
-
-allOpen {
-    annotation(Annotations.javax_entity)
-    annotation(Annotations.javax_mapped_super_class)
-    annotation(Annotations.javax_embeddable)
 }
 
 tasks.register("createDefaultUser", JavaExec::class) {

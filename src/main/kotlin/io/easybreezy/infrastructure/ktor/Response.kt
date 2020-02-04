@@ -18,6 +18,7 @@ import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonOutput
+import kotlinx.serialization.list
 import kotlinx.serialization.modules.serializersModuleOf
 import kotlinx.serialization.serializer
 import kotlin.collections.List
@@ -80,9 +81,11 @@ object ResponseSerializer : KSerializer<Response> {
         if (obj.list != null) {
             return output.encodeJson(output.json.toJson(ContinuousListSerializer, obj.list!!))
         }
-        obj.data?.let { map["data"] = output.json.toJson(obj.data!!::class.serializer() as KSerializer<Any>, obj.data!!) }
+        obj.data?.let {
+            map["data"] = output.json.toJson(obj.data!!::class.serializer() as KSerializer<Any>, obj.data!!)
+        }
         obj.error?.let { map["error"] = output.json.toJson(obj.error!!) }
-        obj.errors?.let { map["error"] = output.json.toJson(obj.errors!!) }
+        obj.errors?.let { map["error"] = output.json.toJson(Error.serializer().list, obj.errors!!) }
         val tree = JsonObject(map)
         output.encodeJson(tree)
     }
