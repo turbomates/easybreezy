@@ -7,6 +7,8 @@ import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
+import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
@@ -23,7 +25,8 @@ class AbsenceQO(private val absenceId: UUID) : QueryObject<Absence> {
         }
 }
 
-class AbsencesQO(private val userId: UUID, private val paging: PagingParameters) : QueryObject<ContinuousList<Absence>> {
+class AbsencesQO(private val userId: UUID, private val paging: PagingParameters) :
+    QueryObject<ContinuousList<Absence>> {
     override fun getData() =
         transaction {
             Absences
@@ -44,11 +47,12 @@ private fun ResultRow.toAbsence() = Absence(
     userId = this[Absences.userId]
 )
 
+@Serializable
 data class Absence(
-    val id: UUID,
+    @Serializable(with = UUIDSerializer::class) val id: UUID,
     val startedAt: String,
     val endedAt: String,
     val comment: String?,
     val reason: Reason,
-    val userId: UUID
+    @Serializable(with = UUIDSerializer::class) val userId: UUID
 )

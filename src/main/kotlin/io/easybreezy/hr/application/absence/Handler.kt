@@ -12,7 +12,6 @@ import io.easybreezy.user.infrastructure.UserRepository
 class Handler @Inject constructor(
     private val absenceRepository: AbsenceRepository,
     private val workingHourRepository: WorkingHourRepository,
-    private val userRepository: UserRepository,
     private val transaction: TransactionManager
 ) {
 
@@ -28,34 +27,42 @@ class Handler @Inject constructor(
         }
     }
 
-    fun handleUpdateAbsence(command: UpdateAbsence) {
-        val absence = absenceRepository.getOne(command.id)
-        absence.edit(
-            command.startedAt,
-            command.endedAt,
-            Reason.valueOf(command.reason)
-        )
-        absence.comment = command.comment
-    }
-
-    fun handleNoteWorkingHours(command: NoteWorkingHours) {
-        command.workingHours.forEach {
-            WorkingHour.create(
-                it.day,
-                it.count,
-                command.userId
+    suspend fun handleUpdateAbsence(command: UpdateAbsence) {
+        transaction {
+            val absence = absenceRepository.getOne(command.id)
+            absence.edit(
+                command.startedAt,
+                command.endedAt,
+                Reason.valueOf(command.reason)
             )
+            absence.comment = command.comment
         }
     }
 
-    fun handleEditWorkingHours(command: EditWorkingHours) {
-        command.workingHours.forEach { (id, dto) ->
-            val workingHour = workingHourRepository.getOne(id)
-            workingHour.edit(dto.day, dto.count)
+    suspend fun handleNoteWorkingHours(command: NoteWorkingHours) {
+        transaction {
+            command.workingHours.forEach {
+                WorkingHour.create(
+                    it.day,
+                    it.count,
+                    command.userId
+                )
+            }
         }
     }
 
-    fun handleRemoveWorkingHours(command: RemoveWorkingHours) {
-        workingHourRepository.remove(command.workingHours)
+    suspend fun handleEditWorkingHours(command: EditWorkingHours) {
+        transaction {
+            command.workingHours.forEach { (id, dto) ->
+                val workingHour = workingHourRepository.getOne(id)
+                workingHour.edit(dto.day, dto.count)
+            }
+        }
+    }
+
+    suspend fun handleRemoveWorkingHours(command: RemoveWorkingHours) {
+        transaction {
+            workingHourRepository.remove(command.workingHours)
+        }
     }
 }

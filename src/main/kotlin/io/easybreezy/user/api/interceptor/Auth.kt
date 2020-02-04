@@ -7,7 +7,7 @@ import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.jsonForm
 import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondWith
+import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.user.infrastructure.auth.UserProvider
 import io.easybreezy.user.infrastructure.security.JWT
 import io.ktor.application.call
@@ -66,7 +66,7 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
                     val session = call.sessions.get<Session>() ?: Session()
                     call.sessions.set(session.copy(principal = principal))
 
-                    call.respondWith { data = JWT.create(principal.id) }
+                    call.respondData(JWT.create(principal.id))
                 }
             }
         }

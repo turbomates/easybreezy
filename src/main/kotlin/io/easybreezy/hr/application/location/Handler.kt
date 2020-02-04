@@ -5,17 +5,19 @@ import io.easybreezy.hr.infrastructure.LocationRepository
 import io.easybreezy.hr.infrastructure.UserLocationRepository
 import io.easybreezy.hr.model.location.Location
 import io.easybreezy.hr.model.location.UserLocation
+import io.easybreezy.infrastructure.exposed.TransactionManager
 
 class Handler @Inject constructor(
     private val locationRepository: LocationRepository,
-    private val userLocationRepository: UserLocationRepository
+    private val userLocationRepository: UserLocationRepository,
+    private val transaction: TransactionManager
 ) {
 
-    fun handleCreateLocation(command: CreateLocation) {
+    suspend fun handleCreateLocation(command: CreateLocation) = transaction {
         Location.create(command.name)
     }
 
-    fun handleAssignLocation(command: AssignLocation) {
+    suspend fun handleAssignLocation(command: AssignLocation) = transaction {
         val location = locationRepository.getOne(command.locationId)
         UserLocation.create(
             command.startedAt,
@@ -25,7 +27,7 @@ class Handler @Inject constructor(
         )
     }
 
-    fun handleEditUserLocation(command: EditUserLocation) {
+    suspend fun handleEditUserLocation(command: EditUserLocation) = transaction {
         val userLocation = userLocationRepository.getOne(command.userLocationId)
         val location = locationRepository.getOne(command.locationId)
 

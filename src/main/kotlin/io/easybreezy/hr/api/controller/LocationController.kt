@@ -14,10 +14,9 @@ import io.easybreezy.hr.infrastructure.UserLocationRepository
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.respondListing
 import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondWith
+import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class LocationController @Inject constructor(
@@ -30,9 +29,7 @@ class LocationController @Inject constructor(
 
     suspend fun createLocation(command: CreateLocation) {
         validation.onCreateLocation(command)
-        transaction {
-            handler.handleCreateLocation(command)
-        }
+        handler.handleCreateLocation(command)
 
         call.respondOk()
     }
@@ -53,9 +50,7 @@ class LocationController @Inject constructor(
     suspend fun assignLocation(userId: UUID, command: AssignLocation) {
         command.userId = userId
         validation.onAssignLocation(command)
-        transaction {
-            handler.handleAssignLocation(command)
-        }
+        handler.handleAssignLocation(command)
 
         call.respondOk()
     }
@@ -63,9 +58,7 @@ class LocationController @Inject constructor(
     suspend fun editUserLocation(id: UUID, command: EditUserLocation) {
         command.userLocationId = id
         validation.onEditUserLocation(command)
-        transaction {
-            handler.handleEditUserLocation(command)
-        }
+        handler.handleEditUserLocation(command)
 
         call.respondOk()
     }
@@ -77,9 +70,7 @@ class LocationController @Inject constructor(
     }
 
     suspend fun showUserLocation(id: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(UserLocationQO(id))
-        }
+        call.respondData(queryExecutor.execute(UserLocationQO(id)))
     }
 
     suspend fun userLocations(userId: UUID) {

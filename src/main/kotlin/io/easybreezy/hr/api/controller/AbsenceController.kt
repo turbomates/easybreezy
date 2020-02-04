@@ -16,7 +16,7 @@ import io.easybreezy.hr.infrastructure.AbsenceRepository
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.respondListing
 import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondWith
+import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -39,9 +39,7 @@ class AbsenceController @Inject constructor(
     suspend fun updateAbsence(id: UUID, command: UpdateAbsence) {
         command.id = id
         validation.onUpdateAbsence(command)
-        transaction {
-            handler.handleUpdateAbsence(command)
-        }
+        handler.handleUpdateAbsence(command)
 
         call.respondOk()
     }
@@ -54,35 +52,27 @@ class AbsenceController @Inject constructor(
 
     suspend fun noteWorkingHours(command: NoteWorkingHours) {
         validation.onNoteWorkingHours(command)
-        transaction {
-            handler.handleNoteWorkingHours(command)
-        }
+        handler.handleNoteWorkingHours(command)
 
         call.respondOk()
     }
 
     suspend fun editWorkingHours(command: EditWorkingHours) {
         validation.onEditWorkingHours(command)
-        transaction {
-            handler.handleEditWorkingHours(command)
-        }
+        handler.handleEditWorkingHours(command)
 
         call.respondOk()
     }
 
     suspend fun removeWorkingHours(command: RemoveWorkingHours) {
         validation.onRemoveWorkingHours(command)
-        transaction {
-            handler.handleRemoveWorkingHours(command)
-        }
+        handler.handleRemoveWorkingHours(command)
 
         call.respondOk()
     }
 
     suspend fun showAbsence(id: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(AbsenceQO(id))
-        }
+        call.respondData(queryExecutor.execute(AbsenceQO(id)))
     }
 
     suspend fun absences(userId: UUID) {
@@ -92,9 +82,7 @@ class AbsenceController @Inject constructor(
     }
 
     suspend fun showWorkingHour(id: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(WorkingHourQO(id))
-        }
+        call.respondData(queryExecutor.execute(WorkingHourQO(id)))
     }
 
     suspend fun workingHours(userId: UUID) {

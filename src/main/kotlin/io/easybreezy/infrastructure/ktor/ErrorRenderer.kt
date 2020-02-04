@@ -6,26 +6,16 @@ import org.valiktor.ConstraintViolationException
 
 object ErrorRenderer {
     suspend fun render(call: ApplicationCall, exception: ConstraintViolationException) {
-        call.respondWith(HttpStatusCode.UnprocessableEntity) {
-            errors = exception.constraintViolations.map {
-                mapOf(
-                    "property" to it.property,
-                    "value" to it.value,
-                    "message" to it.constraint.name
-                )
-            }
-        }
+        call.respondError(HttpStatusCode.UnprocessableEntity, exception.constraintViolations.map {
+            Error(it.constraint.name, it.property, it.value)
+        })
     }
 
     suspend fun render(call: ApplicationCall, exception: Exception) {
-        call.respondWith(HttpStatusCode.UnprocessableEntity) {
-            error = exception.message
-        }
+        call.respondError(HttpStatusCode.UnprocessableEntity, Error(exception.message!!))
     }
 
     suspend fun render(call: ApplicationCall, message: String, statusCode: HttpStatusCode) {
-        call.respondWith(statusCode) {
-            error = message
-        }
+        call.respondError(statusCode, Error(message))
     }
 }

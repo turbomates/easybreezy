@@ -19,6 +19,8 @@ import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
+import io.easybreezy.infrastructure.query.ContinuousList
+import io.easybreezy.infrastructure.query.ContinuousListSerializer
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
@@ -43,6 +45,7 @@ import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.serializersModuleOf
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.event.Level
 import org.valiktor.ConstraintViolationException
@@ -117,8 +120,10 @@ suspend fun main() {
             serialization(
                 contentType = ContentType.Application.Json,
                 json = Json(
-                    DefaultJsonConfiguration.copy(
-                        prettyPrint = true
+                    configuration = DefaultJsonConfiguration.copy(
+                        prettyPrint = true,
+                        useArrayPolymorphism = true,
+                        encodeDefaults = false
                     )
                 )
             )

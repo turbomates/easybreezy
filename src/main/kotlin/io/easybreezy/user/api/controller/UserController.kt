@@ -3,7 +3,7 @@ package io.easybreezy.user.api.controller
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondWith
+import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.user.application.Confirm
 import io.easybreezy.user.application.Handler
@@ -21,30 +21,22 @@ class UserController @Inject constructor(
 ) : Controller() {
 
     suspend fun index() {
-        call.respondWith {
-            data = queryExecutor.execute(UsersQO())
-        }
+        call.respondData(queryExecutor.execute(UsersQO()))
     }
 
     suspend fun me(id: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(UserQO(id))
-        }
+        call.respondData(queryExecutor.execute(UserQO(id)))
     }
 
     suspend fun invite(command: Invite) {
-        transaction {
-            validation.onInvite(command)
-            handler.handleInvite(command)
-        }
+        validation.onInvite(command)
+        handler.handleInvite(command)
 
         call.respondOk()
     }
 
     suspend fun confirm(command: Confirm) {
-        transaction {
-            handler.handleConfirm(command)
-        }
+        handler.handleConfirm(command)
 
         call.respondOk()
     }

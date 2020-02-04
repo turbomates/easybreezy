@@ -19,10 +19,9 @@ import kotlinx.serialization.stringify
 import kotlin.reflect.KClass
 
 object EventSerializer {
-    private val json: Json
-        get() {
-            return Json(configuration = JsonConfiguration(useArrayPolymorphism = true))
-        }
+    private val json: Json by lazy {
+        Json(configuration = JsonConfiguration(useArrayPolymorphism = true))
+    }
 
     fun serialize(event: Event): String {
         return json.stringify(EventWrapper(event))
