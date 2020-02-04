@@ -8,10 +8,9 @@ import io.easybreezy.hr.application.profile.command.UpdatePersonalData
 import io.easybreezy.hr.application.profile.command.Validation
 import io.easybreezy.hr.application.profile.queryobject.ProfileQO
 import io.easybreezy.infrastructure.ktor.Controller
+import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondWith
 import io.easybreezy.infrastructure.query.QueryExecutor
-import io.easybreezy.user.application.queryobject.UserQO
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
@@ -22,9 +21,7 @@ class ProfileController @Inject constructor(
 ) : Controller() {
 
     suspend fun show(id: UUID) {
-        call.respondWith {
-            data = queryExecutor.execute(ProfileQO(id))
-        }
+        call.respondData(queryExecutor.execute(ProfileQO(id)))
     }
 
     suspend fun updatePersonalData(id: UUID, command: UpdatePersonalData) {
