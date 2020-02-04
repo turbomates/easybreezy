@@ -32,6 +32,7 @@ class Router @Inject constructor(
                     profileRouting(this)
                     absencesRouting(this)
                     locationsRouting(this)
+                    hrRouting(this)
                 }
             }
         }
@@ -39,6 +40,11 @@ class Router @Inject constructor(
 
     private fun profileRouting(route: Route) {
         route.route("/profile") {
+            get("") {
+                controller<ProfileController>(this).show(
+                    resolveUserId<UserPrincipal>()
+                )
+            }
             post("/personal-data") {
                 controller<ProfileController>(this).updatePersonalData(
                     resolveUserId<UserPrincipal>(),
@@ -59,6 +65,11 @@ class Router @Inject constructor(
             }
         }
     }
+
+    private fun hrRouting(route: Route) {
+
+    }
+
 
     private fun absencesRouting(route: Route) {
         route.route("/absences") {

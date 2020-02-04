@@ -2,16 +2,17 @@ package io.easybreezy.user.api.controller
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
+import io.easybreezy.infrastructure.ktor.respondListing
 import io.easybreezy.infrastructure.ktor.respondOk
 import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.user.application.Confirm
 import io.easybreezy.user.application.Handler
 import io.easybreezy.user.application.Invite
 import io.easybreezy.user.application.Validation
 import io.easybreezy.user.application.queryobject.UserQO
 import io.easybreezy.user.application.queryobject.UsersQO
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class UserController @Inject constructor(
@@ -21,7 +22,9 @@ class UserController @Inject constructor(
 ) : Controller() {
 
     suspend fun index() {
-        call.respondData(queryExecutor.execute(UsersQO()))
+        call.respondListing(
+            queryExecutor.execute(UsersQO(call.request.pagingParameters()))
+        )
     }
 
     suspend fun me(id: UUID) {
