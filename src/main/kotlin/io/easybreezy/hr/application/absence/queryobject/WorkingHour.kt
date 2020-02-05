@@ -6,6 +6,8 @@ import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
+import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
@@ -41,9 +43,12 @@ private fun ResultRow.toWorkingHour() = WorkingHour(
     userId = this[WorkingHours.userId]
 )
 
+@Serializable
 data class WorkingHour(
+    @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val day: String,
     val count: Int,
+    @Serializable(with = UUIDSerializer::class)
     val userId: UUID
 )

@@ -19,7 +19,6 @@ import io.easybreezy.infrastructure.ktor.respondOk
 import io.easybreezy.infrastructure.ktor.respondData
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class AbsenceController @Inject constructor(

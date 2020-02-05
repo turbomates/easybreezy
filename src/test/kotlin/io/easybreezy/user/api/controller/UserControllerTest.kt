@@ -1,5 +1,6 @@
 package io.easybreezy.user.api.controller
 
+import io.easybreezy.createAdmin
 import io.easybreezy.rollbackTransaction
 import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
@@ -21,6 +22,7 @@ class UserControllerTest {
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
+                database.createAdmin()
                 with(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                 }
