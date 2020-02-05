@@ -1,8 +1,11 @@
 package io.easybreezy.hr
 
+import io.easybreezy.hr.infrastructure.LocationRepository
 import io.easybreezy.hr.model.absence.Absences
 import io.easybreezy.hr.model.absence.Reason
 import io.easybreezy.hr.model.absence.WorkingHours
+import io.easybreezy.hr.model.location.Locations
+import io.easybreezy.hr.model.location.UserLocations
 import io.easybreezy.infrastructure.exposed.toUUID
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.insert
@@ -30,6 +33,27 @@ internal fun Database.createWorkingHour(userId: UUID): UUID {
             it[count] = 5
             it[this.userId] = userId
         } get WorkingHours.id
+        id.toUUID()
+    }
+}
+
+internal fun Database.createLocation(): UUID {
+    return transaction(this) {
+        val id = Locations.insert {
+            it[name] = "Best Location For a Job"
+        } get Locations.id
+        id.toUUID()
+    }
+}
+
+internal fun Database.createUserLocation(userId: UUID, locationId: UUID): UUID {
+    return transaction(this) {
+        val id = UserLocations.insert {
+            it[startedAt] = LocalDate.now()
+            it[endedAt] = LocalDate.now().plusDays(20)
+            it[location] = LocationRepository().getOne(locationId).id
+            it[this.userId] = userId
+        } get UserLocations.id
         id.toUUID()
     }
 }

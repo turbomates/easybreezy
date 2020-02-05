@@ -7,6 +7,8 @@ import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
+import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
@@ -45,11 +47,14 @@ private fun ResultRow.toUserLocation() = UserLocation(
     userId = this[UserLocations.userId]
 )
 
+@Serializable
 data class UserLocation(
+    @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val startedAt: String,
     val endedAt: String,
     val location: Location,
+    @Serializable(with = UUIDSerializer::class)
     val userId: UUID
 )
 
