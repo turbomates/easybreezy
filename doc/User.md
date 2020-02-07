@@ -10,9 +10,8 @@
 
   * [Logout](#1-logout)
   * [Login User](#2-login-user)
-  * [Login Admin](#3-login-admin)
-  * [User confirm](#4-user-confirm)
-  * [User Invite](#5-user-invite)
+  * [User confirm](#3-user-confirm)
+  * [User Invite](#4-user-invite)
 
 
 --------
