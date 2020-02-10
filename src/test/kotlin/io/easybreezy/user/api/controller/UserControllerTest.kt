@@ -3,6 +3,7 @@ package io.easybreezy.user.api.controller
 import io.easybreezy.rollbackTransaction
 import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
+import io.easybreezy.withSwagger
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
@@ -21,11 +22,11 @@ class UserControllerTest {
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
-                with(handleRequest(HttpMethod.Get, "/api/users")) {
+                withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                 }
 
-                with(handleRequest(HttpMethod.Post, "/api/users/invite") {
+                withSwagger(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -34,10 +35,6 @@ class UserControllerTest {
                         }.toString()
                     )
                 }) {
-                    Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                }
-
-                with(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                 }
             }

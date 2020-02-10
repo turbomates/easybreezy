@@ -1,18 +1,21 @@
 package io.easybreezy.user.api
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.GenericPipeline
+import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
+import io.easybreezy.infrastructure.ktor.get
+import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.user.api.controller.UserController
+import io.easybreezy.user.application.Confirm
+import io.easybreezy.user.application.Invite
+import io.easybreezy.user.application.queryobject.User
 import io.ktor.application.Application
-import io.ktor.application.call
 import io.ktor.auth.authenticate
-import io.ktor.request.receive
 import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 
@@ -27,17 +30,18 @@ class Router @Inject constructor(
                 authenticate(*Auth.user) {
                     userRouting(this)
                 }
-                post("/confirm") { controller<UserController>(this).confirm(call.receive()) }
+                post<Response.Ok, Confirm>("/confirm") { command -> controller<UserController>(this).confirm(command) }
             }
         }
     }
 
     private fun userRouting(route: Route) {
         route.route("") {
-            get("") { controller<UserController>(this).index() }
-            get("/me") { controller<UserController>(this).me(resolveUserId<UserPrincipal>()) }
-
-            post("/invite") { controller<UserController>(this).invite(call.receive()) }
+            get<Response.Listing<User>>("") { controller<UserController>(this).index() }
+            get<Response.Data<User>>("/me") { controller<UserController>(this).me(resolvePrincipal<UserPrincipal>()) }
+            post<Response.Either<Response.Ok, Response.Errors>, Invite>("/invite") { invite ->
+                controller<UserController>(this).invite(invite)
+            }
         }
     }
 }

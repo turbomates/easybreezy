@@ -16,7 +16,7 @@ import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
 
 class UserQO(private val userId: UUID) : QueryObject<User> {
-    override fun getData(): User {
+    override suspend fun getData(): User {
         return transaction {
             Users.select {
                 Users.id eq userId
@@ -26,7 +26,7 @@ class UserQO(private val userId: UUID) : QueryObject<User> {
 }
 
 class UsersQO(private val paging: PagingParameters) : QueryObject<ContinuousList<User>> {
-    override fun getData() =
+    override suspend fun getData() =
         transaction {
             Users
                 .selectAll()

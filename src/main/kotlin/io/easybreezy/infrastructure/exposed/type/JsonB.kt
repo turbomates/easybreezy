@@ -35,7 +35,7 @@ private class PostgreSQLJson<out T : Any>(private val serializer: KSerializer<T>
         }
         return value
     }
-
+    @Suppress("UNCHECKED_CAST")
     override fun nonNullValueToString(value: Any): String {
         return json.stringify(serializer, value as T)
     }

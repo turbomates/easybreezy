@@ -1,6 +1,5 @@
 package io.easybreezy.infrastructure.ktor.auth
 
-import io.easybreezy.infrastructure.ktor.ErrorRenderer
 import io.ktor.application.call
 import io.ktor.auth.Authentication
 import io.ktor.auth.AuthenticationFailedCause
@@ -10,6 +9,7 @@ import io.ktor.auth.UserPasswordCredential
 import io.ktor.features.origin
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveOrNull
+import io.ktor.response.respond
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 
@@ -68,7 +68,7 @@ fun <T : Principal> Authentication.Configuration.jsonForm(
             val cause =
                 if (credentials == null) AuthenticationFailedCause.NoCredentials else AuthenticationFailedCause.InvalidCredentials
             context.challenge(formAuthenticationChallengeKey, cause) {
-                ErrorRenderer.render(call, "Bad credentials", HttpStatusCode.Unauthorized)
+                call.respond(HttpStatusCode.Unauthorized, "Bad credentials")
                 it.complete()
             }
         }

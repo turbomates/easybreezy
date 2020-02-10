@@ -71,6 +71,7 @@ import kotlin.reflect.full.createInstance
 open class Embeddable {
     internal var readValues: ResultRow? = null
     internal val writeValues = LinkedHashMap<Column<Any?>, Any?>()
+    @Suppress("UNCHECKED_CAST")
     operator fun <T> Column<T>.getValue(embeddable: Embeddable, property: KProperty<*>): T {
         val readValues = readValues(this.table)
         return when {

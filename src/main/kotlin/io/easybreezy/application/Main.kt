@@ -16,9 +16,11 @@ import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.event.EventsDatabaseAccess
 import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.infrastructure.ktor.ErrorRenderer
+import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
@@ -33,6 +35,7 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
+import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.serialization.DefaultJsonConfiguration
 import io.ktor.serialization.serialization
@@ -46,9 +49,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.serializersModuleOf
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.event.Level
-import org.valiktor.ConstraintViolationException
 import java.io.File
 import java.io.InputStream
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
 
@@ -108,11 +112,13 @@ suspend fun main() {
         }
 
         install(StatusPages) {
-            exception<ConstraintViolationException> { ErrorRenderer.render(call, it) }
             status(HttpStatusCode.Unauthorized) {
-                ErrorRenderer.render(call, "You're not authorized", HttpStatusCode.Unauthorized)
+                call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
             }
-            exception<Exception> { ErrorRenderer.render(call, it) }
+            exception<Exception> {
+                call.application.environment.log.error(it.localizedMessage)
+                call.respond(HttpStatusCode.ServiceUnavailable, Error("Something is wrong"))
+            }
         }
         install(ContentNegotiation) {
             serialization(
@@ -122,6 +128,9 @@ suspend fun main() {
                         prettyPrint = true,
                         useArrayPolymorphism = true,
                         encodeDefaults = false
+                    ),
+                    context = serializersModuleOf(
+                        mapOf(LocalDateTime::class to LocalDateTimeSerializer, LocalDate::class to LocalDateSerializer)
                     )
                 )
             )

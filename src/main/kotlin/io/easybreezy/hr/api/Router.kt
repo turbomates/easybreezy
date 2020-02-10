@@ -4,21 +4,36 @@ import com.google.inject.Inject
 import io.easybreezy.hr.api.controller.AbsenceController
 import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.api.controller.ProfileController
+import io.easybreezy.hr.application.absence.CreateAbsence
+import io.easybreezy.hr.application.absence.EditWorkingHours
+import io.easybreezy.hr.application.absence.NoteWorkingHours
+import io.easybreezy.hr.application.absence.RemoveWorkingHours
+import io.easybreezy.hr.application.absence.UpdateAbsence
+import io.easybreezy.hr.application.absence.queryobject.Absence
+import io.easybreezy.hr.application.absence.queryobject.WorkingHour
+import io.easybreezy.hr.application.location.AssignLocation
+import io.easybreezy.hr.application.location.CreateLocation
+import io.easybreezy.hr.application.location.EditUserLocation
+import io.easybreezy.hr.application.location.queryobject.UserLocation
+import io.easybreezy.hr.application.profile.command.UpdateContactDetails
+import io.easybreezy.hr.application.profile.command.UpdateMessengers
+import io.easybreezy.hr.application.profile.command.UpdatePersonalData
+import io.easybreezy.hr.application.profile.queryobject.Profile
 import io.easybreezy.infrastructure.ktor.GenericPipeline
+import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
+import io.easybreezy.infrastructure.ktor.delete
+import io.easybreezy.infrastructure.ktor.get
+import io.easybreezy.infrastructure.ktor.post
+import io.easybreezy.infrastructure.ktor.put
 import io.ktor.application.Application
-import io.ktor.application.call
 import io.ktor.auth.authenticate
-import io.ktor.locations.*
-import io.ktor.routing.*
-import io.ktor.request.receive
-import java.util.UUID
 import io.ktor.routing.Route
-import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import java.util.UUID
 
 class Router @Inject constructor(
     application: Application,
@@ -40,27 +55,27 @@ class Router @Inject constructor(
 
     private fun profileRouting(route: Route) {
         route.route("/profile") {
-            get("") {
+            get<Response.Data<Profile>>("") {
                 controller<ProfileController>(this).show(
-                    resolveUserId<UserPrincipal>()
+                    resolvePrincipal<UserPrincipal>()
                 )
             }
-            post("/personal-data") {
+            post<Response.Either<Response.Ok, Response.Errors>, UpdatePersonalData>("/personal-data") { command ->
                 controller<ProfileController>(this).updatePersonalData(
-                    resolveUserId<UserPrincipal>(),
-                    call.receive()
+                    resolvePrincipal<UserPrincipal>(),
+                    command
                 )
             }
-            post("/add-messengers") {
+            post<Response.Ok, UpdateMessengers>("/add-messengers") { command ->
                 controller<ProfileController>(this).updateMessengers(
-                    resolveUserId<UserPrincipal>(),
-                    call.receive()
+                    resolvePrincipal<UserPrincipal>(),
+                    command
                 )
             }
-            post("/contact-details") {
+            post<Response.Ok, UpdateContactDetails>("/contact-details") { command ->
                 controller<ProfileController>(this).updateContactDetails(
-                    resolveUserId<UserPrincipal>(),
-                    call.receive()
+                    resolvePrincipal<UserPrincipal>(),
+                    command
                 )
             }
         }
@@ -73,46 +88,91 @@ class Router @Inject constructor(
 
     private fun absencesRouting(route: Route) {
         route.route("/absences") {
-            @Location("/{id}")
-            data class Absence(val id: UUID)
+            data class ID(val id: UUID)
 
-            @Location("/{id}")
-            data class WorkingHour(val id: UUID)
-
-            post("") { controller<AbsenceController>(this).createAbsence(call.receive()) }
-            post<Absence> { controller<AbsenceController>(this).updateAbsence(it.id, call.receive()) }
-            delete<Absence> { controller<AbsenceController>(this).removeAbsence(it.id) }
-            get<Absence> { controller<AbsenceController>(this).showAbsence(it.id) }
-            get("") { controller<AbsenceController>(this).absences(resolveUserId<UserPrincipal>()) }
-
+            post<Response.Either<Response.Ok, Response.Errors>, CreateAbsence>("") { command ->
+                controller<AbsenceController>(this).createAbsence(
+                    command
+                )
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, UpdateAbsence, ID>("/{id}") { command, params ->
+                controller<AbsenceController>(this).updateAbsence(
+                    params.id,
+                    command
+                )
+            }
+            delete<Response.Ok, ID>("/{id}") { params ->
+                controller<AbsenceController>(this).removeAbsence(
+                    params.id
+                )
+            }
+            get<Response.Data<Absence>, ID>("/{id}") { params ->
+                controller<AbsenceController>(this).showAbsence(
+                    params.id
+                )
+            }
+            get<Response.Listing<Absence>>("") { controller<AbsenceController>(this).absences(resolvePrincipal<UserPrincipal>()) }
             route("/working-hours") {
-                post("") { controller<AbsenceController>(this).noteWorkingHours(call.receive()) }
-                put("") { controller<AbsenceController>(this).editWorkingHours(call.receive()) }
-                delete("") { controller<AbsenceController>(this).removeWorkingHours(call.receive()) }
-                get<WorkingHour> { controller<AbsenceController>(this).showWorkingHour(it.id) }
-                get("") { controller<AbsenceController>(this).workingHours(resolveUserId<UserPrincipal>()) }
+                post<Response.Ok, NoteWorkingHours>("") { command ->
+                    controller<AbsenceController>(this).noteWorkingHours(
+                        command
+                    )
+                }
+                put<Response.Ok, EditWorkingHours>("") { command ->
+                    controller<AbsenceController>(this).editWorkingHours(
+                        command
+                    )
+                }
+                delete<Response.Ok, RemoveWorkingHours>("") { command ->
+                    controller<AbsenceController>(this).removeWorkingHours(
+                        command
+                    )
+                }
+                get<Response.Data<WorkingHour>, ID>("/{id}") { routeParams ->
+                    controller<AbsenceController>(this).showWorkingHour(routeParams.id)
+                }
+                get<Response.Listing<WorkingHour>>("") {
+                    controller<AbsenceController>(this).workingHours(
+                        resolvePrincipal<UserPrincipal>()
+                    )
+                }
             }
         }
     }
 
     private fun locationsRouting(route: Route) {
         route.route("/locations") {
-            @Location("/{id}")
-            data class Locations(val id: UUID)
+            data class ID(val id: UUID)
 
-            @Location("/{id}")
-            data class UserLocation(val id: UUID)
-
-            post("") { controller<LocationController>(this).createLocation(call.receive()) }
-            delete<Locations> { controller<LocationController>(this).removeLocation(it.id) }
-            get("") { controller<LocationController>(this).locations() }
-
+            post<Response.Either<Response.Ok, Response.Errors>, CreateLocation>("") { command ->
+                controller<LocationController>(this).createLocation(command)
+            }
+            delete<Response.Ok, ID>("/{id}") { params -> controller<LocationController>(this).removeLocation(params.id) }
+            get<Response.Listing<io.easybreezy.hr.application.location.queryobject.Location>>("") {
+                controller<LocationController>(this).locations()
+            }
             route("/user") {
-                post("") { controller<LocationController>(this).assignLocation(resolveUserId<UserPrincipal>(), call.receive()) }
-                post<UserLocation> { controller<LocationController>(this).editUserLocation(it.id, call.receive()) }
-                delete<UserLocation> { controller<LocationController>(this).removeUserLocation(it.id) }
-                get<UserLocation> { controller<LocationController>(this).showUserLocation(it.id) }
-                get("") { controller<LocationController>(this).userLocations(resolveUserId<UserPrincipal>()) }
+                post<Response.Either<Response.Ok, Response.Errors>, AssignLocation>("") { command ->
+                    controller<LocationController>(this).assignLocation(
+                        resolvePrincipal<UserPrincipal>(),
+                        command
+                    )
+                }
+                post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, UUID>("/{id}") { command, id ->
+                    controller<LocationController>(this).editUserLocation(
+                        id,
+                        command
+                    )
+                }
+                delete<Response.Ok, UUID>("/{id}") { id -> controller<LocationController>(this).removeUserLocation(id) }
+                get<Response.Data<UserLocation>, UUID>("/{id}") { id ->
+                    controller<LocationController>(this).showUserLocation(id)
+                }
+                get<Response.Listing<UserLocation>>("") {
+                    controller<LocationController>(this).userLocations(
+                        resolvePrincipal<UserPrincipal>()
+                    )
+                }
             }
         }
     }

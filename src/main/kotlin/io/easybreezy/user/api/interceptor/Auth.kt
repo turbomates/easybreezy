@@ -1,13 +1,15 @@
 package io.easybreezy.user.api.interceptor
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Interceptor
+import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.jsonForm
-import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondData
+import io.easybreezy.infrastructure.ktor.get
+import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.user.infrastructure.auth.UserProvider
 import io.easybreezy.user.infrastructure.security.JWT
 import io.ktor.application.call
@@ -22,8 +24,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.application
-import io.ktor.routing.get
-import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.sessions.clear
 import io.ktor.sessions.get
@@ -60,20 +60,19 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
 
         route.route("/api/login") {
             authenticate(Auth.UserFormAuth) {
-                post {
+                post<Response.Either<Response.Ok, Response.Data<String>>> {
                     val principal: UserPrincipal? = call.principal()
-                    principal ?: return@post call.respondOk()
+                    principal ?: return@post Response.Either(Either.Left(Response.Ok))
                     val session = call.sessions.get<Session>() ?: Session()
                     call.sessions.set(session.copy(principal = principal))
-
-                    call.respondData(JWT.create(principal.id))
+                    Response.Either(Either.Right(Response.Data(JWT.create(principal.id))))
                 }
             }
         }
 
-        route.get("/api/logout") {
+        route.get<Response.Ok>("/api/logout") {
             call.sessions.clear<Session>()
-            call.respondOk()
+            Response.Ok
         }
     }
 }

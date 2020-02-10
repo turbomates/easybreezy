@@ -5,7 +5,7 @@ import com.google.inject.Guice
 import io.easybreezy.hr.HRModule
 import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.infrastructure.ktor.ErrorRenderer
+import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
@@ -26,8 +26,10 @@ import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
+import io.ktor.response.respond
 import io.ktor.serialization.DefaultJsonConfiguration
 import io.ktor.serialization.serialization
+import io.ktor.server.testing.TestApplicationCall
 import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
@@ -36,7 +38,6 @@ import io.ktor.sessions.set
 import io.ktor.util.DataConversionException
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
-import org.valiktor.ConstraintViolationException
 import java.util.UUID
 import javax.sql.DataSource
 
@@ -74,11 +75,12 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
     }
 
     install(StatusPages) {
-        exception<ConstraintViolationException> { ErrorRenderer.render(call, it) }
         status(HttpStatusCode.Unauthorized) {
-            ErrorRenderer.render(call, "You're not authorized", HttpStatusCode.Unauthorized)
+            call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
         }
-        exception<Exception> { ErrorRenderer.render(call, it) }
+        exception<Exception> {
+            call.respond(HttpStatusCode.ServiceUnavailable, Error("Something is wrong"))
+        }
     }
 
     intercept(ApplicationCallPipeline.Call) {
@@ -129,4 +131,9 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
     ktorInjector.createChildInjector(UserModule())
     ktorInjector.createChildInjector(ProjectModule())
     ktorInjector.createChildInjector(HRModule())
+}
+
+
+inline fun <R> withSwagger(receiver: TestApplicationCall, block: TestApplicationCall.() -> R): R {
+    return with(receiver, { block() })
 }

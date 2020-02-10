@@ -8,18 +8,18 @@ import io.easybreezy.hr.application.absence.NoteWorkingHours
 import io.easybreezy.hr.application.absence.RemoveWorkingHours
 import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.Validation
+import io.easybreezy.hr.application.absence.queryobject.Absence
 import io.easybreezy.hr.application.absence.queryobject.AbsenceQO
 import io.easybreezy.hr.application.absence.queryobject.AbsencesQO
+import io.easybreezy.hr.application.absence.queryobject.WorkingHour
 import io.easybreezy.hr.application.absence.queryobject.WorkingHourQO
 import io.easybreezy.hr.application.absence.queryobject.WorkingHoursQO
 import io.easybreezy.hr.infrastructure.AbsenceRepository
 import io.easybreezy.infrastructure.ktor.Controller
-import io.easybreezy.infrastructure.ktor.respondListing
-import io.easybreezy.infrastructure.ktor.respondOk
-import io.easybreezy.infrastructure.ktor.respondData
+import io.easybreezy.infrastructure.structure.Either
+import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class AbsenceController @Inject constructor(
@@ -29,64 +29,68 @@ class AbsenceController @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) : Controller() {
 
-    suspend fun createAbsence(command: CreateAbsence) {
-        validation.onCreateAbsence(command)
+    suspend fun createAbsence(command: CreateAbsence): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.onCreateAbsence(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
         handler.handleCreateAbsence(command)
-
-        call.respondOk()
+        return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun updateAbsence(id: UUID, command: UpdateAbsence) {
+    suspend fun updateAbsence(id: UUID, command: UpdateAbsence): Response.Either<Response.Ok, Response.Errors> {
         command.id = id
-        validation.onUpdateAbsence(command)
+        val errors = validation.onUpdateAbsence(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
         handler.handleUpdateAbsence(command)
-
-        call.respondOk()
+        return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun removeAbsence(id: UUID) {
+    suspend fun removeAbsence(id: UUID): Response.Ok {
         repository.remove(id)
 
-        call.respondOk()
+        return Response.Ok
     }
 
-    suspend fun noteWorkingHours(command: NoteWorkingHours) {
+    suspend fun noteWorkingHours(command: NoteWorkingHours): Response.Ok {
         validation.onNoteWorkingHours(command)
         handler.handleNoteWorkingHours(command)
 
-        call.respondOk()
+        return Response.Ok
     }
 
-    suspend fun editWorkingHours(command: EditWorkingHours) {
+    suspend fun editWorkingHours(command: EditWorkingHours): Response.Ok {
         validation.onEditWorkingHours(command)
         handler.handleEditWorkingHours(command)
 
-        call.respondOk()
+        return Response.Ok
     }
 
-    suspend fun removeWorkingHours(command: RemoveWorkingHours) {
+    suspend fun removeWorkingHours(command: RemoveWorkingHours): Response.Ok {
         validation.onRemoveWorkingHours(command)
         handler.handleRemoveWorkingHours(command)
 
-        call.respondOk()
+        return Response.Ok
     }
 
-    suspend fun showAbsence(id: UUID) {
-        call.respondData(queryExecutor.execute(AbsenceQO(id)))
+    suspend fun showAbsence(id: UUID): Response.Data<Absence> {
+        return Response.Data(queryExecutor.execute(AbsenceQO(id)))
     }
 
-    suspend fun absences(userId: UUID) {
-        call.respondListing(
+    suspend fun absences(userId: UUID): Response.Listing<Absence> {
+        return Response.Listing(
             queryExecutor.execute(AbsencesQO(userId, call.request.pagingParameters()))
         )
     }
 
-    suspend fun showWorkingHour(id: UUID) {
-        call.respondData(queryExecutor.execute(WorkingHourQO(id)))
+    suspend fun showWorkingHour(id: UUID): Response.Data<WorkingHour> {
+        return Response.Data(queryExecutor.execute(WorkingHourQO(id)))
     }
 
-    suspend fun workingHours(userId: UUID) {
-        call.respondListing(
+    suspend fun workingHours(userId: UUID): Response.Listing<WorkingHour> {
+        return Response.Listing(
             queryExecutor.execute(WorkingHoursQO(userId, call.request.pagingParameters()))
         )
     }

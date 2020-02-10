@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class LocationsQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Location>> {
-    override fun getData() =
+    override suspend fun getData() =
         transaction {
             Locations
                 .selectAll()

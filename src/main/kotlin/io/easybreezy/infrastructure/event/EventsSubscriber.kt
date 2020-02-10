@@ -23,7 +23,7 @@ class EventSubscribers {
             addToMap(it.key, it.subscriber)
         }
     }
-
+    @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Event> subscribe(subscriber: EventSubscriber<T>) {
         val key = T::class.companionObjectInstance as? Event.Key<T>
         key?.let { subscribe(it, subscriber) }
@@ -35,7 +35,7 @@ class EventSubscribers {
     fun <T : Event> subscribe(key: Event.Key<T>, subscriber: EventSubscriber<T>) {
         addToMap(key, subscriber)
     }
-
+    @Suppress("UNCHECKED_CAST")
     fun <T : Event> call(event: T) {
         val subscribers = subscribers.getOrDefault(event.key, mutableListOf()) as MutableList<EventSubscriber<T>>
         subscribers.forEach {

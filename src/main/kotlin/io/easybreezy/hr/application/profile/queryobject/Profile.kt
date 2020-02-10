@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class ProfileQO(private val userId: UUID) : QueryObject<Profile> {
-    override fun getData(): Profile {
+    override suspend fun getData(): Profile {
         return transaction {
             (Profiles leftJoin Messengers).select {
                 Profiles.userId eq userId

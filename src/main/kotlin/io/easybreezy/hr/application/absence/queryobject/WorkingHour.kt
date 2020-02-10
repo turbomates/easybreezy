@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class WorkingHourQO(private val workingHourId: UUID) : QueryObject<WorkingHour> {
-    override fun getData() =
+    override suspend fun getData() =
         transaction {
             WorkingHours.select {
                 WorkingHours.id eq workingHourId
@@ -23,7 +23,7 @@ class WorkingHourQO(private val workingHourId: UUID) : QueryObject<WorkingHour> 
 }
 
 class WorkingHoursQO(private val userId: UUID, private val paging: PagingParameters) : QueryObject<ContinuousList<WorkingHour>> {
-    override fun getData() =
+    override suspend fun getData() =
         transaction {
             WorkingHours
                 .selectAll()

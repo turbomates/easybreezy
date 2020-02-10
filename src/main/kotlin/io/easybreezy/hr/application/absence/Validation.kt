@@ -1,13 +1,14 @@
 package io.easybreezy.hr.application.absence
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.ktor.Error
+import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.user.infrastructure.UserRepository
 import org.valiktor.functions.isLessThan
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isPositive
-import org.valiktor.validate
 
 class Validation @Inject constructor(private val repository: UserRepository) {
 
@@ -15,8 +16,8 @@ class Validation @Inject constructor(private val repository: UserRepository) {
         private const val FULL_WORKING_HOURS = 8
     }
 
-    fun onCreateAbsence(command: CreateAbsence) {
-        validate(command) {
+    fun onCreateAbsence(command: CreateAbsence): List<Error> {
+        return validate(command) {
             validate(CreateAbsence::startedAt).isNotNull().isLessThan(command.endedAt)
             validate(CreateAbsence::endedAt).isNotNull()
             validate(CreateAbsence::comment).isNotBlank()
@@ -25,8 +26,8 @@ class Validation @Inject constructor(private val repository: UserRepository) {
         }
     }
 
-    fun onUpdateAbsence(command: UpdateAbsence) {
-        validate(command) {
+    fun onUpdateAbsence(command: UpdateAbsence): List<Error> {
+        return validate(command) {
             validate(UpdateAbsence::startedAt).isNotNull().isLessThan(command.endedAt)
             validate(UpdateAbsence::endedAt).isNotNull()
             validate(UpdateAbsence::comment).isNotBlank()
@@ -35,29 +36,30 @@ class Validation @Inject constructor(private val repository: UserRepository) {
         }
     }
 
-    fun onNoteWorkingHours(command: NoteWorkingHours) {
-        validate(command) {
+    fun onNoteWorkingHours(command: NoteWorkingHours): List<Error> {
+        val commandErrors: List<Error> = validate(command) {
             validate(NoteWorkingHours::userId).isNotNull()
         }
-        command.workingHours.forEach {
-            validate(it) {
+        return command.workingHours.fold(commandErrors) { acc, value ->
+            return acc + validate(value) {
                 validate(WorkingHour::day).isNotNull()
                 validate(WorkingHour::count).isNotNull().isPositive().isLessThan(FULL_WORKING_HOURS)
             }
         }
     }
 
-    fun onEditWorkingHours(command: EditWorkingHours) {
-        command.workingHours.forEach {
-            validate(it.value) {
+    fun onEditWorkingHours(command: EditWorkingHours): List<Error> {
+        val errors = emptyList<Error>()
+        return command.workingHours.toList().fold(errors) { acc, pair ->
+            return acc + validate(pair.second) {
                 validate(WorkingHour::day).isNotNull()
                 validate(WorkingHour::count).isNotNull().isPositive().isLessThan(FULL_WORKING_HOURS)
             }
         }
     }
 
-    fun onRemoveWorkingHours(command: RemoveWorkingHours) {
-        validate(command) {
+    fun onRemoveWorkingHours(command: RemoveWorkingHours): List<Error> {
+        return validate(command) {
             validate(RemoveWorkingHours::workingHours).isNotNull().isNotEmpty()
         }
     }

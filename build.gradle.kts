@@ -120,7 +120,8 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf(
             "-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI",
             "-Xuse-experimental=kotlinx.serialization.ImplicitReflectionSerializer",
-            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI"
+            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+            "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
         )
     }
 }

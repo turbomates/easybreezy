@@ -18,6 +18,7 @@ import kotlinx.serialization.serializer
 import kotlinx.serialization.stringify
 import kotlin.reflect.KClass
 
+@kotlinx.serialization.UnstableDefault
 object EventSerializer {
     private val json: Json by lazy {
         Json(configuration = JsonConfiguration(useArrayPolymorphism = true))
@@ -40,6 +41,7 @@ internal data class EventWrapper(@Polymorphic val event: Event)
 
 internal object EventWrapperSerializer : KSerializer<EventWrapper> {
     override val descriptor: SerialDescriptor = SerialClassDescImpl("EventDescriptor")
+    @Suppress("UNCHECKED_CAST")
     override fun deserialize(decoder: Decoder): EventWrapper {
         val input = decoder as? JsonInput ?: throw SerializationException("This class can be loaded only by Json")
         val tree = input.decodeJson() as? JsonObject ?: throw SerializationException("Expected JsonObject")
@@ -49,6 +51,7 @@ internal object EventWrapperSerializer : KSerializer<EventWrapper> {
         return EventWrapper(body)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun serialize(encoder: Encoder, obj: EventWrapper) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
         val tree = JsonObject(

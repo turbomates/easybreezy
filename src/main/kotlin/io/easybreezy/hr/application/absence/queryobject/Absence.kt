@@ -13,29 +13,26 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class AbsenceQO(private val absenceId: UUID) : QueryObject<Absence> {
-    override fun getData() =
-        transaction {
-            Absences.select {
-                Absences.id eq absenceId
-            }.first().toAbsence()
-        }
+    override suspend fun getData(): Absence {
+        return Absences.select {
+            Absences.id eq absenceId
+        }.first().toAbsence()
+    }
 }
 
 class AbsencesQO(private val userId: UUID, private val paging: PagingParameters) :
     QueryObject<ContinuousList<Absence>> {
-    override fun getData() =
-        transaction {
-            Absences
-                .selectAll()
-                .andWhere { Absences.userId eq userId }
-                .limit(paging.pageSize, paging.offset)
-                .map { it.toAbsence() }
-                .toContinuousList(paging.pageSize, paging.currentPage)
-        }
+    override suspend fun getData(): ContinuousList<Absence> {
+        return Absences
+            .selectAll()
+            .andWhere { Absences.userId eq userId }
+            .limit(paging.pageSize, paging.offset)
+            .map { it.toAbsence() }
+            .toContinuousList(paging.pageSize, paging.currentPage)
+    }
 }
 
 private fun ResultRow.toAbsence() = Absence(

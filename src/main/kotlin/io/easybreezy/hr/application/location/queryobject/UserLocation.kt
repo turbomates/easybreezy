@@ -16,7 +16,7 @@ import java.util.UUID
 
 
 class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocation> {
-    override fun getData() =
+    override suspend fun getData() =
         transaction {
             (UserLocations innerJoin Locations).select {
                 UserLocations.id eq userLocationId
@@ -26,7 +26,7 @@ class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocatio
 
 class UserLocationsQO(private val userId: UUID, private val paging: PagingParameters) :
     QueryObject<ContinuousList<UserLocation>> {
-    override fun getData() =
+    override suspend fun getData() =
         transaction {
             (UserLocations innerJoin Locations)
                 .selectAll()
