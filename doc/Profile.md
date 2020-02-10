@@ -1,7 +1,5 @@
 **PROFILE**
 
-HR component,  Profile Entity
-
 **Update profile information**
 POST 
 `api/hr/profile/personal-data`
@@ -47,42 +45,5 @@ BODY
 {
 	"phones": ["123", "456"],
 	"emails": ["qwert@qwert.my", "test@test.my"]
-}
-```
-
-
-**USERS**
-
-**Authorization**
-POST 
-`/api/login`
-BODY
-```
-{
-	"email" : "qwert@qwert.my", 
-	"password": "123"
-}
-```
-
-**Invite user**
-POST 
-`/api/users/invite`
-BODY 
-```
-{
-	"email": "qwert@qwert.my", 
-	"role": "MEMBER"
-}
-```
-**Confirm user**
-POST 
-`/api/users/confirm`
-BODY 
-```
-{
-	"token": "Z7YyUhDNZxSDvYZRwHDJVBBPeGMbvCJfnQWCgY6f", 
-	"password": "123", 
-	"firstName": "asd", 
-	"lastName" : "asd"
 }
 ```
