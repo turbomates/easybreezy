@@ -50,7 +50,6 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
             bind(Database::class.java).toInstance(database)
             bind(TransactionManager::class.java).toInstance(TransactionManager(database))
             bind(EventSubscribers::class.java).toInstance(eventSubscribers)
-
         }
     })
 
@@ -79,7 +78,7 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
             call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
         }
         exception<Exception> {
-            call.respond(HttpStatusCode.ServiceUnavailable, Error("Something is wrong"))
+            call.respond(HttpStatusCode.ServiceUnavailable, Error(it.localizedMessage))
         }
     }
 
@@ -132,7 +131,6 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
     ktorInjector.createChildInjector(ProjectModule())
     ktorInjector.createChildInjector(HRModule())
 }
-
 
 inline fun <R> withSwagger(receiver: TestApplicationCall, block: TestApplicationCall.() -> R): R {
     return with(receiver, { block() })

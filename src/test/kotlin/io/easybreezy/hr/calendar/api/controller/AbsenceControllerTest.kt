@@ -10,7 +10,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.json
+import kotlinx.serialization.json.jsonArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -220,7 +222,6 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours")) {

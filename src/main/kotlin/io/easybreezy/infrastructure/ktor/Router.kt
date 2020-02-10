@@ -4,31 +4,15 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.auth.Principal
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
-import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.auth.principal
-import io.ktor.features.MissingRequestParameterException
-import io.ktor.features.ParameterConversionException
-import io.ktor.features.conversionService
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.Parameters
-import io.ktor.locations.handle
-import io.ktor.locations.location
 import io.ktor.locations.locations
-import io.ktor.request.path
-import io.ktor.request.queryString
 import io.ktor.request.receive
-import io.ktor.request.receiveParameters
-import io.ktor.request.uri
 import io.ktor.routing.Route
-import io.ktor.routing.RoutingApplicationCall
-import io.ktor.routing.RoutingPath
-import io.ktor.routing.application
 import io.ktor.routing.method
 import io.ktor.routing.route
-import io.ktor.serialization.DefaultJsonConfiguration
-import io.ktor.util.flattenEntries
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
@@ -37,21 +21,8 @@ import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.internal.SerialClassDescImpl
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonOutput
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
-import kotlinx.serialization.stringify
-import java.lang.reflect.Type
 import java.util.UUID
-import javax.annotation.meta.When
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.javaType
-import kotlin.reflect.typeOf
 
 open class Router @Inject constructor(
     protected val application: Application,
@@ -103,7 +74,7 @@ inline fun <reified TResponse : Response, reified TBody : Any> Route.post(
     }
 }
 
-inline fun <reified TResponse : Response, reified TBody : Any, reified TParams: Any> Route.post(
+inline fun <reified TResponse : Response, reified TBody : Any, reified TParams : Any> Route.post(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TParams) -> TResponse
 ): Route {
@@ -117,15 +88,15 @@ inline fun <reified TResponse : Response, reified TBody : Any, reified TParams: 
 
 inline fun <reified TResponse : Response, reified TBody : Any, reified TQuery : Any, reified TPath : Any> Route.post(
     path: String,
-    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TPath, TQuery, TBody) -> TResponse
+    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TPath, TQuery) -> TResponse
 ): Route {
     return route(path, HttpMethod.Post) {
         handle {
             call.respond(
                 body(
                     call.receive(),
-                    locations.resolve(TQuery::class, call),
-                    locations.resolve(TPath::class, call)
+                    locations.resolve(TPath::class, call),
+                    locations.resolve(TQuery::class, call)
                 )
             )
         }
@@ -183,15 +154,15 @@ inline fun <reified TResponse : Response, reified TBody : Any, reified TParams :
 
 inline fun <reified TResponse : Response, reified TBody : Any, reified TQuery : Any, reified TPath : Any> Route.put(
     path: String,
-    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TPath, TQuery, TBody) -> TResponse
+    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TPath, TQuery) -> TResponse
 ): Route {
     return route(path, HttpMethod.Put) {
         handle {
             call.respond(
                 body(
                     call.receive(),
-                    locations.resolve(TQuery::class, call),
-                    locations.resolve(TPath::class, call)
+                    locations.resolve(TPath::class, call),
+                    locations.resolve(TQuery::class, call)
                 )
             )
         }
@@ -290,6 +261,23 @@ inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : 
     }
 }
 
+inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : Any, reified TBody : Any> Route.delete(
+    path: String,
+    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TPath, TQuery, TBody) -> TResponse
+): Route {
+    return route(path, HttpMethod.Delete) {
+        handle {
+            call.respond(
+                body(
+                    locations.resolve(TPath::class, call),
+                    locations.resolve(TQuery::class, call),
+                    call.receive()
+                )
+            )
+        }
+    }
+}
+
 suspend inline fun ApplicationCall.respond(response: Response) {
     this.response.status(response.status())
     this.response.pipeline.execute(this, SerializableResponse(response))
@@ -303,6 +291,8 @@ fun Response.status(): HttpStatusCode {
         else -> HttpStatusCode.OK
     }
 }
+
+class EmptyParams()
 
 @Serializable(with = SerializableResponse.Companion::class)
 data class SerializableResponse(val response: Response) {

@@ -19,6 +19,7 @@ import io.easybreezy.hr.application.profile.command.UpdateContactDetails
 import io.easybreezy.hr.application.profile.command.UpdateMessengers
 import io.easybreezy.hr.application.profile.command.UpdatePersonalData
 import io.easybreezy.hr.application.profile.queryobject.Profile
+import io.easybreezy.infrastructure.ktor.EmptyParams
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
@@ -82,9 +83,7 @@ class Router @Inject constructor(
     }
 
     private fun hrRouting(route: Route) {
-
     }
-
 
     private fun absencesRouting(route: Route) {
         route.route("/absences") {
@@ -123,7 +122,7 @@ class Router @Inject constructor(
                         command
                     )
                 }
-                delete<Response.Ok, RemoveWorkingHours>("") { command ->
+                delete<Response.Ok, EmptyParams, EmptyParams, RemoveWorkingHours>("") { _, _, command ->
                     controller<AbsenceController>(this).removeWorkingHours(
                         command
                     )
@@ -158,15 +157,19 @@ class Router @Inject constructor(
                         command
                     )
                 }
-                post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, UUID>("/{id}") { command, id ->
+                post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") { command, params ->
                     controller<LocationController>(this).editUserLocation(
-                        id,
+                        params.id,
                         command
                     )
                 }
-                delete<Response.Ok, UUID>("/{id}") { id -> controller<LocationController>(this).removeUserLocation(id) }
-                get<Response.Data<UserLocation>, UUID>("/{id}") { id ->
-                    controller<LocationController>(this).showUserLocation(id)
+                delete<Response.Ok, ID>("/{id}") { params ->
+                    controller<LocationController>(this).removeUserLocation(
+                        params.id
+                    )
+                }
+                get<Response.Data<UserLocation>, ID>("/{id}") { params ->
+                    controller<LocationController>(this).showUserLocation(params.id)
                 }
                 get<Response.Listing<UserLocation>>("") {
                     controller<LocationController>(this).userLocations(
