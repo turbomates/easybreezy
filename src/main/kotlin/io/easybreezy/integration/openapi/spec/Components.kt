@@ -31,9 +31,9 @@ data class SchemaObject(
 @Serializable
 data class ResponseObject(
     val description: String,
-    val headers: Map<String, HeaderObject>,
-    val content: Map<String, MediaTypeObject>,
-    val links: Map<String, LinkObject>
+    val headers: Map<String, HeaderObject>? = null,
+    val content: Map<String, MediaTypeObject>? = null,
+    val links: Map<String, LinkObject>? = null
 )
 
 @Serializable
@@ -67,7 +67,7 @@ data class DiscriminatorObject(val propertyName: String, val mapping: Map<String
 
 @Serializable
 data class MediaTypeObject(
-//    val schema: TestSchemaObject,
+    val schema: SchemaObject,
     @ContextualSerialization val example: Any?,
     val examples: Map<String, ExampleObject>,
     val encoding: Map<String, EncodingObject>
@@ -113,35 +113,35 @@ data class PathsObject(val path: PathItemObject)
 
 @Serializable
 data class PathItemObject(
-    val `$ref`: String?,
-    val summary: String?,
-    val description: String?,
-    val get: OperationObject?,
-    val put: OperationObject?,
-    val post: OperationObject?,
-    val delete: OperationObject?,
-    val options: OperationObject?,
-    val head: OperationObject?,
-    val patch: OperationObject?,
-    val trace: OperationObject?,
-    val servers: OperationObject?,
-    val parameters: List<ParameterObject>?
+    var `$ref`: String? = null,
+    var summary: String? = null,
+    var description: String? = null,
+    var get: OperationObject? = null,
+    var put: OperationObject? = null,
+    var post: OperationObject? = null,
+    var delete: OperationObject? = null,
+    var options: OperationObject? = null,
+    var head: OperationObject? = null,
+    var patch: OperationObject? = null,
+    var trace: OperationObject? = null,
+    var servers: OperationObject? = null,
+    var parameters: List<ParameterObject>? = null
 )
 
 @Serializable
 data class OperationObject(
-    val tags: List<String>?,
-    val summary: String?,
-    val description: String?,
-    val externalDocs: ExternalDocumentationObject?,
-    val operationId: String?,
-    val parameters: List<ParameterObject>?,
-    val requestBody: RequestBodyObject?,
-    val responses: ResponseObject,
-    val callbacks: Map<String, CallbackObject>?,
-    val deprecated: Boolean?,
-    val securitySchemaObject: Map<String, List<String>>?,
-    val server: ServerObject?
+    val responses: Map<Int, ResponseObject>,
+    val tags: List<String>? = null,
+    val summary: String? = null,
+    val description: String? = null,
+    val externalDocs: ExternalDocumentationObject? = null,
+    val operationId: String? = null,
+    val parameters: List<ParameterObject>? = null,
+    val requestBody: RequestBodyObject? = null,
+    val callbacks: Map<String, CallbackObject>? = null,
+    val deprecated: Boolean? = null,
+    val securitySchemaObject: Map<String, List<String>>? = null,
+    val server: ServerObject? = null
 
 
 )
