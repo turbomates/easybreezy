@@ -1,0 +1,53 @@
+.App {
+  min-width: 500px;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+}
+
+.app-layout {
+  height: 100vh;
+}
+
+.app-sider {
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: "#fff";
+}
+
+.app-menu {
+  height: 100%;
+}
+
+.app-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40px;
+  pointer-events: none;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.app-layout .ant-layout-header {
+  padding: 0;
+}
+
+.main-header {
+  display: flex;
+  align-items: center;
+}
