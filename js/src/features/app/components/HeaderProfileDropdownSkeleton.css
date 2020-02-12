@@ -1,0 +1,7 @@
+.placeholder {
+  display: block;
+  margin: 1px;
+  width: 100px;
+  height: 10px;
+  background-color: #cccccc;
+}
