@@ -62,18 +62,18 @@ logback.xml
 
 # UI
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-/ui/.idea
+/js/.idea
 
 # dependencies
-/ui/node_modules
-/ui/.pnp
+/js/node_modules
+/js/.pnp
 .pnp.js
 
 # testing
-/ui/coverage
+/js/coverage
 
 # production
-/ui/build
+/js/build
 
 # misc
 .DS_Store
