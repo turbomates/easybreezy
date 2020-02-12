@@ -11,29 +11,29 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class Note private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
-    private var creatorId by Notes.creatorId
-    private var employee by Notes.employee
+    private var hrManager by Notes.hrManager
+    private var employee by Employee referencedOn Notes.employee
     private var text by Notes.text
     private var archived by Notes.archived
     private var createdAt by Notes.createdAt
 
     companion object : PrivateEntityClass<UUID, Note>(object : Repository() {}) {
-        fun write(creatorId: UUID, employee: EntityID<UUID>, text: String) = Note.new {
-            this.creatorId = creatorId
+        fun write(hrManager: UUID, employee: Employee, text: String) = Note.new {
+            this.hrManager = hrManager
             this.employee = employee
             this.text = text
         }
     }
 
     fun correct(correctedBy: UUID, correctedText: String) {
-        if (correctedBy !== creatorId) {
+        if (correctedBy !== hrManager) {
             throw Exception("Only creator could correct note")
         }
         text = correctedText
     }
 
     fun archive(archivedBy: UUID) {
-        if (archivedBy !== creatorId) {
+        if (archivedBy !== hrManager) {
             throw Exception("Only creator could archive note")
         }
         archived = true
@@ -48,10 +48,10 @@ class Note private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
     }
 }
 
-object Notes : UUIDTable() {
+object Notes : UUIDTable("employee_notes") {
     val employee = reference("employee_id", Employees)
     val text = text("text")
     val archived = bool("archived").default(false)
-    val creatorId = uuid("creator_id")
+    val hrManager = uuid("hr_manager_id")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 }

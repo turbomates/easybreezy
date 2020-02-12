@@ -13,27 +13,27 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class Position private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
-    private var employee by Positions.employee
+    private var employee by Employee referencedOn Positions.employee
     private var title by Positions.title
     private var since by Positions.since
     private var till by Positions.till
 
-    private var creatorId by Positions.creatorId
+    private var hrManager by Positions.hrManager
     private var createdAt by Positions.createdAt
 
     companion object : PrivateEntityClass<UUID, Position>(object : Repository() {}) {
-        fun define(creatorId: UUID, employee: EntityID<UUID>, title: String, since: LocalDate) = Position.new {
+        fun define(hrManager: UUID, employee: Employee, title: String, since: LocalDate) = Position.new {
             this.employee = employee
             this.title = title
             this.since = since
 
-            this.creatorId = creatorId
+            this.hrManager = hrManager
         }
     }
 
-    fun promote(promotedBy: UUID, title: String, promotedAt: LocalDate): Position {
-        till = promotedAt.minusDays(1)
-        return define(promotedBy, employee, title, promotedAt)
+    fun apply(hrManager: UUID, title: String, appliedAt: LocalDate): Position {
+        till = appliedAt.minusDays(1)
+        return define(hrManager, employee, title, appliedAt)
     }
 
     fun terminate(terminatedAt: LocalDate) {
@@ -49,12 +49,12 @@ class Position private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
     }
 }
 
-object Positions : UUIDTable() {
+object Positions : UUIDTable("employee_positions") {
     val employee = reference("employee_id", Employees)
     val title = varchar("title", 100)
     val since = date("since")
-    val till = date("till")
-    val creatorId = uuid("creator_id")
+    val till = date("till").nullable()
+    val hrManager = uuid("hr_manager_id")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 }
 

@@ -13,18 +13,18 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
-    private var employee by Salaries.employee
+    private var employee by Employee referencedOn Salaries.employee
     private var amount by Salaries.amount
     private var since by Salaries.since
     private var till by Salaries.till
 
-    private var creatorId by Salaries.creatorId
+    private var hrManager by Salaries.hrManager
     private var createdAt by Salaries.createdAt
     private var comment by Salaries.comment
 
     companion object : PrivateEntityClass<UUID, Salary>(object : Repository() {}) {
-        fun define(creatorId: UUID, employee: EntityID<UUID>, amount: Int, comment: String, since: LocalDate) = Salary.new {
-            this.creatorId = creatorId
+        fun define(hrManager: UUID, employee: Employee, amount: Int, comment: String, since: LocalDate) = Salary.new {
+            this.hrManager = hrManager
             this.employee = employee
             this.amount = amount
             this.comment = comment
@@ -32,21 +32,21 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
         }
     }
 
-    fun fix(fixedBy: UUID, fixed: Int) {
-        if (fixedBy != creatorId) {
+    fun correct(correctedBy: UUID, corrected: Int) {
+        if (correctedBy != hrManager) {
             throw Exception("Only creator could fix salary amount")
         }
-        amount = fixed
+        amount = corrected
     }
 
-    fun raise(raisedBy: UUID, new: Int, raiseComment: String, raisedAt: LocalDate) : Salary {
-        till = raisedAt.minusDays(1)
+    fun apply(hrManager: UUID, new: Int, applyComment: String, appliedAt: LocalDate) : Salary {
+        till = appliedAt.minusDays(1)
         return Salary.new {
-            this.creatorId = raisedBy
+            this.hrManager = hrManager
             this.employee = employee
             this.amount = new
-            this.comment = raiseComment
-            this.since = raisedAt
+            this.comment = applyComment
+            this.since = appliedAt
             this.createdAt = LocalDateTime.now()
         }
     }
@@ -64,15 +64,15 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
     }
 }
 
-object Salaries : UUIDTable() {
+object Salaries : UUIDTable("employee_salaries") {
 
     val employee = reference("employee_id", Employees)
     val amount = integer("amount")
     val since = date("since")
-    val till = date("till")
+    val till = date("till").nullable()
 
     val comment = varchar("comment", 500)
-    val creatorId = uuid("creator_id")
+    val hrManager = uuid("hr_manager_id")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 }
 

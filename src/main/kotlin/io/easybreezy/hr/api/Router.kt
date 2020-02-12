@@ -2,6 +2,7 @@ package io.easybreezy.hr.api
 
 import com.google.inject.Inject
 import io.easybreezy.hr.api.controller.AbsenceController
+import io.easybreezy.hr.api.controller.HRController
 import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.api.controller.ProfileController
 import io.easybreezy.hr.application.absence.CreateAbsence
@@ -11,13 +12,13 @@ import io.easybreezy.hr.application.absence.RemoveWorkingHours
 import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.queryobject.Absence
 import io.easybreezy.hr.application.absence.queryobject.WorkingHour
+import io.easybreezy.hr.application.hr.command.*
 import io.easybreezy.hr.application.location.AssignLocation
 import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.profile.command.UpdateContactDetails
 import io.easybreezy.hr.application.profile.command.UpdateMessengers
-import io.easybreezy.hr.application.profile.command.UpdatePersonalData
 import io.easybreezy.hr.application.profile.queryobject.Profile
 import io.easybreezy.infrastructure.ktor.EmptyParams
 import io.easybreezy.infrastructure.ktor.GenericPipeline
@@ -61,12 +62,6 @@ class Router @Inject constructor(
                     resolvePrincipal<UserPrincipal>()
                 )
             }
-            post<Response.Either<Response.Ok, Response.Errors>, UpdatePersonalData>("/personal-data") { command ->
-                controller<ProfileController>(this).updatePersonalData(
-                    resolvePrincipal<UserPrincipal>(),
-                    command
-                )
-            }
             post<Response.Ok, UpdateMessengers>("/add-messengers") { command ->
                 controller<ProfileController>(this).updateMessengers(
                     resolvePrincipal<UserPrincipal>(),
@@ -83,6 +78,50 @@ class Router @Inject constructor(
     }
 
     private fun hrRouting(route: Route) {
+        route.route("/employee/create-card") {
+            post<Response.Either<Response.Ok, Response.Errors>, CreateCard>("") { command ->
+                controller<HRController>(this).createCard(
+                    command,
+                    resolvePrincipal<UserPrincipal>()
+                )
+            }
+        }
+        route.route("/employee/{id}") {
+            data class ID(val id: UUID)
+
+            post<Response.Either<Response.Ok, Response.Errors>, Hire, ID>("/hire") { command, params ->
+                controller<HRController>(this).hire(command, params.id, resolvePrincipal<UserPrincipal>())
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, Fire, ID>("/fire") { command, params ->
+                controller<HRController>(this).fire(command, params.id, resolvePrincipal<UserPrincipal>())
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, WriteNote, ID>("/write-note") { command, params ->
+                controller<HRController>(this).writeNote(command, params.id, resolvePrincipal<UserPrincipal>())
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, ID>("/specify-skills") { command, params ->
+                controller<HRController>(this).specifySkills(command, params.id)
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, UpdateBio, ID>("/update-bio") { command, params ->
+                controller<HRController>(this).updateBio(command, params.id)
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, UpdateBirthday, ID>("/update-birthday") { command, params ->
+                controller<HRController>(this).updateBirthday(command, params.id)
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, ApplyPosition, ID>("/apply-position") { command, params ->
+                controller<HRController>(this).applyPosition(command, params.id, resolvePrincipal<UserPrincipal>())
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, ApplySalary, ID>("/apply-salary") { command, params ->
+                controller<HRController>(this).applySalary(command, params.id, resolvePrincipal<UserPrincipal>())
+            }
+        }
+
     }
 
     private fun absencesRouting(route: Route) {

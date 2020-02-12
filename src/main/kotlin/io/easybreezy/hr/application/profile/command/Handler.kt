@@ -2,30 +2,13 @@ package io.easybreezy.hr.application.profile.command
 
 import com.google.inject.Inject
 import io.easybreezy.hr.model.profile.ContactDetails
-import io.easybreezy.hr.model.profile.PersonalData
+import io.easybreezy.hr.model.hr.PersonalData
 import io.easybreezy.hr.model.profile.Profiles
 import io.easybreezy.hr.model.profile.Repository
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import java.time.LocalDate
 
 class Handler @Inject constructor(private val repository: Repository, private val transactional: TransactionManager) {
-
-    suspend fun handleUpdatePersonalData(command: UpdatePersonalData) {
-        transactional {
-            val profile = repository.getByUser(command.id)
-            val personalData = PersonalData.create(
-                PersonalData.Name.create(command.firstName, command.lastName)
-            )
-            personalData.birthday = LocalDate.parse(command.birthday)
-            personalData.about = command.about
-            personalData.workStack = command.workStack
-            personalData.gender = Profiles.Gender.valueOf(command.gender)
-
-            profile.updatePersonalData(
-                personalData
-            )
-        }
-    }
 
     suspend fun handleUpdateMessengers(command: UpdateMessengers) {
         transactional {

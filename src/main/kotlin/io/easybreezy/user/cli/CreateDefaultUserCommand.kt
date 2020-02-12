@@ -2,10 +2,7 @@ package io.easybreezy.user.cli
 
 import io.easybreezy.application.HikariDataSource
 import io.easybreezy.application.SystemConfiguration
-import io.easybreezy.user.model.Email
-import io.easybreezy.user.model.Password
-import io.easybreezy.user.model.User
-import io.easybreezy.user.model.Users
+import io.easybreezy.user.model.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -26,6 +23,10 @@ class CreateDefaultUserCommand {
                         Password.create("123")
                     )
                 }
+
+                //@todo remove
+                 User.invite(Email.create("email@email.com"), mutableSetOf(Role.MEMBER))
+
             }
         }
     }

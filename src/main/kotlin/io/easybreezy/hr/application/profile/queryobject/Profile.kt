@@ -52,11 +52,11 @@ fun ResultRow.toProfilesOne(): Profile {
 private fun ResultRow.toProfile(): Profile {
     return Profile(
         id = this[Profiles.id].toUUID(),
-        gender = this[Profiles.gender].toString(),
-        about = this[Profiles.about],
-        workStack = this[Profiles.workStack],
-        firstName = this[Profiles.firstName],
-        lastName = this[Profiles.lastName],
+//        gender = this[Profiles.gender].toString(),
+//        about = this[Profiles.about],
+//        workStack = this[Profiles.workStack],
+//        firstName = this[Profiles.firstName],
+//        lastName = this[Profiles.lastName],
         messengers = listOf()
     )
 }
@@ -72,11 +72,11 @@ private fun ResultRow.toMessenger(): Messenger {
 data class Profile(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val gender: String,
-    val about: String?,
-    val workStack: String?,
-    val firstName: String?,
-    val lastName: String?,
+//    val gender: String,
+//    val about: String?,
+//    val workStack: String?,
+//    val firstName: String?,
+//    val lastName: String?,
     var messengers: List<Messenger>?
 )
 

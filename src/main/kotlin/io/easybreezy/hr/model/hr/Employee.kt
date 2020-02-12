@@ -1,11 +1,18 @@
 package io.easybreezy.hr.model.hr
 
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
+import io.easybreezy.infrastructure.exposed.dao.Embedded
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.postgresql.PGEnum
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.`java-time`.date
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -14,46 +21,63 @@ import java.util.*
 class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
     private var userId by Employees.userId
+    private var personalData by Embedded(PersonalData)
     private var fired by Employees.fired
 
-    private var currentPosition by Position referencedOn Employees.currentPosition
-    private var currentSalary by Salary referencedOn Employees.currentSalary
+    private var currentPosition by Position optionalReferencedOn Employees.currentPosition
+    private val positions by Position referrersOn Positions.employee
 
-    private var creatorId by Employees.creatorId
+    private var currentSalary by Salary optionalReferencedOn Employees.currentSalary
+
+    private val salaries by Salary referrersOn Salaries.employee
+    private val notes by Note referrersOn Notes.employee
+    private var skills by Employees.skills
+
     private var createdAt by Employees.createdAt
 
     companion object : PrivateEntityClass<UUID, Employee>(object : Repository() {}) {
-        fun hire(creatorId: UUID, userId: UUID, position: String, salary: Int, hiredAt: LocalDate) = Employee.new {
+        fun createCard(userId: UUID, personalData: PersonalData) = Employee.new {
             this.userId = userId
-            this.currentPosition = Position.define(creatorId, id, position, hiredAt)
-            this.currentSalary = Salary.define(creatorId, id, salary, "", hiredAt)
-
-            this.creatorId = creatorId
+            this.personalData = personalData
         }
     }
 
-    fun fire(firedAt: LocalDate) {
+    fun fire(hrManager: UUID, comment: String, firedAt: LocalDate) {
+        note(hrManager, comment)
         fired = true
-        currentPosition.terminate(firedAt)
-        currentSalary.terminate(firedAt)
+        currentPosition?.terminate(firedAt)
+        currentSalary?.terminate(firedAt)
     }
 
-    fun note(creatorId: UUID, text: String) {
-        Note.write(creatorId, id, text)
+    fun note(hrManager: UUID, text: String) {
+       // notes = SizedCollection(notes.plus(Note.write(hrManager, this, text)))
     }
 
-    fun specifySkills(skills: List<Skill>) {
-        skills.forEach { EmployeeSkill.add(id, it) }
+    fun specifySkills(specified: List<String>) {
+        skills = specified
     }
 
-    fun promote(promotedBy: UUID, position: String, promotedAt: LocalDate) {
-        val promoted = currentPosition.promote(promotedBy, position, promotedAt)
-        currentPosition = promoted
+    fun updateBio(updated: String) {
+        personalData = PersonalData.create(personalData.name, personalData.birthday, updated)
     }
 
-    fun raiseSalary(raisedBy: UUID, newAmount: Int, comment: String, raisedAt: LocalDate) {
-        val raised = currentSalary.raise(raisedBy, newAmount, comment, raisedAt)
-        currentSalary = raised
+    fun updateBirthday(updated: LocalDate) {
+        personalData = PersonalData.create(personalData.name, updated, personalData.bio)
+    }
+
+    fun applyPosition(hrManager: UUID, position: String, appliedAt: LocalDate) {
+
+        val applied = currentPosition?.apply(hrManager, position, appliedAt)
+            ?: Position.define(hrManager, this, position, appliedAt)
+       // positions = SizedCollection(positions.plus(applied))
+        currentPosition = applied
+    }
+
+    fun applySalary(hrManager: UUID, newAmount: Int, comment: String, appliedAt: LocalDate) {
+
+        val applied = currentSalary?.apply(hrManager, newAmount, comment, appliedAt)
+            ?: Salary.define(hrManager, this , newAmount, comment, appliedAt)
+        currentSalary = applied
     }
 
     abstract class Repository : EntityClass<UUID, Employee>(Employees, Employee::class.java) {
@@ -65,11 +89,15 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
 
 object Employees: UUIDTable() {
     val userId = uuid("user_id")
+    val birthday = date("birthday").nullable()
+    val bio = text("bio").nullable()
+    val firstName = Employees.varchar("first_name", 100)
+    val lastName = Employees.varchar("last_name", 100)
+
     val fired = bool("fired").default(false)
-
-    val currentPosition = reference("current_position_id", Positions)
-    val currentSalary = reference("current_salary_id", Salaries)
-
-    val creatorId = uuid("creator_id")
+    val skills = jsonb("skills", String.serializer().list).default(listOf())
     val createdAt = datetime("created_at").default(LocalDateTime.now())
+
+    val currentPosition = reference("current_position_id", Positions).nullable()
+    val currentSalary = reference("current_salary_id", Salaries).nullable()
 }

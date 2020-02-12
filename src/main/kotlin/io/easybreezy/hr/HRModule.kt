@@ -5,7 +5,7 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.google.inject.Provides
 import io.easybreezy.hr.api.Router
-import io.easybreezy.hr.application.profile.subscriber.ProfileSubscriber
+import io.easybreezy.hr.application.hr.subscriber.CreateEmployeeCard
 import io.easybreezy.hr.infrastructure.ProfileRepository
 import io.easybreezy.hr.model.profile.Repository
 import io.easybreezy.infrastructure.event.EventSubscribers
@@ -40,6 +40,6 @@ class HRModule : AbstractModule() {
 
 class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers) {
     init {
-        eventSystem.subscribe(ProfileSubscriber())
+        eventSystem.subscribe(CreateEmployeeCard())
     }
 }
