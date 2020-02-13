@@ -28,7 +28,6 @@ import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.delete
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
-import io.easybreezy.infrastructure.ktor.put
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
 import io.ktor.routing.Route
@@ -117,7 +116,7 @@ class Router @Inject constructor(
                         command
                     )
                 }
-                put<Response.Ok, EditWorkingHours>("") { command ->
+                post<Response.Ok, EditWorkingHours>("/update") { command ->
                     controller<AbsenceController>(this).editWorkingHours(
                         command
                     )

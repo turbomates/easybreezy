@@ -25,8 +25,6 @@ data class OpenAPI(val host: String) {
             }
             Method.DELETE -> {
             }
-            Method.PUT -> {
-            }
             Method.PATCH -> {
             }
         }
@@ -40,5 +38,5 @@ data class OpenAPI(val host: String) {
 
 
 enum class Method {
-    GET, POST, DELETE, PUT, PATCH
+    GET, POST, DELETE, PATCH
 }

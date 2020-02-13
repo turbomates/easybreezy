@@ -117,7 +117,6 @@ data class PathItemObject(
     var summary: String? = null,
     var description: String? = null,
     var get: OperationObject? = null,
-    var put: OperationObject? = null,
     var post: OperationObject? = null,
     var delete: OperationObject? = null,
     var options: OperationObject? = null,
