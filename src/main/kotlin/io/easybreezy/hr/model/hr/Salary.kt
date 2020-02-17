@@ -55,6 +55,10 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
         till = terminatedAt
     }
 
+    fun isCurrent() : Boolean {
+        return till == null
+    }
+
     abstract class Repository : EntityClass<UUID, Salary>(
         Salaries, Salary::class.java
     ) {
