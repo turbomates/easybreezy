@@ -75,11 +75,11 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
     }
 
     private fun currentPosition() : Position? {
-        return positions.first { it.isCurrent() }
+        return positions.firstOrNull { it.isCurrent() }
     }
 
     private fun currentSalary() : Salary ? {
-        return salaries.first { it.isCurrent() }
+        return salaries.firstOrNull { it.isCurrent() }
     }
 
     abstract class Repository : EntityClass<UUID, Employee>(Employees, Employee::class.java) {
@@ -99,4 +99,8 @@ object Employees: UUIDTable() {
     val fired = bool("fired").default(false)
     val skills = jsonb("skills", String.serializer().list).default(listOf())
     val createdAt = datetime("created_at").default(LocalDateTime.now())
+}
+
+interface Repository {
+    fun getByUserId(userId: UUID): Employee
 }

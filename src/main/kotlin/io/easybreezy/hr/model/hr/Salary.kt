@@ -41,14 +41,7 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
 
     fun apply(hrManager: UUID, new: Int, applyComment: String, appliedAt: LocalDate) : Salary {
         till = appliedAt.minusDays(1)
-        return Salary.new {
-            this.hrManager = hrManager
-            this.employee = employee
-            this.amount = new
-            this.comment = applyComment
-            this.since = appliedAt
-            this.createdAt = LocalDateTime.now()
-        }
+        return define(hrManager, employee, new, applyComment, appliedAt)
     }
 
     fun terminate(terminatedAt: LocalDate) {
@@ -74,7 +67,6 @@ object Salaries : UUIDTable("employee_salaries") {
     val amount = integer("amount")
     val since = date("since")
     val till = date("till").nullable()
-
     val comment = varchar("comment", 500)
     val hrManager = uuid("hr_manager_id")
     val createdAt = datetime("created_at").default(LocalDateTime.now())

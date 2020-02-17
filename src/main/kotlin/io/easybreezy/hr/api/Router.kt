@@ -13,6 +13,8 @@ import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.queryobject.Absence
 import io.easybreezy.hr.application.absence.queryobject.WorkingHour
 import io.easybreezy.hr.application.hr.command.*
+import io.easybreezy.hr.application.hr.queryobject.Employee
+import io.easybreezy.hr.application.hr.queryobject.EmployeeDetails
 import io.easybreezy.hr.application.location.AssignLocation
 import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
@@ -29,6 +31,7 @@ import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.delete
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
+import io.easybreezy.infrastructure.query.ContinuousList
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
 import io.ktor.routing.Route
@@ -85,39 +88,50 @@ class Router @Inject constructor(
                 )
             }
         }
-        route.route("/employee/{id}") {
-            data class ID(val id: UUID)
+
+        route.route("/employees") {
+            get<Response.Listing<Employee>>("") {
+                controller<HRController>(this).employees()
+            }
+        }
+
+        route.route("/employee/{userId}") {
+            data class ID(val userId: UUID)
+
+            get<Response.Data<EmployeeDetails>, ID>("") { params ->
+                controller<HRController>(this).employee(params.userId)
+            }
 
             post<Response.Either<Response.Ok, Response.Errors>, Hire, ID>("/hire") { command, params ->
-                controller<HRController>(this).hire(command, params.id, resolvePrincipal<UserPrincipal>())
+                controller<HRController>(this).hire(command, params.userId, resolvePrincipal<UserPrincipal>())
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, Fire, ID>("/fire") { command, params ->
-                controller<HRController>(this).fire(command, params.id, resolvePrincipal<UserPrincipal>())
+                controller<HRController>(this).fire(command, params.userId, resolvePrincipal<UserPrincipal>())
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, WriteNote, ID>("/write-note") { command, params ->
-                controller<HRController>(this).writeNote(command, params.id, resolvePrincipal<UserPrincipal>())
+                controller<HRController>(this).writeNote(command, params.userId, resolvePrincipal<UserPrincipal>())
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, ID>("/specify-skills") { command, params ->
-                controller<HRController>(this).specifySkills(command, params.id)
+                controller<HRController>(this).specifySkills(command, params.userId)
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, UpdateBio, ID>("/update-bio") { command, params ->
-                controller<HRController>(this).updateBio(command, params.id)
+                controller<HRController>(this).updateBio(command, params.userId)
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, UpdateBirthday, ID>("/update-birthday") { command, params ->
-                controller<HRController>(this).updateBirthday(command, params.id)
+                controller<HRController>(this).updateBirthday(command, params.userId)
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, ApplyPosition, ID>("/apply-position") { command, params ->
-                controller<HRController>(this).applyPosition(command, params.id, resolvePrincipal<UserPrincipal>())
+                controller<HRController>(this).applyPosition(command, params.userId, resolvePrincipal<UserPrincipal>())
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, ApplySalary, ID>("/apply-salary") { command, params ->
-                controller<HRController>(this).applySalary(command, params.id, resolvePrincipal<UserPrincipal>())
+                controller<HRController>(this).applySalary(command, params.userId, resolvePrincipal<UserPrincipal>())
             }
         }
 

@@ -1,15 +1,15 @@
 package io.easybreezy.hr.application.hr.command
 
 import com.google.inject.Inject
-import io.easybreezy.hr.infrastructure.EmployeeRepository
 import io.easybreezy.hr.model.hr.Employee
 import io.easybreezy.hr.model.hr.PersonalData
+import io.easybreezy.hr.model.hr.Repository
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import java.util.*
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
-    private val repository: EmployeeRepository//@todo bind as guice
+    private val repository: Repository
 ) {
 
     suspend fun createCard(command: CreateCard, userId: UUID) {
@@ -25,10 +25,10 @@ class Handler @Inject constructor(
         }
     }
 
-    suspend fun hire(command: Hire, employeeId: UUID, hrManager: UUID) {
+    suspend fun hire(command: Hire, userId: UUID, hrManager: UUID) {
         transaction {
 
-            val employee = repository[employeeId]
+            val employee = employee(userId)
             employee.applyPosition(hrManager, command.position, command.hiredAt)
             employee.applySalary(hrManager, command.salary, "", command.hiredAt)
 
@@ -40,43 +40,45 @@ class Handler @Inject constructor(
 
     suspend fun fire(command: Fire, employee: UUID, hrManager: UUID) {
         transaction {
-            repository[employee].fire(hrManager, command.comment, command.firedAt)
+            employee(employee).fire(hrManager, command.comment, command.firedAt)
         }
     }
 
     suspend fun writeNote(command: WriteNote, employee: UUID, hrManager: UUID) {
         transaction {
-            repository[employee].note(hrManager, command.text)
+            employee(employee).note(hrManager, command.text)
         }
     }
 
     suspend fun applyPosition(command: ApplyPosition, employee: UUID, hrManager: UUID) {
         transaction {
-            repository[employee].applyPosition(hrManager, command.position, command.appliedAt)
+            employee(employee).applyPosition(hrManager, command.position, command.appliedAt)
         }
     }
 
     suspend fun applySalary(command: ApplySalary, employee: UUID, hrManager: UUID) {
         transaction {
-            repository[employee].applySalary(hrManager, command.amount, command.comment, command.appliedAt)
+            employee(employee).applySalary(hrManager, command.amount, command.comment, command.appliedAt)
         }
     }
 
     suspend fun specifySkills(command: SpecifySkills, employee: UUID) {
         transaction {
-            repository[employee].specifySkills(command.skills)
+            employee(employee).specifySkills(command.skills)
         }
     }
 
     suspend fun updateBio(command: UpdateBio, employee: UUID) {
         transaction {
-            repository[employee].updateBio(command.bio)
+            employee(employee).updateBio(command.bio)
         }
     }
 
     suspend fun updateBirthday(command: UpdateBirthday, employee: UUID) {
         transaction {
-            repository[employee].updateBirthday(command.birthday)
+            employee(employee).updateBirthday(command.birthday)
         }
     }
+
+    private fun employee(userId: UUID) = repository.getByUserId(userId)
 }
