@@ -1,0 +1,24 @@
+.profile-info {
+  padding-left: 5px;
+  display: inline-flex;
+  flex-direction: column;
+  color: white;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.profile-info__email {
+  line-height: 14px;
+  font-size: 12px;
+}
+
+.profile-info__name {
+  line-height: 14px;
+}
+
+.profile-dropdown {
+  margin-left: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+  flex-shrink: 0;
+}

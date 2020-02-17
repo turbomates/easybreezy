@@ -110,9 +110,9 @@ URL: localhost:3000/api/hr/absences/working-hours
 ***Endpoint:***
 
 ```bash
-Method: PUT
+Method: POST
 Type: RAW
-URL: localhost:3000/api/hr/absences/working-hours
+URL: localhost:3000/api/hr/absences/working-hours/update
 ```
 
 

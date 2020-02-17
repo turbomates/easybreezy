@@ -180,7 +180,7 @@ class AbsenceControllerTest {
             rollbackTransaction(database) {
                 val workingHourId = database.createWorkingHour(memberId)
 
-                with(handleRequest(HttpMethod.Put, "/api/hr/absences/working-hours") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/absences/working-hours/update") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {

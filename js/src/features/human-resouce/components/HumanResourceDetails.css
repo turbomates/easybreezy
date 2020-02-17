@@ -1,0 +1,7 @@
+.user-card {
+  max-width: 400px;
+}
+
+.ant-list.user-details-list {
+  margin-top: 20px;
+}
