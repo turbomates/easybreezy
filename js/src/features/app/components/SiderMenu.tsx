@@ -21,13 +21,6 @@ export const SiderMenu: FC<{}> = () => (
       }
     >
       <Item key="1">
-        <Link to="/users">Users</Link>
-      </Item>
-      <Item key="2">Salary</Item>
-      <Item key="3">Comments</Item>
-      <Item key="4">Bio</Item>
-      <Item key="5">Vacations</Item>
-      <Item key="6">
         <Link to="/human-resources">Timeline</Link>
       </Item>
     </SubMenu>

@@ -26,6 +26,7 @@ declare module "HumanResourceModels" {
     lastName: string;
     phone: string;
     description: string;
+    vacations: UserVacation[];
   };
 
   export type UsersListing = {

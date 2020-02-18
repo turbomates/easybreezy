@@ -21,6 +21,7 @@ const getUserDetails = (item: UserJSON) => ({
   lastName: item.lastName,
   phone: item.phone,
   description: item.description,
+  vacations: item.vacations,
 });
 
 const getUserVacationInfo = (item: UserJSON) => ({

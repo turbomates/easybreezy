@@ -1,6 +1,6 @@
 import { RootState } from "MyTypes";
 
-export const users = (state: RootState) => state.humanResource.list;
+export const vacations = (state: RootState) => state.humanResource.vacations;
 
 export const userDetails = (state: RootState) => state.humanResource.details;
 
