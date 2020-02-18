@@ -6,8 +6,8 @@ import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embedded
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.postgresql.PGEnum
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.set
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -72,11 +72,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
 enum class Status {
     ACTIVE, WAIT_CONFIRM
-}
-
-@Serializable
-enum class Role {
-    ADMIN, MEMBER
 }
 
 object Users : UUIDTable() {

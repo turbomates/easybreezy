@@ -6,10 +6,11 @@ import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
 import io.easybreezy.hr.application.location.Handler
 import io.easybreezy.hr.application.location.Validation
-import io.easybreezy.hr.application.location.queryobject.Location
+import io.easybreezy.hr.application.location.queryobject.Locations
 import io.easybreezy.hr.application.location.queryobject.LocationsQO
 import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocationQO
+import io.easybreezy.hr.application.location.queryobject.UserLocations
 import io.easybreezy.hr.application.location.queryobject.UserLocationsQO
 import io.easybreezy.hr.infrastructure.LocationRepository
 import io.easybreezy.hr.infrastructure.UserLocationRepository
@@ -17,7 +18,7 @@ import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
-import io.easybreezy.infrastructure.query.pagingParameters
+import io.easybreezy.infrastructure.query.extractDateRange
 import java.util.UUID
 
 class LocationController @Inject constructor(
@@ -42,15 +43,12 @@ class LocationController @Inject constructor(
         return Response.Ok
     }
 
-    suspend fun locations(): Response.Listing<Location> {
-        return Response.Listing(
-            queryExecutor.execute(LocationsQO(call.request.pagingParameters()))
-        )
+    suspend fun locations(): Response.Data<Locations> {
+        return Response.Data(queryExecutor.execute(LocationsQO()))
     }
 
 
-    suspend fun assignLocation(userId: UUID, command: AssignLocation): Response.Either<Response.Ok, Response.Errors> {
-        command.userId = userId
+    suspend fun assignLocation(command: AssignLocation): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.onAssignLocation(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
@@ -80,9 +78,9 @@ class LocationController @Inject constructor(
         return Response.Data(queryExecutor.execute(UserLocationQO(id)))
     }
 
-    suspend fun userLocations(userId: UUID): Response.Listing<UserLocation> {
-        return Response.Listing(
-            queryExecutor.execute(UserLocationsQO(userId, call.request.pagingParameters()))
+    suspend fun userLocations(): Response.Data<UserLocations> {
+        return Response.Data(
+            queryExecutor.execute(UserLocationsQO(call.request.extractDateRange()))
         )
     }
 }

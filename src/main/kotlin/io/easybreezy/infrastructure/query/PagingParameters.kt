@@ -12,8 +12,8 @@ fun Parameters.paging(maxPageSize: Int = 100, default: Int = 30): PagingParamete
     val page = this["currentPage"]?.toIntOrNull() ?: 1
 
     return PagingParameters(
-            if (pageSize > maxPageSize) maxPageSize else pageSize,
-            page
+        if (pageSize > maxPageSize) maxPageSize else pageSize,
+        page
     )
 }
 

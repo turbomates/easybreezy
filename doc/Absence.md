@@ -1,6 +1,5 @@
 
-
-# Absence
+# Hr/Absence
 
 Api for Absences and Working Hours
 
@@ -9,15 +8,17 @@ Api for Absences and Working Hours
 * [Default](#default)
 
   * [WorkingHours Show](#1-workinghours-show)
-  * [WorkingHours Listing](#2-workinghours-listing)
-  * [Working Hours Delete](#3-working-hours-delete)
-  * [Working Hours Edit](#4-working-hours-edit)
-  * [Working Hours Create](#5-working-hours-create)
-  * [Absence Show](#6-absence-show)
-  * [Absence Listing](#7-absence-listing)
-  * [Absence Remove](#8-absence-remove)
-  * [Absence update](#9-absence-update)
-  * [Absence create](#10-absence-create)
+  * [WorkingHours](#2-workinghours)
+  * [WorkingHours Me](#3-workinghours-me)
+  * [Working Hours Delete](#4-working-hours-delete)
+  * [Working Hours Edit](#5-working-hours-edit)
+  * [Working Hours Create](#6-working-hours-create)
+  * [Absence Show](#7-absence-show)
+  * [Absences](#8-absences)
+  * [Absences Me](#9-absences-me)
+  * [Absence Remove](#10-absence-remove)
+  * [Absence update](#11-absence-update)
+  * [Absence create](#12-absence-create)
 
 
 --------
@@ -48,7 +49,7 @@ URL: localhost:3000/api/hr/absences/working-hours/c34fd09b-2668-4e11-ae3d-0a04a8
 
 
 
-### 2. WorkingHours Listing
+### 2. WorkingHours
 
 
 
@@ -69,7 +70,28 @@ URL: localhost:3000/api/hr/absences/working-hours
 
 
 
-### 3. Working Hours Delete
+### 3. WorkingHours Me
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: RAW
+URL: localhost:3000/api/hr/absences/working-hours/me
+```
+
+
+***Headers:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| Content-Type | application/json |  |
+
+
+
+### 4. Working Hours Delete
 
 
 
@@ -103,7 +125,7 @@ URL: localhost:3000/api/hr/absences/working-hours
 
 
 
-### 4. Working Hours Edit
+### 5. Working Hours Edit
 
 
 
@@ -143,7 +165,7 @@ URL: localhost:3000/api/hr/absences/working-hours/update
 
 
 
-### 5. Working Hours Create
+### 6. Working Hours Create
 
 
 
@@ -184,7 +206,7 @@ URL: localhost:3000/api/hr/absences/working-hours
 
 
 
-### 6. Absence Show
+### 7. Absence Show
 
 
 
@@ -205,7 +227,7 @@ URL: localhost:3000/api/hr/absences/e13eb3fa-f3dd-4e60-b1f0-515c060a4e0c
 
 
 
-### 7. Absence Listing
+### 8. Absences
 
 
 
@@ -226,7 +248,28 @@ URL: localhost:3000/api/hr/absences
 
 
 
-### 8. Absence Remove
+### 9. Absences Me
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: RAW
+URL: localhost:3000/api/hr/absences/me
+```
+
+
+***Headers:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| Content-Type | application/json |  |
+
+
+
+### 10. Absence Remove
 
 
 
@@ -247,7 +290,7 @@ URL: localhost:3000/api/hr/absences/33f44946-68cb-42fe-8aaa-9e5243056181
 
 
 
-### 9. Absence update
+### 11. Absence update
 
 
 
@@ -282,7 +325,7 @@ URL: localhost:3000/api/hr/absences/b0cffbc3-eb51-4799-ad79-62b0fbf177cf
 
 
 
-### 10. Absence create
+### 12. Absence create
 
 
 
@@ -320,4 +363,4 @@ URL: localhost:3000/api/hr/absences
 
 ---
 [Back to top](#hrabsence)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-02-07 13:04:28 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-02-18 15:32:21 by [docgen](https://github.com/thedevsaddam/docgen)

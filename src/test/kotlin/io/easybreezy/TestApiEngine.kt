@@ -7,12 +7,12 @@ import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.auth.Auth
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
-import io.easybreezy.user.model.Role
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
