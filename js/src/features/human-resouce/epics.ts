@@ -4,23 +4,23 @@ import { filter, switchMap, map, catchError, delay } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 
 import {
-  fetchUsersAsync,
+  fetchUsersVacationsAsync,
   fetchUserDetailsAsync,
   fetchProfileAsync,
 } from "./actions";
 
 export const fetchUsersEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
-    filter(isActionOf(fetchUsersAsync.request)),
+    filter(isActionOf(fetchUsersVacationsAsync.request)),
     switchMap(action =>
-      from(api.humanResource.fetchUsers(action.payload)).pipe(
+      from(api.humanResource.fetchVacations()).pipe(
         delay(1000),
         map(result =>
           result.success
-            ? fetchUsersAsync.success(result.data)
-            : fetchUsersAsync.failure(result.reason),
+            ? fetchUsersVacationsAsync.success(result.data)
+            : fetchUsersVacationsAsync.failure(result.reason),
         ),
-        catchError(message => of(fetchUsersAsync.failure(message))),
+        catchError(message => of(fetchUsersVacationsAsync.failure(message))),
       ),
     ),
   );

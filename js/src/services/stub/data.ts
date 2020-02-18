@@ -24,8 +24,12 @@ export const usersData: UserJSON[] = [
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     vacations: [
-      { description: "Test vacation 1", from: "2019-11-01", to: "2019-11-11" },
-      { description: "Test vacation 2", from: "2020-01-01", to: "2020-01-11" },
+      {
+        description: "Two weeks on the beach",
+        from: "2019-11-01",
+        to: "2019-11-15",
+      },
+      { description: "Test vacation 2", from: "2020-01-01", to: "2020-01-21" },
     ],
   },
   {
@@ -38,7 +42,7 @@ export const usersData: UserJSON[] = [
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     vacations: [
-      { description: "Test vacation 1", from: "2019-10-01", to: "2019-10-11" },
+      { description: "Test vacation 1", from: "2019-09-01", to: "2019-10-20" },
       { description: "Test vacation 2", from: "2020-02-01", to: "2020-02-11" },
     ],
   },
@@ -52,7 +56,7 @@ export const usersData: UserJSON[] = [
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     vacations: [
-      { description: "Test vacation 1", from: "2020-02-11", to: "2020-02-21" },
+      { description: "Relaxing in Bali", from: "2019-10-12", to: "2020-01-20" },
     ],
   },
   {

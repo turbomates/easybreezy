@@ -5,7 +5,6 @@ import { Route, Switch } from "react-router";
 import { Main } from "layouts/Main";
 import { HomePage } from "./pages/Home";
 import { HumanResourcesPage } from "./pages/HumanResources";
-import { UsersPage } from "./pages/Users";
 import { UserDetailsPage } from "./pages/UserDetails";
 import { NotFoundPage } from "./pages/NotFound";
 import { LoginPage } from "./pages/Login";
@@ -28,7 +27,6 @@ export const Routes: React.FC = () => {
         <Route exact path="/" component={HomePage} />
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
-        <Route exact path="/users" component={UsersPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </Main>
