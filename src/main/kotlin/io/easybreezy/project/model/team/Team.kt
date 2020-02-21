@@ -25,7 +25,7 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         }
     }
 
-    fun addMember(member: UUID, info: Member.Info, role: Role) {
+    fun addMember(member: UUID, info: Info, role: Role) {
         members = SizedCollection(members + Member.create(this, member, role, info))
     }
 

@@ -1,91 +1,88 @@
 package io.easybreezy.infrastructure.exposed
 
-import io.easybreezy.infrastructure.exposed.dao.Embeddable
-import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
-import io.easybreezy.infrastructure.exposed.dao.Embedded
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
+import io.easybreezy.infrastructure.exposed.embedded.Embeddable
+import io.easybreezy.infrastructure.exposed.embedded.EmbeddableClass
+import io.easybreezy.infrastructure.exposed.embedded.EmbeddableTable
+import io.easybreezy.infrastructure.exposed.embedded.Entity
+import io.easybreezy.infrastructure.exposed.embedded.embedded
+import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 
-object Users : IntIdTable() {
-    val age = integer("age").nullable()
-    val avatar = varchar("info_avatar", 25)
-    val firstName = varchar("first_name", 25)
-    val lastName = varchar("last_name", 25)
+object Accounts : IntIdTable() {
+    val name = varchar("account", 255).nullable()
+    val balance = embedded<Money>(MoneyTable)
+    val latBalance = embedded<Money>(MoneyTable, "last")
 }
 
-class User(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<User>(Users)
+object MoneyTable : EmbeddableTable() {
+    val amount = integer("amount")
+    val currency = embedded<Currency>(CurrencyTable)
+}
 
-    var age by Users.age
-    var info by Embedded(Info)
+object CurrencyTable : EmbeddableTable() {
+    val name = varchar("name", 25)
+}
 
-    class Info private constructor() : Embeddable() {
-        var name by Embedded(Name)
-        var avatar by Users.avatar
+class Currency : Embeddable() {
+    var name by CurrencyTable.name
+}
 
-        companion object : EmbeddableClass<Info>(Info::class) {
-            operator fun invoke(avatar: String, name: Name): Info {
-                val info = Info()
-                info.avatar = avatar
-                info.name = name
-                return info
-            }
+class Money private constructor() : Embeddable() {
+    var amount by MoneyTable.amount
+    var currency by MoneyTable.currency
 
-            override fun createInstance(resultRow: ResultRow?): Info {
-                return Info()
-            }
-        }
-    }
-
-    class Name private constructor() : Embeddable() {
-        var firstName by Users.firstName
-        var lastName by Users.lastName
-
-        companion object : EmbeddableClass<Name>(Name::class) {
-            operator fun invoke(firstName: String, lastName: String): Name {
-                val name = Name()
-                name.firstName = firstName
-                name.lastName = lastName
-                return name
-            }
-
-            override fun createInstance(resultRow: ResultRow?): Name {
-                return Name()
-            }
+    companion object : EmbeddableClass<Money>(Money::class) {
+        override fun createInstance(): Money {
+            return Money()
         }
     }
 }
+
+class Account(id: EntityID<Int>) : Entity<Int>(id) {
+    companion object : EntityClass<Int, Account>(Accounts)
+
+    var name by Accounts.name
+    var balance by Accounts.balance
+    var lastBalance by Accounts.latBalance
+}
+
 
 @Test
 fun main() {
     Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver", user = "root", password = "")
 
     transaction {
-        SchemaUtils.create(Users)
-        val name = User.Name("first", "last")
-        val nextName = User.Name("firstNext", "lastNext")
-        val eqName = User.Name("first", "last")
-        val info = User.Info("test", name)
-        User.new {
-            age = 1
-            this.info = info
-        }
+        SchemaUtils.create(Accounts)
+        val money = Money.createInstance()
+        money.amount = 10
+        val currency = Currency()
+        currency.name = "EUR"
+        money.currency = currency
+        val last = Money.createInstance()
+        last.amount = 20
+        last.currency = currency
+        Account.new {
+            name = "test"
+            balance = money
+            lastBalance = last
 
-        val result = User.wrapRows(Users.selectAll())
-        assertSame(result.first().info.name.firstName, "first")
-        assertNotEquals(name, nextName)
-        assertEquals(name, eqName)
-        assertEquals(name, name)
+        }
+        var result = Account.wrapRows(Accounts.selectAll()).first()
+        assertSame(10, result.balance.amount)
+        assertSame("EUR", result.balance.currency.name)
+        result.lastBalance.amount = 40
+        val newCurrency = Currency()
+        newCurrency.name = "TEST"
+        result.lastBalance.currency = newCurrency
+        result = Account.wrapRows(Accounts.selectAll()).first()
+        assertSame("TEST", result.lastBalance.currency.name)
+        assertSame(40, result.lastBalance.amount)
     }
 }
