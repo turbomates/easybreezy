@@ -23,10 +23,6 @@ class CreateDefaultUserCommand {
                         Password.create("123")
                     )
                 }
-
-                //@todo remove
-                 User.invite(Email.create("email@email.com"), mutableSetOf(Role.MEMBER))
-
             }
         }
     }
