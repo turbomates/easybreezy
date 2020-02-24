@@ -1,6 +1,5 @@
 
-
-# Location
+# Hr/Location
 
 
 
@@ -8,12 +7,12 @@
 
 * [Default](#default)
 
-  * [User location listing](#1-user-location-listing)
+  * [User locations](#1-user-locations)
   * [User location show](#2-user-location-show)
   * [User location delete](#3-user-location-delete)
   * [User location edit](#4-user-location-edit)
   * [User location assign](#5-user-location-assign)
-  * [Locations Listing](#6-locations-listing)
+  * [Locations](#6-locations)
   * [Location Remove](#7-location-remove)
   * [Location create](#8-location-create)
 
@@ -25,7 +24,7 @@
 
 
 
-### 1. User location listing
+### 1. User locations
 
 
 
@@ -154,7 +153,7 @@ URL: localhost:3000/api/hr/locations/user
 
 
 
-### 6. Locations Listing
+### 6. Locations
 
 
 
@@ -229,4 +228,4 @@ URL: localhost:3000/api/hr/locations
 
 ---
 [Back to top](#hrlocation)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-02-07 13:21:28 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-02-18 15:44:36 by [docgen](https://github.com/thedevsaddam/docgen)

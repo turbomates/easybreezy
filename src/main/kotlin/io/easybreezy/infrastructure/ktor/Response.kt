@@ -18,9 +18,7 @@ import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 
 @Serializable
-data class Error(val message: String, val property: String? = null, @ContextualSerialization val value: Any? = null) {
-
-}
+data class Error(val message: String, val property: String? = null, @ContextualSerialization val value: Any? = null)
 
 @Serializable(with = ResponseSerializer::class)
 sealed class Response {

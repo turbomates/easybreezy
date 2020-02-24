@@ -62,7 +62,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testLocationsListing() {
+    fun testMyLocations() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -72,14 +72,11 @@ class LocationControllerTest {
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations")) {
                     println(response.content)
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
-                    Assertions.assertTrue(response.content?.contains("hasMore")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
         }
     }
-
-
 
     @Test
     fun testUserLocationAssign() {
@@ -93,6 +90,7 @@ class LocationControllerTest {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
+                            "userId" to memberId.toString()
                             "startedAt" to "2020-07-19"
                             "endedAt" to "2020-08-19"
                             "locationId" to locationId.toString()
@@ -102,7 +100,7 @@ class LocationControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
                     println(response.content)
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
                     Assertions.assertTrue(response.content?.contains("2020-08-19")!!)
@@ -125,8 +123,8 @@ class LocationControllerTest {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
-                            "startedAt" to "2021-07-19"
-                            "endedAt" to "2023-08-19"
+                            "startedAt" to "2020-03-19"
+                            "endedAt" to "2020-04-19"
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -134,10 +132,10 @@ class LocationControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
                     println(response.content)
-                    Assertions.assertTrue(response.content?.contains("2021-07-19")!!)
-                    Assertions.assertTrue(response.content?.contains("2023-08-19")!!)
+                    Assertions.assertTrue(response.content?.contains("2020-03-19")!!)
+                    Assertions.assertTrue(response.content?.contains("2020-04-19")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -193,10 +191,9 @@ class LocationControllerTest {
                 val locationId = database.createLocation()
                 database.createUserLocation(memberId, locationId)
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
                     Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
-                    Assertions.assertTrue(response.content?.contains("hasMore")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }

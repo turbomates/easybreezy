@@ -1,41 +1,24 @@
 package io.easybreezy.project.model.team
 
-import io.easybreezy.infrastructure.exposed.dao.Embeddable
-import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
-import io.easybreezy.infrastructure.exposed.dao.Embedded
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import org.jetbrains.exposed.dao.UUIDEntity
-import org.jetbrains.exposed.dao.UUIDEntityClass
+import io.easybreezy.infrastructure.exposed.embedded.Embeddable
+import io.easybreezy.infrastructure.exposed.embedded.EmbeddableClass
+import io.easybreezy.infrastructure.exposed.embedded.EmbeddableTable
+import io.easybreezy.infrastructure.exposed.embedded.Entity
+import io.easybreezy.infrastructure.exposed.embedded.embedded
+import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
+import kotlin.reflect.full.createInstance
 
-class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
     private var user by Members.user
     private var role by Role referencedOn Members.role
-    private var info by Embedded(Info)
+    private var info by Members.info
     private var team by Members.team
 
-    class Info private constructor() : Embeddable() {
-        private var name by Members.name
-        private var username by Members.username
-        private var avatar by Members.avatar
-
-        companion object : EmbeddableClass<Info>(Info::class) {
-            override fun createInstance(resultRow: ResultRow?): Info {
-                return Info()
-            }
-
-            fun create(name: String, username: String, avatar: String): Info {
-                val info = Info()
-                info.name = name
-                info.username = username
-                info.avatar = avatar
-                return info
-            }
-        }
-    }
 
     companion object : PrivateEntityClass<UUID, Member>(object : Repository() {}) {
         fun create(team: Team, user: UUID, role: Role, info: Info): Member {
@@ -48,18 +31,43 @@ class Member private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         }
     }
 
-    abstract class Repository : UUIDEntityClass<Member>(Members, Member::class.java) {
+    abstract class Repository : EntityClass<UUID, Member>(Members, Member::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Member {
             return Member(entityId)
         }
     }
 }
 
+class Info private constructor() : Embeddable() {
+    private var name by InfoTable.name
+    private var username by InfoTable.username
+    private var avatar by InfoTable.avatar
+
+    companion object : EmbeddableClass<Info>(Info::class) {
+        fun create(name: String, username: String, avatar: String): Info {
+            val info = Info()
+            info.name = name
+            info.username = username
+            info.avatar = avatar
+            return info
+        }
+
+        override fun createInstance(): Info {
+            return Info()
+        }
+    }
+}
+
+object InfoTable : EmbeddableTable() {
+    val name = varchar("name", 25)
+    val username = varchar("username", 25)
+    val avatar = varchar("avatar", 25)
+}
+
 object Members : UUIDTable() {
     val team = reference("team", Teams)
     val user = uuid("user_id")
     val role = reference("role", Roles)
-    val name = varchar("info_name", 25)
-    val username = varchar("info_username", 25)
-    val avatar = varchar("info_avatar", 25)
+    val info = embedded<Info>(InfoTable)
+
 }

@@ -1,7 +1,7 @@
 package io.easybreezy
 
 import io.easybreezy.infrastructure.exposed.toUUID
-import io.easybreezy.user.model.Role
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.user.model.Status
 import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.sql.Database

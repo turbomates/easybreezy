@@ -10,16 +10,22 @@ import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.Validation
 import io.easybreezy.hr.application.absence.queryobject.Absence
 import io.easybreezy.hr.application.absence.queryobject.AbsenceQO
+import io.easybreezy.hr.application.absence.queryobject.Absences
 import io.easybreezy.hr.application.absence.queryobject.AbsencesQO
+import io.easybreezy.hr.application.absence.queryobject.UserAbsences
+import io.easybreezy.hr.application.absence.queryobject.UserAbsencesQO
+import io.easybreezy.hr.application.absence.queryobject.UserWorkingHours
+import io.easybreezy.hr.application.absence.queryobject.UserWorkingHoursQO
 import io.easybreezy.hr.application.absence.queryobject.WorkingHour
 import io.easybreezy.hr.application.absence.queryobject.WorkingHourQO
+import io.easybreezy.hr.application.absence.queryobject.WorkingHours
 import io.easybreezy.hr.application.absence.queryobject.WorkingHoursQO
 import io.easybreezy.hr.infrastructure.AbsenceRepository
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
-import io.easybreezy.infrastructure.query.pagingParameters
+import io.easybreezy.infrastructure.query.extractDateRange
 import java.util.UUID
 
 class AbsenceController @Inject constructor(
@@ -35,6 +41,7 @@ class AbsenceController @Inject constructor(
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
         handler.handleCreateAbsence(command)
+
         return Response.Either(Either.Left(Response.Ok))
     }
 
@@ -45,10 +52,11 @@ class AbsenceController @Inject constructor(
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
         handler.handleUpdateAbsence(command)
+
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun removeAbsence(id: UUID): Response.Ok {
+    fun removeAbsence(id: UUID): Response.Ok {
         repository.remove(id)
 
         return Response.Ok
@@ -79,19 +87,27 @@ class AbsenceController @Inject constructor(
         return Response.Data(queryExecutor.execute(AbsenceQO(id)))
     }
 
-    suspend fun absences(userId: UUID): Response.Listing<Absence> {
-        return Response.Listing(
-            queryExecutor.execute(AbsencesQO(userId, call.request.pagingParameters()))
+    suspend fun myAbsences(userId: UUID): Response.Data<UserAbsences> {
+        return Response.Data(
+            queryExecutor.execute(UserAbsencesQO(userId))
         )
+    }
+
+    suspend fun absences(): Response.Data<Absences> {
+        return Response.Data(queryExecutor.execute(AbsencesQO(call.request.extractDateRange())))
     }
 
     suspend fun showWorkingHour(id: UUID): Response.Data<WorkingHour> {
         return Response.Data(queryExecutor.execute(WorkingHourQO(id)))
     }
 
-    suspend fun workingHours(userId: UUID): Response.Listing<WorkingHour> {
-        return Response.Listing(
-            queryExecutor.execute(WorkingHoursQO(userId, call.request.pagingParameters()))
+    suspend fun myWorkingHours(userId: UUID): Response.Data<UserWorkingHours> {
+        return Response.Data(
+            queryExecutor.execute(UserWorkingHoursQO(userId))
         )
+    }
+
+    suspend fun workingHours(): Response.Data<WorkingHours> {
+        return Response.Data(queryExecutor.execute(WorkingHoursQO(call.request.extractDateRange())))
     }
 }

@@ -39,7 +39,7 @@ class AbsenceControllerTest {
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -69,7 +69,7 @@ class AbsenceControllerTest {
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment 2")!!)
                     Assertions.assertTrue(response.content?.contains("DAYON")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -90,7 +90,7 @@ class AbsenceControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertFalse(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -99,17 +99,33 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testAbsencesListing() {
+    fun testMyAbsences() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
                 database.createAbsence(memberId)
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
                     println(response.content)
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
-                    Assertions.assertTrue(response.content?.contains("hasMore")!!)
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun testAbsences() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                database.createAbsence(memberId)
+
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
+                    println(response.content)
+                    Assertions.assertTrue(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -164,7 +180,7 @@ class AbsenceControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
                     Assertions.assertTrue(response.content?.contains("2020-05-16")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -196,7 +212,7 @@ class AbsenceControllerTest {
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
                     Assertions.assertTrue(response.content?.contains("2020-09-19")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -224,7 +240,7 @@ class AbsenceControllerTest {
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertFalse(response.content?.contains("5")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -233,18 +249,35 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testWorkingHoursListing() {
+    fun testMyWorkingHours() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
                 database.createWorkingHour(memberId)
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
                     println(response.content)
                     Assertions.assertTrue(response.content?.contains("5")!!)
                     Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
-                    Assertions.assertTrue(response.content?.contains("hasMore")!!)
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun testWorkingHours() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                database.createWorkingHour(memberId)
+
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours?from=2010-04-04&to=2030-04-04")) {
+                    println(response.content)
+                    Assertions.assertTrue(response.content?.contains("5")!!)
+                    Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }

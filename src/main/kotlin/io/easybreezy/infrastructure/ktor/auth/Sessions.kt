@@ -1,7 +1,6 @@
 package io.easybreezy.infrastructure.ktor.auth
 
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
-import io.easybreezy.user.model.Role
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration

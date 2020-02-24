@@ -23,6 +23,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.json.JsonOutput
 import java.util.UUID
+import io.easybreezy.infrastructure.ktor.auth.Role
 
 open class Router @Inject constructor(
     protected val application: Application,

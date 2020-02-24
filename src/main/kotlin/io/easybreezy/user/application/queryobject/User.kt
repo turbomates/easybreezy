@@ -1,12 +1,12 @@
 package io.easybreezy.user.application.queryobject
 
 import io.easybreezy.infrastructure.exposed.toUUID
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
-import io.easybreezy.user.model.Role
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
