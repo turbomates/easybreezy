@@ -38,6 +38,17 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         return this.email.address
     }
 
+    fun replaceContacts(replaced: List<io.easybreezy.user.application.Contact>) {
+        contacts.forEach { it.delete()}
+        replaced.map {
+            Contact.add(
+                this,
+                Contacts.Type.valueOf(it.type),
+                it.value
+            )
+        }
+    }
+
     private fun resetToken() {
         token = null
     }

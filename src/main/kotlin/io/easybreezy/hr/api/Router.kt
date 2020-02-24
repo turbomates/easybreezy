@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import io.easybreezy.hr.api.controller.AbsenceController
 import io.easybreezy.hr.api.controller.HRController
 import io.easybreezy.hr.api.controller.LocationController
-import io.easybreezy.hr.api.controller.ProfileController
 import io.easybreezy.hr.application.absence.CreateAbsence
 import io.easybreezy.hr.application.absence.EditWorkingHours
 import io.easybreezy.hr.application.absence.NoteWorkingHours
@@ -25,9 +24,6 @@ import io.easybreezy.hr.application.location.EditUserLocation
 import io.easybreezy.hr.application.location.queryobject.Locations
 import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocations
-import io.easybreezy.hr.application.profile.command.UpdateContactDetails
-import io.easybreezy.hr.application.profile.command.UpdateMessengers
-import io.easybreezy.hr.application.profile.queryobject.Profile
 import io.easybreezy.infrastructure.ktor.EmptyParams
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
@@ -53,7 +49,6 @@ class Router @Inject constructor(
         application.routing {
             route("/api/hr") {
                 authenticate(*Auth.user) {
-                    profileRouting(this)
                     absencesRouting(this)
                     locationsRouting(this)
                     hrRouting(this)
@@ -61,29 +56,6 @@ class Router @Inject constructor(
             }
         }
     }
-
-    private fun profileRouting(route: Route) {
-        route.route("/profile") {
-            get<Response.Data<Profile>>("") {
-                controller<ProfileController>(this).show(
-                    resolvePrincipal<UserPrincipal>()
-                )
-            }
-            post<Response.Ok, UpdateMessengers>("/add-messengers") { command ->
-                controller<ProfileController>(this).updateMessengers(
-                    resolvePrincipal<UserPrincipal>(),
-                    command
-                )
-            }
-            post<Response.Ok, UpdateContactDetails>("/contact-details") { command ->
-                controller<ProfileController>(this).updateContactDetails(
-                    resolvePrincipal<UserPrincipal>(),
-                    command
-                )
-            }
-        }
-    }
-
 
     private fun absencesRouting(route: Route) {
         route.route("/absences") {

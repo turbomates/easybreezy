@@ -39,6 +39,12 @@ object Contacts : UUIDTable() {
     val value = varchar("value", 100)
 
     enum class Type {
-        PHONE, EMAIL, SKYPE, TELEGRAM, SLACK
+        PHONE, EMAIL, SKYPE, TELEGRAM, SLACK;
+
+        companion object {
+            fun stringValues(): List<String> {
+                return values().map { it.toString() }
+            }
+        }
     }
 }

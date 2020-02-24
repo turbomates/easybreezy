@@ -24,6 +24,7 @@ class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails>
                 .leftJoin(Positions)
                 .leftJoin(Notes)
                 .innerJoin(Users, {Employees.userId}, {Users.id})
+                .join(Contacts, JoinType.LEFT, Employees.userId, Contacts.user)
                 .select {
                     Employees.userId eq userId
                 }.toEmployeeDetailsJoined().single()
@@ -39,14 +40,17 @@ fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {
         val noteId = resultRow.getOrNull(Notes.id)
         val salaryId = resultRow.getOrNull(Salaries.id)
         val positionId = resultRow.getOrNull(Positions.id)
+        val contactId = resultRow.getOrNull(Contacts.id)
         val notes = noteId?.let { resultRow.toNote() }
         val salaries = salaryId?.let { resultRow.toSalary() }
         val positions = positionId?.let { resultRow.toPosition() }
+        val contacts = contactId?.let { resultRow.toContact() }
 
         map[details.userId] = current.copy(
             notes = current.notes.plus(listOfNotNull(notes)).distinct(),
             salaries = current.salaries.plus(listOfNotNull(salaries)).distinct(),
-            positions = current.positions.plus(listOfNotNull(positions)).distinct()
+            positions = current.positions.plus(listOfNotNull(positions)).distinct(),
+            contacts = current.contacts.plus(listOfNotNull(contacts)).distinct()
         )
         map
 
@@ -85,6 +89,11 @@ fun ResultRow.toPosition() = Position(
     this[Positions.till].toString()
 )
 
+fun ResultRow.toContact() = Contact(
+    this[Contacts.type].toString(),
+    this[Contacts.value]
+)
+
 @Serializable
 data class EmployeeDetails(
     @Serializable(with = UUIDSerializer::class)
@@ -96,7 +105,8 @@ data class EmployeeDetails(
     val bio: String?,
     var notes: List<Note> = listOf(),
     var salaries: List<Salary> = listOf(),
-    var positions: List<Position> = listOf()
+    var positions: List<Position> = listOf(),
+    var contacts: List<Contact> = listOf()
 )
 
 @Serializable
@@ -127,4 +137,10 @@ data class Salary(
     val comment: String,
     val since: String,
     val till: String?
+)
+
+@Serializable
+data class Contact(
+    val type: String,
+    val value: String
 )
