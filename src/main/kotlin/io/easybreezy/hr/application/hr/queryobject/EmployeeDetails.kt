@@ -6,8 +6,12 @@ import io.easybreezy.hr.model.hr.Positions
 import io.easybreezy.hr.model.hr.Salaries
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import io.easybreezy.user.model.Contacts
+import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -15,7 +19,11 @@ import java.util.*
 class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails> {
     override suspend fun getData(): EmployeeDetails {
         return transaction {
-            (Employees leftJoin Salaries leftJoin Positions leftJoin Notes)
+            Employees
+                .leftJoin(Salaries)
+                .leftJoin(Positions)
+                .leftJoin(Notes)
+                .innerJoin(Users, {Employees.userId}, {Users.id})
                 .select {
                     Employees.userId eq userId
                 }.toEmployeeDetailsJoined().single()
@@ -47,8 +55,8 @@ fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {
 
 fun ResultRow.toEmployeeDetails() = EmployeeDetails(
     this[Employees.userId],
-    this[Employees.firstName],
-    this[Employees.lastName],
+    this[Users.firstName],
+    this[Users.lastName],
     this[Employees.skills],
     this[Employees.birthday].toString(),
     this[Employees.bio]
@@ -81,8 +89,8 @@ fun ResultRow.toPosition() = Position(
 data class EmployeeDetails(
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
-    val firstName: String,
-    val lastName: String,
+    val firstName: String?,
+    val lastName: String?,
     val skills: List<String>?,
     val birthday: String?,
     val bio: String?,

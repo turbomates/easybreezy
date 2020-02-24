@@ -23,7 +23,7 @@ class CreateEmployeeCard: EventsSubscriber {
         transaction {
             Employee.createCard(
                 event.user,
-                PersonalData.create(PersonalData.Name.create(event.firstName, event.lastName))
+                PersonalData.create()
             )
         }
     }

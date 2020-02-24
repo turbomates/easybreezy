@@ -54,11 +54,11 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
     }
 
     fun updateBio(updated: String) {
-        personalData = PersonalData.create(personalData.name, personalData.birthday, updated)
+        personalData = PersonalData.create( personalData.birthday, updated)
     }
 
     fun updateBirthday(updated: LocalDate) {
-        personalData = PersonalData.create(personalData.name, updated, personalData.bio)
+        personalData = PersonalData.create(updated, personalData.bio)
     }
 
     fun applyPosition(hrManager: UUID, position: String, appliedAt: LocalDate) {
@@ -93,9 +93,6 @@ object Employees: UUIDTable() {
     val userId = uuid("user_id")
     val birthday = date("birthday").nullable()
     val bio = text("bio").nullable()
-    val firstName = Employees.varchar("first_name", 100)
-    val lastName = Employees.varchar("last_name", 100)
-
     val fired = bool("fired").default(false)
     val skills = jsonb("skills", String.serializer().list).default(listOf())
     val createdAt = datetime("created_at").default(LocalDateTime.now())

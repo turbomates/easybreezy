@@ -6,17 +6,17 @@ import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class EmployeesQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Employee>> {
     override suspend fun getData(): ContinuousList<Employee> {
         return transaction {
-            Employees
+
+                Employees.innerJoin(Users, {Employees.userId}, {Users.id})
                 .selectAll()
                 .andWhere { Employees.fired eq false }
                 .limit(paging.pageSize, paging.offset)
@@ -28,14 +28,14 @@ class EmployeesQO(private val paging: PagingParameters) : QueryObject<Continuous
 
 internal fun ResultRow.toEmployee() = Employee(
     this[Employees.userId],
-    this[Employees.firstName],
-    this[Employees.lastName]
+    this[Users.firstName],
+    this[Users.lastName]
 )
 
 @Serializable
 data class Employee(
     @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
-    val firstName: String,
-    val lastName: String
+    val firstName: String?,
+    val lastName: String?
 )

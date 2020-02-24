@@ -17,7 +17,6 @@ class Handler @Inject constructor(
             Employee.createCard(
                 userId,
                 PersonalData.create(
-                    PersonalData.Name.create(command.firstName, command.lastName),
                     command.birthday,
                     command.bio
                 )

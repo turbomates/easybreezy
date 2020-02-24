@@ -2,9 +2,7 @@ package io.easybreezy.user.model
 
 import io.easybreezy.infrastructure.event.user.Confirmed
 import io.easybreezy.infrastructure.event.user.Invited
-import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
-import io.easybreezy.infrastructure.exposed.dao.Embedded
-import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.dao.*
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.Serializable
@@ -24,10 +22,13 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var status by Users.status
     private var token by Users.token
     private var createdAt by Users.createdAt
+    private var name by Embedded(Name)
+    private val contacts by Contact referrersOn Contacts.user
 
     fun confirm(password: Password, firstName: String, lastName: String) {
         this.password = password
         this.status = Status.ACTIVE
+        this.name = Name.create(firstName, lastName)
         resetToken()
 
         this.addEvent(Confirmed(this.id.value, firstName, lastName))
@@ -63,6 +64,25 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         }
     }
 
+    class Name private constructor() : Embeddable() {
+        private var first by Users.firstName
+        private var last by Users.lastName
+
+        companion object : EmbeddableClass<Name>(
+            Name::class) {
+            override fun createInstance(resultRow: ResultRow?): Name {
+                return Name()
+            }
+
+            fun create(firstName: String, lastName: String): Name {
+                val name = Name()
+                name.first = firstName
+                name.last = lastName
+                return name
+            }
+        }
+    }
+
     abstract class Repository : EntityClass<UUID, User>(Users, User::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): User {
             return User(entityId)
@@ -90,4 +110,6 @@ object Users : UUIDTable() {
     val hashedPassword = varchar("password", 255).nullable()
     val email = varchar("email_address", 255).uniqueIndex()
     val createdAt = datetime("created_at").default(LocalDateTime.now())
+    val firstName = varchar("first_name", 100).nullable()
+    val lastName = varchar("last_name", 100).nullable()
 }
