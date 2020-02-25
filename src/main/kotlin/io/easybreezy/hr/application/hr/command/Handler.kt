@@ -12,18 +12,6 @@ class Handler @Inject constructor(
     private val repository: Repository
 ) {
 
-    suspend fun createCard(command: CreateCard, userId: UUID) {
-        transaction {
-            Employee.createCard(
-                userId,
-                PersonalData.create(
-                    command.birthday,
-                    command.bio
-                )
-            )
-        }
-    }
-
     suspend fun hire(command: Hire, userId: UUID, hrManager: UUID) {
         transaction {
 

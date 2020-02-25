@@ -161,14 +161,6 @@ class Router @Inject constructor(
     }
 
     private fun hrRouting(route: Route) {
-        route.route("/employee/create-card") {
-            post<Response.Either<Response.Ok, Response.Errors>, CreateCard>("") { command ->
-                controller<HRController>(this).createCard(
-                    command,
-                    resolvePrincipal<UserPrincipal>()
-                )
-            }
-        }
         route.route("/employee/{id}") {
             data class ID(val id: UUID)
 

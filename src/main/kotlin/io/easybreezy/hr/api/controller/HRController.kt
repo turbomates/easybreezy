@@ -19,15 +19,6 @@ class HRController @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) : Controller() {
 
-    suspend fun createCard(command: CreateCard, userId: UUID): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.onCreateCard(command)
-        if (errors.isNotEmpty()) {
-            return Response.Either(Either.Right(Response.Errors(errors)))
-        }
-        handler.createCard(command, userId)
-        return Response.Either(Either.Left(Response.Ok))
-    }
-
     suspend fun hire(command: Hire, employeeUser: UUID, hrManager: UUID): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.onHire(command)
         if (errors.isNotEmpty()) {

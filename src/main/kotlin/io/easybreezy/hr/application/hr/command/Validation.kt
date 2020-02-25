@@ -1,28 +1,16 @@
 package io.easybreezy.hr.application.hr.command
 
 import com.google.inject.Inject
-import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
-import org.valiktor.Constraint
-import org.valiktor.Validator
 import org.valiktor.functions.*
 
 class Validation @Inject constructor(){
 
-    fun onCreateCard(command: CreateCard): List<Error> {
-        return validate(command) {
-            validate(CreateCard::firstName).hasSize(3, 100)
-            validate(CreateCard::lastName).hasSize(3, 100)
-            validate(CreateCard::birthday).isNotNull()
-            validate(CreateCard::bio).isNotBlank()
-        }
-    }
-
     fun onHire(command: Hire): List<Error> {
 
         return validate(command) {
-            validate(Hire::position).hasSize(3, 100)
+            validate(Hire::position).hasSize(2, 100)
             validate(Hire::salary).isPositiveOrZero()
         }
     }
@@ -48,7 +36,7 @@ class Validation @Inject constructor(){
 
     fun onApplyPosition(command: ApplyPosition): List<Error> {
         return validate(command) {
-            validate(ApplyPosition::position).hasSize(3, 100)
+            validate(ApplyPosition::position).hasSize(2, 100)
         }
     }
 
@@ -82,14 +70,4 @@ class Validation @Inject constructor(){
             validate(UpdateBirthday::birthday).isNotNull()
         }
     }
-
-//    object GenderConstraint : Constraint {
-//        override val name: String
-//            get() = "Non valid gender value"
-//    }
-//
-//    private fun <E> Validator<E>.Property<String?>.isValidGender(): Validator<E>.Property<String?> =
-//        this.validate(GenderConstraint) { value ->
-//            Employees.Gender.values().any { it.name == value }
-//        }
 }
