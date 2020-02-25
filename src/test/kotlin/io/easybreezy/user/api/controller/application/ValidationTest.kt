@@ -4,6 +4,7 @@ import io.easybreezy.user.application.Contact
 import io.easybreezy.user.application.UpdateContacts
 import io.easybreezy.user.application.Validation
 import io.easybreezy.user.infrastructure.UserRepository
+import io.easybreezy.user.model.Contacts
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -13,25 +14,18 @@ class ValidationTest {
 
     @Test fun `correct contacts data should pass validation`() {
         val command = UpdateContacts(listOf(
-            Contact("SKYPE", "skype-n"),
-            Contact("TELEGRAM", "telegram-n"),
-            Contact("SLACK", "slack-n"),
-            Contact("EMAIL", "email@example.com"),
-            Contact("PHONE", "12-2343-24")
+            Contact(Contacts.Type.SKYPE, "skype-n"),
+            Contact(Contacts.Type.TELEGRAM, "telegram-n"),
+            Contact(Contacts.Type.SLACK, "slack-n"),
+            Contact(Contacts.Type.EMAIL, "email@example.com"),
+            Contact(Contacts.Type.PHONE, "12-2343-24")
         ))
 
         Assertions.assertTrue(validation.onUpdateContacts(command).isEmpty())
     }
 
-    @Test fun `unknown contact's type SKYPEEEE should raise error`() {
-        val command = UpdateContacts(listOf(Contact("SKYPEEEE", "skype-n")))
-
-        Assertions.assertFalse(validation.onUpdateContacts(command).isEmpty())
-    }
-
     @Test fun `invalid email address should not be accepted as contact`() {
-        val command = UpdateContacts(listOf(Contact("EMAIL", "email-invalid")))
-
+        val command = UpdateContacts(listOf(Contact(Contacts.Type.EMAIL, "email-invalid")))
         Assertions.assertFalse(validation.onUpdateContacts(command).isEmpty())
     }
 }

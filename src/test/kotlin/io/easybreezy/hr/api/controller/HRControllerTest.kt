@@ -18,10 +18,10 @@ class HRControllerTest {
 
     @Test fun `fresh employee salary, position, skills updated and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/hire") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/hire") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -36,7 +36,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("PM")!!)
                     Assertions.assertTrue(response.content?.contains("1000")!!)
@@ -50,10 +50,10 @@ class HRControllerTest {
 
     @Test fun `fired employee should not been listed`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/fire") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/fire") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {"comment" to "was fired"}.toString())
                 }) {
@@ -62,7 +62,7 @@ class HRControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/employees")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                    Assertions.assertFalse(response.content?.contains("$memberId")!!)
+                    Assertions.assertFalse(response.content?.contains("$userId")!!)
                 }
             }
         }
@@ -70,17 +70,17 @@ class HRControllerTest {
 
     @Test fun `employee note should be added and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/write-note") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/write-note") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {"text" to "note about employee"}.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("note about employee")!!)
                 }
@@ -90,10 +90,10 @@ class HRControllerTest {
 
     @Test fun `employee position should be applied and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/apply-position") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {"position" to "Developer"}.toString())
@@ -101,7 +101,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Developer")!!)
                 }
@@ -111,10 +111,10 @@ class HRControllerTest {
 
     @Test fun `employee position history should be kept in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/apply-position") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {"position" to "position1"}.toString())
@@ -122,7 +122,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/apply-position") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {"position" to "position2"}.toString())
@@ -130,7 +130,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("position1")!!)
                     Assertions.assertTrue(response.content?.contains("position2")!!)
@@ -141,10 +141,10 @@ class HRControllerTest {
 
     @Test fun `employee salary should be applied and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/apply-salary") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-salary") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -155,7 +155,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("1200")!!)
                     Assertions.assertTrue(response.content?.contains("raise salary")!!)
@@ -166,10 +166,10 @@ class HRControllerTest {
 
     @Test fun `employee salary history should be kept and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/apply-salary") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-salary") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -180,7 +180,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/apply-salary") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-salary") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -191,7 +191,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("1200")!!)
                     Assertions.assertTrue(response.content?.contains("1250")!!)
@@ -202,10 +202,10 @@ class HRControllerTest {
 
     @Test fun `employee skills should be added and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/specify-skills") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/specify-skills") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -219,7 +219,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Kotlin")!!)
                     Assertions.assertTrue(response.content?.contains("Ktor")!!)
@@ -230,17 +230,17 @@ class HRControllerTest {
 
     @Test fun `employee bio should be updated and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/update-bio") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/update-bio") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {"bio" to "My nice bio"}.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("My nice bio")!!)
                 }
@@ -250,17 +250,17 @@ class HRControllerTest {
 
     @Test fun `employee birthday should be updated and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$memberId/update-birthday") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/update-birthday") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {"birthday" to "2001-01-01"}.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("2001-01-01")!!)
                 }
@@ -270,8 +270,8 @@ class HRControllerTest {
 
     @Test fun `employee contacts should be updated and shown in his details`() {
         rollbackTransaction(testDatabase) {
-            val memberId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(memberId, emptySet(), testDatabase) }) {
+            val userId = testDatabase.createEmployee()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/users/update-contacts") {
                     addHeader("Content-Type", "application/json")
@@ -288,7 +288,7 @@ class HRControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$memberId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("skype-n")!!)
                 }

@@ -34,17 +34,11 @@ object Contacts : UUIDTable() {
     val type = customEnumeration(
         "type",
         "contact_type",
-        { value -> Contacts.Type.valueOf(value as String) },
+        { value -> Type.valueOf(value as String) },
         { PGEnum("contact_type", it) })
     val value = varchar("value", 100)
 
     enum class Type {
-        PHONE, EMAIL, SKYPE, TELEGRAM, SLACK;
-
-        companion object {
-            fun stringValues(): List<String> {
-                return values().map { it.toString() }
-            }
-        }
+        PHONE, EMAIL, SKYPE, TELEGRAM, SLACK
     }
 }

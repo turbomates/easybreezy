@@ -41,11 +41,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     fun replaceContacts(replaced: List<io.easybreezy.user.application.Contact>) {
         contacts.forEach { it.delete()}
         replaced.map {
-            Contact.add(
-                this,
-                Contacts.Type.valueOf(it.type),
-                it.value
-            )
+            Contact.add(this, it.type, it.value)
         }
     }
 

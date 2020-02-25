@@ -32,20 +32,12 @@ class Validation @Inject constructor(private val repository: Repository) {
     fun onUpdateContacts(command: UpdateContacts): List<Error> {
         return validate(command) {
             validate(UpdateContacts::contacts)
-                .validateForEach {
-                    validate(Contact::type).isIn(Contacts.Type.stringValues())
+                .validateForEach { contact ->
                     validate(Contact::value).isNotBlank()
-                    //isEmailContact() @todo
+                    if (contact.type == Contacts.Type.EMAIL) {
+                        validate(Contact::value).isEmail()
+                    }
                 }
         }
     }
-
-    private fun <E> Validator<E>.Property<Contact?>.isEmailContact(): Validator<E>.Property<Contact?> =
-        this.validate(org.valiktor.constraints.Email) { contact ->
-            contact == null ||
-            contact.type != Contacts.Type.EMAIL.toString() ||
-            !contact.value.matches(
-                Regex("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
-            )
-        }
 }
