@@ -1,5 +1,6 @@
 import React, { FC } from "react";
-import { Menu, Icon } from "antd";
+import { Menu } from "antd";
+import { UserOutlined, LaptopOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 const { SubMenu, Item } = Menu;
@@ -15,7 +16,7 @@ export const SiderMenu: FC<{}> = () => (
       key="hr"
       title={
         <span>
-          <Icon type="user" />
+          <UserOutlined />
           <span>HR</span>
         </span>
       }
@@ -28,7 +29,7 @@ export const SiderMenu: FC<{}> = () => (
       key="projects"
       title={
         <span>
-          <Icon type="laptop" />
+          <LaptopOutlined />
           <span>Projects</span>
         </span>
       }

@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Select, Icon } from "antd";
+import { Button, Select } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 import "./Paging.css";
 
@@ -33,7 +34,7 @@ export const Paging = (props: Props) => (
         props.onChange({ page: props.page - 1, perPage: props.perPage })
       }
     >
-      <Icon type="left" />
+      <LeftOutlined />
       Prev
     </Button>
 
@@ -44,7 +45,7 @@ export const Paging = (props: Props) => (
       }
     >
       Next
-      <Icon type="right" />
+      <RightOutlined />
     </Button>
   </div>
 );
