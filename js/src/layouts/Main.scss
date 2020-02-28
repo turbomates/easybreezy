@@ -22,6 +22,10 @@
   overflow-x: hidden;
   overflow-y: auto;
   background: "#fff";
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .app-menu {

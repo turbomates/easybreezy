@@ -1,31 +1,29 @@
 import React, { useState } from "react";
-import {
-  Card,
-  List,
-  Typography,
-  Row,
-  Col,
-  Menu,
-  Icon,
-  DatePicker,
-  Avatar,
-} from "antd";
-import moment from "moment";
+import { Row, Col, Menu } from "antd";
+import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { UserDetails } from "HumanResourceModels";
 
-import "./HumanResourceDetails.css";
+import { ProfileCard } from "./ProfileCard";
+import { PositionsCard } from "./PositionsCard";
+import { ContactsCard } from "./ContactsCard";
+import { VacationsCard } from "./VacationsCard";
+import { SickDaysCart } from "./SickDaysCart";
+import { NotesCart } from "./NotesCart";
 
-const { RangePicker } = DatePicker;
-const { Meta } = Card;
+import "./HumanResourceDetails.scss";
 
 interface Props {
   user: UserDetails | null;
   loading: boolean;
+  account: UserDetails | null;
 }
 
 export const HumanResourceDetails = (props: Props) => {
   const [selected, setSelected] = useState("general");
   const { loading, user } = props;
+
+  const canEdit = props.account?.id === props.user?.id;
+  const canSeeAdminStuff = canEdit;
 
   return (
     <div className="human-resource-details">
@@ -38,75 +36,38 @@ export const HumanResourceDetails = (props: Props) => {
         mode="horizontal"
       >
         <Menu.Item key="general">
-          <Icon type="person" />
+          <UserOutlined />
           General info
         </Menu.Item>
         <Menu.Item key="settings">
-          <Icon type="setting" />
+          <SettingOutlined />
           Settings
         </Menu.Item>
       </Menu>
       <Row gutter={10} className="human-resource-details__grid">
-        <Col span={12}>
-          <Card className="user-card" loading={loading}>
-            {user && (
-              <>
-                <Meta
-                  title={user.username}
-                  description={`${user.firstName} ${user.lastName}`}
-                  avatar={
-                    <Avatar
-                      shape="square"
-                      size={150}
-                      icon="user"
-                      src={user.avatar}
-                    />
-                  }
-                />
-                {user.description}
-                <List bordered={true} className="user-details-list">
-                  <List.Item>
-                    <Typography.Text>First Name</Typography.Text>
-                    <Typography.Text>{user.firstName}</Typography.Text>
-                  </List.Item>
-                  <List.Item>
-                    <Typography.Text>Last Name</Typography.Text>
-                    <Typography.Text>{user.lastName}</Typography.Text>
-                  </List.Item>
-                  <List.Item>
-                    <Typography.Text>phone</Typography.Text>
-                    <Typography.Text>{user.phone}</Typography.Text>
-                  </List.Item>
-                </List>
-              </>
-            )}
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card
-            title="Vacations"
-            bordered={false}
-            className="user-card"
+        <Col lg={12} md={24}>
+          <ProfileCard user={user} loading={loading} canEdit={canEdit} />
+          <PositionsCard user={user} loading={loading} canEdit={canEdit} />
+          <ContactsCard
+            contacts={user?.contacts || []}
             loading={loading}
-          >
-            {user?.vacations.map((vacation, index) => (
-              <span key={index} className="vacation-item">
-                <RangePicker
-                  defaultValue={[moment(vacation.from), moment(vacation.to)]}
-                  format="DD/MM/YYYY"
-                />
-                <span className="vacation-item-description">
-                  {vacation.description}
-                </span>
-              </span>
-            ))}
-          </Card>
-          <Card title="Sick Days" bordered={false} className="user-card">
-            Card content
-          </Card>
-          <Card title="Notes" bordered={false} className="user-card">
-            Card content
-          </Card>
+            canEdit={canEdit}
+          />
+        </Col>
+        <Col lg={12} md={24}>
+          <VacationsCard
+            vacations={user?.vacations || []}
+            loading={loading}
+            canEdit={canEdit}
+          />
+          <SickDaysCart sickDays={[]} loading={loading} canEdit={canEdit} />
+          {canSeeAdminStuff && (
+            <NotesCart
+              notes={user?.notes || []}
+              loading={loading}
+              canEdit={canEdit}
+            />
+          )}
         </Col>
       </Row>
     </div>

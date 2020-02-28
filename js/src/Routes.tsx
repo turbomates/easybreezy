@@ -7,19 +7,19 @@ import { HomePage } from "./pages/Home";
 import { HumanResourcesPage } from "./pages/HumanResources";
 import { UserDetailsPage } from "./pages/UserDetails";
 import { NotFoundPage } from "./pages/NotFound";
-import { LoginPage } from "./pages/Login";
+// import { LoginPage } from "./pages/Login";
 
-import { isAuthorized } from "./features/auth/selectors";
+// import { isAuthorized } from "./features/auth/selectors";
 import { canRender } from "./features/app/selectors";
 import { Preloader } from "./features/app/components/Preloader";
 
 export const Routes: React.FC = () => {
-  const isUserAuthorized = useSelector(isAuthorized);
+  // const isUserAuthorized = useSelector(isAuthorized);
   const canStartRender = useSelector(canRender);
 
   if (!canStartRender) return <Preloader />;
 
-  if (!isUserAuthorized) return <LoginPage />;
+  // if (!isUserAuthorized) return <LoginPage />;
 
   return (
     <Main>

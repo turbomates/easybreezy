@@ -8,7 +8,7 @@ import { account } from "features/account/selectors";
 import { fetchProfileAsync } from "features/human-resouce/actions";
 
 import logo from "../assets/logo.svg";
-import "./Main.css";
+import "./Main.scss";
 
 const { Header, Sider, Content } = Layout;
 
