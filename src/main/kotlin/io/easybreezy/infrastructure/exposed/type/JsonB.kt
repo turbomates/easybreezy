@@ -1,5 +1,6 @@
 package io.easybreezy.infrastructure.exposed.type
 
+import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -12,8 +13,11 @@ import org.postgresql.util.PGobject
 fun <T : Any> Table.jsonb(name: String, serializer: KSerializer<T>): Column<T> {
     return registerColumn(name, PostgreSQLJson(serializer))
 }
+inline fun <reified T : Any> EmbeddableTable.jsonb(name: String, serializer: KSerializer<T>): io.easybreezy.infrastructure.exposed.dao.Column<T> {
+    return registerColumn(name, PostgreSQLJson(serializer))
+}
 
-private class PostgreSQLJson<out T : Any>(private val serializer: KSerializer<T>) :
+class PostgreSQLJson<out T : Any>(private val serializer: KSerializer<T>) :
     ColumnType() {
     private val json = Json(JsonConfiguration.Stable)
     override fun sqlType() = "jsonb"

@@ -38,7 +38,7 @@ class UsersQO(private val paging: PagingParameters) : QueryObject<ContinuousList
 
 private fun ResultRow.toUser() = User(
     id = this[Users.id].toUUID(),
-    email = this[Users.email],
+    email = this[Users.email].address,
     status = this[Users.status].toString(),
     roles = this[Users.roles]
 )

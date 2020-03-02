@@ -4,22 +4,17 @@ import io.easybreezy.infrastructure.event.profile.MessengerAdded
 import io.easybreezy.infrastructure.event.profile.MessengerRemoved
 import io.easybreezy.infrastructure.event.profile.MessengerUsernameChanged
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
-import io.easybreezy.infrastructure.exposed.dao.Embedded
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.infrastructure.exposed.type.jsonb
-import io.easybreezy.infrastructure.postgresql.PGEnum
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.set
+import io.easybreezy.infrastructure.exposed.dao.embedded
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.`java-time`.date
 import java.util.UUID
 
 class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var personalData by Embedded(PersonalData)
-    private var contactDetails by Embedded(ContactDetails)
+    private var personalData by Profiles.personalData
+    private var contactDetails by Profiles.contactDetails
     private var userId by Profiles.userId
     private val messengers by Messenger.referrersOn(Messengers.profile, true)
 
@@ -74,26 +69,6 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 
 object Profiles : UUIDTable() {
     val userId = uuid("user_id")
-    val birthday = date("birthday").nullable()
-    val gender = customEnumeration(
-        "gender",
-        "profile_gender",
-        { value -> Gender.valueOf(value as String) },
-        { PGEnum("profile_gender", it) }).nullable()
-    val about = text("about").nullable()
-    val firstName = varchar("first_name", 25).nullable()
-    val lastName = varchar("last_name", 25).nullable()
-    val phones = jsonb("phones", Phone.serializer().set).nullable()
-    val emails = jsonb("emails", Email.serializer().set).nullable()
-    val workStack = text("work_stack").nullable()
-
-    enum class Gender {
-        MALE, FEMALE
-    }
-
-    @Serializable
-    class Phone(val number: String)
-
-    @Serializable
-    class Email(val address: String)
+    val contactDetails = embedded<ContactDetails>(ContactDetailsTable)
+    val personalData = embedded<PersonalData>(PersonalDataTable)
 }

@@ -3,8 +3,8 @@ package io.easybreezy.user.model
 import io.easybreezy.infrastructure.event.user.Confirmed
 import io.easybreezy.infrastructure.event.user.Invited
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
-import io.easybreezy.infrastructure.exposed.dao.Embedded
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.postgresql.PGEnum
@@ -18,8 +18,8 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var email by Embedded(Email)
-    private var password by Embedded(Password)
+    private var email by Users.email
+    private var password by Users.password
     private var roles by Users.roles
     private var status by Users.status
     private var token by Users.token
@@ -82,7 +82,7 @@ object Users : UUIDTable() {
         { value -> Status.valueOf(value as String) },
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
     val roles = jsonb("roles", Role.serializer().set)
-    val hashedPassword = varchar("password", 255).nullable()
-    val email = varchar("email_address", 255).uniqueIndex()
+    val password = embedded<Password>(PasswordTable)
+    val email = embedded<Email>(EmailTable)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 }

@@ -1,10 +1,10 @@
 package io.easybreezy.infrastructure.exposed
 
-import io.easybreezy.infrastructure.exposed.embedded.Embeddable
-import io.easybreezy.infrastructure.exposed.embedded.EmbeddableClass
-import io.easybreezy.infrastructure.exposed.embedded.EmbeddableTable
-import io.easybreezy.infrastructure.exposed.embedded.Entity
-import io.easybreezy.infrastructure.exposed.embedded.embedded
+import io.easybreezy.infrastructure.exposed.dao.Embeddable
+import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
+import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
+import io.easybreezy.infrastructure.exposed.dao.Entity
+import io.easybreezy.infrastructure.exposed.dao.embedded
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable

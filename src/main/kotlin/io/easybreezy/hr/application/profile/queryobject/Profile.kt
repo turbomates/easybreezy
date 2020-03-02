@@ -1,6 +1,9 @@
 package io.easybreezy.hr.application.profile.queryobject
 
 import io.easybreezy.hr.model.profile.Messengers
+import io.easybreezy.hr.model.profile.NameTable
+import io.easybreezy.hr.model.profile.PersonalData
+import io.easybreezy.hr.model.profile.PersonalDataTable
 import io.easybreezy.hr.model.profile.Profiles
 import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.QueryObject
@@ -50,14 +53,11 @@ fun ResultRow.toProfilesOne(): Profile {
 }
 
 private fun ResultRow.toProfile(): Profile {
+
+    this[Profiles.contactDetails]
     return Profile(
         id = this[Profiles.id].toUUID(),
-        gender = this[Profiles.gender].toString(),
-        about = this[Profiles.about],
-        workStack = this[Profiles.workStack],
-        firstName = this[Profiles.firstName],
-        lastName = this[Profiles.lastName],
-        messengers = listOf()
+        gender = "asf"
     )
 }
 
@@ -73,11 +73,11 @@ data class Profile(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val gender: String,
-    val about: String?,
-    val workStack: String?,
-    val firstName: String?,
-    val lastName: String?,
-    var messengers: List<Messenger>?
+    val about: String? = null,
+    val workStack: String? = null,
+    val firstName: String? = null,
+    val lastName: String? = null,
+    var messengers: List<Messenger>? = null
 )
 
 @Serializable
