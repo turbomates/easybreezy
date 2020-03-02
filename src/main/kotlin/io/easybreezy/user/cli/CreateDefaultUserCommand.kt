@@ -3,6 +3,7 @@ package io.easybreezy.user.cli
 import io.easybreezy.application.HikariDataSource
 import io.easybreezy.application.SystemConfiguration
 import io.easybreezy.user.model.Email
+import io.easybreezy.user.model.EmailTable
 import io.easybreezy.user.model.Password
 import io.easybreezy.user.model.User
 import io.easybreezy.user.model.Users
@@ -20,7 +21,7 @@ class CreateDefaultUserCommand {
             Database.connect(dataSource)
 
             transaction {
-                if (Users.select { Users.email eq "admin@admin.my" }.count() == 0) {
+                if (Users.select { Users.email[EmailTable.email] eq "admin@admin.my" }.count() == 0) {
                     User.createAdmin(
                         Email.create("admin@admin.my"),
                         Password.create("123")

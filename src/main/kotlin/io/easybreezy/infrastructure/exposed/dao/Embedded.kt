@@ -98,6 +98,9 @@ class EmbeddableColumn<T : Embeddable>(
         }
     }
 
+    operator fun <T : Any> get(embeddedColumn: Column<T>): org.jetbrains.exposed.sql.Column<Any?> {
+        return columns.values.first { column -> column.name == embeddedColumn.name }
+    }
 }
 
 class Column<T : Any>(val name: String, val columnType: IColumnType, val type: KClass<T>) : Expression<T>() {

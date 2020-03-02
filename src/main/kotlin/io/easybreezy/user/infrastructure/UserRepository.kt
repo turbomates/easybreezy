@@ -1,6 +1,7 @@
 package io.easybreezy.user.infrastructure
 
 import io.easybreezy.user.model.Email
+import io.easybreezy.user.model.EmailTable
 import io.easybreezy.user.model.User
 import io.easybreezy.user.model.Users
 import io.easybreezy.user.model.exception.InvalidTokenException
@@ -32,6 +33,6 @@ class UserRepository : User.Repository(), Repository {
     }
 
     override fun findByEmail(email: Email): User? {
-        return find { Users.email eq email.address }.firstOrNull()
+        return find { Users.email[EmailTable.email] eq email.address }.firstOrNull()
     }
 }

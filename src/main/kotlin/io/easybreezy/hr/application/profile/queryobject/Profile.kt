@@ -1,5 +1,6 @@
 package io.easybreezy.hr.application.profile.queryobject
 
+import io.easybreezy.hr.model.profile.ContactDetailsTable
 import io.easybreezy.hr.model.profile.Messengers
 import io.easybreezy.hr.model.profile.NameTable
 import io.easybreezy.hr.model.profile.PersonalData
@@ -54,7 +55,7 @@ fun ResultRow.toProfilesOne(): Profile {
 
 private fun ResultRow.toProfile(): Profile {
 
-    this[Profiles.contactDetails]
+    this[Profiles.contactDetails[ContactDetailsTable.phones]]
     return Profile(
         id = this[Profiles.id].toUUID(),
         gender = "asf"
