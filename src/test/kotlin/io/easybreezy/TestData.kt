@@ -1,5 +1,6 @@
 package io.easybreezy
 
+import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.user.model.Email
@@ -29,6 +30,22 @@ internal fun Database.createMember(): UUID {
             it[email[EmailTable.email]] = "member@gmail.com"
             it[roles] = setOf(Role.MEMBER)
         } get Users.id
+        id.toUUID()
+    }
+}
+
+internal fun Database.createEmployee(): UUID {
+    return transaction(this) {
+        val id = Users.insert {
+            it[status] = Status.ACTIVE
+            it[email] = "employee@gmail.com"
+            it[roles] = setOf(Role.MEMBER)
+        } get Users.id
+
+        Employees.insert {
+            it[userId] = id.value
+        }
+
         id.toUUID()
     }
 }

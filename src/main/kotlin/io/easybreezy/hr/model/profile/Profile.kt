@@ -13,7 +13,6 @@ import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
 
 class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var personalData by Profiles.personalData
     private var contactDetails by Profiles.contactDetails
     private var userId by Profiles.userId
     private val messengers by Messenger.referrersOn(Messengers.profile, true)
@@ -43,18 +42,13 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 
     fun messengers() = messengers
 
-    fun updatePersonalData(personalData: PersonalData) {
-        this.personalData = personalData
-    }
-
     fun updateContactDetails(contactDetails: ContactDetails) {
         this.contactDetails = contactDetails
     }
 
     companion object : PrivateEntityClass<UUID, Profile>(object : Repository() {}) {
-        fun create(userId: UUID, personalData: PersonalData) = Profile.new {
+        fun create(userId: UUID) = Profile.new {
             this.userId = userId
-            this.personalData = personalData
         }
     }
 
@@ -70,5 +64,4 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 object Profiles : UUIDTable() {
     val userId = uuid("user_id")
     val contactDetails = embedded<ContactDetails>(ContactDetailsTable)
-    val personalData = embedded<PersonalData>(PersonalDataTable)
 }

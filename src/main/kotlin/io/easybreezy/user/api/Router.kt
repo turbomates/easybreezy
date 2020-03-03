@@ -12,6 +12,7 @@ import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.user.api.controller.UserController
 import io.easybreezy.user.application.Confirm
 import io.easybreezy.user.application.Invite
+import io.easybreezy.user.application.UpdateContacts
 import io.easybreezy.user.application.queryobject.User
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
@@ -41,6 +42,10 @@ class Router @Inject constructor(
             get<Response.Data<User>>("/me") { controller<UserController>(this).me(resolvePrincipal<UserPrincipal>()) }
             post<Response.Either<Response.Ok, Response.Errors>, Invite>("/invite") { invite ->
                 controller<UserController>(this).invite(invite)
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, UpdateContacts>("/update-contacts") { command ->
+                controller<UserController>(this).updateContacts(command, resolvePrincipal<UserPrincipal>())
             }
         }
     }
