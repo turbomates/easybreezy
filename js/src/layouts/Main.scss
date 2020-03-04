@@ -2,19 +2,23 @@
   min-width: 500px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 80px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: white;
-}
-
 .app-layout {
   height: 100vh;
+
+  .app-mobile-drawer-toggle {
+    margin-right: 10px;
+
+    @media (min-width: 992px) {
+      display: none;
+    }
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+
+    padding: 0 10px;
+  }
 }
 
 .app-sider {
@@ -23,7 +27,7 @@
   overflow-y: auto;
   background: "#fff";
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     display: none;
   }
 }
@@ -32,26 +36,12 @@
   height: 100%;
 }
 
-.app-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40px;
-  pointer-events: none;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-mobile-drawer {
+  @media (min-width: 992px) {
+    display: none;
   }
-  to {
-    transform: rotate(360deg);
+
+  .ant-drawer-body {
+    padding: 0;
   }
-}
-
-.app-layout .ant-layout-header {
-  padding: 0;
-}
-
-.main-header {
-  display: flex;
-  align-items: center;
 }
