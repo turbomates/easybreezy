@@ -38,7 +38,7 @@ internal fun Database.createEmployee(): UUID {
     return transaction(this) {
         val id = Users.insert {
             it[status] = Status.ACTIVE
-            it[email] = "employee@gmail.com"
+            it[email[EmailTable.email]] = "employee@gmail.com"
             it[roles] = setOf(Role.MEMBER)
         } get Users.id
 

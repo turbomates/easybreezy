@@ -2,11 +2,14 @@ package io.easybreezy.hr.application.hr.queryobject
 
 import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.hr.model.hr.Notes
+import io.easybreezy.hr.model.hr.PersonalDataTable
 import io.easybreezy.hr.model.hr.Positions
 import io.easybreezy.hr.model.hr.Salaries
 import io.easybreezy.infrastructure.query.QueryObject
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.user.model.Contacts
+import io.easybreezy.user.model.NameTable
 import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.JoinType
@@ -14,7 +17,8 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import java.time.LocalDate
+import java.util.UUID
 
 class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails> {
     override suspend fun getData(): EmployeeDetails {
@@ -23,7 +27,7 @@ class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails>
                 .leftJoin(Salaries)
                 .leftJoin(Positions)
                 .leftJoin(Notes)
-                .innerJoin(Users, {Employees.userId}, {Users.id})
+                .innerJoin(Users, { Employees.userId }, { Users.id })
                 .join(Contacts, JoinType.LEFT, Employees.userId, Contacts.user)
                 .select {
                     Employees.userId eq userId
@@ -59,11 +63,11 @@ fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {
 
 fun ResultRow.toEmployeeDetails() = EmployeeDetails(
     this[Employees.userId],
-    this[Users.firstName],
-    this[Users.lastName],
+    this[Users.name[NameTable.firstName]],
+    this[Users.name[NameTable.lastName]],
     this[Employees.skills],
-    this[Employees.birthday].toString(),
-    this[Employees.bio]
+    this[Employees.personalData[PersonalDataTable.birthday]],
+    this[Employees.personalData[PersonalDataTable.bio]]
 )
 
 fun ResultRow.toNote() = Note(
@@ -101,7 +105,8 @@ data class EmployeeDetails(
     val firstName: String?,
     val lastName: String?,
     val skills: List<String>?,
-    val birthday: String?,
+    @Serializable(with = LocalDateSerializer::class)
+    val birthday: LocalDate?,
     val bio: String?,
     var notes: List<Note> = listOf(),
     var salaries: List<Salary> = listOf(),

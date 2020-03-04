@@ -2,11 +2,16 @@ package io.easybreezy.infrastructure.exposed.dao
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.exceptions.DuplicateColumnException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.JavaInstantColumnType
+import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateColumnType
+import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateTimeColumnType
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import java.math.BigDecimal
+import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.LinkedHashMap
 import java.util.UUID
 import kotlin.reflect.KClass
@@ -14,10 +19,6 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
-import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateColumnType
-import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateTimeColumnType
-import java.time.Instant
-import java.time.LocalDateTime
 
 inline fun <reified T : Embeddable> Table.embedded(obj: EmbeddableTable, prefix: String? = null): EmbeddableColumn<T> {
     return obj.getColumn(this, prefix)
@@ -31,17 +32,17 @@ abstract class EmbeddableClass<T : Embeddable>(private val type: KClass<T>) {
 
 open class Embeddable {
     internal var readValues = LinkedHashMap<String, Any?>()
-    internal var writeValues = LinkedHashMap<String, Any>()
+    internal var writeValues = LinkedHashMap<String, Any?>()
     internal var entity: Entity? = null
 
-    operator fun <T : Any> Column<T>.getValue(embeddable: Embeddable, property: KProperty<*>): T {
+    operator fun <T> Column<T>.getValue(embeddable: Embeddable, property: KProperty<*>): T {
         if (writeValues.containsKey(this.name)) {
             return writeValues[this.name] as T
         }
         return readValues[this.name] as T
     }
 
-    operator fun <T : Any> Column<T>.setValue(embeddable: Embeddable, property: KProperty<*>, value: T) {
+    operator fun <T> Column<T>.setValue(embeddable: Embeddable, property: KProperty<*>, value: T) {
         writeValues[this.name] = value
         entity?.let {
             it.applyValue(this.name, value)
@@ -72,7 +73,7 @@ open class Embeddable {
         private val columns: Map<String, org.jetbrains.exposed.sql.Column<Any?>>,
         private val writeValues: LinkedHashMap<org.jetbrains.exposed.sql.Column<Any?>, Any?>
     ) {
-        fun <T : Any> applyValue(name: String, value: T) {
+        fun <T> applyValue(name: String, value: T) {
             columns[name]?.let { writeValues[it] = value }
         }
     }
@@ -98,28 +99,14 @@ class EmbeddableColumn<T : Embeddable>(
         }
     }
 
-    operator fun <T : Any> get(embeddedColumn: Column<T>): org.jetbrains.exposed.sql.Column<Any?> {
-        return columns.values.first { column -> column.name == embeddedColumn.name }
+    operator fun <T> get(embeddedColumn: Column<T>): org.jetbrains.exposed.sql.Column<T?> {
+        return columns.values.first { column -> column.name == embeddedColumn.name } as org.jetbrains.exposed.sql.Column<T?>
     }
 }
 
-class Column<T : Any>(val name: String, val columnType: IColumnType, val type: KClass<T>) : Expression<T>() {
+class Column<T>(val name: String, val columnType: IColumnType) {
     internal var nullable: Boolean = false
     internal var defaultValueFn: (() -> T)? = null
-    fun nullable(): Column<T> {
-        nullable = true
-        return this
-    }
-
-    fun default(defaultValue: T): Column<T> {
-        defaultValueFn = { defaultValue }
-        return this
-    }
-
-    override fun toQueryBuilder(queryBuilder: QueryBuilder) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 }
 
 class EmbeddedColumn<T : Embeddable>(val table: EmbeddableTable, val type: KClass<T>, val prefix: String?) {
@@ -136,6 +123,9 @@ open class Entity<ID : Comparable<ID>>(id: EntityID<ID>) : Entity<ID>(id) {
                 this.embeddableColumns.fold(this.columns) { columns, item -> columns + item.columns },
                 entity.writeValues
             )
+        entity.writeValues.forEach {
+            instance.writeValues[it.key.name] = it.value
+        }
         columns.forEach {
             instance.readValues[it.key] = entity.readValues[it.value]
         }
@@ -166,7 +156,7 @@ open class Entity<ID : Comparable<ID>>(id: EntityID<ID>) : Entity<ID>(id) {
 }
 
 open class EmbeddableTable {
-    val columns = mutableListOf<Column<out Any>>()
+    val columns = mutableListOf<Column<*>>()
     val embeddable = mutableListOf<EmbeddedColumn<out Embeddable>>()
 
     fun short(name: String): Column<String> = registerColumn(name, ShortColumnType())
@@ -210,6 +200,20 @@ open class EmbeddableTable {
 
     fun timestamp(name: String): Column<Instant> = registerColumn(name, JavaInstantColumnType())
 
+    /** Marks this column as nullable. */
+    fun <T : Any> Column<T>.nullable(): Column<T?> {
+        val newColumn = Column<T?>(name, columnType)
+        newColumn.defaultValueFn = defaultValueFn
+        newColumn.nullable = true
+        return replaceColumn(this, newColumn)
+    }
+
+    fun <TColumn : Column<*>> replaceColumn(oldColumn: Column<*>, newColumn: TColumn): TColumn {
+        columns.remove(oldColumn)
+        columns.add(newColumn)
+        return newColumn
+    }
+
     inline fun <reified T : Embeddable> embedded(
         obj: EmbeddableTable,
         prefix: String? = null
@@ -234,7 +238,7 @@ open class EmbeddableTable {
     }
 
     inline fun <reified T : Any> registerColumn(name: String, type: IColumnType): Column<T> =
-        Column(name, type, T::class).apply { columns.add(this) }
+        Column<T>(name, type).apply { columns.add(this) }
 
     inline fun <reified T : Embeddable> getColumn(table: Table, prefix: String? = null): EmbeddableColumn<T> {
         return EmbeddableColumn(
@@ -257,9 +261,9 @@ open class EmbeddableTable {
             })
     }
 
-    fun <T : Any> Column<T>.registerInTable(table: Table, prefix: String? = null): org.jetbrains.exposed.sql.Column<T> {
+    fun <T> Column<T>.registerInTable(table: Table, prefix: String? = null): org.jetbrains.exposed.sql.Column<T?> {
         columnType.nullable = this.nullable
-        val column: org.jetbrains.exposed.sql.Column<T> =
+        val column: org.jetbrains.exposed.sql.Column<T?> =
             table.registerColumn(prefix?.let { prefix + "_" + name } ?: name, columnType)
         column.defaultValueFun = this.defaultValueFn
         return column

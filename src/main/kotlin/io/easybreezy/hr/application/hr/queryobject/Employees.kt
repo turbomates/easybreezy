@@ -6,6 +6,7 @@ import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import io.easybreezy.user.model.NameTable
 import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.*
@@ -28,8 +29,8 @@ class EmployeesQO(private val paging: PagingParameters) : QueryObject<Continuous
 
 internal fun ResultRow.toEmployee() = Employee(
     this[Employees.userId],
-    this[Users.firstName],
-    this[Users.lastName]
+    this[Users.name[NameTable.firstName]],
+    this[Users.name[NameTable.lastName]]
 )
 
 @Serializable

@@ -23,6 +23,7 @@ class UserControllerTest {
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
+                    println(response.content)
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                 }
 
@@ -35,6 +36,7 @@ class UserControllerTest {
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                 }
             }
