@@ -1,12 +1,12 @@
 object Versions {
     const val kotlin = "1.3.60"
-    const val ktor = "1.3.0"
+    const val ktor = "1.3.1"
     const val junit = "5.4.2"
     const val test_logger = "1.7.0"
     const val flyway = "6.2.1"
     const val cfg4k = "0.9.0"
     const val hikaricp = "3.4.2"
-    const val postgresqlJDBC = "42.2.9"
+    const val postgresqlJDBC = "42.2.10"
     const val google_guice = "4.2.2"
     const val slf4j_api = "1.7.30"
     const val valiktor_core = "0.9.0"
@@ -14,8 +14,8 @@ object Versions {
     const val mindrot_jbcrypt = "0.4"
     const val rabbitmq_amqp_client = "5.8.0"
     const val ktlint_gradle = "9.1.1"
-    const val exposed = "0.20.3"
-    const val kotlin_serialization = "1.3.61"
+    const val exposed = "0.21.1"
+    const val kotlin_serialization = "1.3.70"
     const val kotlin_serialization_runtime = "0.14.0"
 }
 
