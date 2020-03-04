@@ -27,4 +27,8 @@ a:hover,
 
 .content {
   padding: 10px;
+
+  @media (max-width: 992px) {
+    padding: 10px 0;
+  }
 }

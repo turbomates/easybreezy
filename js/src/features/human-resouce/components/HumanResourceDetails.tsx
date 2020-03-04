@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { Row, Col, Menu } from "antd";
+import { Row, Col, Menu, Card } from "antd";
 import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { UserDetails } from "HumanResourceModels";
 
-import { ProfileCard } from "./ProfileCard";
-import { PositionsCard } from "./PositionsCard";
-import { ContactsCard } from "./ContactsCard";
-import { VacationsCard } from "./VacationsCard";
-import { SickDaysCart } from "./SickDaysCart";
-import { NotesCart } from "./NotesCart";
+import { Profile } from "./Profile";
+import { Contacts } from "./Contacts";
+import { Vacations } from "./Vacations";
+import { Notes } from "./Notes";
 
 import "./HumanResourceDetails.scss";
 
@@ -20,9 +18,9 @@ interface Props {
 
 export const HumanResourceDetails = (props: Props) => {
   const [selected, setSelected] = useState("general");
-  const { loading, user } = props;
+  const { loading, user, account } = props;
 
-  const canEdit = props.account?.id === props.user?.id;
+  const canEdit = (account && user && account.id === user.id) || false;
   const canSeeAdminStuff = canEdit;
 
   return (
@@ -44,29 +42,50 @@ export const HumanResourceDetails = (props: Props) => {
           Settings
         </Menu.Item>
       </Menu>
-      <Row gutter={10} className="human-resource-details__grid">
+      <Row gutter={10} className="human-resource-details__grid content">
         <Col lg={12} md={24}>
-          <ProfileCard user={user} loading={loading} canEdit={canEdit} />
-          <PositionsCard user={user} loading={loading} canEdit={canEdit} />
-          <ContactsCard
-            contacts={user?.contacts || []}
+          <Card
+            className="human-resource-details__card user-details"
             loading={loading}
-            canEdit={canEdit}
-          />
+          >
+            {user && <Profile user={user} canEdit={canEdit} />}
+          </Card>
+          <Card
+            title="Positions"
+            className="human-resource-details__card user-positions"
+            loading={loading}
+          ></Card>
+          <Card
+            title="Contacts"
+            className="human-resource-details__card contacts"
+            loading={loading}
+          >
+            <Contacts contacts={user?.contacts || []} canEdit={canEdit} />
+          </Card>
         </Col>
         <Col lg={12} md={24}>
-          <VacationsCard
-            vacations={user?.vacations || []}
+          <Card
+            title="Vacations"
+            className="human-resource-details__card vacations"
             loading={loading}
-            canEdit={canEdit}
-          />
-          <SickDaysCart sickDays={[]} loading={loading} canEdit={canEdit} />
+          >
+            <Vacations vacations={user?.vacations || []} canEdit={canEdit} />
+          </Card>
+          <Card
+            title="Sick Days"
+            className="human-resource-details__card"
+            loading={loading}
+          >
+            Card content
+          </Card>
           {canSeeAdminStuff && (
-            <NotesCart
-              notes={user?.notes || []}
+            <Card
+              title="Notes"
+              className="human-resource-details__card"
               loading={loading}
-              canEdit={canEdit}
-            />
+            >
+              <Notes notes={user?.notes || []} canEdit={canEdit} />
+            </Card>
           )}
         </Col>
       </Row>

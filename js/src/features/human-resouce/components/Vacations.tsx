@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, DatePicker, Button } from "antd";
+import { DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { UserVacation } from "HumanResourceModels";
 import moment from "moment";
@@ -8,20 +8,14 @@ const { RangePicker } = DatePicker;
 
 interface Props {
   vacations: UserVacation[];
-  loading: boolean;
   canEdit: boolean;
 }
 
-export const VacationsCard = (props: Props) => {
-  const { loading, vacations, canEdit } = props;
+export const Vacations = (props: Props) => {
+  const { vacations, canEdit } = props;
 
   return (
-    <Card
-      title="Vacations"
-      bordered={false}
-      className="human-resource-details__card vacations"
-      loading={loading}
-    >
+    <>
       {vacations.map((vacation, index) => (
         <span key={index} className="vacations__item">
           <RangePicker
@@ -38,6 +32,6 @@ export const VacationsCard = (props: Props) => {
           <PlusOutlined /> Add Vacation
         </Button>
       )}
-    </Card>
+    </>
   );
 };

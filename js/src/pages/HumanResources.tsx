@@ -1,9 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { HumanResourceCalendar } from "../features/human-resouce/components/HumanResourceCalendar";
+import { HumanResourceCalendar } from "features/human-resouce/components/HumanResourceCalendar";
 import { fetchUsersVacationsAsync } from "features/human-resouce/actions";
-import { vacations } from "features/human-resouce/selectors";
+import {
+  vacations,
+  vacationGroups,
+  vacationItems,
+} from "features/human-resouce/selectors";
 
 export const HumanResourcesPage = () => {
   const dispatch = useDispatch();
@@ -13,9 +17,11 @@ export const HumanResourcesPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const vacationsData = useSelector(vacations);
+  const { loading } = useSelector(vacations);
+  const items = useSelector(vacationItems);
+  const groups = useSelector(vacationGroups);
 
-  if (vacationsData.loading) return null;
+  if (loading) return null;
 
-  return <HumanResourceCalendar items={vacationsData.items} />;
+  return <HumanResourceCalendar items={items} groups={groups} />;
 };

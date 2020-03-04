@@ -2,10 +2,13 @@ import React from "react";
 import Timeline from "react-calendar-timeline";
 import moment from "moment";
 import { HumanResourceCalendarGroup } from "./HumanResourceCalendarGroup";
-import { UserVacations } from "HumanResourceModels";
+import {
+  CalendarVacationItem,
+  CalendarVacationGroup,
+} from "HumanResourceModels";
 
 import "react-calendar-timeline/lib/Timeline.css";
-import "./HumanResourceCalendar.css";
+import "./HumanResourceCalendar.scss";
 
 const LINE_HEIGHT = 45;
 
@@ -44,51 +47,29 @@ const verticalLineClassNamesForTime = (timeStart: number, timeEnd: number) => {
 };
 
 interface Props {
-  items: UserVacations[];
+  items: CalendarVacationItem[];
+  groups: CalendarVacationGroup[];
 }
 
-export const HumanResourceCalendar = (props: Props) => {
-  const groups = props.items.map(item => ({
-    id: item.id,
-    title: item.username,
-    height: LINE_HEIGHT,
-    item,
-  }));
-
-  const items: any[] = [];
-
-  props.items.forEach(item => {
-    item.vacations.forEach(vacation => {
-      items.push({
-        id: `${item.id}${vacation.description}`,
-        group: item.id,
-        title: vacation.description,
-        start_time: moment(vacation.from),
-        end_time: moment(vacation.to),
-      });
-    });
-  });
-
-  return (
-    <div className="content human-resource-calendar">
-      <Timeline
-        groups={groups}
-        groupRenderer={data => (
-          <HumanResourceCalendarGroup
-            username={data.group.item.username}
-            avatar={data.group.item.avatar}
-            id={data.group.item.id}
-          />
-        )}
-        items={items}
-        itemHeightRatio={0.7}
-        lineHeight={LINE_HEIGHT}
-        defaultTimeStart={moment().add(-6, "month")}
-        defaultTimeEnd={moment().add(6, "month")}
-        canResize="both"
-        dragSnap={day}
-        verticalLineClassNamesForTime={verticalLineClassNamesForTime}
-      ></Timeline>
-    </div>
-  );
-};
+export const HumanResourceCalendar = (props: Props) => (
+  <div className="content human-resource-calendar">
+    <Timeline
+      groups={props.groups}
+      groupRenderer={data => (
+        <HumanResourceCalendarGroup
+          username={data.group.item.username}
+          avatar={data.group.item.avatar}
+          id={data.group.item.id}
+        />
+      )}
+      items={props.items}
+      itemHeightRatio={0.7}
+      lineHeight={LINE_HEIGHT}
+      defaultTimeStart={moment().add(-6, "month")}
+      defaultTimeEnd={moment().add(6, "month")}
+      canResize="both"
+      dragSnap={day}
+      verticalLineClassNamesForTime={verticalLineClassNamesForTime}
+    ></Timeline>
+  </div>
+);
