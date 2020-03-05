@@ -1,11 +1,11 @@
-import { UsersListing, UsersParams, UserDetails } from "HumanResourceModels";
+import { UserVacations, UserDetails } from "HumanResourceModels";
 import { createAsyncAction } from "typesafe-actions";
 
-export const fetchUsersAsync = createAsyncAction(
-  "FETCH_USERS_REQUEST",
-  "FETCH_USERS_SUCCESS",
-  "FETCH_USERS_FAILURE",
-)<UsersParams, UsersListing, string>();
+export const fetchUsersVacationsAsync = createAsyncAction(
+  "FETCH_USERS_VACATIONS_REQUEST",
+  "FETCH_USERS_VACATIONS_SUCCESS",
+  "FETCH_USERS_VACATIONS_FAILURE",
+)<undefined, UserVacations[], string>();
 
 export const fetchUserDetailsAsync = createAsyncAction(
   "FETCH_USER_DETAILS_REQUEST",

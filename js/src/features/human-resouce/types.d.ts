@@ -18,14 +18,47 @@ declare module "HumanResourceModels" {
     vacations: UserVacation[];
   };
 
+  export type CalendarVacationItem = {
+    id: string;
+    group: number;
+    title: string;
+    start_time: number;
+    end_time: number;
+  };
+
+  export type CalendarVacationGroup = {
+    id: number;
+    title: string;
+    item: User;
+  };
+
+  export type UserContact = {
+    type: string;
+    value: string;
+  };
+
+  export type UserNote = {
+    id: number;
+    text: string;
+    archived: boolean;
+    createdAt: string;
+  };
+
   export type UserDetails = {
     id: number;
     username: string;
+    email: string;
     avatar: string;
     firstName: string;
     lastName: string;
+    birthday: string;
     phone: string;
     description: string;
+    position: string;
+    skills: string[];
+    vacations: UserVacation[];
+    contacts: UserContact[];
+    notes: UserNote[];
   };
 
   export type UsersListing = {

@@ -1,3 +1,5 @@
 import React from "react";
 
-export const HomePage = () => <div className="content">Home page</div>;
+export const HomePage: React.FC = () => (
+  <div className="content">Home page</div>
+);

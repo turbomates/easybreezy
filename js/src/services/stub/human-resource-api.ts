@@ -16,11 +16,18 @@ const getUserGeneralInfo = (item: UserJSON) => ({
 const getUserDetails = (item: UserJSON) => ({
   id: item.id,
   username: item.username,
+  email: item.email,
   avatar: item.avatar,
   firstName: item.firstName,
   lastName: item.lastName,
+  birthday: item.birthday,
   phone: item.phone,
   description: item.description,
+  position: item.position,
+  vacations: item.vacations,
+  contacts: item.contacts,
+  notes: item.notes,
+  skills: item.skills,
 });
 
 const getUserVacationInfo = (item: UserJSON) => ({

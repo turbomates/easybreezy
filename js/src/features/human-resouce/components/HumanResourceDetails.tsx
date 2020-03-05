@@ -1,46 +1,95 @@
-import React from "react";
-import { Card, List, Typography } from "antd";
+import React, { useState } from "react";
+import { Row, Col, Menu, Card } from "antd";
+import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { UserDetails } from "HumanResourceModels";
 
-import "./HumanResourceDetails.css";
+import { Profile } from "./Profile";
+import { Contacts } from "./Contacts";
+import { Vacations } from "./Vacations";
+import { Notes } from "./Notes";
 
-const { Meta } = Card;
+import "./HumanResourceDetails.scss";
 
 interface Props {
   user: UserDetails | null;
   loading: boolean;
+  account: UserDetails | null;
 }
 
-export const HumanResourceDetails = (props: Props) => {
-  const { loading, user } = props;
+export const HumanResourceDetails: React.FC<Props> = props => {
+  const [selected, setSelected] = useState("general");
+  const { loading, user, account } = props;
+  const { contacts = [], vacations = [], notes = [] } = user ?? {};
+
+  const canEdit = (account && user && account.id === user.id) || false;
+  const canSeeAdminStuff = canEdit;
 
   return (
-    <div className="content human-resource-details">
-      <Card
-        className="user-card"
-        loading={loading}
-        cover={user ? <img alt="example" src={user.avatar} /> : null}
+    <div className="human-resource-details">
+      <Menu
+        onClick={(e: any) => {
+          console.log(e);
+          setSelected(e.key);
+        }}
+        selectedKeys={[selected]}
+        mode="horizontal"
       >
-        {user && (
-          <>
-            <Meta title={user.username} description={user.description} />
-            <List bordered={true} className="user-details-list">
-              <List.Item>
-                <Typography.Text>First Name</Typography.Text>
-                <Typography.Text>{user.firstName}</Typography.Text>
-              </List.Item>
-              <List.Item>
-                <Typography.Text>Last Name</Typography.Text>
-                <Typography.Text>{user.lastName}</Typography.Text>
-              </List.Item>
-              <List.Item>
-                <Typography.Text>phone</Typography.Text>
-                <Typography.Text>{user.phone}</Typography.Text>
-              </List.Item>
-            </List>
-          </>
-        )}
-      </Card>
+        <Menu.Item key="general">
+          <UserOutlined />
+          General info
+        </Menu.Item>
+        <Menu.Item key="settings">
+          <SettingOutlined />
+          Settings
+        </Menu.Item>
+      </Menu>
+      <Row gutter={10} className="human-resource-details__grid content">
+        <Col lg={12} md={24}>
+          <Card
+            className="human-resource-details__card user-details"
+            loading={loading}
+          >
+            {user && <Profile user={user} canEdit={canEdit} />}
+          </Card>
+          <Card
+            title="Positions"
+            className="human-resource-details__card user-positions"
+            loading={loading}
+          ></Card>
+          <Card
+            title="Contacts"
+            className="human-resource-details__card contacts"
+            loading={loading}
+          >
+            <Contacts contacts={contacts} canEdit={canEdit} />
+          </Card>
+        </Col>
+        <Col lg={12} md={24}>
+          <Card
+            title="Vacations"
+            className="human-resource-details__card vacations"
+            loading={loading}
+          >
+            <Vacations vacations={vacations} canEdit={canEdit} />
+          </Card>
+          <Card
+            title="Sick Days"
+            className="human-resource-details__card"
+            loading={loading}
+          >
+            Card content
+          </Card>
+          {canSeeAdminStuff && (
+            <Card
+              title="Notes"
+              className="human-resource-details__card"
+              loading={loading}
+            >
+              <Notes notes={notes} canEdit={canEdit} />
+            </Card>
+          )}
+        </Col>
+      </Row>
     </div>
   );
 };

@@ -1,0 +1,47 @@
+.App {
+  min-width: 500px;
+}
+
+.app-layout {
+  height: 100vh;
+
+  .app-mobile-drawer-toggle {
+    margin-right: 10px;
+
+    @media (min-width: 992px) {
+      display: none;
+    }
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+
+    padding: 0 10px;
+  }
+}
+
+.app-sider {
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: "#fff";
+
+  @media (max-width: 992px) {
+    display: none;
+  }
+}
+
+.app-menu {
+  height: 100%;
+}
+
+.app-mobile-drawer {
+  @media (min-width: 992px) {
+    display: none;
+  }
+
+  .ant-drawer-body {
+    padding: 0;
+  }
+}
