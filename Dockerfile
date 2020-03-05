@@ -1,4 +1,4 @@
-FROM openjdk:12-jdk as builder
+FROM openjdk:13-jdk as builder
 
 RUN mkdir -p /build/gradle
 WORKDIR /build
@@ -11,7 +11,7 @@ ADD . .
 
 RUN ./gradlew shadowJar --console=plain
 
-FROM openjdk:12-slim
+FROM openjdk:13-slim
 WORKDIR /eazybreezy
 COPY --from=builder /build/build/libs/easybreezy.jar /eazybreezy
 COPY _dockerfiles/logback.xml .
