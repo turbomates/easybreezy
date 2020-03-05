@@ -66,12 +66,6 @@ object Plugins {
     const val kotlin_serialization = "org.jetbrains.kotlin.plugin.serialization"
 }
 
-object Annotations {
-    const val javax_entity = "javax.persistence.Entity"
-    const val javax_mapped_super_class = "javax.persistence.MappedSuperclass"
-    const val javax_embeddable = "javax.persistence.Embeddable"
-}
-
 object KotlinModules {
     const val jvm = "jvm"
     const val stdlib_jdk8 = "stdlib-jdk8"
