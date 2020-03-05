@@ -11,27 +11,23 @@ interface Props {
   canEdit: boolean;
 }
 
-export const Vacations = (props: Props) => {
-  const { vacations, canEdit } = props;
-
-  return (
-    <>
-      {vacations.map((vacation, index) => (
-        <span key={index} className="vacations__item">
-          <RangePicker
-            defaultValue={[moment(vacation.from), moment(vacation.to)]}
-            format="DD/MM/YYYY"
-          />
-          <span className="vacations__item-description">
-            {vacation.description}
-          </span>
+export const Vacations: React.FC<Props> = ({ vacations, canEdit }) => (
+  <>
+    {vacations.map((vacation, index) => (
+      <span key={index} className="vacations__item">
+        <RangePicker
+          defaultValue={[moment(vacation.from), moment(vacation.to)]}
+          format="DD/MM/YYYY"
+        />
+        <span className="vacations__item-description">
+          {vacation.description}
         </span>
-      ))}
-      {canEdit && (
-        <Button onClick={() => {}}>
-          <PlusOutlined /> Add Vacation
-        </Button>
-      )}
-    </>
-  );
-};
+      </span>
+    ))}
+    {canEdit && (
+      <Button onClick={() => {}}>
+        <PlusOutlined /> Add Vacation
+      </Button>
+    )}
+  </>
+);

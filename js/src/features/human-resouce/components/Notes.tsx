@@ -8,9 +8,7 @@ interface Props {
   canEdit: boolean;
 }
 
-export const Notes = (props: Props) => {
-  const { notes, canEdit } = props;
-
+export const Notes: React.FC<Props> = ({ notes, canEdit }) => {
   if (notes.length) return null;
 
   return (

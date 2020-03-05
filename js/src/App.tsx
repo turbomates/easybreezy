@@ -6,7 +6,7 @@ import store, { history } from "./store";
 import { Routes } from "./Routes";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-export const App = () => (
+export const App: React.FC = () => (
   <ErrorBoundary>
     <Provider store={store}>
       <ConnectedRouter history={history}>

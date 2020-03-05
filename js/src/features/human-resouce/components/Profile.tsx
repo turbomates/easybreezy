@@ -10,50 +10,46 @@ interface Props {
   canEdit: boolean;
 }
 
-export const Profile = (props: Props) => {
-  const { user, canEdit } = props;
+export const Profile: React.FC<Props> = ({ user, canEdit }) => (
+  <>
+    <div className="user-details__short-info user-profile">
+      <Avatar
+        className="user-profile__image"
+        shape="square"
+        size={150}
+        icon="user"
+        src={user.avatar}
+      />
+      <div className="user-profile__description">
+        <h3>
+          {user.firstName} {user.lastName}
+        </h3>
+        <h4>{user.username}</h4>
 
-  return (
-    <>
-      <div className="user-details__short-info user-profile">
-        <Avatar
-          className="user-profile__image"
-          shape="square"
-          size={150}
-          icon="user"
-          src={user.avatar}
-        />
-        <div className="user-profile__description">
-          <h3>
-            {user.firstName} {user.lastName}
-          </h3>
-          <h4>{user.username}</h4>
-
-          <div className="user-profile__row">
-            {user.skills.map(skill => (
-              <Tag key={skill} closable={true}>
-                {skill}
-              </Tag>
-            ))}
-            {canEdit && (
-              <Tag className="site-tag-plus">
-                <PlusOutlined /> Add Skill
-              </Tag>
-            )}
-          </div>
-          <div className="user-profile__row">
-            <label>Birthday</label>
-            <DatePicker
-              placeholder="Birthday"
-              value={moment(user.birthday)}
-              disabled={!canEdit}
-            />
-          </div>
+        <div className="user-profile__row">
+          {user.skills.map(skill => (
+            <Tag key={skill} closable={true}>
+              {skill}
+            </Tag>
+          ))}
+          {canEdit && (
+            <Tag className="site-tag-plus">
+              <PlusOutlined /> Add Skill
+            </Tag>
+          )}
+        </div>
+        <div className="user-profile__row">
+          <label>Birthday</label>
+          <DatePicker
+            placeholder="Birthday"
+            value={moment(user.birthday)}
+            disabled={!canEdit}
+          />
         </div>
       </div>
-      <Paragraph className="user-description" editable={canEdit}>
-        {user.description}
-      </Paragraph>
-    </>
-  );
-};
+    </div>
+    <Paragraph className="user-description" editable={canEdit}>
+      {user.description}
+    </Paragraph>
+  </>
+);

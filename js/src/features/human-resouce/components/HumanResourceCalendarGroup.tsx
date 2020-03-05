@@ -10,7 +10,7 @@ interface Props {
   id: number;
 }
 
-export const HumanResourceCalendarGroup = (props: Props) => (
+export const HumanResourceCalendarGroup: React.FC<Props> = props => (
   <Link to={`/users/${props.id}`} className="human-resource-calendar-group">
     <Avatar icon="user" src={props.avatar} />{" "}
     <span className="title">{props.username}</span>

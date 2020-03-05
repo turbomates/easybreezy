@@ -10,7 +10,7 @@ interface Props {
   type: string;
 }
 
-export const ContactIcon = (props: Props) => {
+export const ContactIcon: React.FC<Props> = props => {
   switch (props.type) {
     case "phone":
       return <PhoneOutlined />;

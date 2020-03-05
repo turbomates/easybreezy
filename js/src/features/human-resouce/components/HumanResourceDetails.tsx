@@ -16,9 +16,10 @@ interface Props {
   account: UserDetails | null;
 }
 
-export const HumanResourceDetails = (props: Props) => {
+export const HumanResourceDetails: React.FC<Props> = props => {
   const [selected, setSelected] = useState("general");
   const { loading, user, account } = props;
+  const { contacts = [], vacations = [], notes = [] } = user ?? {};
 
   const canEdit = (account && user && account.id === user.id) || false;
   const canSeeAdminStuff = canEdit;
@@ -60,7 +61,7 @@ export const HumanResourceDetails = (props: Props) => {
             className="human-resource-details__card contacts"
             loading={loading}
           >
-            <Contacts contacts={user?.contacts || []} canEdit={canEdit} />
+            <Contacts contacts={contacts} canEdit={canEdit} />
           </Card>
         </Col>
         <Col lg={12} md={24}>
@@ -69,7 +70,7 @@ export const HumanResourceDetails = (props: Props) => {
             className="human-resource-details__card vacations"
             loading={loading}
           >
-            <Vacations vacations={user?.vacations || []} canEdit={canEdit} />
+            <Vacations vacations={vacations} canEdit={canEdit} />
           </Card>
           <Card
             title="Sick Days"
@@ -84,7 +85,7 @@ export const HumanResourceDetails = (props: Props) => {
               className="human-resource-details__card"
               loading={loading}
             >
-              <Notes notes={user?.notes || []} canEdit={canEdit} />
+              <Notes notes={notes} canEdit={canEdit} />
             </Card>
           )}
         </Col>

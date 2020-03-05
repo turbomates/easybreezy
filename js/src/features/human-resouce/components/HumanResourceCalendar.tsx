@@ -51,10 +51,10 @@ interface Props {
   groups: CalendarVacationGroup[];
 }
 
-export const HumanResourceCalendar = (props: Props) => (
+export const HumanResourceCalendar: React.FC<Props> = ({ items, groups }) => (
   <div className="content human-resource-calendar">
     <Timeline
-      groups={props.groups}
+      groups={groups}
       groupRenderer={data => (
         <HumanResourceCalendarGroup
           username={data.group.item.username}
@@ -62,7 +62,7 @@ export const HumanResourceCalendar = (props: Props) => (
           id={data.group.item.id}
         />
       )}
-      items={props.items}
+      items={items}
       itemHeightRatio={0.7}
       lineHeight={LINE_HEIGHT}
       defaultTimeStart={moment().add(-6, "month")}

@@ -5,7 +5,7 @@ import { userDetails, profile } from "../features/human-resouce/selectors";
 import { fetchUserDetailsAsync } from "../features/human-resouce/actions";
 import { HumanResourceDetails } from "features/human-resouce/components/HumanResourceDetails";
 
-export const UserDetailsPage = () => {
+export const UserDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user, loading } = useSelector(userDetails);
   const { data } = useSelector(profile);

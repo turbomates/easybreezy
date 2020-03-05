@@ -9,7 +9,7 @@ import {
   vacationItems,
 } from "features/human-resouce/selectors";
 
-export const HumanResourcesPage = () => {
+export const HumanResourcesPage: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
