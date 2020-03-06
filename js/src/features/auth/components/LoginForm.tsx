@@ -1,6 +1,6 @@
 import { SignInData } from "AuthModels";
 import React from "react";
-import useForm from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import { signInAsync } from "../actions";

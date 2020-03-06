@@ -1,6 +1,6 @@
 import React from "react";
 import { DatePicker, Avatar, Tag } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, UserOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 import moment from "moment";
 import { UserDetails } from "HumanResourceModels";
@@ -17,7 +17,7 @@ export const Profile: React.FC<Props> = ({ user, canEdit }) => (
         className="user-profile__image"
         shape="square"
         size={150}
-        icon="user"
+        icon={<UserOutlined />}
         src={user.avatar}
       />
       <div className="user-profile__description">
