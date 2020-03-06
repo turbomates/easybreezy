@@ -1,5 +1,6 @@
 import React from "react";
 import { Dropdown, Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { HeaderProfileMenu } from "./HeaderProfileMenu";
 import { UserDetails } from "HumanResourceModels";
 import { HeaderProfileDropdownSkeleton } from "./HeaderProfileDropdownSkeleton";
@@ -21,7 +22,7 @@ export const HeaderProfileDropdown = (props: Props) => {
       overlay={<HeaderProfileMenu userId={profile.id} />}
     >
       <div>
-        <Avatar icon="user" src={profile.avatar} />
+        <Avatar icon={<UserOutlined />} src={profile.avatar} />
         <div className="profile-info">
           <div className="profile-info__name">
             {profile.firstName} {profile.lastName}

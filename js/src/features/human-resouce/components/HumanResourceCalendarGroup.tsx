@@ -1,5 +1,6 @@
 import React from "react";
 import { Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 import "./HumanResourceCalendarGroup.scss";
@@ -12,7 +13,7 @@ interface Props {
 
 export const HumanResourceCalendarGroup: React.FC<Props> = props => (
   <Link to={`/users/${props.id}`} className="human-resource-calendar-group">
-    <Avatar icon="user" src={props.avatar} />{" "}
+    <Avatar icon={<UserOutlined />} src={props.avatar} />{" "}
     <span className="title">{props.username}</span>
   </Link>
 );
