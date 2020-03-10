@@ -183,6 +183,16 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.delete(
     }
 }
 
+inline fun <reified TResponse : Response, reified TBody : Any> Route.deleteWithBody(
+    path: String,
+    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody) -> TResponse
+): Route {
+    return route(path, HttpMethod.Delete) {
+        handle {
+            call.respond(body(call.receive()))
+        }
+    }
+}
 
 inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : Any> Route.delete(
     path: String,

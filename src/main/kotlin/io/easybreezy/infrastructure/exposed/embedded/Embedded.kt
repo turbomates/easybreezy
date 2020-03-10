@@ -2,7 +2,6 @@ package io.easybreezy.infrastructure.exposed.embedded
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.exceptions.DuplicateColumnException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import java.math.BigDecimal
@@ -10,10 +9,8 @@ import java.util.LinkedHashMap
 import java.util.UUID
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.isSubclassOf
 
 inline fun <reified T : Embeddable> Table.embedded(obj: EmbeddableTable, prefix: String? = null): EmbeddableColumn<T> {
     return obj.getColumn(this, prefix)

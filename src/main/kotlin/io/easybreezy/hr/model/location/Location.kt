@@ -8,17 +8,19 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
 
-class Location private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
+typealias LocationId = UUID
+
+class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
     private var name by Locations.name
 
-    companion object : PrivateEntityClass<UUID, Location>(object: Repository() {}) {
+    companion object : PrivateEntityClass<LocationId, Location>(object: Repository() {}) {
         fun create(name: String): Location {
             return Location.new { this.name = name }
         }
     }
 
     abstract class Repository : UUIDEntityClass<Location>(Locations, Location::class.java) {
-        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Location {
+        override fun createInstance(entityId: EntityID<LocationId>, row: ResultRow?): Location {
             return Location(entityId)
         }
     }

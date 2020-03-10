@@ -1,29 +1,18 @@
 package io.easybreezy.hr.api
 
 import com.google.inject.Inject
-import io.easybreezy.hr.api.controller.AbsenceController
-import io.easybreezy.hr.api.controller.LocationController
-import io.easybreezy.hr.api.controller.ProfileController
-import io.easybreezy.hr.application.absence.CreateAbsence
-import io.easybreezy.hr.application.absence.EditWorkingHours
-import io.easybreezy.hr.application.absence.NoteWorkingHours
-import io.easybreezy.hr.application.absence.RemoveWorkingHours
-import io.easybreezy.hr.application.absence.UpdateAbsence
-import io.easybreezy.hr.application.absence.queryobject.Absence
-import io.easybreezy.hr.application.absence.queryobject.Absences
-import io.easybreezy.hr.application.absence.queryobject.UserAbsences
-import io.easybreezy.hr.application.absence.queryobject.UserWorkingHours
+import io.easybreezy.hr.api.controller.*
+import io.easybreezy.hr.application.absence.*
+import io.easybreezy.hr.application.absence.queryobject.*
 import io.easybreezy.hr.application.absence.queryobject.WorkingHour
-import io.easybreezy.hr.application.absence.queryobject.WorkingHours
+import io.easybreezy.hr.application.calendar.command.*
+import io.easybreezy.hr.application.calendar.queryobject.Calendars
+import io.easybreezy.hr.application.calendar.queryobject.Holidays
 import io.easybreezy.hr.application.location.AssignLocation
 import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
-import io.easybreezy.hr.application.location.queryobject.Locations
-import io.easybreezy.hr.application.location.queryobject.UserLocation
-import io.easybreezy.hr.application.location.queryobject.UserLocations
-import io.easybreezy.hr.application.profile.command.UpdateContactDetails
-import io.easybreezy.hr.application.profile.command.UpdateMessengers
-import io.easybreezy.hr.application.profile.command.UpdatePersonalData
+import io.easybreezy.hr.application.location.queryobject.*
+import io.easybreezy.hr.application.profile.command.*
 import io.easybreezy.hr.application.profile.queryobject.Profile
 import io.easybreezy.infrastructure.ktor.EmptyParams
 import io.easybreezy.infrastructure.ktor.GenericPipeline
@@ -32,6 +21,7 @@ import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.delete
+import io.easybreezy.infrastructure.ktor.deleteWithBody
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.ktor.application.Application
@@ -39,6 +29,7 @@ import io.ktor.auth.authenticate
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import java.time.LocalDate
 import java.util.UUID
 
 class Router @Inject constructor(
@@ -53,6 +44,7 @@ class Router @Inject constructor(
                     profileRouting(this)
                     absencesRouting(this)
                     locationsRouting(this)
+                    calendarsRouting(this)
                 }
             }
         }
@@ -92,7 +84,7 @@ class Router @Inject constructor(
         route.route("/absences") {
             data class ID(val id: UUID)
 
-            workingHours(this)
+            workingHoursRouting(this)
 
             post<Response.Either<Response.Ok, Response.Errors>, CreateAbsence>("") { command ->
                 controller<AbsenceController>(this).createAbsence(
@@ -121,7 +113,7 @@ class Router @Inject constructor(
     }
 
 
-    private fun workingHours(route: Route) {
+    private fun workingHoursRouting(route: Route) {
         data class ID(val id: UUID)
 
         route.route("/working-hours") {
@@ -187,6 +179,51 @@ class Router @Inject constructor(
                 get<Response.Data<UserLocations>>("") {
                     controller<LocationController>(this).userLocations()
                 }
+            }
+        }
+    }
+
+    private fun calendarsRouting(route: Route) {
+        route.route("/calendars") {
+            data class ID(val id: UUID)
+
+            holidaysRouting(this)
+
+            post<Response.Either<Response.Ok, Response.Errors>, ImportCalendar>("") { command ->
+                controller<CalendarController>(this).importCalendar(command)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, EditCalendar, ID>("/{id}") { command, params ->
+                controller<CalendarController>(this).editCalendar(params.id, command)
+            }
+            delete<Response.Ok, ID>("/{id}") { params ->
+                controller<CalendarController>(this).removeCalendar(
+                    params.id
+                )
+            }
+            get<Response.Data<Calendars>>("") {
+                controller<CalendarController>(this).calendars()
+            }
+        }
+    }
+
+    private fun holidaysRouting(route: Route) {
+        data class ID(val id: UUID)
+
+        route.route("/holidays") {
+            post<Response.Either<Response.Ok, Response.Errors>, AddHoliday>("") { command ->
+                controller<CalendarController>(this).addHoliday(command)
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, EditHoliday, ID>("/{id}") { command, params ->
+                controller<CalendarController>(this).editHoliday(params.id, command)
+            }
+
+            deleteWithBody<Response.Either<Response.Ok, Response.Errors>, RemoveHoliday>("") { command ->
+                controller<CalendarController>(this).removeHoliday(command)
+            }
+
+            get<Response.Data<Holidays>>("") {
+                controller<CalendarController>(this).holidays()
             }
         }
     }
