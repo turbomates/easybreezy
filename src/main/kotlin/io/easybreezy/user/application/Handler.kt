@@ -3,10 +3,8 @@ package io.easybreezy.user.application
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.auth.Role
-import io.easybreezy.user.model.Email
-import io.easybreezy.user.model.Password
-import io.easybreezy.user.model.Repository
-import io.easybreezy.user.model.User
+import io.easybreezy.user.model.*
+import java.util.*
 
 class Handler @Inject constructor(
     private val repository: Repository,
@@ -27,6 +25,12 @@ class Handler @Inject constructor(
             val user = repository.getByToken(command.token)
 
             user.confirm(Password.create(command.password), command.firstName, command.lastName)
+        }
+    }
+
+    suspend fun handleUpdateContacts(command: UpdateContacts, userId: UUID) {
+        transaction {
+            repository.getOne(userId).replaceContacts(command.contacts)
         }
     }
 }

@@ -1,17 +1,16 @@
 package io.easybreezy.project.model.team
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.infrastructure.exposed.embedded.Embeddable
-import io.easybreezy.infrastructure.exposed.embedded.EmbeddableClass
-import io.easybreezy.infrastructure.exposed.embedded.EmbeddableTable
-import io.easybreezy.infrastructure.exposed.embedded.Entity
-import io.easybreezy.infrastructure.exposed.embedded.embedded
+import io.easybreezy.infrastructure.exposed.dao.Embeddable
+import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
+import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
+import io.easybreezy.infrastructure.exposed.dao.Entity
+import io.easybreezy.infrastructure.exposed.dao.embedded
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
-import kotlin.reflect.full.createInstance
 
 class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
     private var user by Members.user

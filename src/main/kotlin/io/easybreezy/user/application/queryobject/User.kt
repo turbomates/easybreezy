@@ -7,6 +7,7 @@ import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import io.easybreezy.user.model.EmailTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -36,18 +37,20 @@ class UsersQO(private val paging: PagingParameters) : QueryObject<ContinuousList
         }
 }
 
-private fun ResultRow.toUser() = User(
-    id = this[Users.id].toUUID(),
-    email = this[Users.email],
-    status = this[Users.status].toString(),
-    roles = this[Users.roles]
-)
+private fun ResultRow.toUser(): User {
+    return User(
+        id = this[Users.id].toUUID(),
+        email = this[Users.email[EmailTable.email]],
+        status = this[Users.status].toString(),
+        roles = this[Users.roles]
+    )
+}
 
 @Serializable
 data class User(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val email: String,
+    val email: String?,
     val status: String,
     val roles: Set<Role>
 )

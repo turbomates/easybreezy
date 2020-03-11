@@ -21,8 +21,8 @@ class ShadowJarPlugin: Plugin<Project> {
     private fun Project.configureShadowJarTask(): TaskProvider<ShadowJar> {
         return tasks.named<ShadowJar>("shadowJar") {
             archiveBaseName.set("easybreezy")
-            archiveClassifier.set(null as String?)
-            archiveVersion.set(null as String?)
+            archiveClassifier.set("")
+            archiveVersion.set("")
 
             val sourceSets = project.properties["sourceSets"] as SourceSetContainer
 

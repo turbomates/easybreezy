@@ -1,0 +1,92 @@
+.human-resource-details {
+  &__grid {
+  }
+
+  &__card {
+    &.ant-card {
+      margin-bottom: 10px;
+    }
+  }
+
+  .user-details {
+    &__short-info {
+    }
+  }
+
+  .user-profile {
+    display: flex;
+    flex-direction: row;
+
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &__image {
+      flex-shrink: 0;
+    }
+
+    &__description {
+      padding-left: 10px;
+      width: 100%;
+
+      @media (max-width: 576px) {
+        padding-left: 0;
+        padding-top: 1rem;
+      }
+
+      h3 {
+        margin-bottom: 0;
+        line-height: 14px;
+      }
+
+      h4 {
+        color: grey;
+      }
+    }
+
+    &__row {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      padding-top: 0.5rem;
+
+      label {
+        color: grey;
+        padding-right: 10px;
+      }
+
+      .ant-tag {
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  .user-description {
+    padding-top: 1rem;
+  }
+
+  .vacations {
+    &__item {
+      display: flex;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+
+    &__item-description {
+      padding-left: 10px;
+      flex-basis: 70%;
+    }
+  }
+
+  .contacts {
+    .ant-form-inline .ant-form-item {
+    }
+  }
+
+  .ant-input[disabled] {
+    color: rgba(0, 0, 0, 0.85);
+  }
+}

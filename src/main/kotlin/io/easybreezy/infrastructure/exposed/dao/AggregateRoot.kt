@@ -2,7 +2,6 @@ package io.easybreezy.infrastructure.exposed.dao
 
 import io.easybreezy.infrastructure.event.Event
 import io.easybreezy.infrastructure.exposed.events
-import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 

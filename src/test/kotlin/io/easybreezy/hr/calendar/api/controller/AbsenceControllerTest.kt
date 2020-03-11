@@ -89,8 +89,8 @@ class AbsenceControllerTest {
                 with(handleRequest(HttpMethod.Delete, "/api/hr/absences/$absenceId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
-
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
+                    println(response.content)
                     Assertions.assertFalse(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }

@@ -1,5 +1,6 @@
 import React from "react";
-import { Menu, Icon } from "antd";
+import { Menu } from "antd";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -12,11 +13,11 @@ export const HeaderProfileMenu = (props: Props) => {
     <Menu {...other}>
       <Menu.Item>
         <Link to={`/users/${userId}`}>
-          <Icon type="user" /> Profile
+          <UserOutlined /> Profile
         </Link>
       </Menu.Item>
       <Menu.Item>
-        <Icon type="logout" />
+        <LogoutOutlined />
         Logout
       </Menu.Item>
     </Menu>
