@@ -1,9 +1,12 @@
 package io.easybreezy.hr
 
+import io.easybreezy.hr.infrastructure.CalendarRepository
 import io.easybreezy.hr.infrastructure.LocationRepository
 import io.easybreezy.hr.model.absence.Absences
 import io.easybreezy.hr.model.absence.Reason
 import io.easybreezy.hr.model.absence.WorkingHours
+import io.easybreezy.hr.model.calendar.Calendars
+import io.easybreezy.hr.model.calendar.Holidays
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations
 import io.easybreezy.infrastructure.exposed.toUUID
@@ -55,5 +58,29 @@ internal fun Database.createUserLocation(userId: UUID, locationId: UUID): UUID {
             it[this.userId] = userId
         } get UserLocations.id
         id.toUUID()
+    }
+}
+
+internal fun Database.createCalendar(locationId: UUID): UUID {
+    return transaction(this) {
+        val id = Calendars.insert {
+            it[name] = "Belarus"
+            it[location] = LocationRepository().getOne(locationId).id
+        } get Calendars.id
+
+        id.toUUID()
+    }
+}
+
+internal fun Database.createHoliday(calendarId: UUID): LocalDate {
+    return transaction(this) {
+        val day = Holidays.insert {
+            it[name] = "New year"
+            it[day] =  LocalDate.now().plusDays(20)
+            it[isWorkingDay] = false
+            it[calendar] = CalendarRepository().getOne(calendarId).id
+        } get Holidays.day
+
+        day
     }
 }

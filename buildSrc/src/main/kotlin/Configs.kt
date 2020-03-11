@@ -17,6 +17,7 @@ object Versions {
     const val exposed = "0.21.1"
     const val kotlin_serialization = "1.3.70"
     const val kotlin_serialization_runtime = "0.14.0"
+    const val ical4j = "3.0.14"
 }
 
 object Deps {
@@ -57,6 +58,7 @@ object Deps {
     const val kotlin_serialization_runtime =
         "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlin_serialization_runtime}"
     const val exposed_time = "org.jetbrains.exposed:exposed-java-time:${Versions.exposed}"
+    const val ical4j = "org.mnode.ical4j:ical4j:${Versions.ical4j}"
 }
 
 object Plugins {
