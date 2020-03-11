@@ -11,9 +11,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.json
-import kotlinx.serialization.json.jsonArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -152,7 +150,7 @@ class CalendarControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays")) {
                     println(response.content)
-                    Assertions.assertTrue(response.content?.contains("19/07/2020")!!)
+                    Assertions.assertTrue(response.content?.contains("2020-07-19")!!)
                     Assertions.assertTrue(response.content?.contains(name)!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
