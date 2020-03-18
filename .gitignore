@@ -55,6 +55,7 @@ hibernate.properties
 *.http
 trunc.sh
 logback.xml
+!_dockerfiles/logback.xml
 
 
 
