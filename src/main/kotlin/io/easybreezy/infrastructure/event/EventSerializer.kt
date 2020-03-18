@@ -7,7 +7,6 @@ import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonInput
@@ -40,13 +39,14 @@ object EventSerializer {
 internal data class EventWrapper(@Polymorphic val event: Event)
 
 internal object EventWrapperSerializer : KSerializer<EventWrapper> {
-    override val descriptor: SerialDescriptor = SerialClassDescImpl("EventDescriptor")
+    override val descriptor: SerialDescriptor = SerialDescriptor("EventDescriptor")
+
     @Suppress("UNCHECKED_CAST")
     override fun deserialize(decoder: Decoder): EventWrapper {
         val input = decoder as? JsonInput ?: throw SerializationException("This class can be loaded only by Json")
         val tree = input.decodeJson() as? JsonObject ?: throw SerializationException("Expected JsonObject")
-        var type: KClass<Event> = Class.forName(tree.getPrimitive("type").content).kotlin as KClass<Event>
-        var body: Event = input.json.fromJson(type.serializer(), tree.getObject("body"))
+        val type: KClass<Event> = Class.forName(tree.getPrimitive("type").content).kotlin as KClass<Event>
+        val body: Event = input.json.fromJson(type.serializer(), tree.getObject("body"))
 
         return EventWrapper(body)
     }

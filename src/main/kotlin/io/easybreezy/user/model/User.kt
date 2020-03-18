@@ -11,8 +11,7 @@ import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.postgresql.PGEnum
-import io.easybreezy.user.model.Users.nullable
-import kotlinx.serialization.set
+import kotlinx.serialization.builtins.set
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable

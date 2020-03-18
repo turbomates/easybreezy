@@ -5,7 +5,7 @@ import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.set
+import kotlinx.serialization.builtins.set
 
 class ContactDetails private constructor() : Embeddable() {
     private var phones by ContactDetailsTable.phones

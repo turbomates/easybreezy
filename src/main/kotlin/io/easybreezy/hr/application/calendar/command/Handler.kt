@@ -6,10 +6,10 @@ import io.easybreezy.hr.infrastructure.LocationRepository
 import io.easybreezy.hr.model.calendar.Calendar
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.exposed.toLocalDate
-import kotlinx.io.StringReader
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Summary
+import java.io.StringReader
 import java.util.Base64
 
 class Handler @Inject constructor(

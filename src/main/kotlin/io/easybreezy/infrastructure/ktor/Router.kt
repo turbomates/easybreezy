@@ -20,10 +20,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.json.JsonOutput
 import java.util.UUID
-import io.easybreezy.infrastructure.ktor.auth.Role
 
 open class Router @Inject constructor(
     protected val application: Application,
@@ -241,7 +239,7 @@ class EmptyParams()
 @Serializable(with = SerializableResponse.Companion::class)
 data class SerializableResponse(val response: Response) {
     companion object : KSerializer<SerializableResponse> {
-        override val descriptor: SerialDescriptor = SerialClassDescImpl("SerializableResponseDescriptor")
+        override val descriptor: SerialDescriptor = SerialDescriptor("SerializableResponseDescriptor")
 
         override fun deserialize(decoder: Decoder): SerializableResponse {
             throw NotImplementedError()
