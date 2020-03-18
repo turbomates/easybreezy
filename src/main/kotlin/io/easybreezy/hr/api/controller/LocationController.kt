@@ -47,7 +47,6 @@ class LocationController @Inject constructor(
         return Response.Data(queryExecutor.execute(LocationsQO()))
     }
 
-
     suspend fun assignLocation(command: AssignLocation): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.onAssignLocation(command)
         if (errors.isNotEmpty()) {

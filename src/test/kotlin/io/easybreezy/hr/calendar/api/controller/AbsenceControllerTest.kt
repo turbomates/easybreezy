@@ -146,8 +146,6 @@ class AbsenceControllerTest {
         }
     }
 
-
-
     @Test
     fun testWorkingHoursCreate() {
         val memberId = UUID.randomUUID()

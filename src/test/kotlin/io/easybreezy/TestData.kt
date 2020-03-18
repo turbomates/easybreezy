@@ -3,7 +3,6 @@ package io.easybreezy
 import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
-import io.easybreezy.user.model.Email
 import io.easybreezy.user.model.EmailTable
 import io.easybreezy.user.model.Status
 import io.easybreezy.user.model.Users

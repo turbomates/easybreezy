@@ -76,7 +76,7 @@ internal fun Database.createHoliday(calendarId: UUID): LocalDate {
     return transaction(this) {
         val day = Holidays.insert {
             it[name] = "New year"
-            it[day] =  LocalDate.now().plusDays(20)
+            it[day] = LocalDate.now().plusDays(20)
             it[isWorkingDay] = false
             it[calendar] = CalendarRepository().getOne(calendarId).id
         } get Holidays.day

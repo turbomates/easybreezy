@@ -18,7 +18,6 @@ class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
     private var info by Members.info
     private var team by Members.team
 
-
     companion object : PrivateEntityClass<UUID, Member>(object : Repository() {}) {
         fun create(team: Team, user: UUID, role: Role, info: Info): Member {
             return Member.new {
@@ -68,5 +67,4 @@ object Members : UUIDTable() {
     val user = uuid("user_id")
     val role = reference("role", Roles)
     val info = embedded<Info>(InfoTable)
-
 }

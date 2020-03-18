@@ -142,7 +142,6 @@ data class OperationObject(
     val securitySchemaObject: Map<String, List<String>>? = null,
     val server: ServerObject? = null
 
-
 )
 
 @Serializable

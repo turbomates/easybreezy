@@ -95,7 +95,6 @@ class Router @Inject constructor(
         }
     }
 
-
     private fun workingHoursRouting(route: Route) {
         data class ID(val id: UUID)
 
@@ -126,7 +125,6 @@ class Router @Inject constructor(
             get<Response.Data<WorkingHours>>("") { controller<AbsenceController>(this).workingHours() }
         }
     }
-
 
     private fun locationsRouting(route: Route) {
         route.route("/locations") {

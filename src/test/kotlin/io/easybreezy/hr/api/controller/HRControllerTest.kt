@@ -56,7 +56,7 @@ class HRControllerTest {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/fire") {
                     addHeader("Content-Type", "application/json")
-                    setBody(json {"comment" to "was fired"}.toString())
+                    setBody(json { "comment" to "was fired" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -76,7 +76,7 @@ class HRControllerTest {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/write-note") {
                     addHeader("Content-Type", "application/json")
-                    setBody(json {"text" to "note about employee"}.toString())
+                    setBody(json { "text" to "note about employee" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -97,7 +97,7 @@ class HRControllerTest {
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
                     setBody(
-                        json {"position" to "Developer"}.toString())
+                        json { "position" to "Developer" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -118,7 +118,7 @@ class HRControllerTest {
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
                     setBody(
-                        json {"position" to "position1"}.toString())
+                        json { "position" to "position1" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -126,7 +126,7 @@ class HRControllerTest {
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
                     setBody(
-                        json {"position" to "position2"}.toString())
+                        json { "position" to "position2" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -214,7 +214,6 @@ class HRControllerTest {
                                 + "Kotlin"
                                 + "Ktor"
                             }
-
                         }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -236,7 +235,7 @@ class HRControllerTest {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/update-bio") {
                     addHeader("Content-Type", "application/json")
-                    setBody(json {"bio" to "My nice bio"}.toString())
+                    setBody(json { "bio" to "My nice bio" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -256,7 +255,7 @@ class HRControllerTest {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/update-birthday") {
                     addHeader("Content-Type", "application/json")
-                    setBody(json {"birthday" to "2001-01-01"}.toString())
+                    setBody(json { "birthday" to "2001-01-01" }.toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }

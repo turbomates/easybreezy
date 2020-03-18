@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class ApplyPosition (
+data class ApplyPosition(
     val position: String,
     @Serializable(with = LocalDateSerializer::class)
     val appliedAt: LocalDate = LocalDate.now()

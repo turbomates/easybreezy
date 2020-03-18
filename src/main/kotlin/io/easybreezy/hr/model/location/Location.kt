@@ -13,7 +13,7 @@ typealias LocationId = UUID
 class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
     private var name by Locations.name
 
-    companion object : PrivateEntityClass<LocationId, Location>(object: Repository() {}) {
+    companion object : PrivateEntityClass<LocationId, Location>(object : Repository() {}) {
         fun create(name: String): Location {
             return Location.new { this.name = name }
         }

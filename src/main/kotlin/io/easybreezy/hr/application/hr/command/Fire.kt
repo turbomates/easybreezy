@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class Fire (
+data class Fire(
     val comment: String,
     @Serializable(with = LocalDateSerializer::class)
     val firedAt: LocalDate = LocalDate.now()

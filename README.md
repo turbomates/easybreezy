@@ -24,3 +24,8 @@ easybreezy.rabbit.api=http://localhost:15672
 ```bash
 ./gradlew migrationsMigrate
 ```
+
+#### Reformat code 
+```bash
+./gradlew ktlintFormat
+```

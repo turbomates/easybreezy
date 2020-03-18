@@ -62,7 +62,6 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
 
         currentPosition()?.apply(hrManager, position, appliedAt)
             ?: Position.define(hrManager, this, position, appliedAt)
-
     }
 
     fun applySalary(hrManager: UUID, newAmount: Int, comment: String, appliedAt: LocalDate) {

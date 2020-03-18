@@ -40,7 +40,6 @@ open class Router @Inject constructor(
         id ?: call.principal<T>()?.id as UUID
 }
 
-
 inline fun <reified TResponse : Response> Route.post(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.() -> TResponse
 ): Route {
@@ -84,7 +83,6 @@ inline fun <reified TResponse : Response, reified TBody : Any, reified TParams :
     }
 }
 
-
 inline fun <reified TResponse : Response, reified TBody : Any, reified TQuery : Any, reified TPath : Any> Route.post(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TPath, TQuery) -> TResponse
@@ -123,7 +121,6 @@ inline fun <reified TResponse : Response> Route.get(
     }
 }
 
-
 inline fun <reified TResponse : Response, reified TParams : Any> Route.get(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
@@ -135,7 +132,6 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.get(
         }
     }
 }
-
 
 inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : Any> Route.get(
     path: String,
@@ -168,7 +164,6 @@ inline fun <reified TResponse : Response> Route.delete(
         }
     }
 }
-
 
 inline fun <reified TResponse : Response, reified TParams : Any> Route.delete(
     path: String,

@@ -3,7 +3,6 @@ package io.easybreezy.user.infrastructure.auth
 import io.easybreezy.infrastructure.ktor.auth.PrincipalProvider
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.user.model.EmailTable
-import io.easybreezy.user.model.Password
 import io.easybreezy.user.model.Status
 import io.easybreezy.user.model.Users
 import io.ktor.auth.UserPasswordCredential
@@ -20,8 +19,8 @@ class UserProvider : PrincipalProvider<UserPrincipal> {
             val resultRow =
                 Users.select { (Users.email[EmailTable.email] eq credential.name) and (Users.status eq Status.ACTIVE) }
                     .singleOrNull()
-            if (resultRow is ResultRow
-                && resultRow[Users.password].isValid(credential.password)
+            if (resultRow is ResultRow &&
+                resultRow[Users.password].isValid(credential.password)
             ) {
                 return@transaction UserPrincipal(UUID.fromString(resultRow[Users.id].toString()), setOf())
             } else null

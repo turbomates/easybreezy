@@ -36,7 +36,6 @@ data class OpenAPI(val host: String) {
     }
 }
 
-
 enum class Method {
     GET, POST, DELETE, PATCH
 }

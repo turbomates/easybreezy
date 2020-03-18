@@ -17,7 +17,6 @@ import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.structure.Either
-import java.time.LocalDate
 import java.util.UUID
 
 class CalendarController @Inject constructor(
@@ -40,7 +39,7 @@ class CalendarController @Inject constructor(
 
     suspend fun editCalendar(id: UUID, command: EditCalendar): Response.Either<Response.Ok, Response.Errors> {
         command.id = id
-        val errors= validation.onEditCalendar(command)
+        val errors = validation.onEditCalendar(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }

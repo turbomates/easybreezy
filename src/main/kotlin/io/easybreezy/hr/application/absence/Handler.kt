@@ -7,7 +7,6 @@ import io.easybreezy.hr.model.absence.Absence
 import io.easybreezy.hr.model.absence.Reason
 import io.easybreezy.hr.model.absence.WorkingHour
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.user.infrastructure.UserRepository
 
 class Handler @Inject constructor(
     private val absenceRepository: AbsenceRepository,

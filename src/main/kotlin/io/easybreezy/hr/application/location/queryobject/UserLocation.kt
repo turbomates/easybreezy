@@ -64,4 +64,3 @@ data class UserLocation(
 data class UserLocations(
     val userLocations: Map<@Serializable(with = UUIDSerializer::class) UUID, List<UserLocation>>
 )
-

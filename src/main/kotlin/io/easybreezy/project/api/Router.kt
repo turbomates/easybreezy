@@ -10,7 +10,6 @@ import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.application.project.command.New
 import io.easybreezy.project.application.project.command.NewRole
 import io.ktor.application.Application
-import io.ktor.application.call
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import io.ktor.routing.routing

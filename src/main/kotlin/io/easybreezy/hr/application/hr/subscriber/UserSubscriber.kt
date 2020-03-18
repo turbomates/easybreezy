@@ -11,7 +11,7 @@ import io.easybreezy.infrastructure.event.user.Invited
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class UserSubscriber: EventsSubscriber {
+class UserSubscriber : EventsSubscriber {
     override fun subscribers(): List<EventsSubscriber.EventSubscriberItem<out Event>> {
         return listOf(
             Confirmed to object : EventSubscriber<Confirmed> {

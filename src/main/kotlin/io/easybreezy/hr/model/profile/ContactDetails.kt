@@ -28,7 +28,6 @@ class ContactDetails private constructor() : Embeddable() {
 object ContactDetailsTable : EmbeddableTable() {
     val phones = jsonb("phones", Phone.serializer().set).nullable()
     val emails = jsonb("emails", Email.serializer().set).nullable()
-
 }
 
 @Serializable
