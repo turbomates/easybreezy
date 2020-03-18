@@ -62,11 +62,11 @@ class AbsenceControllerTest {
                             "startedAt" to "2023-08-13"
                             "endedAt" to "2023-10-13"
                             "reason" to "DAYON"
-                            "userId" to memberId.toString()
                             "comment" to "Test Comment 2"
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
@@ -107,7 +107,6 @@ class AbsenceControllerTest {
                 database.createAbsence(memberId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -124,7 +123,6 @@ class AbsenceControllerTest {
                 database.createAbsence(memberId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -147,8 +145,6 @@ class AbsenceControllerTest {
             }
         }
     }
-
-
 
     @Test
     fun testWorkingHoursCreate() {
@@ -176,7 +172,6 @@ class AbsenceControllerTest {
 
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
@@ -257,7 +252,6 @@ class AbsenceControllerTest {
                 database.createWorkingHour(memberId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("5")!!)
                     Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -275,7 +269,6 @@ class AbsenceControllerTest {
                 database.createWorkingHour(memberId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours?from=2010-04-04&to=2030-04-04")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("5")!!)
                     Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())

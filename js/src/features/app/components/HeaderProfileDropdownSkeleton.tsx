@@ -1,12 +1,13 @@
 import React from "react";
 import { Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 
 import "./HeaderProfileDropdownSkeleton.css";
 
 export const HeaderProfileDropdownSkeleton = () => {
   return (
     <div className="profile-dropdown">
-      <Avatar icon="user" />
+      <Avatar icon={<UserOutlined />} />
       <div className="profile-info">
         <div className="profile-info__name">
           <span className="placeholder" />

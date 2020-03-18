@@ -11,27 +11,22 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocation> {
     override suspend fun getData() =
-        transaction {
-            (UserLocationsTable innerJoin Locations).select {
-                UserLocationsTable.id eq userLocationId
-            }.first().toUserLocation()
-        }
+        (UserLocationsTable innerJoin Locations).select {
+            UserLocationsTable.id eq userLocationId
+        }.first().toUserLocation()
 }
 
 class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocations> {
     override suspend fun getData() =
-        transaction {
-            (UserLocationsTable innerJoin Locations)
-                .selectAll()
-                .andWhere { UserLocationsTable.startedAt greater dateRange.from }
-                .andWhere { UserLocationsTable.endedAt less dateRange.to }
-                .toUserLocations()
-        }
+        (UserLocationsTable innerJoin Locations)
+            .selectAll()
+            .andWhere { UserLocationsTable.startedAt greater dateRange.from }
+            .andWhere { UserLocationsTable.endedAt less dateRange.to }
+            .toUserLocations()
 }
 
 private fun ResultRow.toUserLocation() = UserLocation(
@@ -69,4 +64,3 @@ data class UserLocation(
 data class UserLocations(
     val userLocations: Map<@Serializable(with = UUIDSerializer::class) UUID, List<UserLocation>>
 )
-

@@ -24,4 +24,3 @@ fun ApplicationRequest.extractDateRange(): DateRange {
 
     return DateRange(from, to)
 }
-

@@ -36,7 +36,6 @@ class V20200212133804__HR : BaseJavaMigration() {
             """.trimIndent()
         )
 
-
         context.execute(
             """
                 create table employee_salaries (

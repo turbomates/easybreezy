@@ -12,7 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
+class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var employee by Employee referencedOn Salaries.employee
     private var amount by Salaries.amount
     private var since by Salaries.since
@@ -39,7 +39,7 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
         amount = corrected
     }
 
-    fun apply(hrManager: UUID, new: Int, applyComment: String, appliedAt: LocalDate) : Salary {
+    fun apply(hrManager: UUID, new: Int, applyComment: String, appliedAt: LocalDate): Salary {
         till = appliedAt.minusDays(1)
         return define(hrManager, employee, new, applyComment, appliedAt)
     }
@@ -48,7 +48,7 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
         till = terminatedAt
     }
 
-    fun isCurrent() : Boolean {
+    fun isCurrent(): Boolean {
         return till == null
     }
 
@@ -71,4 +71,3 @@ object Salaries : UUIDTable("employee_salaries") {
     val hrManager = uuid("hr_manager_id")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 }
-

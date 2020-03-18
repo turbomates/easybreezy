@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class Hire (
+data class Hire(
     val position: String,
     val salary: Int,
     val bio: String? = null,
-    @Serializable(with=LocalDateSerializer::class)
+    @Serializable(with = LocalDateSerializer::class)
     val birthday: LocalDate? = null,
     val skills: List<String>? = null,
     @Serializable(with = LocalDateSerializer::class)

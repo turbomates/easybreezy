@@ -5,7 +5,7 @@ import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import org.valiktor.functions.*
 
-class Validation @Inject constructor(){
+class Validation @Inject constructor() {
 
     fun onHire(command: Hire): List<Error> {
 
@@ -47,7 +47,7 @@ class Validation @Inject constructor(){
         }
     }
 
-    fun onCorrectSalary(command: CorrectSalary) : List<Error> {
+    fun onCorrectSalary(command: CorrectSalary): List<Error> {
         return validate(command) {
             validate(CorrectSalary::correctedAmount).isPositiveOrZero()
         }

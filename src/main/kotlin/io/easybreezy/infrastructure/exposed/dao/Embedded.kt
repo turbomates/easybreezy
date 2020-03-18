@@ -2,7 +2,6 @@ package io.easybreezy.infrastructure.exposed.dao
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.exceptions.DuplicateColumnException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.`java-time`.JavaInstantColumnType
 import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateColumnType
@@ -77,7 +76,6 @@ open class Embeddable {
             columns[name]?.let { writeValues[it] = value }
         }
     }
-
 }
 
 class EmbeddableColumn<T : Embeddable>(

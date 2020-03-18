@@ -20,10 +20,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.json.JsonOutput
 import java.util.UUID
-import io.easybreezy.infrastructure.ktor.auth.Role
 
 open class Router @Inject constructor(
     protected val application: Application,
@@ -41,7 +39,6 @@ open class Router @Inject constructor(
     protected inline fun <reified T : Principal> PipelineContext<*, ApplicationCall>.resolvePrincipal(id: UUID? = null) =
         id ?: call.principal<T>()?.id as UUID
 }
-
 
 inline fun <reified TResponse : Response> Route.post(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.() -> TResponse
@@ -86,7 +83,6 @@ inline fun <reified TResponse : Response, reified TBody : Any, reified TParams :
     }
 }
 
-
 inline fun <reified TResponse : Response, reified TBody : Any, reified TQuery : Any, reified TPath : Any> Route.post(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TPath, TQuery) -> TResponse
@@ -125,7 +121,6 @@ inline fun <reified TResponse : Response> Route.get(
     }
 }
 
-
 inline fun <reified TResponse : Response, reified TParams : Any> Route.get(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
@@ -137,7 +132,6 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.get(
         }
     }
 }
-
 
 inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : Any> Route.get(
     path: String,
@@ -171,7 +165,6 @@ inline fun <reified TResponse : Response> Route.delete(
     }
 }
 
-
 inline fun <reified TResponse : Response, reified TParams : Any> Route.delete(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
@@ -183,6 +176,16 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.delete(
     }
 }
 
+inline fun <reified TResponse : Response, reified TBody : Any> Route.deleteWithBody(
+    path: String,
+    noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody) -> TResponse
+): Route {
+    return route(path, HttpMethod.Delete) {
+        handle {
+            call.respond(body(call.receive()))
+        }
+    }
+}
 
 inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : Any> Route.delete(
     path: String,
@@ -231,7 +234,7 @@ class EmptyParams()
 @Serializable(with = SerializableResponse.Companion::class)
 data class SerializableResponse(val response: Response) {
     companion object : KSerializer<SerializableResponse> {
-        override val descriptor: SerialDescriptor = SerialClassDescImpl("SerializableResponseDescriptor")
+        override val descriptor: SerialDescriptor = SerialDescriptor("SerializableResponseDescriptor")
 
         override fun deserialize(decoder: Decoder): SerializableResponse {
             throw NotImplementedError()

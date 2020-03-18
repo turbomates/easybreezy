@@ -12,7 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Position private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
+class Position private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var employee by Employee referencedOn Positions.employee
     private var title by Positions.title
     private var since by Positions.since
@@ -40,7 +40,7 @@ class Position private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
         till = terminatedAt
     }
 
-    fun isCurrent() : Boolean {
+    fun isCurrent(): Boolean {
         return till == null
     }
 
@@ -61,4 +61,3 @@ object Positions : UUIDTable("employee_positions") {
     val hrManager = uuid("hr_manager_id")
     val createdAt = datetime("created_at").default(LocalDateTime.now())
 }
-

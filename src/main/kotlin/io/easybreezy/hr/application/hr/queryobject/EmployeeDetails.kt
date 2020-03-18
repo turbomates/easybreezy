@@ -57,7 +57,6 @@ fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {
             contacts = current.contacts.plus(listOfNotNull(contacts)).distinct()
         )
         map
-
     }.values.toList()
 }
 

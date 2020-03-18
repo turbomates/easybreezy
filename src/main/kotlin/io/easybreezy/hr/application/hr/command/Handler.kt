@@ -1,8 +1,6 @@
 package io.easybreezy.hr.application.hr.command
 
 import com.google.inject.Inject
-import io.easybreezy.hr.model.hr.Employee
-import io.easybreezy.hr.model.hr.PersonalData
 import io.easybreezy.hr.model.hr.Repository
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import java.util.*
@@ -21,7 +19,7 @@ class Handler @Inject constructor(
 
             command.bio?.let { employee.updateBio(it) }
             command.birthday?.let { employee.updateBirthday(it) }
-            command.skills?.let {employee.specifySkills(it)}
+            command.skills?.let { employee.specifySkills(it) }
         }
     }
 

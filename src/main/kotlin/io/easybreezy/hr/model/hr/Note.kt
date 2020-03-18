@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Note private constructor(id: EntityID<UUID>) : UUIDEntity(id)  {
+class Note private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var hrManager by Notes.hrManager
     private var employee by Employee referencedOn Notes.employee
     private var text by Notes.text

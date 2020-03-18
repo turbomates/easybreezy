@@ -38,7 +38,7 @@ import io.ktor.locations.Locations
 import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.serialization.DefaultJsonConfiguration
-import io.ktor.serialization.serialization
+import io.ktor.serialization.json
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.sessions.Sessions
@@ -121,7 +121,7 @@ suspend fun main() {
             }
         }
         install(ContentNegotiation) {
-            serialization(
+            json(
                 contentType = ContentType.Application.Json,
                 json = Json(
                     configuration = DefaultJsonConfiguration.copy(

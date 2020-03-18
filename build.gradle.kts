@@ -69,6 +69,7 @@ dependencies {
     implementation(Deps.exposed_time)
     implementation(Deps.kotlin_serialization)
     implementation(Deps.kotlin_serialization_runtime)
+    implementation(Deps.ical4j)
 
     runtimeOnly(Deps.logback_classic)
 

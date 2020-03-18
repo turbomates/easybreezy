@@ -53,7 +53,6 @@ class Account(id: EntityID<Int>) : Entity<Int>(id) {
     var lastBalance by Accounts.latBalance
 }
 
-
 @Test
 fun main() {
     Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver", user = "root", password = "")
@@ -72,7 +71,6 @@ fun main() {
             name = "test"
             balance = money
             lastBalance = last
-
         }
         var result = Account.wrapRows(Accounts.selectAll()).first()
         assertSame(10, result.balance.amount)

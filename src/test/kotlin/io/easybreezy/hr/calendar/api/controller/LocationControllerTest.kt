@@ -70,7 +70,6 @@ class LocationControllerTest {
                 database.createLocation()
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -101,7 +100,6 @@ class LocationControllerTest {
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
                     Assertions.assertTrue(response.content?.contains("2020-08-19")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -133,7 +131,6 @@ class LocationControllerTest {
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("2020-03-19")!!)
                     Assertions.assertTrue(response.content?.contains("2020-04-19")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())

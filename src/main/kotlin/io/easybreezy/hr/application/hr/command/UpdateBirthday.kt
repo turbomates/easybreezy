@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class UpdateBirthday (
-    @Serializable(with=LocalDateSerializer::class)
+data class UpdateBirthday(
+    @Serializable(with = LocalDateSerializer::class)
     val birthday: LocalDate
 )

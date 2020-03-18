@@ -80,4 +80,3 @@ data class UserAbsences(
 data class Absences(
     val absences: Map<@Serializable(with = UUIDSerializer::class) UUID, List<Absence>>
 )
-

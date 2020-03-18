@@ -4,7 +4,7 @@ import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
-import kotlinx.serialization.list
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.serializer
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -62,7 +62,6 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
 
         currentPosition()?.apply(hrManager, position, appliedAt)
             ?: Position.define(hrManager, this, position, appliedAt)
-
     }
 
     fun applySalary(hrManager: UUID, newAmount: Int, comment: String, appliedAt: LocalDate) {
@@ -89,7 +88,7 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
 object Employees : UUIDTable() {
     val userId = uuid("user_id")
     val fired = bool("fired").default(false)
-    val skills = jsonb("skills", String.serializer().list).default(listOf())
+    val skills = jsonb("skills", String::class.serializer().list).default(listOf())
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val personalData = embedded<PersonalData>(PersonalDataTable)
 }

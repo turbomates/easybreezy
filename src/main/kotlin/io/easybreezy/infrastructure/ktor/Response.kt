@@ -7,14 +7,13 @@ import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
-import kotlinx.serialization.internal.SerialClassDescImpl
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonOutput
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.list
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.serializer
 
 @Serializable
@@ -37,13 +36,13 @@ sealed class Response {
 }
 
 object ResponseSerializer : KSerializer<Response> {
-    override val descriptor: SerialDescriptor = SerialClassDescImpl("ResponseSerializerDescriptor")
+    override val descriptor: SerialDescriptor = SerialDescriptor("ResponseSerializerDescriptor")
     @Suppress("UNCHECKED_CAST")
-    override fun serialize(encoder: Encoder, obj: Response) {
+    override fun serialize(encoder: Encoder, value: Response) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
-        val tree: JsonElement = when (obj) {
+        val tree: JsonElement = when (value) {
             is Response.Error -> {
-                output.json.toJson("error" to obj.error)
+                output.json.toJson("error" to value.error)
             }
             is Response.Ok -> {
                 JsonObject(mapOf("status" to JsonPrimitive("ok")))
@@ -52,21 +51,21 @@ object ResponseSerializer : KSerializer<Response> {
                 JsonObject(
                     mapOf(
                         "data" to output.json.toJson(
-                            obj.data::class.serializer() as KSerializer<Any>,
-                            obj.data
+                            value.data::class.serializer() as KSerializer<Any>,
+                            value.data
                         )
                     )
                 )
             }
             is Response.Listing<*> -> {
-                output.json.toJson(ContinuousListSerializer, obj.list)
+                output.json.toJson(ContinuousListSerializer, value.list)
             }
             is Response.Errors -> {
-                JsonObject(mapOf("errors" to output.json.toJson(Error.serializer().list, obj.errors)))
+                JsonObject(mapOf("errors" to output.json.toJson(Error.serializer().list, value.errors)))
             }
             is Response.Either<*, *> -> {
                 val anon = { response: Response -> output.json.toJson(response) }
-                obj.data.fold(anon, anon) as JsonObject
+                value.data.fold(anon, anon) as JsonObject
             }
         }
         output.encodeJson(tree)
