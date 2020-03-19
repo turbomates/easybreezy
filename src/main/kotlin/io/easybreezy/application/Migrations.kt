@@ -14,9 +14,9 @@ class Migrations {
                     .validateOnMigrate(true)
                     .outOfOrder(true)
                     .dataSource(
-                        provider.get("bts.jdbc.url", String::class.java),
-                        provider.get("bts.jdbc.user", String::class.java),
-                        provider.get("bts.jdbc.password", String::class.java)
+                        provider.get("easybreezy.jdbc.url", String::class.java),
+                        provider.get("easybreezy.jdbc.user", String::class.java),
+                        provider.get("easybreezy.jdbc.password", String::class.java)
                     )
                     .baselineOnMigrate(true)
                     .load()
