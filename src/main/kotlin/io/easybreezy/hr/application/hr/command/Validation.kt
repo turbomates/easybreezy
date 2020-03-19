@@ -3,7 +3,11 @@ package io.easybreezy.hr.application.hr.command
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
-import org.valiktor.functions.*
+import org.valiktor.functions.hasSize
+import org.valiktor.functions.isNotBlank
+import org.valiktor.functions.isNotEmpty
+import org.valiktor.functions.isNotNull
+import org.valiktor.functions.isPositiveOrZero
 
 class Validation @Inject constructor() {
 

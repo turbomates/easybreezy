@@ -3,7 +3,7 @@ package io.easybreezy.hr.application.hr.command
 import com.google.inject.Inject
 import io.easybreezy.hr.model.hr.Repository
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import java.util.*
+import java.util.UUID
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,

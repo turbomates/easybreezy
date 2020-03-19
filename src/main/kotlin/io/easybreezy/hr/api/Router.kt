@@ -1,8 +1,8 @@
 package io.easybreezy.hr.api
 
 import com.google.inject.Inject
-import io.easybreezy.hr.api.controller.*
 import io.easybreezy.hr.api.controller.AbsenceController
+import io.easybreezy.hr.api.controller.CalendarController
 import io.easybreezy.hr.api.controller.HRController
 import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.application.absence.CreateAbsence
@@ -15,11 +15,22 @@ import io.easybreezy.hr.application.absence.queryobject.Absences
 import io.easybreezy.hr.application.absence.queryobject.UserAbsences
 import io.easybreezy.hr.application.absence.queryobject.UserWorkingHours
 import io.easybreezy.hr.application.absence.queryobject.WorkingHour
-import io.easybreezy.hr.application.calendar.command.*
+import io.easybreezy.hr.application.absence.queryobject.WorkingHours
+import io.easybreezy.hr.application.calendar.command.AddHoliday
+import io.easybreezy.hr.application.calendar.command.EditCalendar
+import io.easybreezy.hr.application.calendar.command.EditHoliday
+import io.easybreezy.hr.application.calendar.command.ImportCalendar
+import io.easybreezy.hr.application.calendar.command.RemoveHoliday
 import io.easybreezy.hr.application.calendar.queryobject.Calendars
 import io.easybreezy.hr.application.calendar.queryobject.Holidays
-import io.easybreezy.hr.application.absence.queryobject.WorkingHours
-import io.easybreezy.hr.application.hr.command.*
+import io.easybreezy.hr.application.hr.command.ApplyPosition
+import io.easybreezy.hr.application.hr.command.ApplySalary
+import io.easybreezy.hr.application.hr.command.Fire
+import io.easybreezy.hr.application.hr.command.Hire
+import io.easybreezy.hr.application.hr.command.SpecifySkills
+import io.easybreezy.hr.application.hr.command.UpdateBio
+import io.easybreezy.hr.application.hr.command.UpdateBirthday
+import io.easybreezy.hr.application.hr.command.WriteNote
 import io.easybreezy.hr.application.hr.queryobject.Employee
 import io.easybreezy.hr.application.hr.queryobject.EmployeeDetails
 import io.easybreezy.hr.application.location.AssignLocation

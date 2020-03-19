@@ -1,7 +1,16 @@
 package io.easybreezy.hr.api.controller
 
 import com.google.inject.Inject
-import io.easybreezy.hr.application.hr.command.*
+import io.easybreezy.hr.application.hr.command.ApplyPosition
+import io.easybreezy.hr.application.hr.command.ApplySalary
+import io.easybreezy.hr.application.hr.command.Fire
+import io.easybreezy.hr.application.hr.command.Handler
+import io.easybreezy.hr.application.hr.command.Hire
+import io.easybreezy.hr.application.hr.command.SpecifySkills
+import io.easybreezy.hr.application.hr.command.UpdateBio
+import io.easybreezy.hr.application.hr.command.UpdateBirthday
+import io.easybreezy.hr.application.hr.command.Validation
+import io.easybreezy.hr.application.hr.command.WriteNote
 import io.easybreezy.hr.application.hr.queryobject.Employee
 import io.easybreezy.hr.application.hr.queryobject.EmployeeDetails
 import io.easybreezy.hr.application.hr.queryobject.EmployeeDetailsQO
@@ -11,7 +20,7 @@ import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
-import java.util.*
+import java.util.UUID
 
 class HRController @Inject constructor(
     private val handler: Handler,
@@ -93,9 +102,9 @@ class HRController @Inject constructor(
     }
 
     suspend fun employees(): Response.Listing<Employee> {
-         return Response.Listing(
-            queryExecutor.execute(EmployeesQO(call.request.pagingParameters()))
-        )
+        return Response.Listing(
+             queryExecutor.execute(EmployeesQO(call.request.pagingParameters()))
+             )
     }
 
     suspend fun employee(employeeUser: UUID): Response.Data<EmployeeDetails> {

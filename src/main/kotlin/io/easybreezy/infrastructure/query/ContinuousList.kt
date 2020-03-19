@@ -7,11 +7,11 @@ import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.ArraySerializer
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapEntrySerializer
 import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.builtins.nullable
-import kotlinx.serialization.builtins.MapEntrySerializer
-import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonElementSerializer
 import kotlinx.serialization.json.JsonObject
@@ -36,6 +36,7 @@ class ContinuousList<T>(
 
 object ContinuousListSerializer : KSerializer<ContinuousList<*>> {
     override val descriptor: SerialDescriptor = SerialDescriptor("ContinuousListDescriptor")
+    @Suppress("UNCHECKED_CAST")
     override fun serialize(encoder: Encoder, value: ContinuousList<*>) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
         val tree = JsonObject(

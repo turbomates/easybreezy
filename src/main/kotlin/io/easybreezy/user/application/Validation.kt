@@ -9,7 +9,10 @@ import io.easybreezy.user.model.Repository
 import io.easybreezy.user.model.User
 import org.valiktor.Constraint
 import org.valiktor.Validator
-import org.valiktor.functions.*
+import org.valiktor.functions.isEmail
+import org.valiktor.functions.isNotBlank
+import org.valiktor.functions.isNotNull
+import org.valiktor.functions.validateForEach
 
 class Validation @Inject constructor(private val repository: Repository) {
 

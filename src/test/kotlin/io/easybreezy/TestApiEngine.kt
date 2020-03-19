@@ -28,6 +28,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.response.respond
 import io.ktor.serialization.DefaultJsonConfiguration
+import io.ktor.serialization.json
 import io.ktor.serialization.serialization
 import io.ktor.server.testing.TestApplicationCall
 import io.ktor.sessions.SessionStorageMemory
@@ -63,13 +64,13 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
     install(Locations)
 
     install(ContentNegotiation) {
-        serialization(
-            contentType = ContentType.Application.Json,
+        json(
             json = Json(
                 DefaultJsonConfiguration.copy(
                     prettyPrint = true
                 )
-            )
+            ),
+            contentType = ContentType.Application.Json
         )
     }
 

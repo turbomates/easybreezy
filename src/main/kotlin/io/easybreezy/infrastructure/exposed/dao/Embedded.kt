@@ -2,7 +2,25 @@ package io.easybreezy.infrastructure.exposed.dao
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.BasicBinaryColumnType
+import org.jetbrains.exposed.sql.BinaryColumnType
+import org.jetbrains.exposed.sql.BlobColumnType
+import org.jetbrains.exposed.sql.BooleanColumnType
+import org.jetbrains.exposed.sql.CharacterColumnType
+import org.jetbrains.exposed.sql.DecimalColumnType
+import org.jetbrains.exposed.sql.DoubleColumnType
+import org.jetbrains.exposed.sql.Expression
+import org.jetbrains.exposed.sql.FloatColumnType
+import org.jetbrains.exposed.sql.IColumnType
+import org.jetbrains.exposed.sql.IntegerColumnType
+import org.jetbrains.exposed.sql.LongColumnType
+import org.jetbrains.exposed.sql.QueryBuilder
+import org.jetbrains.exposed.sql.ShortColumnType
+import org.jetbrains.exposed.sql.StringColumnType
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.TextColumnType
+import org.jetbrains.exposed.sql.UUIDColumnType
+import org.jetbrains.exposed.sql.VarCharColumnType
 import org.jetbrains.exposed.sql.`java-time`.JavaInstantColumnType
 import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateColumnType
 import org.jetbrains.exposed.sql.`java-time`.JavaLocalDateTimeColumnType
@@ -34,6 +52,7 @@ open class Embeddable {
     internal var writeValues = LinkedHashMap<String, Any?>()
     internal var entity: Entity? = null
 
+    @Suppress("UNCHECKED_CAST")
     operator fun <T> Column<T>.getValue(embeddable: Embeddable, property: KProperty<*>): T {
         if (writeValues.containsKey(this.name)) {
             return writeValues[this.name] as T
@@ -83,6 +102,8 @@ class EmbeddableColumn<T : Embeddable>(
     internal var columns: Map<String, org.jetbrains.exposed.sql.Column<Any?>> = emptyMap(),
     internal val embeddableColumns: List<EmbeddableColumn<*>> = emptyList()
 ) : Expression<T>() {
+
+    @Suppress("UNCHECKED_CAST")
     fun createInstance(): T {
         val companion = columnType.companionObjectInstance as? EmbeddableClass<T>
         return companion?.let { it.createInstance() } ?: columnType.createInstance()
@@ -97,6 +118,7 @@ class EmbeddableColumn<T : Embeddable>(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     operator fun <T> get(embeddedColumn: Column<T>): org.jetbrains.exposed.sql.Column<T?> {
         return columns.values.first { column -> column.name == embeddedColumn.name } as org.jetbrains.exposed.sql.Column<T?>
     }
@@ -238,6 +260,7 @@ open class EmbeddableTable {
     inline fun <reified T : Any> registerColumn(name: String, type: IColumnType): Column<T> =
         Column<T>(name, type).apply { columns.add(this) }
 
+    @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Embeddable> getColumn(table: Table, prefix: String? = null): EmbeddableColumn<T> {
         return EmbeddableColumn(
             T::class,

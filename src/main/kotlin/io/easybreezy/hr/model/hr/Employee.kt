@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
