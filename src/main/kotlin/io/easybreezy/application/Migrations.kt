@@ -15,8 +15,8 @@ class Migrations {
                     .outOfOrder(true)
                     .dataSource(
                         provider.get("bts.jdbc.url", String::class.java),
-                        provider.getOrNull("bts.jdbc.user", String::class.java),
-                        provider.getOrNull("bts.jdbc.password", String::class.java)
+                        provider.get("bts.jdbc.user", String::class.java),
+                        provider.get("bts.jdbc.password", String::class.java)
                     )
                     .baselineOnMigrate(true)
                     .load()
