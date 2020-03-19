@@ -18,11 +18,11 @@ ADD js .
 RUN npm install && npm run build
 
 FROM openjdk:13-slim
-WORKDIR /eazybreezy
-COPY --from=builder /build/build/libs/easybreezy.jar /eazybreezy
-COPY --from=js /js/build /eazybreezy/js
+WORKDIR /easybreezy
+COPY --from=builder /build/build/libs/easybreezy.jar /easybreezy
+COPY --from=js /js/build /easybreezy/js
 COPY _dockerfiles/logback.xml .
 
-VOLUME /eazybreezy/js
+VOLUME /easybreezy/js
 EXPOSE 3000
 
