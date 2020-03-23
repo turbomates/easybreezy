@@ -12,17 +12,14 @@ import io.easybreezy.infrastructure.ktor.InterceptorPipeline
 import io.easybreezy.infrastructure.ktor.InterceptorPipelineFactory
 import io.easybreezy.project.api.Router
 import io.easybreezy.project.application.project.subscriber.TestSubscriber
-import io.easybreezy.project.model.Project
-import io.easybreezy.project.model.project.ProjectRepository
-import io.easybreezy.project.model.team.Team
-import io.easybreezy.project.model.team.TeamRepository
+import io.easybreezy.project.infrastructure.ProjectRepository
+import io.easybreezy.project.model.Repository
 
 class ProjectModule : AbstractModule() {
     override fun configure() {
         bind(SubscriberDescription::class.java).asEagerSingleton()
         bind(Router::class.java).asEagerSingleton()
-        bind(Project.Repository::class.java).to(ProjectRepository::class.java)
-        bind(Team.Repository::class.java).to(TeamRepository::class.java)
+        bind(Repository::class.java).to(ProjectRepository::class.java)
     }
 
     @Provides

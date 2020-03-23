@@ -1,3 +1,6 @@
 package io.easybreezy.project.application.project.command
 
-class NewTeam
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class NewTeam(val name: String)

@@ -14,10 +14,11 @@ import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
 
 class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
-    private var project by Project referencedOn Roles.project
     var name by Roles.name
         private set
     private var permissions by Roles.permissions
+    private var project by Project referencedOn Roles.project
+
     fun membersCount(): Int {
         return 0
     }

@@ -3,6 +3,8 @@ package io.easybreezy
 import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
+import io.easybreezy.project.model.Project
+import io.easybreezy.project.model.Projects
 import io.easybreezy.user.model.EmailTable
 import io.easybreezy.user.model.Status
 import io.easybreezy.user.model.Users
@@ -30,6 +32,18 @@ internal fun Database.createMember(): UUID {
             it[roles] = setOf(Role.MEMBER)
         } get Users.id
         id.toUUID()
+    }
+}
+
+internal fun Database.createMyProject(): String {
+    return transaction(this) {
+        Projects.insert {
+            it[slug] = "my-project"
+            it[name] = "My Project"
+            it[description] = "descr"
+            it[author] = UUID.randomUUID()
+            it[status] = Project.Status.Active
+        } get Projects.slug
     }
 }
 

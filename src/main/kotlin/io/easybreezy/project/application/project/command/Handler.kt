@@ -3,21 +3,30 @@ package io.easybreezy.project.application.project.command
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.project.model.Project
+import io.easybreezy.project.model.Repository
+import java.util.*
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
-    private val repository: Project.Repository
+    private val repository: Repository
 ) {
-    suspend fun new(new: New) {
+    suspend fun new(new: New, author: UUID) {
         transaction {
-            Project.new(new.name, new.description)
+            Project.new(author, new.name, new.description)
         }
     }
 
-    suspend fun addRole(role: NewRole) {
+    suspend fun addRole(command: NewRole, slug: String) {
         transaction {
-            val project = repository[role.projectID]
-            project.addRole(role.name, role.permissions)
+            val project = repository.getBySlug(slug)
+            project.addRole(command.name, command.permissions)
+        }
+    }
+
+    suspend fun addTeam(command: NewTeam, slug: String) {
+        transaction {
+            val project = repository.getBySlug(slug)
+            project.createTeam(command.name)
         }
     }
 }

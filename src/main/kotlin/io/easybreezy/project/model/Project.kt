@@ -98,10 +98,10 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     companion object : PrivateEntityClass<UUID, Project>(object : Repository() {}) {
-        fun new(name: String, description: String): Project {
+        fun new(author: UUID, name: String, description: String): Project {
             return Project.new {
                 this.name = name
-                this.author = UUID.randomUUID()
+                this.author = author
                 this.status = Status.Active
                 this.slug = slugify(name)
                 this.description = description
@@ -157,4 +157,8 @@ object Projects : UUIDTable("projects") {
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
     val slug = varchar("slug", 25).uniqueIndex("projects_slug_idx")
+}
+
+interface Repository {
+    fun getBySlug(slug: String): Project
 }

@@ -1,6 +1,6 @@
 package io.easybreezy.project.model.team
 
-import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
+import io.easybreezy.infrastructure.exposed.dao.Entity
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.Projects
 import org.jetbrains.exposed.dao.EntityClass
@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SizedCollection
 import java.util.*
 
-class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
+class Team private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
     private var name by Teams.name
     //    private val repositories by Repository referrersOn Teams.repositories
     private var members by Member via Members
@@ -25,8 +25,8 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         }
     }
 
-    fun addMember(member: UUID, info: Info, role: Role) {
-        members = SizedCollection(members + Member.create(this, member, role, info))
+    fun addMember(member: UUID, role: Role) {
+        members = SizedCollection(members + Member.create(this, member, role))
     }
 
     fun changeMemberRole(member: UUID, role: Role) {
