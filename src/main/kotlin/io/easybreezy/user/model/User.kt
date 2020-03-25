@@ -50,6 +50,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         }
     }
 
+    fun password(): Password {
+        return password
+    }
+
     private fun resetToken() {
         token = null
     }
