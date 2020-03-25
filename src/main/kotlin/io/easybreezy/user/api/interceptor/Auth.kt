@@ -1,7 +1,6 @@
 package io.easybreezy.user.api.interceptor
 
 import com.google.inject.Inject
-import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Interceptor
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.auth.Auth
@@ -10,12 +9,12 @@ import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.jsonForm
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
+import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.user.infrastructure.auth.UserProvider
 import io.easybreezy.user.infrastructure.security.JWT
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.jwt
 import io.ktor.auth.principal
@@ -59,14 +58,12 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
     private fun login(route: Route) {
 
         route.route("/api/login") {
-            authenticate(Auth.UserFormAuth) {
-                post<Response.Either<Response.Ok, Response.Data<String>>> {
-                    val principal: UserPrincipal? = call.principal()
-                    principal ?: return@post Response.Either(Either.Left(Response.Ok))
-                    val session = call.sessions.get<Session>() ?: Session()
-                    call.sessions.set(session.copy(principal = principal))
-                    Response.Either(Either.Right(Response.Data(JWT.create(principal.id))))
-                }
+            post<Response.Either<Response.Ok, Response.Data<String>>> {
+                val principal: UserPrincipal? = call.principal()
+                principal ?: return@post Response.Either(Either.Left(Response.Ok))
+                val session = call.sessions.get<Session>() ?: Session()
+                call.sessions.set(session.copy(principal = principal))
+                Response.Either(Either.Right(Response.Data(JWT.create(principal.id))))
             }
         }
 
