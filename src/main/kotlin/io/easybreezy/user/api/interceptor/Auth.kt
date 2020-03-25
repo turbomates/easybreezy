@@ -15,6 +15,7 @@ import io.easybreezy.user.infrastructure.security.JWT
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.jwt
 import io.ktor.auth.principal
@@ -58,12 +59,14 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
     private fun login(route: Route) {
 
         route.route("/api/login") {
-            post<Response.Either<Response.Ok, Response.Data<String>>> {
-                val principal: UserPrincipal? = call.principal()
-                principal ?: return@post Response.Either(Either.Left(Response.Ok))
-                val session = call.sessions.get<Session>() ?: Session()
-                call.sessions.set(session.copy(principal = principal))
-                Response.Either(Either.Right(Response.Data(JWT.create(principal.id))))
+            authenticate(Auth.UserFormAuth) {
+                post<Response.Either<Response.Ok, Response.Data<String>>> {
+                    val principal: UserPrincipal? = call.principal()
+                    principal ?: return@post Response.Either(Either.Left(Response.Ok))
+                    val session = call.sessions.get<Session>() ?: Session()
+                    call.sessions.set(session.copy(principal = principal))
+                    Response.Either(Either.Right(Response.Data(JWT.create(principal.id))))
+                }
             }
         }
 
