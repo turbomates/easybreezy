@@ -1,4 +1,4 @@
-package io.easybreezy.hr.calendar.api.controller
+package io.easybreezy.hr.api.controller
 
 import io.easybreezy.hr.createLocation
 import io.easybreezy.hr.createUserLocation

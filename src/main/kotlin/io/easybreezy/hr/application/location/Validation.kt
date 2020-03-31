@@ -2,6 +2,7 @@ package io.easybreezy.hr.application.location
 
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
+import org.valiktor.functions.isGreaterThanOrEqualTo
 import org.valiktor.functions.isLessThan
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotNull
@@ -10,6 +11,7 @@ class Validation {
     fun onCreateLocation(command: CreateLocation): List<Error> {
         return validate(command) {
             validate(CreateLocation::name).isNotNull().isNotBlank()
+            validate(CreateLocation::vacationDays).isGreaterThanOrEqualTo(24)
         }
     }
 
