@@ -73,12 +73,28 @@ export const HumanResourceDetails: React.FC<Props> = props => {
             <Vacations vacations={vacations} canEdit={canEdit} />
           </Card>
           <Card
-            title="Sick Days"
+            title="Working Hours"
+            className="human-resource-details__card"
+            loading={loading}
+          >
+            Working Hours content
+          </Card>
+          <Card
+            title="Sick Days / Absences"
             className="human-resource-details__card"
             loading={loading}
           >
             Card content
           </Card>
+          {canSeeAdminStuff && (
+            <Card
+              title="Salaries"
+              className="human-resource-details__card"
+              loading={loading}
+            >
+              Salaries content
+            </Card>
+          )}
           {canSeeAdminStuff && (
             <Card
               title="Notes"

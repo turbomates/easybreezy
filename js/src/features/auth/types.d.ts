@@ -5,7 +5,7 @@ declare module "AuthModels" {
   };
 
   export type SignInData = {
-    username: string;
+    email: string;
     password: string;
-  }
+  };
 }

@@ -5,10 +5,11 @@ import { Link } from "react-router-dom";
 
 interface Props {
   userId: number;
+  logout: () => void;
 }
 
 export const HeaderProfileMenu = (props: Props) => {
-  const { userId, ...other } = props;
+  const { userId, logout, ...other } = props;
   return (
     <Menu {...other}>
       <Menu.Item>
@@ -16,7 +17,7 @@ export const HeaderProfileMenu = (props: Props) => {
           <UserOutlined /> Profile
         </Link>
       </Menu.Item>
-      <Menu.Item>
+      <Menu.Item onClick={logout}>
         <LogoutOutlined />
         Logout
       </Menu.Item>

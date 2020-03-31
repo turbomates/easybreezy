@@ -7,6 +7,7 @@ import { SiderMenu } from "features/app/components/SiderMenu";
 import { HeaderProfileDropdown } from "features/app/components/HeaderProfileDropdown";
 import { account } from "features/account/selectors";
 import { fetchProfileAsync } from "features/human-resouce/actions";
+import { signOutAsync } from "features/auth/actions";
 
 import "./Main.scss";
 
@@ -29,6 +30,7 @@ export const Main: FC<Props> = ({ children }) => {
 
   const showDrawer = () => setMenuVisible(true);
   const onClose = () => setMenuVisible(false);
+  const onLogout = () => dispatch(signOutAsync.request());
 
   return (
     <Layout className="app-layout">
@@ -60,7 +62,11 @@ export const Main: FC<Props> = ({ children }) => {
             <MenuOutlined />
           </Button>
           <Link to="/">Easybreezy</Link>
-          <HeaderProfileDropdown profile={profile} loading={loading} />
+          <HeaderProfileDropdown
+            profile={profile}
+            loading={loading}
+            logout={onLogout}
+          />
         </Header>
         <Content>{children}</Content>
         {/* <Footer className="footer">
