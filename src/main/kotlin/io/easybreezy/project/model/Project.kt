@@ -5,7 +5,6 @@ import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.team.Role
 import io.easybreezy.project.model.team.Roles
-import io.easybreezy.project.model.team.Teams
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.dao.id.EntityID
@@ -22,73 +21,50 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var description by Projects.description
     private var status by Projects.status
     private var updatedAt by Projects.updatedAt
-    private val roles by Role.referrersOn(Roles.project, true)
-    private val teams by Team.referrersOn(Teams.project, true)
+    private val roles by Role referrersOn Roles.project
 
     fun writeDescription(description: String) {
         this.description = description
+        addEvent(DescriptionWritten(id.value, this.updatedAt))
     }
 
     fun close() {
         this.status = Status.Closed
         this.updatedAt = LocalDateTime.now()
-        this.addEvent(Closed(id.value, this.updatedAt))
+        addEvent(Closed(id.value, this.updatedAt))
     }
 
     fun suspend() {
         this.status = Status.Suspended
         this.updatedAt = LocalDateTime.now()
-        this.addEvent(Suspended(id.value, this.updatedAt))
+        addEvent(Suspended(id.value, this.updatedAt))
     }
 
     fun activate() {
         this.status = Status.Active
         this.updatedAt = LocalDateTime.now()
-        this.addEvent(Activated(id.value, this.updatedAt))
+        addEvent(Activated(id.value, this.updatedAt))
     }
 
     fun addRole(name: String, permissions: List<String>) {
         val newRole = Role.new(this, name, permissions)
         this.updatedAt = LocalDateTime.now()
-        this.addEvent(RoleAdded(id.value, newRole.id.value, newRole.name, permissions))
+        addEvent(RoleAdded(id.value, newRole.id.value, newRole.name, permissions, this.updatedAt))
     }
 
-    fun changeRole(name: String, permissions: List<String>, newName: String? = null) {
-        val role = roles.first { it.name == name }
+    fun changeRole(roleId: UUID, permissions: List<String>, newName: String? = null) {
+        val role = roles.first { it.id.value == roleId }
         newName?.let { role.rename(it) }
         role.changePermissions(permissions)
         this.updatedAt = LocalDateTime.now()
-        this.addEvent(RoleChanged(id.value, role.id.value, role.name, permissions))
+        addEvent(RoleChanged(id.value, role.id.value, role.name, permissions, this.updatedAt))
     }
 
-    fun removeRole(name: String) {
-        val role = roles.first { it.name == name }
-        if (role.membersCount() > 0) {
-            throw Exception("can't remove role with active members")
-        }
+    fun removeRole(roleId: UUID) {
+        val role = roles.first { it.id.value == roleId }
         role.delete()
         this.updatedAt = LocalDateTime.now()
-        this.addEvent(RoleRemoved(id.value, role.id.value, role.name))
-    }
-
-    fun createTeam(name: String) {
-        val newTeam = Team.new { this.name = name; this.project = this@Project.id }
-        this.updatedAt = LocalDateTime.now()
-        this.addEvent(NewTeamAdded(id.value, newTeam.id.value, newTeam.name))
-    }
-
-    fun closeTeam(name: String) {
-        val team = teams.first { it.name == name }
-        team.close()
-        this.updatedAt = LocalDateTime.now()
-        this.addEvent(TeamClosed(id.value, team.id.value, team.name))
-    }
-
-    fun activateTeam(name: String) {
-        val team = teams.first { it.name == name }
-        team.activate()
-        this.updatedAt = LocalDateTime.now()
-        this.addEvent(TeamActivated(id.value, team.id.value, team.name))
+        addEvent(RoleRemoved(id.value, role.id.value, role.name, this.updatedAt))
     }
 
     enum class Status {
@@ -106,7 +82,7 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
                 this.slug = slugify(name)
                 this.description = description
                 defaultRoles(this)
-                this.addEvent(Created(this.id.value, this.name))
+                addEvent(Created(this.id.value, this.name, LocalDateTime.now()))
             }
         }
 
@@ -131,22 +107,6 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
             return Project(entityId)
         }
     }
-
-    internal class Team constructor(id: EntityID<UUID>) : UUIDEntity(id) {
-        var name by Teams.name
-        var project by Teams.project
-        var status by Teams.status
-
-        fun close() {
-            status = io.easybreezy.project.model.team.Status.CLOSED
-        }
-
-        fun activate() {
-            status = io.easybreezy.project.model.team.Status.ACTIVE
-        }
-
-        companion object : UUIDEntityClass<Team>(Teams)
-    }
 }
 
 object Projects : UUIDTable("projects") {
@@ -161,4 +121,5 @@ object Projects : UUIDTable("projects") {
 
 interface Repository {
     fun getBySlug(slug: String): Project
+    fun hasMembers(withRoleId: UUID): Boolean
 }

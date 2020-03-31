@@ -1,3 +1,7 @@
 package io.easybreezy.project.application.project.command
 
-class Suspend
+import kotlinx.serialization.Serializable
+
+@Serializable
+class Suspend {
+}

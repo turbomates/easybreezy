@@ -10,23 +10,52 @@ class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val repository: Repository
 ) {
-    suspend fun new(new: New, author: UUID) {
+    suspend fun new(command: New, author: UUID) {
         transaction {
-            Project.new(author, new.name, new.description)
+            Project.new(author, command.name, command.description)
+        }
+    }
+
+    suspend fun activate(slug: String) {
+        transaction {
+            project(slug).activate()
+        }
+    }
+
+    suspend fun close(slug: String) {
+        transaction {
+            project(slug).close()
+        }
+    }
+
+    suspend fun suspendProject(slug: String) {
+        transaction {
+            project(slug).suspend()
+        }
+    }
+
+    suspend fun writeDescription(command: WriteDescription, slug: String) {
+        transaction {
+            project(slug).writeDescription(command.description)
         }
     }
 
     suspend fun addRole(command: NewRole, slug: String) {
         transaction {
-            val project = repository.getBySlug(slug)
-            project.addRole(command.name, command.permissions)
+            project(slug).addRole(command.name, command.permissions)
         }
     }
 
-    suspend fun addTeam(command: NewTeam, slug: String) {
+    suspend fun changeRole(command: ChangeRole, slug: String, roleId: UUID) {
         transaction {
-            val project = repository.getBySlug(slug)
-            project.createTeam(command.name)
+            project(slug).changeRole(roleId, command.permissions, command.name)
         }
     }
+
+    suspend fun removeRole(command: RemoveRole, slug: String) {
+        transaction {
+            project(slug).removeRole(command.roleId)
+        }
+    }
+    private fun project(slug: String) = repository.getBySlug(slug)
 }

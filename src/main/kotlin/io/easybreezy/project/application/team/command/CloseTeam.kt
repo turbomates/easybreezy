@@ -1,11 +1,11 @@
-package io.easybreezy.project.application.project.command
+package io.easybreezy.project.application.team.command
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.util.*
 
 @Serializable
-class RemoveRole {
+class CloseTeam {
     @Transient
-    lateinit var roleId: UUID
+    lateinit var team: UUID
 }

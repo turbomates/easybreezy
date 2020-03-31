@@ -10,7 +10,7 @@ import java.util.UUID
 @Serializable
 data class Activated(
     @Serializable(with = UUIDSerializer::class) val project: UUID,
-    @Serializable(with = LocalDateTimeSerializer::class) val updatedAt: LocalDateTime
+    @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key
         get() = Companion

@@ -1,5 +1,6 @@
 package io.easybreezy.project.application.project.queryobject
 
+import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
@@ -8,7 +9,9 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
+import io.easybreezy.user.model.Contacts
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -20,7 +23,7 @@ class ProjectQO(private val slug: String) : QueryObject<Project> {
         return transaction {
             Projects
             .leftJoin(Roles)
-            .leftJoin(Teams)
+            .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
             .select {
                 Projects.slug eq slug
             }
@@ -62,7 +65,9 @@ fun Iterable<ResultRow>.toProjectJoined(): List<Project> {
 
 fun ResultRow.toProject() = Project(
     this[Projects.slug],
-    this[Projects.name]
+    this[Projects.name],
+    this[Projects.status].name,
+    this[Projects.description]
 )
 
 fun ResultRow.toRole() = Role(
@@ -80,6 +85,8 @@ fun ResultRow.toTeam() = Team(
 data class Project(
     val slug: String,
     val name: String,
+    val status: String,
+    val description: String?,
     var roles: List<Role> = listOf(),
     var teams: List<Team> = listOf()
 )

@@ -10,14 +10,18 @@ import java.util.UUID
 
 class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
     private var user by Members.user
-    private var role by Role referencedOn Members.role
-    private var team by Members.team
+    private var role by Members.role
+    private var team by Team referencedOn Members.team
+
+    fun changeRole(newRole: UUID) {
+        role = newRole
+    }
 
     companion object : PrivateEntityClass<UUID, Member>(object : Repository() {}) {
-        fun create(team: Team, user: UUID, role: Role): Member {
+        fun create(team: Team, user: UUID, role: UUID): Member {
             return Member.new {
                 this.user = user
-                this.team = team.id
+                this.team = team
                 this.role = role
             }
         }
@@ -33,5 +37,5 @@ class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
 object Members : UUIDTable("project_members") {
     val team = reference("team", Teams)
     val user = uuid("user_id")
-    val role = reference("role", Roles)
+    val role = uuid("role")
 }

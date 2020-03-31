@@ -1,3 +1,7 @@
 package io.easybreezy.project.application.project.command
 
-class Close
+import kotlinx.serialization.Serializable
+
+@Serializable
+class Close {
+}

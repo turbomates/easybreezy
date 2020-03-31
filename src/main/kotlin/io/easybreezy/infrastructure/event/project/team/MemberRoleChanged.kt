@@ -1,7 +1,6 @@
-package io.easybreezy.infrastructure.event.project.project
+package io.easybreezy.infrastructure.event.project.team
 
 import io.easybreezy.infrastructure.event.Event
-import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
@@ -9,12 +8,14 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Serializable
-data class Closed(
-    @Serializable(with = UUIDSerializer::class) val project: UUID,
+data class MemberRoleChanged(
+    @Serializable(with = UUIDSerializer::class) val team: UUID,
+    @Serializable(with = UUIDSerializer::class) val member: UUID,
+    @Serializable(with = UUIDSerializer::class) val newRole: UUID,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key
         get() = Companion
 
-    companion object : Event.Key<Closed>
+    companion object : Event.Key<MemberRoleChanged>
 }
