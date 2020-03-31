@@ -93,7 +93,7 @@ class Router @Inject constructor(
         route.route("/teams") {
             data class Team(val teamId: UUID)
 
-            post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/") { command ->
+            post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/add") { command ->
                 controller<TeamController>(this).newTeam(command)
             }
             get<Response.Data<io.easybreezy.project.application.team.queryobject.Team>, Team>("/{teamId}") { params ->

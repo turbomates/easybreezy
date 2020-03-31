@@ -214,7 +214,7 @@ class ProjectControllerTest {
             val team = testDatabase.createProjectTeam(project.value, "Lite")
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/teams/$team/members") {
+                with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {

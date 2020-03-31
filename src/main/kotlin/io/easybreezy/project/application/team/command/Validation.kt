@@ -9,7 +9,7 @@ import org.valiktor.functions.isNotNull
 import java.util.*
 
 class Validation @Inject constructor(
-    private val repository: Repository
+    //private val repository: Repository
 ){
 
     fun validate(command: NewTeam): List<Error> {

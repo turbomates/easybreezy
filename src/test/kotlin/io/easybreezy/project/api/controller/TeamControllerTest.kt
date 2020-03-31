@@ -20,7 +20,7 @@ class TeamControllerTest {
             val project = testDatabase.createMyProject().value
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/teams") {
+                with(handleRequest(HttpMethod.Post, "/api/teams/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -49,7 +49,7 @@ class TeamControllerTest {
 
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
 
-                with(handleRequest(HttpMethod.Post, "/api/teams/$team/members") {
+                with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
