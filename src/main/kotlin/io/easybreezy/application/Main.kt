@@ -116,8 +116,8 @@ suspend fun main() {
                 call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
             }
             exception<Exception> {
-                call.application.environment.log.error(it.localizedMessage)
                 call.respond(HttpStatusCode.ServiceUnavailable, Error("Something is wrong"))
+                throw it
             }
         }
         install(ContentNegotiation) {
