@@ -29,3 +29,7 @@ easybreezy.rabbit.api=http://localhost:15672
 ```bash
 ./gradlew ktlintFormat
 ```
+### Build Doc from Postman
+```
+docgen build -i input-postman-collection.json -o ~/Downloads/index.md -m
+```
