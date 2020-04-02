@@ -45,6 +45,15 @@ URL: localhost:3000/api/hr/locations/user
 
 
 
+***Query params:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| from | 2006-12-12 |  |
+| to | 2020-06-16 |  |
+
+
+
 ### 2. User location show
 
 
@@ -145,8 +154,10 @@ URL: localhost:3000/api/hr/locations/user
 
 ```js        
 {
-	"startedAt": "2020-07-19",
-	"endedAt": "2020-08-19",
+	"userId": "984ad62f-efa2-4633-a377-708931096331",
+	"startedAt": "2019-03-19",
+	"endedAt": "2020-09-19",
+	"extraVacationDays": 0,
 	"locationId": "67429926-5ec0-4017-b50a-d99c172d89b6"
 }
 ```
@@ -220,7 +231,7 @@ URL: localhost:3000/api/hr/locations
 
 ```js        
 {
-	"name": "USA2"
+	"name": "Poland2"
 }
 ```
 
@@ -228,4 +239,4 @@ URL: localhost:3000/api/hr/locations
 
 ---
 [Back to top](#hrlocation)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-02-18 15:44:36 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-02 20:38:08 by [docgen](https://github.com/thedevsaddam/docgen)
