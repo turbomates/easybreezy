@@ -6,7 +6,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.named
 
 class ShadowJarPlugin: Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
@@ -23,7 +24,7 @@ class ShadowJarPlugin: Plugin<Project> {
             archiveBaseName.set("easybreezy")
             archiveClassifier.set("")
             archiveVersion.set("")
-
+            mergeServiceFiles()
             val sourceSets = project.properties["sourceSets"] as SourceSetContainer
 
             sourceSets.whenObjectAdded {

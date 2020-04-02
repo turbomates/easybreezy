@@ -21,6 +21,6 @@ data class PagingParameters(val pageSize: Int, val currentPage: Int) {
     val offset = offset(pageSize, currentPage)
 }
 
-fun offset(pageSize: Int, currentPage: Int): Int {
-    return pageSize * (currentPage - 1)
+fun offset(pageSize: Int, currentPage: Int): Long {
+    return (pageSize * (currentPage - 1)).toLong()
 }
