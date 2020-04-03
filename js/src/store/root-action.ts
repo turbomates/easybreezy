@@ -1,11 +1,13 @@
-import { routerActions } from "connected-react-router";
-import * as authActions from "../features/auth/actions";
-import * as humanResourceActions from "../features/human-resouce/actions";
-import * as accountActions from "../features/account/actions";
+import { routerActions as router } from "connected-react-router";
+import * as auth from "../features/auth/actions";
+import * as humanResource from "../features/human-resouce/actions";
+import * as account from "../features/account/actions";
+import * as location from "../features/location/actions";
 
 export default {
-  router: routerActions,
-  auth: authActions,
-  humanResource: humanResourceActions,
-  account: accountActions,
+  router,
+  auth,
+  humanResource,
+  account,
+  location,
 };
