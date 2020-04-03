@@ -10,16 +10,17 @@ import "./HeaderProfileDropdown.css";
 interface Props {
   profile: UserDetails | null;
   loading: boolean;
+  logout: () => void;
 }
 
 export const HeaderProfileDropdown = (props: Props) => {
-  const { profile, loading } = props;
+  const { profile, loading, logout } = props;
   if (loading || !profile) return <HeaderProfileDropdownSkeleton />;
 
   return (
     <Dropdown
       className="profile-dropdown"
-      overlay={<HeaderProfileMenu userId={profile.id} />}
+      overlay={<HeaderProfileMenu userId={profile.id} logout={logout} />}
     >
       <div>
         <Avatar icon={<UserOutlined />} src={profile.avatar} />

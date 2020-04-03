@@ -531,3 +531,9 @@ export const usersData: UserJSON[] = [
     ],
   },
 ];
+
+export const locationsData = [
+  { id: "1", name: "Minsk" },
+  { id: "2", name: "Brest" },
+  { id: "3", name: "Amsterdam" },
+];
