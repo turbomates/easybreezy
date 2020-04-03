@@ -12,10 +12,15 @@ typealias LocationId = UUID
 
 class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
     private var name by Locations.name
+    private var vacationDays by Locations.vacationDays
 
     companion object : PrivateEntityClass<LocationId, Location>(object : Repository() {}) {
-        fun create(name: String): Location {
-            return Location.new { this.name = name }
+
+        fun create(name: String, vacationDays: Int): Location {
+            return Location.new {
+                this.name = name
+                this.vacationDays = vacationDays
+            }
         }
     }
 
@@ -28,4 +33,5 @@ class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
 
 object Locations : UUIDTable("locations") {
     val name = text("name").uniqueIndex()
+    val vacationDays = integer("vacation_days")
 }

@@ -16,11 +16,15 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 import java.util.UUID
 
-internal fun Database.createAbsence(userId: UUID): UUID {
+internal fun Database.createAbsence(
+    userId: UUID,
+    startedAt: LocalDate = LocalDate.now(),
+    endedAt: LocalDate = LocalDate.now().plusDays(20)
+): UUID {
     return transaction(this) {
         val id = Absences.insert {
-            it[startedAt] = LocalDate.now()
-            it[endedAt] = LocalDate.now().plusDays(20)
+            it[this.startedAt] = startedAt
+            it[this.endedAt] = endedAt
             it[comment] = "Test Comment"
             it[reason] = Reason.VACATION
             it[this.userId] = userId
@@ -29,11 +33,15 @@ internal fun Database.createAbsence(userId: UUID): UUID {
     }
 }
 
-internal fun Database.createWorkingHour(userId: UUID): UUID {
+internal fun Database.createWorkingHour(
+    userId: UUID,
+    day: LocalDate = LocalDate.now().plusDays(20),
+    count: Int = 5
+): UUID {
     return transaction(this) {
         val id = WorkingHours.insert {
-            it[day] = LocalDate.now().plusDays(20)
-            it[count] = 5
+            it[this.day] = day
+            it[this.count] = count
             it[this.userId] = userId
         } get WorkingHours.id
         id.toUUID()
@@ -44,17 +52,25 @@ internal fun Database.createLocation(): UUID {
     return transaction(this) {
         val id = Locations.insert {
             it[name] = "Best Location For a Job"
+            it[vacationDays] = 25
         } get Locations.id
         id.toUUID()
     }
 }
 
-internal fun Database.createUserLocation(userId: UUID, locationId: UUID): UUID {
+internal fun Database.createUserLocation(
+    userId: UUID,
+    locationId: UUID,
+    extraVacations: Int = 0,
+    startedAt: LocalDate = LocalDate.now(),
+    endedAt: LocalDate = LocalDate.now().plusDays(20)
+): UUID {
     return transaction(this) {
         val id = UserLocations.insert {
-            it[startedAt] = LocalDate.now()
-            it[endedAt] = LocalDate.now().plusDays(20)
+            it[this.startedAt] = startedAt
+            it[this.endedAt] = endedAt
             it[location] = LocationRepository().getOne(locationId).id
+            it[this.extraVacationDays] = extraVacations
             it[this.userId] = userId
         } get UserLocations.id
         id.toUUID()

@@ -15,5 +15,6 @@ data class AssignLocation(
     @Serializable(with = UUIDSerializer::class)
     val locationId: UUID,
     @Serializable(with = UUIDSerializer::class)
-    val userId: UUID
+    val userId: UUID,
+    val extraVacationDays: Int? = null
 )

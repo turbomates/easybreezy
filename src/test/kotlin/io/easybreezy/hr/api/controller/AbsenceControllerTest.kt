@@ -1,4 +1,4 @@
-package io.easybreezy.hr.calendar.api.controller
+package io.easybreezy.hr.api.controller
 
 import io.easybreezy.hr.createAbsence
 import io.easybreezy.hr.createWorkingHour
@@ -37,6 +37,7 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {

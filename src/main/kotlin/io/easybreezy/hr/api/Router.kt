@@ -5,6 +5,7 @@ import io.easybreezy.hr.api.controller.AbsenceController
 import io.easybreezy.hr.api.controller.CalendarController
 import io.easybreezy.hr.api.controller.HRController
 import io.easybreezy.hr.api.controller.LocationController
+import io.easybreezy.hr.api.controller.VacationController
 import io.easybreezy.hr.application.absence.CreateAbsence
 import io.easybreezy.hr.application.absence.EditWorkingHours
 import io.easybreezy.hr.application.absence.NoteWorkingHours
@@ -39,6 +40,8 @@ import io.easybreezy.hr.application.location.EditUserLocation
 import io.easybreezy.hr.application.location.queryobject.Locations
 import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocations
+import io.easybreezy.hr.application.RemainingTime
+import io.easybreezy.hr.application.RemainingTimes
 import io.easybreezy.infrastructure.ktor.EmptyParams
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
@@ -69,6 +72,7 @@ class Router @Inject constructor(
                     locationsRouting(this)
                     hrRouting(this)
                     calendarsRouting(this)
+                    vacationRouting(this)
                 }
             }
         }
@@ -76,8 +80,6 @@ class Router @Inject constructor(
 
     private fun absencesRouting(route: Route) {
         route.route("/absences") {
-            data class ID(val id: UUID)
-
             workingHoursRouting(this)
 
             post<Response.Either<Response.Ok, Response.Errors>, CreateAbsence>("") { command ->
@@ -107,8 +109,6 @@ class Router @Inject constructor(
     }
 
     private fun workingHoursRouting(route: Route) {
-        data class ID(val id: UUID)
-
         route.route("/working-hours") {
             post<Response.Ok, NoteWorkingHours>("") { command ->
                 controller<AbsenceController>(this).noteWorkingHours(
@@ -139,8 +139,6 @@ class Router @Inject constructor(
 
     private fun locationsRouting(route: Route) {
         route.route("/locations") {
-            data class ID(val id: UUID)
-
             post<Response.Either<Response.Ok, Response.Errors>, CreateLocation>("") { command ->
                 controller<LocationController>(this).createLocation(command)
             }
@@ -177,8 +175,6 @@ class Router @Inject constructor(
 
     private fun hrRouting(route: Route) {
         route.route("/employee/{id}") {
-            data class ID(val id: UUID)
-
             route.route("/employees") {
                 get<Response.Listing<Employee>>("") {
                     controller<HRController>(this).employees()
@@ -186,37 +182,35 @@ class Router @Inject constructor(
             }
 
             route.route("/employee/{userId}") {
-                data class ID(val userId: UUID)
-
-                get<Response.Data<EmployeeDetails>, ID>("") { params ->
+                get<Response.Data<EmployeeDetails>, UserId>("") { params ->
                     controller<HRController>(this).employee(params.userId)
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, Hire, ID>("/hire") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, Hire, UserId>("/hire") { command, params ->
                     controller<HRController>(this).hire(command, params.userId, resolvePrincipal<UserPrincipal>())
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, Fire, ID>("/fire") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, Fire, UserId>("/fire") { command, params ->
                     controller<HRController>(this).fire(command, params.userId, resolvePrincipal<UserPrincipal>())
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, WriteNote, ID>("/write-note") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, WriteNote, UserId>("/write-note") { command, params ->
                     controller<HRController>(this).writeNote(command, params.userId, resolvePrincipal<UserPrincipal>())
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, ID>("/specify-skills") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, UserId>("/specify-skills") { command, params ->
                     controller<HRController>(this).specifySkills(command, params.userId)
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, UpdateBio, ID>("/update-bio") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, UpdateBio, UserId>("/update-bio") { command, params ->
                     controller<HRController>(this).updateBio(command, params.userId)
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, UpdateBirthday, ID>("/update-birthday") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, UpdateBirthday, UserId>("/update-birthday") { command, params ->
                     controller<HRController>(this).updateBirthday(command, params.userId)
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, ApplyPosition, ID>("/apply-position") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, ApplyPosition, UserId>("/apply-position") { command, params ->
                     controller<HRController>(this).applyPosition(
                         command,
                         params.userId,
@@ -224,7 +218,7 @@ class Router @Inject constructor(
                     )
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, ApplySalary, ID>("/apply-salary") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, ApplySalary, UserId>("/apply-salary") { command, params ->
                     controller<HRController>(this).applySalary(
                         command,
                         params.userId,
@@ -237,8 +231,6 @@ class Router @Inject constructor(
 
     private fun calendarsRouting(route: Route) {
         route.route("/calendars") {
-            data class ID(val id: UUID)
-
             holidaysRouting(this)
 
             post<Response.Either<Response.Ok, Response.Errors>, ImportCalendar>("") { command ->
@@ -258,9 +250,19 @@ class Router @Inject constructor(
         }
     }
 
-    private fun holidaysRouting(route: Route) {
-        data class ID(val id: UUID)
+    private fun vacationRouting(route: Route) {
+        route.route("/vacations") {
+            get<Response.Data<RemainingTime>, ID>("/{id}") { params ->
+                controller<VacationController>(this).calculateVacation(params.id)
+            }
 
+            get<Response.Data<RemainingTimes>>("") {
+                controller<VacationController>(this).calculateVacations()
+            }
+        }
+    }
+
+    private fun holidaysRouting(route: Route) {
         route.route("/holidays") {
             post<Response.Either<Response.Ok, Response.Errors>, AddHoliday>("") { command ->
                 controller<CalendarController>(this).addHoliday(command)
@@ -279,4 +281,9 @@ class Router @Inject constructor(
             }
         }
     }
+
+    internal data class ID(val id: UUID)
+    internal data class UserId(val userId: UUID)
 }
+
+
