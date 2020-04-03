@@ -20,8 +20,7 @@ import java.util.UUID
 class UserController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryExecutor: QueryExecutor,
-    private val transactionManager: TransactionManager
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun index(): Response.Listing<User> {
@@ -35,9 +34,7 @@ class UserController @Inject constructor(
     }
 
     suspend fun invite(command: Invite): Response.Either<Response.Ok, Response.Errors> {
-        val errors = transactionManager {
-            validation.onInvite(command)
-        }
+        val errors = validation.onInvite(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }

@@ -1,6 +1,7 @@
 package io.easybreezy.user.application
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.user.model.Contacts
@@ -14,8 +15,10 @@ import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.validateForEach
 
-class Validation @Inject constructor(private val repository: Repository) {
-
+class Validation @Inject constructor(
+    private val transactionManager: TransactionManager,
+    private val repository: Repository
+) {
     object Unique : Constraint {
         override val name: String
             get() = "User with this email already exist"
@@ -26,9 +29,11 @@ class Validation @Inject constructor(private val repository: Repository) {
             repository.findByEmail(Email.create(value!!)) !is User
         }
 
-    fun onInvite(command: Invite): List<Error> {
-        return validate(command) {
-            validate(Invite::email).isNotBlank().isNotNull().isUnique()
+    suspend fun onInvite(command: Invite): List<Error> {
+        return transactionManager {
+            validate(command) {
+                validate(Invite::email).isNotBlank().isNotNull().isUnique()
+            }
         }
     }
 
