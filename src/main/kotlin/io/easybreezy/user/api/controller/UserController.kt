@@ -1,7 +1,6 @@
 package io.easybreezy.user.api.controller
 
 import com.google.inject.Inject
-import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor

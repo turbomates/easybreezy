@@ -1,5 +1,7 @@
 package io.easybreezy.user.api.controller.application
 
+import io.easybreezy.infrastructure.exposed.TransactionManager
+import io.easybreezy.testDatabase
 import io.easybreezy.user.application.Contact
 import io.easybreezy.user.application.UpdateContacts
 import io.easybreezy.user.application.Validation
@@ -9,8 +11,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class ValidationTest {
-
-    private var validation = Validation(UserRepository())
+    private var validation = Validation(TransactionManager(testDatabase), UserRepository())
 
     @Test fun `correct contacts data should pass validation`() {
         val command = UpdateContacts(listOf(
