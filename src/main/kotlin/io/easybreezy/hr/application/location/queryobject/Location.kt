@@ -23,14 +23,16 @@ class LocationsQO : QueryObject<Locations> {
 
 internal fun ResultRow.toLocation() = Location(
     id = this[LocationsTable.id].toUUID(),
-    name = this[LocationsTable.name]
+    name = this[LocationsTable.name],
+    vacationDays = this[LocationsTable.vacationDays]
 )
 
 @Serializable
 data class Location(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val name: String
+    val name: String,
+    val vacationDays: Int
 )
 
 @Serializable
