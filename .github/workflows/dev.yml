@@ -1,0 +1,32 @@
+name: dev
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: webmaster
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: easybreazy
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12'
+      - name: Run migrations
+        run: ./gradlew migrationsMigrate -Deasybreezy.jdbc.url=jdbc:postgresql://localhost:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
+      - name: Run tests
+        run: ./gradlew test -Deasybreezy.jdbc.url=jdbc:postgresql://localhost:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
