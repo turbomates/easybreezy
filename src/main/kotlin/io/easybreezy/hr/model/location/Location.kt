@@ -24,10 +24,6 @@ class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
         }
     }
 
-    fun updateVacationDays(vacationDays: Int) {
-        this.vacationDays = vacationDays
-    }
-
     abstract class Repository : UUIDEntityClass<Location>(Locations, Location::class.java) {
         override fun createInstance(entityId: EntityID<LocationId>, row: ResultRow?): Location {
             return Location(entityId)
