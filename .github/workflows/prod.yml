@@ -34,6 +34,7 @@ jobs:
         run: ./gradlew test -Deasybreezy.jdbc.url=jdbc:postgresql://localhost:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
 
   build:
+    needs: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
