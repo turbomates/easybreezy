@@ -231,7 +231,8 @@ URL: localhost:3000/api/hr/locations
 
 ```js        
 {
-	"name": "Poland2"
+	"name": "Poland2",
+	"vacationDays": 25
 }
 ```
 
@@ -239,4 +240,4 @@ URL: localhost:3000/api/hr/locations
 
 ---
 [Back to top](#hrlocation)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-02 20:38:08 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-03 18:31:43 by [docgen](https://github.com/thedevsaddam/docgen)

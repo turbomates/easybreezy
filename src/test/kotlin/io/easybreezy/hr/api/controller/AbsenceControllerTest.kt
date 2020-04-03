@@ -37,6 +37,7 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {

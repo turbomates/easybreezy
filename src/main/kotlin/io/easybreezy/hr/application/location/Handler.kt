@@ -14,8 +14,7 @@ class Handler @Inject constructor(
 ) {
 
     suspend fun handleCreateLocation(command: CreateLocation) = transaction {
-        val location = Location.create(command.name)
-        command.vacationDays?.let { location.updateVacationDays(command.vacationDays) }
+        Location.create(command.name, command.vacationDays)
     }
 
     suspend fun handleAssignLocation(command: AssignLocation) = transaction {

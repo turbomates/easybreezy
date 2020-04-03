@@ -11,7 +11,7 @@ class Validation {
     fun onCreateLocation(command: CreateLocation): List<Error> {
         return validate(command) {
             validate(CreateLocation::name).isNotNull().isNotBlank()
-            validate(CreateLocation::vacationDays).isGreaterThanOrEqualTo(24)
+            validate(CreateLocation::vacationDays).isNotNull().isGreaterThanOrEqualTo(24)
         }
     }
 

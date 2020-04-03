@@ -11,6 +11,8 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
+private const val WORKING_HOURS_PER_DAY = 8
+
 class VacationQO(private val userId: UUID) : QueryObject<RemainingTime> {
     override suspend fun getData(): RemainingTime {
         return Vacations
@@ -43,7 +45,7 @@ private fun ResultRow.toVacation() = Vacation(
     this[Vacations.vacationDaysPerYear]
 )
 
-class Vacation(
+private class Vacation(
     val userId: UUID,
     private val absenceHours: Int,
     private val absenceDays: Int,
@@ -54,6 +56,7 @@ class Vacation(
 ) {
     fun calculateRemainingTime(): RemainingTime {
         val dayPerMonth = vacationDaysPerYear / 12
+        // By default is 1
         val remains = vacationDaysPerYear % 12
 
         var lastWorkingDay = locationEndedAt
@@ -64,14 +67,18 @@ class Vacation(
 
         var hours = 0
         if (absenceHours > 0) {
-            val hoursInDays = absenceHours / 8
-            val hoursRemains = absenceHours % 8
+            val hoursInDays = absenceHours / WORKING_HOURS_PER_DAY
+            val hoursRemains = absenceHours % WORKING_HOURS_PER_DAY
+            // Here we transform hours to days if they more than 8 and decrease earned days
             when {
+                // e.g. 9 hours
                 hoursInDays >= 1 && hoursRemains > 0 -> earnedDays -= hoursInDays + 1
+                // e.g. 8 hours
                 hoursInDays >= 1 && hoursRemains == 0 -> earnedDays -= hoursInDays
+                // e.g. 3 hours
                 else -> earnedDays--
             }
-            hours = 8 - absenceHours % 8
+            hours = WORKING_HOURS_PER_DAY - absenceHours % WORKING_HOURS_PER_DAY
         }
 
         return RemainingTime(
@@ -94,9 +101,9 @@ class RemainingTime(
         if (userId != other.userId) throw IllegalArgumentException("Different users")
         var days = days + other.days
         var hours = hours + other.hours
-        if (hours > 8) {
-            days += hours / 8
-            hours %= 8
+        if (hours > WORKING_HOURS_PER_DAY) {
+            days += hours / WORKING_HOURS_PER_DAY
+            hours %= WORKING_HOURS_PER_DAY
         }
 
         return RemainingTime(userId, days, hours)
@@ -106,6 +113,6 @@ class RemainingTime(
 @Serializable
 data class RemainingTimes(val remainingTimes: Map<@Serializable(with = UUIDSerializer::class) UUID, RemainingTime>)
 
-fun List<Vacation>.reduce(userId: UUID): RemainingTime {
+private fun List<Vacation>.reduce(userId: UUID): RemainingTime {
     return fold(RemainingTime(userId, 0, 0)) { total, next -> total + next.calculateRemainingTime() }
 }

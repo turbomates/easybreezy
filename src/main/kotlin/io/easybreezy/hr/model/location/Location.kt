@@ -15,12 +15,11 @@ class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
     private var vacationDays by Locations.vacationDays
 
     companion object : PrivateEntityClass<LocationId, Location>(object : Repository() {}) {
-        private const val VACATION_DAYS = 25
 
-        fun create(name: String): Location {
+        fun create(name: String, vacationDays: Int): Location {
             return Location.new {
                 this.name = name
-                this.vacationDays = VACATION_DAYS
+                this.vacationDays = vacationDays
             }
         }
     }

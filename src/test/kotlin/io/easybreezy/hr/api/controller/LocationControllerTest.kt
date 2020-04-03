@@ -18,7 +18,7 @@ import java.util.UUID
 class LocationControllerTest {
 
     @Test
-    fun testAbsenceCreate() {
+    fun testLocationCreate() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -28,6 +28,7 @@ class LocationControllerTest {
                     setBody(
                         json {
                             "name" to "UK"
+                            "vacationDays" to 25
                         }.toString()
                     )
                 }) {
@@ -35,6 +36,7 @@ class LocationControllerTest {
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations")) {
                     Assertions.assertTrue(response.content?.contains("UK")!!)
+                    Assertions.assertTrue(response.content?.contains("25")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }

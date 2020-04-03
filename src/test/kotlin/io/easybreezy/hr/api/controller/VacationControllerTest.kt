@@ -29,9 +29,34 @@ class VacationControllerTest {
                 createVacationParts(memberId, database)
 
                 with(handleRequest(HttpMethod.Get, "api/hr/vacations/$memberId")) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("\"days\": 10")!!)
+                    Assertions.assertTrue(response.content?.contains("\"hours\": 5")!!)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun testUserVacationWithManyLocations() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                val locationId = database.createLocation()
+                createVacationParts(memberId, database, locationId)
+
+                // +13d
+                val userLocationId = database.createUserLocation(
+                    memberId,
+                    locationId,
+                    startedAt = LocalDate.now().minusMonths(24).minusDays(5),
+                    endedAt = LocalDate.now().minusMonths(18)
+                )
+
+                with(handleRequest(HttpMethod.Get, "api/hr/vacations/$memberId")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("\"days\": 23")!!)
                     Assertions.assertTrue(response.content?.contains("\"hours\": 5")!!)
                 }
             }
@@ -44,7 +69,6 @@ class VacationControllerTest {
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
-
                 createVacationParts(memberId, database)
 
                 with(handleRequest(HttpMethod.Get, "api/hr/vacations")) {
@@ -56,32 +80,31 @@ class VacationControllerTest {
         }
     }
 
-    private fun createVacationParts(memberId: UUID, database: Database) {
-        val locationId = database.createLocation()
+    private fun createVacationParts(memberId: UUID, database: Database, locationId: UUID = database.createLocation()) {
         //user earn 25 vacation days per year (2 per month)
         // +10d + 2*6d = 22d
-        val userLocationId = database.createUserLocation(
+        database.createUserLocation(
             memberId,
             locationId,
             10,
-            LocalDate.now().minusMonths(12).minusDays(5),
-            LocalDate.now().minusMonths(6)
+            LocalDate.of(2019, 3, 2),
+            LocalDate.of(2019, 9, 10)
         )
         // +22d -5h
-        database.createWorkingHour(memberId, LocalDate.now().minusMonths(12))
+        database.createWorkingHour(memberId,LocalDate.of(2019, 3, 6))
         // +22d -11h
-        database.createWorkingHour(memberId, LocalDate.now().minusMonths(11), 6)
+        database.createWorkingHour(memberId, LocalDate.of(2019, 3, 7), 6)
         // +22d - 5d -11h
         database.createAbsence(
             memberId,
-            LocalDate.of(2020, 3, 2),
-            LocalDate.of(2020, 3, 8)
+            LocalDate.of(2019, 3, 4),
+            LocalDate.of(2019, 3, 8)
         )
         // +17d - 6d -11h
         database.createAbsence(
             memberId,
-            LocalDate.of(2020, 3, 9),
-            LocalDate.of(2020, 3, 16)
+            LocalDate.of(2019, 8, 19),
+            LocalDate.of(2019, 8, 26)
         )
         // +9d +5h + 1 extra (25 % 12) = 10d 5h
     }
