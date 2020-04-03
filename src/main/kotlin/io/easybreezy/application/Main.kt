@@ -60,6 +60,7 @@ suspend fun main() {
     val configProvider = SystemConfiguration
     val dataSource = HikariDataSource(configProvider)
     val database = Database.connect(dataSource)
+    database.useNestedTransactions = true
     val eventSubscribers = EventSubscribers()
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
