@@ -7,6 +7,7 @@ import io.easybreezy.hr.model.absence.Absence
 import io.easybreezy.hr.model.absence.Reason
 import io.easybreezy.hr.model.absence.WorkingHour
 import io.easybreezy.infrastructure.exposed.TransactionManager
+import java.util.UUID
 
 class Handler @Inject constructor(
     private val absenceRepository: AbsenceRepository,
@@ -62,6 +63,12 @@ class Handler @Inject constructor(
     suspend fun handleRemoveWorkingHours(command: RemoveWorkingHours) {
         transaction {
             workingHourRepository.remove(command.workingHours)
+        }
+    }
+
+    suspend fun handlerRemoveAbsence(id: UUID) {
+        transaction {
+            absenceRepository.remove(id)
         }
     }
 }

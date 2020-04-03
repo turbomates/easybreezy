@@ -3,7 +3,6 @@ package io.easybreezy.hr.infrastructure
 import io.easybreezy.hr.model.absence.Absence
 import io.easybreezy.hr.model.absence.AbsenceNotFoundException
 import io.easybreezy.hr.model.absence.Absences
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class AbsenceRepository : Absence.Repository() {
@@ -12,15 +11,11 @@ class AbsenceRepository : Absence.Repository() {
     }
 
     private fun find(id: UUID): Absence? {
-        return transaction {
-            find { Absences.id eq id }.firstOrNull()
-        }
+        return find { Absences.id eq id }.firstOrNull()
     }
 
     fun remove(id: UUID) {
-        transaction {
-            val absence = find(id)
-            absence?.delete()
-        }
+        val absence = find(id)
+        absence?.delete()
     }
 }

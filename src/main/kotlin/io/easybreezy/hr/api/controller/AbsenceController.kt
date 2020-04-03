@@ -20,18 +20,16 @@ import io.easybreezy.hr.application.absence.queryobject.WorkingHour
 import io.easybreezy.hr.application.absence.queryobject.WorkingHourQO
 import io.easybreezy.hr.application.absence.queryobject.WorkingHours
 import io.easybreezy.hr.application.absence.queryobject.WorkingHoursQO
-import io.easybreezy.hr.infrastructure.AbsenceRepository
 import io.easybreezy.infrastructure.ktor.Controller
-import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.extractDateRange
+import io.easybreezy.infrastructure.structure.Either
 import java.util.UUID
 
 class AbsenceController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val repository: AbsenceRepository,
     private val queryExecutor: QueryExecutor
 ) : Controller() {
 
@@ -56,8 +54,8 @@ class AbsenceController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    fun removeAbsence(id: UUID): Response.Ok {
-        repository.remove(id)
+    suspend fun removeAbsence(id: UUID): Response.Ok {
+        handler.handlerRemoveAbsence(id)
 
         return Response.Ok
     }
