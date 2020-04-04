@@ -6,6 +6,7 @@ import io.easybreezy.hr.infrastructure.UserLocationRepository
 import io.easybreezy.hr.model.location.Location
 import io.easybreezy.hr.model.location.UserLocation
 import io.easybreezy.infrastructure.exposed.TransactionManager
+import java.util.UUID
 
 class Handler @Inject constructor(
     private val locationRepository: LocationRepository,
@@ -33,5 +34,17 @@ class Handler @Inject constructor(
         val location = locationRepository.getOne(command.locationId)
 
         userLocation.edit(command.startedAt, command.endedAt, location)
+    }
+
+    suspend fun handleRemoveLocation(id: UUID) {
+        transaction {
+            locationRepository.remove(id)
+        }
+    }
+
+    suspend fun handleRemoveUserLocation(id: UUID) {
+        transaction {
+            userLocationRepository.remove(id)
+        }
     }
 }

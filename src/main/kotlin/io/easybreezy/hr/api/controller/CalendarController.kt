@@ -49,8 +49,8 @@ class CalendarController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    fun removeCalendar(id: UUID): Response.Ok {
-        calendarRepository.remove(id)
+    suspend fun removeCalendar(id: UUID): Response.Ok {
+        handler.removeCalendar(id)
 
         return Response.Ok
     }

@@ -14,13 +14,12 @@ import java.util.UUID
 private const val WORKING_HOURS_PER_DAY = 8
 
 class VacationQO(private val userId: UUID) : QueryObject<RemainingTime> {
-    override suspend fun getData(): RemainingTime {
-        return Vacations
+    override suspend fun getData() =
+        Vacations
             .selectAll()
             .andWhere { Vacations.userId eq userId }
             .map { it.toVacation() }
             .reduce(userId)
-    }
 }
 
 class VacationsQO() : QueryObject<RemainingTimes> {
@@ -60,7 +59,7 @@ private class Vacation(
         val remains = vacationDaysPerYear % 12
 
         var lastWorkingDay = locationEndedAt
-        if (locationEndedAt > LocalDate.now())  lastWorkingDay = LocalDate.now()
+        if (locationEndedAt > LocalDate.now()) lastWorkingDay = LocalDate.now()
 
         val workedMonths = ChronoUnit.MONTHS.between(locationStartedAt, lastWorkingDay).toInt()
         var earnedDays = workedMonths * dayPerMonth + remains
@@ -86,7 +85,6 @@ private class Vacation(
             earnedDays + extraVacationDays - absenceDays,
             hours
         )
-
     }
 }
 

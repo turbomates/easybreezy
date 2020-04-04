@@ -16,24 +16,20 @@ import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 import java.util.UUID
 
 class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails> {
-    override suspend fun getData(): EmployeeDetails {
-        return transaction {
-            Employees
-                .leftJoin(Salaries)
-                .leftJoin(Positions)
-                .leftJoin(Notes)
-                .innerJoin(Users, { Employees.userId }, { Users.id })
-                .join(Contacts, JoinType.LEFT, Employees.userId, Contacts.user)
-                .select {
-                    Employees.userId eq userId
-                }.toEmployeeDetailsJoined().single()
-        }
-    }
+    override suspend fun getData() =
+        Employees
+            .leftJoin(Salaries)
+            .leftJoin(Positions)
+            .leftJoin(Notes)
+            .innerJoin(Users, { Employees.userId }, { Users.id })
+            .join(Contacts, JoinType.LEFT, Employees.userId, Contacts.user)
+            .select {
+                Employees.userId eq userId
+            }.toEmployeeDetailsJoined().single()
 }
 
 fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {

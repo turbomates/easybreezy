@@ -4,7 +4,6 @@ import io.easybreezy.hr.model.absence.WorkingHour
 import io.easybreezy.hr.model.absence.WorkingHourNotFoundException
 import io.easybreezy.hr.model.absence.WorkingHours
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class WorkingHourRepository : WorkingHour.Repository() {
@@ -14,14 +13,10 @@ class WorkingHourRepository : WorkingHour.Repository() {
     }
 
     private fun find(id: UUID): WorkingHour? {
-        return transaction {
-            find { WorkingHours.id eq id }.firstOrNull()
-        }
+        return find { WorkingHours.id eq id }.firstOrNull()
     }
 
     fun remove(ids: List<UUID>) {
-        transaction {
-            WorkingHours.deleteWhere { WorkingHours.id inList ids }
-        }
+        WorkingHours.deleteWhere { WorkingHours.id inList ids }
     }
 }

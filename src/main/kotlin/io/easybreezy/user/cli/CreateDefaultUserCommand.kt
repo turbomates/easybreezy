@@ -14,16 +14,18 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class CreateDefaultUserCommand {
 
     companion object {
+        private const val EMAIL = "admin@admin.my"
+
         @JvmStatic
         fun main(args: Array<String>) {
             val configProvider = SystemConfiguration
             val dataSource = HikariDataSource(configProvider)
-            Database.connect(dataSource)
+            val database = Database.connect(dataSource)
 
             transaction {
-                if (Users.select { Users.email[EmailTable.email] eq "admin@admin.my" }.count().compareTo(0) == 0) {
+                if (Users.select { Users.email[EmailTable.email] eq EMAIL}.count().compareTo(0) == 0) {
                     User.createAdmin(
-                        Email.create("admin@admin.my"),
+                        Email.create(EMAIL),
                         Password.create("123")
                     )
                 }

@@ -7,18 +7,16 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 class LocationsQO : QueryObject<Locations> {
-    override suspend fun getData() =
-        transaction {
-            val result = LocationsTable
-                .selectAll()
-                .map { it.toLocation() }
+    override suspend fun getData(): Locations {
+        val result = LocationsTable
+            .selectAll()
+            .map { it.toLocation() }
 
-            Locations(result)
-        }
+        return Locations(result)
+    }
 }
 
 internal fun ResultRow.toLocation() = Location(

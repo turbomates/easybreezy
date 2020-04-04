@@ -11,15 +11,16 @@ import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Summary
 import java.io.StringReader
 import java.util.Base64
+import java.util.UUID
 
 class Handler @Inject constructor(
     private val locationRepository: LocationRepository,
     private val calendarRepository: CalendarRepository,
-    private val transactional: TransactionManager
+    private val transaction: TransactionManager
 ) {
 
     suspend fun importCalendar(command: ImportCalendar) {
-        transactional {
+        transaction {
             val location = locationRepository.getOne(command.locationId)
 
             val decodedCalendar = String(Base64.getDecoder().decode(command.encodedCalendar))
@@ -39,30 +40,36 @@ class Handler @Inject constructor(
     }
 
     suspend fun editCalendar(command: EditCalendar) {
-        transactional {
+        transaction {
             val calendar = calendarRepository.getOne(command.id)
             calendar.edit(command.name, locationRepository.getOne(command.locationId))
         }
     }
 
     suspend fun addHoliday(command: AddHoliday) {
-        transactional {
+        transaction {
             val calendar = calendarRepository.getOne(command.calendarId)
             calendar.addHoliday(command.day, command.name, command.isWorkingDay)
         }
     }
 
     suspend fun editHoliday(command: EditHoliday) {
-        transactional {
+        transaction {
             val calendar = calendarRepository.getOne(command.calendarId)
             calendar.editHoliday(command.day, command.name, command.isWorkingDay)
         }
     }
 
     suspend fun removeHoliday(command: RemoveHoliday) {
-        transactional {
+        transaction {
             val calendar = calendarRepository.getOne(command.calendarId)
             calendar.removeHoliday(command.day)
+        }
+    }
+
+    suspend fun removeCalendar(id: UUID) {
+        transaction {
+            calendarRepository.remove(id)
         }
     }
 }

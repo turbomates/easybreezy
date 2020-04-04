@@ -39,7 +39,8 @@ class LocationController @Inject constructor(
     }
 
     suspend fun removeLocation(id: UUID): Response.Ok {
-        locationRepository.remove(id)
+        handler.handleRemoveLocation(id)
+
         return Response.Ok
     }
 
@@ -69,7 +70,8 @@ class LocationController @Inject constructor(
     }
 
     suspend fun removeUserLocation(id: UUID): Response.Ok {
-        userLocationRepository.remove(id)
+        handler.handleRemoveUserLocation(id)
+
         return Response.Ok
     }
 
