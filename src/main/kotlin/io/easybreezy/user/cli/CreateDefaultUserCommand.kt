@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.select
 class CreateDefaultUserCommand {
 
     companion object {
-        private const val EMAIL = "admin13@admin.my"
+        private const val EMAIL = "admin@admin.my"
 
         @JvmStatic
         fun main(args: Array<String>): Unit = runBlocking {
