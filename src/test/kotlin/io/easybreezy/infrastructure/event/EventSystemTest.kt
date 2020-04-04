@@ -6,11 +6,11 @@ import kotlin.test.assertEquals
 
 class EventSystemTest {
     @Test
-    fun testInvokeSubscriber() {
+    suspend fun testInvokeSubscriber() {
         val store = EventSubscribers()
         var i = 0
         store.subscribe(TestEventForSubscriber, object : EventSubscriber<TestEventForSubscriber> {
-            override fun invoke(event: TestEventForSubscriber) {
+            override suspend fun invoke(event: TestEventForSubscriber) {
                 i++
             }
         })
@@ -20,7 +20,7 @@ class EventSystemTest {
     }
 
     @Test
-    fun testInvokeSubscribers() {
+    suspend fun testInvokeSubscribers() {
         val store = EventSubscribers()
         val subscriber = TestSubscriber()
         store.subscribe(subscriber)
@@ -42,7 +42,7 @@ class TestSubscriber : EventsSubscriber {
     var i = 0
     override fun subscribers(): List<EventsSubscriber.EventSubscriberItem<out Event>> {
         return listOf(TestEventForSubscriber to object : EventSubscriber<TestEventForSubscriber> {
-            override fun invoke(event: TestEventForSubscriber) {
+            override suspend fun invoke(event: TestEventForSubscriber) {
                 i++
             }
         })

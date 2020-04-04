@@ -11,7 +11,7 @@ interface EventsSubscriber {
 }
 
 interface EventSubscriber<T : Event> {
-    operator fun invoke(event: T)
+    suspend operator fun invoke(event: T)
 }
 
 class EventSubscribers {
@@ -36,7 +36,7 @@ class EventSubscribers {
         addToMap(key, subscriber)
     }
     @Suppress("UNCHECKED_CAST")
-    fun <T : Event> call(event: T) {
+    suspend fun <T : Event> call(event: T) {
         val subscribers = subscribers.getOrDefault(event.key, mutableListOf()) as MutableList<EventSubscriber<T>>
         subscribers.forEach {
             it(event)

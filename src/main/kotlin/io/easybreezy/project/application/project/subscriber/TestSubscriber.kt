@@ -6,7 +6,7 @@ import io.easybreezy.infrastructure.event.project.project.Created
 import io.easybreezy.project.model.team.Team
 
 class TestSubscriber @Inject constructor(repository: Team.Repository) : EventSubscriber<Created> {
-    override fun invoke(event: Created) {
+    override suspend fun invoke(event: Created) {
         println("it's working")
     }
 }

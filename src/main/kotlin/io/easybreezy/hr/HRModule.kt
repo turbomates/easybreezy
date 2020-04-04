@@ -11,6 +11,7 @@ import io.easybreezy.hr.infrastructure.ProfileRepository
 import io.easybreezy.hr.model.profile.Repository
 import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.event.GuiceSubscriberFactory
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.ControllerPipeline
 import io.easybreezy.infrastructure.ktor.ControllerPipelineFactory
 import io.easybreezy.infrastructure.ktor.InterceptorPipeline
@@ -40,8 +41,8 @@ class HRModule : AbstractModule() {
     }
 }
 
-class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers) {
+class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers, transactionManager: TransactionManager) {
     init {
-        eventSystem.subscribe(UserSubscriber())
+        eventSystem.subscribe(UserSubscriber(transactionManager))
     }
 }

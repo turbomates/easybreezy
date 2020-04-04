@@ -1,6 +1,7 @@
 package io.easybreezy.user.infrastructure.auth
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.auth.PrincipalProvider
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.user.infrastructure.UserRepository
@@ -11,11 +12,13 @@ import io.ktor.auth.UserPasswordCredential
 import io.ktor.auth.jwt.JWTCredential
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
-class UserProvider @Inject constructor(private val repository: UserRepository) : PrincipalProvider<UserPrincipal> {
-    override fun load(credential: UserPasswordCredential, clientIp: String): UserPrincipal? {
+class UserProvider @Inject constructor(
+    private val repository: UserRepository,
+    private val transaction: TransactionManager
+) : PrincipalProvider<UserPrincipal> {
+    override suspend fun load(credential: UserPasswordCredential, clientIp: String): UserPrincipal? {
         return transaction {
             val resultRow =
                 Users.select { (Users.email[EmailTable.email] eq credential.name) and (Users.status eq Status.ACTIVE) }

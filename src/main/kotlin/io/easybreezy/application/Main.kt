@@ -61,17 +61,18 @@ suspend fun main() {
     val dataSource = HikariDataSource(configProvider)
     val database = Database.connect(dataSource)
     database.useNestedTransactions = true
+    val transactionManager = TransactionManager(database)
     val eventSubscribers = EventSubscribers()
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)
             bind(Database::class.java).toInstance(database)
-            bind(TransactionManager::class.java).toInstance(TransactionManager(database))
+            bind(TransactionManager::class.java).toInstance(transactionManager)
             bind(EventSubscribers::class.java).toInstance(eventSubscribers)
         }
     })
 
-    val subscriberWorker = SubscriberWorker(EventsDatabaseAccess(database), eventSubscribers)
+    val subscriberWorker = SubscriberWorker(EventsDatabaseAccess(transactionManager), eventSubscribers)
     subscriberWorker.start(1)
     embeddedServer(Netty, port = 3000) {
         val application = this
