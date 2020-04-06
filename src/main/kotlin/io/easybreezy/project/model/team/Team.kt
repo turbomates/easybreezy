@@ -3,7 +3,6 @@ package io.easybreezy.project.model.team
 import io.easybreezy.infrastructure.event.project.team.*
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.project.model.Project
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
@@ -38,7 +37,7 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     fun close() {
-        status = Status.CLOSED
+        status = Status.Closed
         updatedAt = LocalDateTime.now()
         addEvent(
             TeamClosed(
@@ -51,7 +50,7 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     fun activate() {
-        status = Status.ACTIVE
+        status = Status.Active
         updatedAt = LocalDateTime.now()
         addEvent(
             TeamActivated(
@@ -71,13 +70,13 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
     fun changeMemberRole(member: UUID, role: UUID) {
         updatedAt = LocalDateTime.now()
-        members.first { it.id.value == member }.changeRole(role)
+        members.first { it.isUser(member) }.changeRole(role)
         addEvent(MemberRoleChanged(id.value, member, role, updatedAt))
     }
 
     fun removeMember(member: UUID) {
         updatedAt = LocalDateTime.now()
-        members.first { it.id.value == member }.delete()
+        members.first { it.isUser(member) }.delete()
     }
 
 //    fun addRepository(url: String, type: io.easybreezy.project.model.team.RemoteRepository.Type) {
@@ -94,29 +93,30 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 }
 
 enum class Status {
-    ACTIVE,
-    CLOSED
+    Active,
+    Closed
 }
-
 
 object Teams : UUIDTable("project_teams") {
     val name = varchar("name", 25)
     val project = uuid("project")
-    val status = enumerationByName("status", 25, Status::class).default(Status.ACTIVE)
+    val status = enumerationByName("status", 25, Status::class).default(Status.Active)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
 }
 
 interface Repository {
     fun isRoleBelongs(toTeam: UUID, role: UUID): Boolean
+    fun isNoActualTickets(member: UUID): Boolean
+    fun get(id: UUID): Team
 }
 
-//open class RemoteRepository : UUIDEntity(EntityID(UUID.randomUUID(), RemoteRepositories)) {
+// open class RemoteRepository : UUIDEntity(EntityID(UUID.randomUUID(), RemoteRepositories)) {
 //    companion object : PrivateEntityClass<UUID, RemoteRepository>(object : UUIDEntityClass<RemoteRepository>(RemoteRepositories) {})
 //    enum class Type {
 //        GITLAB,
 //        GITHUB
 //    }
-//}
+// }
 
-//object RemoteRepositories : UUIDTable()
+// object RemoteRepositories : UUIDTable()

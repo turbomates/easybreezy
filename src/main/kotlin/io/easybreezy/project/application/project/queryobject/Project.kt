@@ -1,6 +1,5 @@
 package io.easybreezy.project.application.project.queryobject
 
-import io.easybreezy.hr.model.hr.Employees
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
@@ -9,7 +8,6 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
-import io.easybreezy.user.model.Contacts
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow

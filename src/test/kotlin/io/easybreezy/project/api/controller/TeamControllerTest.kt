@@ -8,7 +8,6 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import kotlinx.serialization.json.json
-import kotlinx.serialization.json.jsonArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -40,6 +39,48 @@ class TeamControllerTest {
         }
     }
 
+    @Test fun `close team`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val team = testDatabase.createProjectTeam(project.value, "Lite")
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+                with(handleRequest(HttpMethod.Post, "/api/teams/$team/close") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {}.toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/teams/$team")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("Closed")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `activate team`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val team = testDatabase.createProjectTeam(project.value, "Lite")
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+                with(handleRequest(HttpMethod.Post, "/api/teams/$team/activate") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {}.toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/teams/$team")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("Active")!!)
+                }
+            }
+        }
+    }
+
     @Test fun `add member`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
@@ -62,9 +103,63 @@ class TeamControllerTest {
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/teams/$team")) {
-                    val r = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("member@gmail.com")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `change member role`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val role = testDatabase.createProjectRole(project, "Dev")
+            val newRole = testDatabase.createProjectRole(project, "PM")
+            val team = testDatabase.createProjectTeam(project.value, "Lite")
+            testDatabase.createTeamMember(team, userId, role)
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/$userId/change-role") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "newRoleId" to newRole.toString()
+                        }
+                            .toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/teams/$team")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertFalse(response.content?.contains(role.toString())!!)
+                    Assertions.assertTrue(response.content?.contains(newRole.toString())!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `remove member`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val role = testDatabase.createProjectRole(project, "Dev")
+            val team = testDatabase.createProjectTeam(project.value, "Lite")
+            testDatabase.createTeamMember(team, userId, role)
+
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/$userId/remove") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {}.toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/teams/$team")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertFalse(response.content?.contains("member@gmail.com")!!)
                 }
             }
         }

@@ -15,14 +15,13 @@ import io.easybreezy.project.application.project.subscriber.TestSubscriber
 import io.easybreezy.project.infrastructure.ProjectRepository
 import io.easybreezy.project.infrastructure.TeamRepository
 import io.easybreezy.project.model.Repository
-import io.easybreezy.project.model.team.Team
 
 class ProjectModule : AbstractModule() {
     override fun configure() {
         bind(SubscriberDescription::class.java).asEagerSingleton()
         bind(Router::class.java).asEagerSingleton()
         bind(Repository::class.java).to(ProjectRepository::class.java)
-        bind(Team.Repository::class.java).to(TeamRepository::class.java)
+        bind(io.easybreezy.project.model.team.Repository::class.java).to(TeamRepository::class.java)
     }
 
     @Provides

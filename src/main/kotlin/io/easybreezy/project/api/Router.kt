@@ -100,6 +100,7 @@ class Router @Inject constructor(
                 controller<TeamController>(this).show(params.teamId)
             }
             post<Response.Either<Response.Ok, Response.Errors>, NewMember, Team>("/{teamId}/members/add") { command, params ->
+                command.team = params.teamId
                 controller<TeamController>(this).newMember(
                     params.teamId,
                     command
@@ -116,6 +117,7 @@ class Router @Inject constructor(
 
             data class TeamMember(val teamId: UUID, val memberId: UUID)
             post<Response.Either<Response.Ok, Response.Errors>, RemoveMember, TeamMember>("/{teamId}/members/{memberId}/remove") { command, params ->
+                command.memberId = params.memberId
                 controller<TeamController>(this).removeMember(
                     params.teamId,
                     command
@@ -123,6 +125,8 @@ class Router @Inject constructor(
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, ChangeMemberRole, TeamMember>("/{teamId}/members/{memberId}/change-role") { command, params ->
+                command.team = params.teamId
+                command.memberId = params.memberId
                 controller<TeamController>(this).changeMemberRole(
                     params.teamId,
                     command

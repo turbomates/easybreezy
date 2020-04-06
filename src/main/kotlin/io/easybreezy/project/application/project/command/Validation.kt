@@ -9,7 +9,7 @@ import org.valiktor.functions.hasSize
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotEmpty
 
-class Validation @Inject constructor(private val repository: Repository){
+class Validation @Inject constructor(private val repository: Repository) {
     fun validate(command: New): List<Error> {
 
         return validate(command) {
@@ -33,7 +33,6 @@ class Validation @Inject constructor(private val repository: Repository){
             validate(ChangeRole::permissions).isNotEmpty()
         }
     }
-
 
     object HasMembers : Constraint {
         override val name: String

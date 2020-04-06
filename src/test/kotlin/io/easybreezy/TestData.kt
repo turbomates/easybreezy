@@ -5,6 +5,7 @@ import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
+import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
 import io.easybreezy.user.model.EmailTable
@@ -69,9 +70,19 @@ internal fun Database.createProjectTeam(projectId: UUID, team: String): UUID {
         val id = Teams.insert {
             it[project] = projectId
             it[name] = team
-            it[status] = io.easybreezy.project.model.team.Status.ACTIVE
+            it[status] = io.easybreezy.project.model.team.Status.Active
         } get Teams.id
         id.toUUID()
+    }
+}
+
+internal fun Database.createTeamMember(teamId: UUID, member: UUID, roleId: UUID) {
+    return transaction(this) {
+        Members.insert {
+            it[team] = EntityID(teamId, Teams)
+            it[user] = member
+            it[role] = roleId
+        }
     }
 }
 

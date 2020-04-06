@@ -5,8 +5,6 @@ import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.structure.Either
-import io.easybreezy.project.application.project.queryobject.Project
-import io.easybreezy.project.application.project.queryobject.ProjectQO
 import io.easybreezy.project.application.team.command.*
 import io.easybreezy.project.application.team.queryobject.Team
 import io.easybreezy.project.application.team.queryobject.TeamQO

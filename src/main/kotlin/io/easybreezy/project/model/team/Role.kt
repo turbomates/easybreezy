@@ -18,7 +18,7 @@ class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         private set
     private var permissions by Roles.permissions
     private var project by Project referencedOn Roles.project
-    //private val members by Member referrersOn Members.role
+    // private val members by Member referrersOn Members.role
 
     fun membersCount(): Int {
         return 0

@@ -28,7 +28,6 @@ class ProjectControllerTest {
                         }
                         .toString())
                 }) {
-                    val r = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
@@ -64,7 +63,7 @@ class ProjectControllerTest {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
-                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/close"){
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/close") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {}.toString())
                 }) {
@@ -111,7 +110,7 @@ class ProjectControllerTest {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
-                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/write-description"){
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/write-description") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {
                         "description" to "My project for my needs"
@@ -133,7 +132,7 @@ class ProjectControllerTest {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
-                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/roles/add"){
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/roles/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {
                         "name" to "Tester"

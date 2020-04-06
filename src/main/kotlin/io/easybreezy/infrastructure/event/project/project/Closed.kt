@@ -1,7 +1,6 @@
 package io.easybreezy.infrastructure.event.project.project
 
 import io.easybreezy.infrastructure.event.Event
-import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable

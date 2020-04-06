@@ -12,4 +12,6 @@ data class ChangeMemberRole(
 ) {
     @Transient
     lateinit var memberId: UUID
+    @Transient
+    lateinit var team: UUID
 }

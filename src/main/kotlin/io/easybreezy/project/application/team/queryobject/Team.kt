@@ -44,7 +44,6 @@ fun Iterable<ResultRow>.toTeamJoined(): List<Team> {
     }.values.toList()
 }
 
-
 fun ResultRow.toTeam() = Team(
     this[Teams.id].value,
     this[Teams.name],
@@ -56,7 +55,7 @@ fun ResultRow.toMember() = Member(
     this[Members.role],
     this[Users.email[EmailTable.email]],
     this[Users.name[NameTable.firstName]],
-    this[Users.name[NameTable.lastName]]    
+    this[Users.name[NameTable.lastName]]
 )
 
 @Serializable

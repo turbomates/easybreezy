@@ -17,6 +17,10 @@ class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
         role = newRole
     }
 
+    fun isUser(user: UUID): Boolean {
+        return this.user == user
+    }
+
     companion object : PrivateEntityClass<UUID, Member>(object : Repository() {}) {
         fun create(team: Team, user: UUID, role: UUID): Member {
             return Member.new {
