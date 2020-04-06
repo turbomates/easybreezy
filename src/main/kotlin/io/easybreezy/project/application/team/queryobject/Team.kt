@@ -51,7 +51,7 @@ fun ResultRow.toTeam() = Team(
 )
 
 fun ResultRow.toMember() = Member(
-    this[Members.id].value,
+    this[Members.user],
     this[Members.role],
     this[Users.email[EmailTable.email]],
     this[Users.name[NameTable.firstName]],

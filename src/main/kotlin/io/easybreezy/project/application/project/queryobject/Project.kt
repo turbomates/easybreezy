@@ -62,6 +62,7 @@ fun Iterable<ResultRow>.toProjectJoined(): List<Project> {
 }
 
 fun ResultRow.toProject() = Project(
+    this[Projects.id].value,
     this[Projects.slug],
     this[Projects.name],
     this[Projects.status].name,
@@ -81,6 +82,8 @@ fun ResultRow.toTeam() = Team(
 
 @Serializable
 data class Project(
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
     val slug: String,
     val name: String,
     val status: String,
