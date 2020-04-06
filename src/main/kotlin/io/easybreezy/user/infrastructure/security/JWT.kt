@@ -8,14 +8,14 @@ import java.util.UUID
 
 object JWT {
     const val audience = "easybreezy"
-    private const val ttl: Int = 3600000 * 10 // 10 hours
+    private const val ttl: Long = 2592000000 * 3 // 3 months
     private val algorithm: Algorithm = Algorithm.HMAC256("secret")
 
     val verifier: JWTVerifier = JWT
         .require(algorithm)
         .build()
 
-    fun create(id: UUID, ttl: Int = this.ttl, once: Boolean = false): String = JWT
+    fun create(id: UUID, ttl: Long = this.ttl, once: Boolean = false): String = JWT
         .create()
         .withSubject(id.toString())
         .withExpiresAt(Date(System.currentTimeMillis() + ttl))
