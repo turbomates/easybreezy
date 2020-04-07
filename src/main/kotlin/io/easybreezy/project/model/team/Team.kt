@@ -13,7 +13,6 @@ import java.util.*
 
 class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var name by Teams.name
-    //    private val repositories by Repository referrersOn Teams.repositories
     private val members by Member referrersOn Members.team
     private var project by Teams.project
     private var status by Teams.status
@@ -79,12 +78,6 @@ class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         members.first { it.isUser(member) }.delete()
     }
 
-//    fun addRepository(url: String, type: io.easybreezy.project.model.team.RemoteRepository.Type) {
-//    }
-//
-//    fun removeRepository(url: String) {
-//    }
-
     abstract class Repository : EntityClass<UUID, Team>(Teams, Team::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Team {
             return Team(entityId)
@@ -110,13 +103,3 @@ interface Repository {
     fun isNoActualTickets(member: UUID): Boolean
     fun get(id: UUID): Team
 }
-
-// open class RemoteRepository : UUIDEntity(EntityID(UUID.randomUUID(), RemoteRepositories)) {
-//    companion object : PrivateEntityClass<UUID, RemoteRepository>(object : UUIDEntityClass<RemoteRepository>(RemoteRepositories) {})
-//    enum class Type {
-//        GITLAB,
-//        GITHUB
-//    }
-// }
-
-// object RemoteRepositories : UUIDTable()
