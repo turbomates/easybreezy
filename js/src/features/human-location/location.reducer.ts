@@ -1,15 +1,19 @@
 import { createReducer } from "typesafe-actions";
 import { Location } from "LocationModels";
-import { fetchLocationsAsync } from "./actions";
+import { FormErrorMap } from "MyTypes";
+import { fetchLocationsAsync, createLocationAsync } from "./actions";
+import { normalizeErrors } from "utils/error";
 
 export type State = {
   items: Location[];
   loading: boolean;
+  formErrors: FormErrorMap;
 };
 
 const initialState: State = {
   items: [],
   loading: false,
+  formErrors: {},
 };
 
 export const reducer = createReducer<State>(initialState)
@@ -22,4 +26,8 @@ export const reducer = createReducer<State>(initialState)
     items: action.payload,
     loading: false,
   }))
-  .handleAction(fetchLocationsAsync.failure, () => initialState);
+  .handleAction(fetchLocationsAsync.failure, () => initialState)
+  .handleAction(createLocationAsync.failure, (state, action) => ({
+    ...state,
+    formErrors: normalizeErrors(action.payload),
+  }));

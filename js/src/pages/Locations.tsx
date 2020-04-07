@@ -1,39 +1,158 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { Card, Row, Col, Modal, List } from "antd";
 import {
   fetchLocationsAsync,
   createLocationAsync,
   removeLocationAsync,
-} from "features/location/actions";
-import { location } from "features/location/selectors";
-import { LocationsList } from "features/location/components/LocationsList";
-import { LocationForm } from "features/location/components/LocationForm";
+  fetchEmployeesAsync,
+  assignLocationAsync,
+  fetchEmployeeLocationsAsync,
+  removeEmployeeLocationAsync,
+  selectEmployeeSync,
+  selectEmployeeLocationSync,
+  editEmployeeLocationAsync,
+} from "features/human-location/actions";
+import {
+  location,
+  employee,
+  employeeLocation,
+  isAssignLocationFormVisible,
+  isEditEmployeeLocationFormVisible,
+} from "features/human-location/selectors";
+import { LocationsList } from "features/human-location/components/LocationsList";
+import { LocationForm } from "features/human-location/components/LocationForm";
+import { EmployeeListItem } from "features/human-location/components/EmployeeListItem";
+import {
+  LocationForm as LocationFormModel,
+  AssignLocationForm,
+  EmployeeLocation,
+  EditEmployeeLocationData,
+} from "LocationModels";
+import { LocationAssignForm } from "features/human-location/components/LocationAssignForm";
+import { EmployeeLocationEditForm } from "features/human-location/components/EmployeeLocationEditForm";
 
 export const LocationsPage: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchLocationsAsync.request());
+    dispatch(fetchEmployeesAsync.request());
+    dispatch(fetchEmployeeLocationsAsync.request());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { loading, items } = useSelector(location);
+  const locations = useSelector(location);
+  const employees = useSelector(employee);
+  const employeeLocations = useSelector(employeeLocation);
+  const isAssignVisible = useSelector(isAssignLocationFormVisible);
+  const isEditVisible = useSelector(isEditEmployeeLocationFormVisible);
 
-  const createLocation = (value: string) =>
-    dispatch(createLocationAsync.request(value));
+  const createLocation = useCallback(
+    (form: LocationFormModel) => dispatch(createLocationAsync.request(form)),
+    [dispatch],
+  );
 
-  const removeLocation = (itemId: string) =>
-    dispatch(removeLocationAsync.request(itemId));
+  const removeLocation = useCallback(
+    (itemId: string) => dispatch(removeLocationAsync.request(itemId)),
+    [dispatch],
+  );
 
-  if (loading) return <Spin indicator={<LoadingOutlined spin />} />;
+  const assignLocation = useCallback(
+    (form: AssignLocationForm) => dispatch(assignLocationAsync.request(form)),
+    [dispatch],
+  );
+
+  const editEmployeeLocation = useCallback(
+    (data: EditEmployeeLocationData) =>
+      dispatch(editEmployeeLocationAsync.request(data)),
+    [dispatch],
+  );
+
+  const selectEmployee = useCallback(
+    (id: string | null) => dispatch(selectEmployeeSync(id)),
+    [dispatch],
+  );
+
+  const selectEmployeeLocation = useCallback(
+    (employeeLocation: EmployeeLocation | null) =>
+      dispatch(selectEmployeeLocationSync(employeeLocation)),
+    [dispatch],
+  );
+
+  const removeEmployeeLocation = useCallback(
+    (id: string) => dispatch(removeEmployeeLocationAsync.request(id)),
+    [dispatch],
+  );
+
+  const handleCancelAssign = useCallback(() => selectEmployee(null), [
+    selectEmployee,
+  ]);
+
+  const handleCancelEdit = useCallback(() => selectEmployeeLocation(null), [
+    selectEmployeeLocation,
+  ]);
 
   return (
     <>
-      <h1>Locations</h1>
-      <LocationForm create={createLocation} />
-      <LocationsList items={items} remove={removeLocation} />
+      <Row gutter={10} className="content">
+        <Col lg={12} xs={24}>
+          <Card title="Locations" loading={locations.loading}>
+            <LocationForm
+              create={createLocation}
+              errors={locations.formErrors}
+            />
+            <LocationsList items={locations.items} remove={removeLocation} />
+          </Card>
+        </Col>
+        <Col lg={12} xs={24}>
+          <Card title="Employees">
+            <List
+              dataSource={employees.items}
+              renderItem={(item) => (
+                <EmployeeListItem
+                  employee={item}
+                  employeeLocation={employeeLocations.data[item.userId]}
+                  locations={locations.items}
+                  selectEmployee={selectEmployee}
+                  selectEmployeeLocation={selectEmployeeLocation}
+                  remove={removeEmployeeLocation}
+                />
+              )}
+            />
+          </Card>
+        </Col>
+      </Row>
+      <Modal
+        title="Assign location"
+        visible={isAssignVisible}
+        onCancel={handleCancelAssign}
+        footer={null}
+      >
+        {isAssignVisible && (
+          <LocationAssignForm
+            userId={employees.idToAssign!}
+            assign={assignLocation}
+            locations={locations.items}
+            errors={employeeLocations.formErrors}
+          />
+        )}
+      </Modal>
+      <Modal
+        title="Edit employee location"
+        visible={isEditVisible}
+        onCancel={handleCancelEdit}
+        footer={null}
+      >
+        {isEditVisible && (
+          <EmployeeLocationEditForm
+            employeeLocation={employeeLocations.employeeLocationToEdit!}
+            edit={editEmployeeLocation}
+            locations={locations.items}
+            errors={employeeLocations.formErrors}
+          />
+        )}
+      </Modal>
     </>
   );
 };

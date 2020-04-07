@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePicker, Avatar, Tag, Input } from "antd";
+import { DatePicker, Avatar, Tag } from "antd";
 import { PlusOutlined, UserOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 import moment from "moment";
@@ -45,10 +45,6 @@ export const Profile: React.FC<Props> = ({ user, canEdit }) => (
             value={moment(user.birthday)}
             disabled={!canEdit}
           />
-        </div>
-        <div className="user-profile__row">
-          <label>Location</label>
-          <Input placeholder="Location" value="Minsk" disabled={!canEdit} />
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ export const SiderMenu: FC<{}> = () => (
   >
     <Menu.Item key="hr">
       <Link to="/human-resources">
-        <UserOutlined /> Timeline
+        <UserOutlined /> <span>Timeline</span>
       </Link>
     </Menu.Item>
     <Menu.Item key="projects">
@@ -27,7 +27,7 @@ export const SiderMenu: FC<{}> = () => (
     </Menu.Item>
     <Menu.Item key="31">
       <Link to="/locations">
-        <GlobalOutlined /> Locations
+        <GlobalOutlined /> <span>Locations</span>
       </Link>
     </Menu.Item>
   </Menu>

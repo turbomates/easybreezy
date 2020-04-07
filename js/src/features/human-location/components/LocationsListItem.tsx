@@ -14,6 +14,7 @@ export const LocationsListItem: React.FC<Props> = ({
   ...rest
 }) => (
   <List.Item {...rest}>
-    {item.name} <CloseCircleOutlined onClick={() => remove(item.id)} />
+    {item.name} {item.vacationDays}{" "}
+    <CloseCircleOutlined onClick={() => remove(item.id)} />
   </List.Item>
 );

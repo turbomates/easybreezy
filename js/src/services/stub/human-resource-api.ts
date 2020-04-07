@@ -1,4 +1,4 @@
-import { Failed, Success } from "MyTypes";
+import { Failure, Success } from "MyTypes";
 import {
   UsersListing,
   UsersParams,
@@ -37,7 +37,7 @@ const getUserVacationInfo = (item: UserJSON) => ({
   vacations: item.vacations,
 });
 
-type UsersResponse = Promise<Success<UsersListing> | Failed>;
+type UsersResponse = Promise<Success<UsersListing> | Failure>;
 
 export const fetchUsers = (params: UsersParams): UsersResponse => {
   const perPage = params.perPage || 10;
@@ -57,7 +57,7 @@ export const fetchUsers = (params: UsersParams): UsersResponse => {
   });
 };
 
-type UsersVacationsResponse = Promise<Success<UserVacations[]> | Failed>;
+type UsersVacationsResponse = Promise<Success<UserVacations[]> | Failure>;
 
 export const fetchVacations = (): UsersVacationsResponse => {
   return Promise.resolve({
@@ -66,10 +66,10 @@ export const fetchVacations = (): UsersVacationsResponse => {
   });
 };
 
-type UserResponse = Promise<Success<UserDetails> | Failed>;
+type UserResponse = Promise<Success<UserDetails> | Failure>;
 
 export const fetchUserDetails = (id: string): UserResponse => {
-  const user = usersData.find(item => item.id === parseInt(id));
+  const user = usersData.find((item) => item.id === parseInt(id));
 
   const response = user
     ? ({
@@ -79,7 +79,7 @@ export const fetchUserDetails = (id: string): UserResponse => {
     : ({
         success: false,
         reason: "User isn't found",
-      } as Failed);
+      } as Failure);
 
   return Promise.resolve(response);
 };
