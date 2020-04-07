@@ -17,7 +17,7 @@ import java.util.UUID
 class UserControllerTest {
 
     @Test
-    fun testUserInvite() {
+    fun `user invite`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -44,7 +44,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun testUserInviteTwice() {
+    fun `user invite twice`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {

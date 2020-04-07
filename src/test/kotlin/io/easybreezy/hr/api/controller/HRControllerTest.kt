@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 
 class HRControllerTest {
 
-    @Test fun `fresh employee salary, position, skills updated and shown in his details`() {
+    @Test fun `hire employee`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -49,7 +49,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `fired employee should not been listed`() {
+    @Test fun `fire employee`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -69,7 +69,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee note should be added and shown in his details`() {
+    @Test fun `add employee note`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -89,7 +89,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee position should be applied and shown in his details`() {
+    @Test fun `add employee position`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -110,7 +110,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee position history should be kept in his details`() {
+    @Test fun `keep employee position history`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -140,7 +140,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee salary should be applied and shown in his details`() {
+    @Test fun `add employee salary`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -165,7 +165,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee salary history should be kept and shown in his details`() {
+    @Test fun `keep employee salary history`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -201,7 +201,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee skills should be added and shown in his details`() {
+    @Test fun `add employee skills`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -228,7 +228,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee bio should be updated and shown in his details`() {
+    @Test fun `update employee bio`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -248,7 +248,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee birthday should be updated and shown in his details`() {
+    @Test fun `update employee birthday`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
@@ -268,7 +268,7 @@ class HRControllerTest {
         }
     }
 
-    @Test fun `employee contacts should be updated and shown in his details`() {
+    @Test fun `update employee contacts`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {

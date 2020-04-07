@@ -20,7 +20,7 @@ import java.util.UUID
 class VacationControllerTest {
 
     @Test
-    fun testUserVacation() {
+    fun `user vacation`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -38,7 +38,7 @@ class VacationControllerTest {
     }
 
     @Test
-    fun testUserVacationWithManyLocations() {
+    fun `user vacation with many locations`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -64,7 +64,7 @@ class VacationControllerTest {
     }
 
     @Test
-    fun testUsersVacation() {
+    fun `users vacation`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {

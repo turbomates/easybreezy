@@ -20,7 +20,7 @@ import java.util.UUID
 class AbsenceControllerTest {
 
     @Test
-    fun testAbsenceCreate() {
+    fun `absence create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -49,7 +49,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testAbsenceUpdate() {
+    fun `absence update`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -80,7 +80,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testRemoveAbsence() {
+    fun `remove absence`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -100,7 +100,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testMyAbsences() {
+    fun `my absences`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -116,7 +116,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testAbsences() {
+    fun absences() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -132,7 +132,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testAbsenceShow() {
+    fun show() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -148,7 +148,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testWorkingHoursCreate() {
+    fun `working hours create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
 
@@ -185,7 +185,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testWorkingHoursUpdate() {
+    fun `working hours update`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -217,7 +217,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testWorkingHoursDelete() {
+    fun `working hours delete`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -245,7 +245,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testMyWorkingHours() {
+    fun `my working hours`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -262,7 +262,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testWorkingHours() {
+    fun `working hours`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -279,7 +279,7 @@ class AbsenceControllerTest {
     }
 
     @Test
-    fun testWorkingHourShow() {
+    fun `working hour show`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {

@@ -18,7 +18,7 @@ import java.util.UUID
 class LocationControllerTest {
 
     @Test
-    fun testLocationCreate() {
+    fun `location create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -44,7 +44,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testRemoveLocation() {
+    fun `remove location`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -64,7 +64,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testMyLocations() {
+    fun `my locations`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -80,7 +80,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testUserLocationAssign() {
+    fun `user location assign`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -111,7 +111,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testLocationEdit() {
+    fun `location edit`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -142,7 +142,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testRemoveUserLocation() {
+    fun `remove user location`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -164,7 +164,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testUserLocationShow() {
+    fun `user location show`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -182,7 +182,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun testUserLocationsListing() {
+    fun `user locations listing`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {

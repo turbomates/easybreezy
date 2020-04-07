@@ -19,7 +19,7 @@ import java.util.UUID
 class CalendarControllerTest {
 
     @Test
-    fun testCalendarImport() {
+    fun `calendar import`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -49,7 +49,7 @@ class CalendarControllerTest {
     }
 
     @Test
-    fun testCalendarEdit() {
+    fun `calendar edit`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -79,7 +79,7 @@ class CalendarControllerTest {
     }
 
     @Test
-    fun testCalendars() {
+    fun calendars() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -96,7 +96,7 @@ class CalendarControllerTest {
     }
 
     @Test
-    fun testCalendarRemove() {
+    fun `calendar remove`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -125,7 +125,7 @@ class CalendarControllerTest {
     }
 
     @Test
-    fun testAddHoliday() {
+    fun `add holiday`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -159,7 +159,7 @@ class CalendarControllerTest {
     }
 
     @Test
-    fun testHolidays() {
+    fun holidays() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
