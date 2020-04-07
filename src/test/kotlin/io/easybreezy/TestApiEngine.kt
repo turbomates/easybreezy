@@ -29,7 +29,6 @@ import io.ktor.locations.Locations
 import io.ktor.response.respond
 import io.ktor.serialization.DefaultJsonConfiguration
 import io.ktor.serialization.json
-import io.ktor.serialization.serialization
 import io.ktor.server.testing.TestApplicationCall
 import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.Sessions

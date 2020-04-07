@@ -10,6 +10,7 @@ import io.easybreezy.user.model.Status
 import io.easybreezy.user.model.Users
 import io.ktor.auth.UserPasswordCredential
 import io.ktor.auth.jwt.JWTCredential
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.UUID

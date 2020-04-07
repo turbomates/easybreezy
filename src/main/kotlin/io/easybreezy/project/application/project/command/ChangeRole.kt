@@ -1,3 +1,16 @@
 package io.easybreezy.project.application.project.command
 
-class ChangeRole
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import java.util.*
+
+@Serializable
+data class ChangeRole(
+    val name: String? = null,
+    val permissions: List<String>
+) {
+    @Transient
+    lateinit var roleId: UUID
+    @Transient
+    lateinit var project: String
+}

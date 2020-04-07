@@ -1,4 +1,4 @@
-package io.easybreezy.infrastructure.event.project.project
+package io.easybreezy.infrastructure.event.project.team
 
 import io.easybreezy.infrastructure.event.Event
 import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
@@ -8,13 +8,13 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Serializable
-data class Created(
-    @Serializable(with = UUIDSerializer::class) val project: UUID,
-    val name: String,
+data class MemberRemoved(
+    @Serializable(with = UUIDSerializer::class) val team: UUID,
+    @Serializable(with = UUIDSerializer::class) val member: UUID,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key
         get() = Companion
 
-    companion object : Event.Key<Created>
+    companion object : Event.Key<MemberRemoved>
 }

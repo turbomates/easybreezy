@@ -4,10 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-data class NewRole(
-    val name: String,
-    val permissions: List<String>
-) {
+data class WriteDescription(val description: String) {
     @Transient
     lateinit var project: String
 }
