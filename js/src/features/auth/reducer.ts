@@ -1,6 +1,6 @@
 import { createReducer } from "typesafe-actions";
 import { User } from "AuthModels";
-import { signInAsync, signOutAsync, checkAuthAsync } from "./actions";
+import { signInAsync, signOutAsync, checkAuth } from "./actions";
 
 type State =
   | { status: "initial" }
@@ -10,16 +10,15 @@ type State =
   | { status: "unauthorized"; reason?: string };
 
 const reducer = createReducer<State>({ status: "initial" })
-  .handleAction(checkAuthAsync.request, (state, action) => ({
+  .handleAction(checkAuth.request, (state, action) => ({
     status: "checking",
   }))
-  .handleAction(checkAuthAsync.success, (state, action) => ({
+  .handleAction(checkAuth.success, (state, action) => ({
     status: "authorized",
     user: action.payload,
   }))
-  .handleAction(checkAuthAsync.failure, (state, action) => ({
+  .handleAction(checkAuth.failure, (state, action) => ({
     status: "unauthorized",
-    reason: action.payload,
   }))
   .handleAction(signInAsync.request, (state, action) => ({
     status: "authorizing",
@@ -30,7 +29,7 @@ const reducer = createReducer<State>({ status: "initial" })
   }))
   .handleAction(signInAsync.failure, (state, action) => ({
     status: "unauthorized",
-    reason: action.payload
+    reason: action.payload,
   }))
   .handleAction(signOutAsync.request, (state, action) => ({
     ...state,

@@ -1,10 +1,7 @@
-import { RootEpic } from 'MyTypes';
-import { first, map } from 'rxjs/operators';
+import { RootEpic } from "MyTypes";
+import { first, map } from "rxjs/operators";
 
-import { checkAuthAsync } from "../auth/actions";
+import { checkAuth } from "../auth/actions";
 
-export const loadDataOnAppStart: RootEpic = (action$, store, { api }) =>
-  action$.pipe(
-    first(),
-    map(checkAuthAsync.request)
-  );
+export const loadDataOnAppStart: RootEpic = action$ =>
+  action$.pipe(first(), map(checkAuth.request));

@@ -13,8 +13,8 @@ export const signOutAsync = createAsyncAction(
   "SIGN_OUT_FAILURE",
 )<undefined, undefined, string>();
 
-export const checkAuthAsync = createAsyncAction(
+export const checkAuth = createAsyncAction(
   "CHECK_AUTH_REQUEST",
   "CHECK_AUTH_SUCCESS",
   "CHECK_AUTH_FAILURE",
-)<undefined, User, string>();
+)<undefined, User, undefined>();

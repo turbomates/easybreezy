@@ -10,11 +10,11 @@ export const check = () =>
 
 export const signIn = (credentials: SignInData) =>
   api
-    .post<User>("/login", {
+    .post<{ data: string }>("/login", {
       email: credentials.email,
       password: credentials.password,
     })
-    .then<Success<User>>(resp => ({ success: true, data: resp.data }))
+    .then<Success<string>>(resp => ({ success: true, data: resp.data.data }))
     .catch<Failed>(resp => ({
       success: false,
       reason: resp?.response?.data?.error || "Error",

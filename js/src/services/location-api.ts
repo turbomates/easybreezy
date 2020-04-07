@@ -5,7 +5,7 @@ import { api } from "./api";
 export const fetchAll = () =>
   api
     .get<LocationResponse>("/hr/locations")
-    .then<Success<Location[]>>(resp => ({
+    .then<Success<Location[]>>((resp) => ({
       success: true,
       data: resp.data.data.locations,
     }))
@@ -21,7 +21,7 @@ export const remove = (locationId: string) =>
   api
     .delete(`hr/locations/${locationId}`)
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<Failed>(resp => ({
+    .catch<Failed>((resp) => ({
       success: false,
       reason: resp?.response?.data?.error || "Error",
     }));
