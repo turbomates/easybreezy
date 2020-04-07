@@ -1,6 +1,7 @@
 package io.easybreezy.hr.application.hr.command
 
 import com.google.inject.Inject
+import io.easybreezy.hr.model.hr.Employee
 import io.easybreezy.hr.model.hr.Repository
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import java.util.UUID
@@ -9,6 +10,12 @@ class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val repository: Repository
 ) {
+
+    suspend fun registerCard(command: RegisterCard) {
+        transaction {
+            Employee.registerCard(command.user)
+        }
+    }
 
     suspend fun hire(command: Hire, userId: UUID, hrManager: UUID) {
         transaction {

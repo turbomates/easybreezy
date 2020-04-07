@@ -29,9 +29,8 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
     private var createdAt by Employees.createdAt
 
     companion object : PrivateEntityClass<UUID, Employee>(object : Repository() {}) {
-        fun createCard(userId: UUID, personalData: PersonalData) = Employee.new {
+        fun registerCard(userId: UUID) = Employee.new {
             this.userId = userId
-            this.personalData = personalData
         }
     }
 
