@@ -10,7 +10,7 @@ import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotEmpty
 
 class Validation @Inject constructor(private val repository: Repository) {
-    fun validate(command: New): List<Error> {
+    fun validateCommand(command: New): List<Error> {
 
         return validate(command) {
             validate(New::name).hasSize(2, 255)
@@ -18,7 +18,7 @@ class Validation @Inject constructor(private val repository: Repository) {
         }
     }
 
-    fun validate(command: NewRole): List<Error> {
+    fun validateCommand(command: NewRole): List<Error> {
 
         return validate(command) {
             validate(NewRole::name).hasSize(2, 25)
@@ -26,7 +26,7 @@ class Validation @Inject constructor(private val repository: Repository) {
         }
     }
 
-    fun validate(command: ChangeRole): List<Error> {
+    fun validateCommand(command: ChangeRole): List<Error> {
 
         return validate(command) {
             validate(ChangeRole::name).hasSize(0, 25)
@@ -39,7 +39,7 @@ class Validation @Inject constructor(private val repository: Repository) {
             get() = "There are members with this role"
     }
 
-    fun validate(command: RemoveRole): List<Error> {
+    fun validateCommand(command: RemoveRole): List<Error> {
 
         if (repository.hasMembers(command.roleId)) {
             return listOf(Error(HasMembers.name))
@@ -47,7 +47,7 @@ class Validation @Inject constructor(private val repository: Repository) {
         return listOf()
     }
 
-    fun validate(command: WriteDescription): List<Error> {
+    fun validateCommand(command: WriteDescription): List<Error> {
 
         return validate(command) {
             validate(WriteDescription::description).isNotBlank()

@@ -20,7 +20,7 @@ class ProjectController @Inject constructor(
 
     suspend fun create(new: New, author: UUID): Response.Either<Response.Ok, Response.Errors> {
 
-        val errors = validation.validate(new)
+        val errors = validation.validateCommand(new)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -56,7 +56,7 @@ class ProjectController @Inject constructor(
     }
 
     suspend fun writeDescription(command: WriteDescription): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -66,7 +66,7 @@ class ProjectController @Inject constructor(
 
     suspend fun addRole(command: NewRole): Response.Either<Response.Ok, Response.Errors> {
 
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -76,7 +76,7 @@ class ProjectController @Inject constructor(
 
     suspend fun changeRole(command: ChangeRole): Response.Either<Response.Ok, Response.Errors> {
 
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -85,7 +85,7 @@ class ProjectController @Inject constructor(
     }
 
     suspend fun removeRole(command: RemoveRole): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }

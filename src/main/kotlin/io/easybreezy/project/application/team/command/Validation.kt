@@ -16,14 +16,14 @@ class Validation @Inject constructor(
     private val repository: Repository
 ) {
 
-    fun validate(command: NewTeam): List<Error> {
+    fun validateCommand(command: NewTeam): List<Error> {
 
         return validate(command) {
             validate(NewTeam::name).hasSize(2, 25)
         }
     }
 
-    suspend fun validate(command: NewMember): List<Error> {
+    suspend fun validateCommand(command: NewMember): List<Error> {
 
         return transactionManager {
             validate(command) {
@@ -33,14 +33,14 @@ class Validation @Inject constructor(
         }
     }
 
-    fun validate(command: RemoveMember): List<Error> {
+    fun validateCommand(command: RemoveMember): List<Error> {
 
         return validate(command) {
             validate(RemoveMember::memberId).isNotNull().isNoTickets()
         }
     }
 
-    suspend fun validate(command: ChangeMemberRole): List<Error> {
+    suspend fun validateCommand(command: ChangeMemberRole): List<Error> {
 
         return transactionManager {
             validate(command) {

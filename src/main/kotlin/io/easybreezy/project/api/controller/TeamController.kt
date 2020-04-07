@@ -17,7 +17,7 @@ class TeamController @Inject constructor(
 ) : Controller() {
 
     suspend fun newTeam(command: NewTeam): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -26,7 +26,7 @@ class TeamController @Inject constructor(
     }
 
     suspend fun newMember(command: NewMember): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -51,7 +51,7 @@ class TeamController @Inject constructor(
     }
 
     suspend fun removeMember(command: RemoveMember): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
@@ -60,7 +60,7 @@ class TeamController @Inject constructor(
     }
 
     suspend fun changeMemberRole(command: ChangeMemberRole): Response.Either<Response.Ok, Response.Errors> {
-        val errors = validation.validate(command)
+        val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
