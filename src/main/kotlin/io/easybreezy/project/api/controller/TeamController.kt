@@ -25,12 +25,12 @@ class TeamController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun newMember(team: UUID, command: NewMember): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun newMember(command: NewMember): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.newMember(team, command)
+        handler.newMember(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 
@@ -50,21 +50,21 @@ class TeamController @Inject constructor(
         return Response.Ok
     }
 
-    suspend fun removeMember(team: UUID, command: RemoveMember): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun removeMember(command: RemoveMember): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.removeMember(team, command)
+        handler.removeMember(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun changeMemberRole(team: UUID, command: ChangeMemberRole): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun changeMemberRole(command: ChangeMemberRole): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.changeMemberRole(team, command)
+        handler.changeMemberRole(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 }

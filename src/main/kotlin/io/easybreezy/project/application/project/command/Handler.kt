@@ -34,27 +34,27 @@ class Handler @Inject constructor(
         }
     }
 
-    suspend fun writeDescription(command: WriteDescription, slug: String) {
+    suspend fun writeDescription(command: WriteDescription) {
         transaction {
-            project(slug).writeDescription(command.description)
+            project(command.project).writeDescription(command.description)
         }
     }
 
-    suspend fun addRole(command: NewRole, slug: String) {
+    suspend fun addRole(command: NewRole) {
         transaction {
-            project(slug).addRole(command.name, command.permissions)
+            project(command.project).addRole(command.name, command.permissions)
         }
     }
 
-    suspend fun changeRole(command: ChangeRole, slug: String, roleId: UUID) {
+    suspend fun changeRole(command: ChangeRole) {
         transaction {
-            project(slug).changeRole(roleId, command.permissions, command.name)
+            project(command.project).changeRole(command.roleId, command.permissions, command.name)
         }
     }
 
-    suspend fun removeRole(command: RemoveRole, slug: String) {
+    suspend fun removeRole(command: RemoveRole) {
         transaction {
-            project(slug).removeRole(command.roleId)
+            project(command.project).removeRole(command.roleId)
         }
     }
     private fun project(slug: String) = repository.getBySlug(slug)

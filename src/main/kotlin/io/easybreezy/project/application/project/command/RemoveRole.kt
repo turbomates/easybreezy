@@ -8,4 +8,6 @@ import java.util.*
 class RemoveRole {
     @Transient
     lateinit var roleId: UUID
+    @Transient
+    lateinit var project: String
 }

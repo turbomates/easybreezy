@@ -17,9 +17,9 @@ class Handler @Inject constructor(
         }
     }
 
-    suspend fun newMember(team: UUID, command: NewMember) {
+    suspend fun newMember(command: NewMember) {
         transaction {
-            team(team).addMember(command.user, command.role)
+            team(command.team).addMember(command.user, command.role)
         }
     }
 
@@ -35,15 +35,15 @@ class Handler @Inject constructor(
         }
     }
 
-    suspend fun removeMember(team: UUID, command: RemoveMember) {
+    suspend fun removeMember(command: RemoveMember) {
         transaction {
-            team(team).removeMember(command.memberId)
+            team(command.team).removeMember(command.memberId)
         }
     }
 
-    suspend fun changeMemberRole(team: UUID, command: ChangeMemberRole) {
+    suspend fun changeMemberRole(command: ChangeMemberRole) {
         transaction {
-            team(team).changeMemberRole(command.memberId, command.newRoleId)
+            team(command.team).changeMemberRole(command.memberId, command.newRoleId)
         }
     }
 

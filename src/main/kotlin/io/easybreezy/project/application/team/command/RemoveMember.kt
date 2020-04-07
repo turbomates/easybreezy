@@ -8,4 +8,6 @@ import java.util.*
 class RemoveMember {
     @Transient
     lateinit var memberId: UUID
+    @Transient
+    lateinit var team: UUID
 }

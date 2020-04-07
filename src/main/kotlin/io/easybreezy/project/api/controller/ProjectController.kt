@@ -55,42 +55,42 @@ class ProjectController @Inject constructor(
         return Response.Ok
     }
 
-    suspend fun writeDescription(slug: String, command: WriteDescription): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun writeDescription(command: WriteDescription): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.writeDescription(command, slug)
+        handler.writeDescription(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun addRole(slug: String, command: NewRole): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun addRole(command: NewRole): Response.Either<Response.Ok, Response.Errors> {
 
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.addRole(command, slug)
+        handler.addRole(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun changeRole(slug: String, roleId: UUID, command: ChangeRole): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun changeRole(command: ChangeRole): Response.Either<Response.Ok, Response.Errors> {
 
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.changeRole(command, slug, roleId)
+        handler.changeRole(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun removeRole(slug: String, command: RemoveRole): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun removeRole(command: RemoveRole): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validate(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
 
-        handler.removeRole(command, slug)
+        handler.removeRole(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 }

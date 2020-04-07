@@ -48,12 +48,7 @@ class Router @Inject constructor(
             get<Response.Data<io.easybreezy.project.application.project.queryobject.Project>, Project>("") { params ->
                 controller<ProjectController>(this).show(params.slug)
             }
-            post<Response.Either<Response.Ok, Response.Errors>, NewRole, Project>("/roles") { command, params ->
-                controller<ProjectController>(this).addRole(
-                    params.slug,
-                    command
-                )
-            }
+
             post<Response.Ok, Activate, Project>("/activate") { _, params ->
                 controller<ProjectController>(this).activate(params.slug)
             }
@@ -64,29 +59,24 @@ class Router @Inject constructor(
                 controller<ProjectController>(this).close(params.slug)
             }
             post<Response.Either<Response.Ok, Response.Errors>, WriteDescription, Project>("/write-description") { command, params ->
-                controller<ProjectController>(this).writeDescription(params.slug, command)
+                command.project = params.slug
+                controller<ProjectController>(this).writeDescription(command)
             }
 
             data class ProjectRole(val slug: String, val roleId: UUID)
             post<Response.Either<Response.Ok, Response.Errors>, NewRole, Project>("/roles/add") { command, params ->
-                controller<ProjectController>(this).addRole(
-                    params.slug,
-                    command
-                )
+                command.project = params.slug
+                controller<ProjectController>(this).addRole(command)
             }
             post<Response.Either<Response.Ok, Response.Errors>, ChangeRole, ProjectRole>("/roles/{roleId}/change") { command, params ->
-                controller<ProjectController>(this).changeRole(
-                    params.slug,
-                    params.roleId,
-                    command
-                )
+                command.project = params.slug
+                command.roleId = params.roleId
+                controller<ProjectController>(this).changeRole(command)
             }
             post<Response.Either<Response.Ok, Response.Errors>, RemoveRole, ProjectRole>("/roles/{roleId}/remove") { command, params ->
                 command.roleId = params.roleId
-                controller<ProjectController>(this).removeRole(
-                    params.slug,
-                    command
-                )
+                command.project = params.slug
+                controller<ProjectController>(this).removeRole(command)
             }
         }
 
@@ -101,10 +91,7 @@ class Router @Inject constructor(
             }
             post<Response.Either<Response.Ok, Response.Errors>, NewMember, Team>("/{teamId}/members/add") { command, params ->
                 command.team = params.teamId
-                controller<TeamController>(this).newMember(
-                    params.teamId,
-                    command
-                )
+                controller<TeamController>(this).newMember(command)
             }
 
             post<Response.Ok, ActivateTeam, Team>("/{teamId}/activate") { _, params ->
@@ -118,19 +105,14 @@ class Router @Inject constructor(
             data class TeamMember(val teamId: UUID, val memberId: UUID)
             post<Response.Either<Response.Ok, Response.Errors>, RemoveMember, TeamMember>("/{teamId}/members/{memberId}/remove") { command, params ->
                 command.memberId = params.memberId
-                controller<TeamController>(this).removeMember(
-                    params.teamId,
-                    command
-                )
+                command.team = params.teamId
+                controller<TeamController>(this).removeMember(command)
             }
 
             post<Response.Either<Response.Ok, Response.Errors>, ChangeMemberRole, TeamMember>("/{teamId}/members/{memberId}/change-role") { command, params ->
                 command.team = params.teamId
                 command.memberId = params.memberId
-                controller<TeamController>(this).changeMemberRole(
-                    params.teamId,
-                    command
-                )
+                controller<TeamController>(this).changeMemberRole(command)
             }
         }
     }
