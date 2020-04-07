@@ -1,51 +1,49 @@
 import { RootEpic } from "MyTypes";
+import { User } from "AuthModels";
 import { from, of } from "rxjs";
-import { filter, switchMap, map, catchError } from "rxjs/operators";
+import { filter, switchMap, map, catchError, tap } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 
-import { checkAuthAsync, signInAsync, signOutAsync } from "./actions";
+import { checkAuth, signInAsync, signOutAsync } from "./actions";
 
-export const checkAuthEpic: RootEpic = (action$, state$, { api }) =>
+export const checkAuthEpic: RootEpic = (action$, state$, { jwt }) =>
   action$.pipe(
-    filter(isActionOf(checkAuthAsync.request)),
-    switchMap(() =>
-      from(api.auth.check()).pipe(
-        map(result =>
-          result.success
-            ? checkAuthAsync.success(result.data)
-            : checkAuthAsync.failure(result.reason),
-        ),
-        catchError(message => of(checkAuthAsync.failure(message))),
-      ),
-    ),
+    filter(isActionOf(checkAuth.request)),
+    map(() => {
+      const token = jwt.get();
+      return token
+        ? checkAuth.success(jwt.decode<User>(token))
+        : checkAuth.failure();
+    }),
   );
 
-export const signInEpic: RootEpic = (action$, state$, { api, logger }) =>
+export const signInEpic: RootEpic = (action$, state$, { api, jwt }) =>
   action$.pipe(
     filter(isActionOf(signInAsync.request)),
     switchMap(action =>
       from(api.auth.signIn(action.payload)).pipe(
-        map(result =>
-          result.success
-            ? signInAsync.success(result.data)
-            : signInAsync.failure(result.reason),
-        ),
+        map(result => {
+          if (result.success) {
+            const token = result.data;
+            jwt.set(token);
+            return signInAsync.success(jwt.decode(token));
+          } else {
+            return signInAsync.failure(result.reason);
+          }
+        }),
+
         catchError(message => of(signInAsync.failure(message))),
       ),
     ),
   );
 
-export const signOutEpic: RootEpic = (action$, state$, { api, logger }) =>
-action$.pipe(
-  filter(isActionOf(signOutAsync.request)),
-  switchMap(() =>
-    from(api.auth.signOut()).pipe(
-      map(result =>
-        result.success
-          ? signOutAsync.success()
-          : signOutAsync.failure(result.reason),
-      ),
-      catchError(message => of(signInAsync.failure(message))),
-    ),
-  ),
-);
+export const signOutEpic: RootEpic = (action$, state$, { jwt }) =>
+  action$.pipe(
+    filter(isActionOf(signOutAsync.request)),
+    tap(() => {
+      jwt.remove();
+    }),
+    map(() => {
+      return signOutAsync.success();
+    }),
+  );

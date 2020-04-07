@@ -1,8 +1,16 @@
 import axios from "axios";
 
-const BASE_URL = "https://easybreezy.tmsoft.dev/api";
+import { DOMAIN } from "../constants";
+import * as jwt from "./jwt-service";
 
 export const api = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true,
+  baseURL: `${DOMAIN}/api`,
+});
+
+api.interceptors.request.use((config) => {
+  const token = jwt.get();
+  if (token && config.method !== "options") {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
 });
