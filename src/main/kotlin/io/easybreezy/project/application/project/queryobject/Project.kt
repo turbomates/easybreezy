@@ -13,33 +13,27 @@ import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class ProjectQO(private val slug: String) : QueryObject<Project> {
-    override suspend fun getData(): Project {
-        return transaction {
-            Projects
-            .leftJoin(Roles)
-            .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
-            .select {
-                Projects.slug eq slug
-            }
-            .toProjectJoined()
-            .single()
+    override suspend fun getData() =
+        Projects
+        .leftJoin(Roles)
+        .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
+        .select {
+            Projects.slug eq slug
         }
-    }
+        .toProjectJoined()
+        .single()
 }
 
 class ProjectsQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Project>> {
     override suspend fun getData() =
-        transaction {
-            Projects
-                .selectAll()
-                .limit(paging.pageSize, paging.offset)
-                .map { it.toProject() }
-                .toContinuousList(paging.pageSize, paging.currentPage)
-        }
+        Projects
+            .selectAll()
+            .limit(paging.pageSize, paging.offset)
+            .map { it.toProject() }
+            .toContinuousList(paging.pageSize, paging.currentPage)
 }
 
 fun Iterable<ResultRow>.toProjectJoined(): List<Project> {

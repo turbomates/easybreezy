@@ -11,12 +11,10 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class TeamQO(private val teamId: UUID) : QueryObject<Team> {
-    override suspend fun getData(): Team {
-        return transaction {
+    override suspend fun getData() =
             Teams
             .leftJoin(Members)
             .join(Users, JoinType.LEFT, Members.user, Users.id)
@@ -25,8 +23,6 @@ class TeamQO(private val teamId: UUID) : QueryObject<Team> {
             }
             .toTeamJoined()
             .single()
-        }
-    }
 }
 
 fun Iterable<ResultRow>.toTeamJoined(): List<Team> {
