@@ -37,7 +37,51 @@ Type:
 URL: localhost:3000/api/projects/{project-slug}
 ```
 
+***Response:***
 
+```js        
+{
+    "data": {
+        "id": "4a658ede-b156-4f10-9d49-2fbaf802b4f2",
+        "slug": "myproject",
+        "name": "My project",
+        "status": "Active",
+        "description": "New description",
+        "roles": [
+            {
+                "id": "4ea00b9d-890d-4bf5-a9d7-0603b86c5c16",
+                "name": "Project Manager",
+                "permissions": []
+            },
+            {
+                "id": "1ec6800d-091a-441e-8884-a58993fc8258",
+                "name": "Team Lead",
+                "permissions": []
+            },
+            {
+                "id": "2721fe9e-d326-4f99-b79f-459ece0fbc6a",
+                "name": "Developer",
+                "permissions": []
+            },
+            {
+                "id": "20a0b150-6895-4e3b-b7f7-9eaac367bbdb",
+                "name": "Testerq",
+                "permissions": [
+                    "testing",
+                    "building",
+                    "scripting"
+                ]
+            }
+        ],
+        "teams": [
+            {
+                "id": "a59588c1-3718-4810-bec1-b205aee9abb9",
+                "name": "new team"
+            }
+        ]
+    }
+}
+```
 
 ### 2. Remove role from project
 
@@ -56,9 +100,7 @@ URL: localhost:3000/api/projects/{project-slug}/roles/{role-id}/remove
 ***Body:***
 
 ```js        
-{
- 
-}
+{}
 ```
 
 
@@ -161,9 +203,7 @@ URL: localhost:3000/api/projects/{project-slug}/activate
 ***Body:***
 
 ```js        
-{
-
-}
+{}
 ```
 
 
@@ -185,9 +225,7 @@ URL: localhost:3000/api/projects/{project-slug}/close
 ***Body:***
 
 ```js        
-{
-
-}
+{}
 ```
 
 
@@ -209,9 +247,7 @@ URL: localhost:3000/api/projects/{project-slug}/suspend
 ***Body:***
 
 ```js        
-{
-
-}
+{}
 ```
 
 

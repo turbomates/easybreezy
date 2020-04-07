@@ -83,12 +83,22 @@ URL: localhost:3000/api/teams/{team-id}
 
 
 
-***Body:***
+***Response:***
 
 ```js        
 {
-	"role" : "20a0b150-6895-4e3b-b7f7-9eaac367bbdb",
-	"user" : "{user-id}"
+    "data": {
+        "id": "a59588c1-3718-4810-bec1-b205aee9abb9",
+        "name": "new team",
+        "status": "Active",
+        "members": [
+            {
+                "user": "f79733bd-ae6d-4b6f-961f-3fbda1a8d1e3",
+                "role": "20a0b150-6895-4e3b-b7f7-9eaac367bbdb",
+                "email": "admin@admin.my"
+            }
+        ]
+    }
 }
 ```
 

@@ -1,6 +1,7 @@
 package io.easybreezy.project.application.team.command
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.project.model.team.Repository
@@ -11,6 +12,7 @@ import org.valiktor.functions.isNotNull
 import java.util.*
 
 class Validation @Inject constructor(
+    private val transactionManager: TransactionManager,
     private val repository: Repository
 ) {
 
@@ -21,11 +23,13 @@ class Validation @Inject constructor(
         }
     }
 
-    fun validate(command: NewMember): List<Error> {
+    suspend fun validate(command: NewMember): List<Error> {
 
-      return validate(command) {
-            validate(NewMember::role).isNotNull().isRoleBelongs(command.team)
-            validate(NewMember::user).isNotNull()
+        return transactionManager {
+            validate(command) {
+                validate(NewMember::role).isNotNull().isRoleBelongs(command.team)
+                validate(NewMember::user).isNotNull()
+            }
         }
     }
 
@@ -36,10 +40,12 @@ class Validation @Inject constructor(
         }
     }
 
-    fun validate(command: ChangeMemberRole): List<Error> {
+    suspend fun validate(command: ChangeMemberRole): List<Error> {
 
-        return validate(command) {
-            validate(ChangeMemberRole::newRoleId).isRoleBelongs(command.team)
+        return transactionManager {
+            validate(command) {
+                validate(ChangeMemberRole::newRoleId).isRoleBelongs(command.team)
+            }
         }
     }
 
