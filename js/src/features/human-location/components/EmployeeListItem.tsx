@@ -1,48 +1,45 @@
 import React, { useCallback } from "react";
 import { List, Button, Typography } from "antd";
-import { EmployeeShort, Location, EmployeeLocation } from "LocationModels";
+import { EmployeeShort, EmployeeLocation } from "LocationModels";
 import { EmployeeLocationListItem } from "./EmployeeLocationListItem";
 
 const { Text } = Typography;
 
 interface Props {
   employee: EmployeeShort;
-  employeeLocation?: EmployeeLocation[];
-  locations: Location[];
-  selectEmployee: (id: string) => void;
-  selectEmployeeLocation: (val: EmployeeLocation | null) => void;
+  employeeLocations?: EmployeeLocation[];
+  openLocationAssignForm: (id: string) => void;
+  openEmployeeLocationEditForm: (val: EmployeeLocation) => void;
   remove: (id: string) => void;
 }
 
 export const EmployeeListItem: React.FC<Props> = ({
   employee,
-  locations,
-  employeeLocation,
-  selectEmployee,
-  selectEmployeeLocation,
+  employeeLocations,
+  openLocationAssignForm,
+  openEmployeeLocationEditForm,
   remove,
-  ...rest
 }) => {
-  const handleAssign = useCallback(() => selectEmployee(employee.userId), [
-    employee,
-    selectEmployee,
-  ]);
+  const handleAssign = useCallback(
+    () => openLocationAssignForm(employee.userId),
+    [employee, openLocationAssignForm],
+  );
 
   return (
-    <List.Item {...rest} style={{ flexDirection: "column" }}>
+    <List.Item style={{ flexDirection: "column" }}>
       <div>
         <Text strong>
           {employee.userId} {employee.firstName} {employee.lastName}
         </Text>
         <Button onClick={handleAssign}>Assign</Button>
       </div>
-      {employeeLocation && (
+      {employeeLocations && (
         <List
-          dataSource={employeeLocation}
+          dataSource={employeeLocations}
           renderItem={(item) => (
             <EmployeeLocationListItem
               item={item}
-              edit={selectEmployeeLocation}
+              edit={openEmployeeLocationEditForm}
               remove={remove}
             />
           )}

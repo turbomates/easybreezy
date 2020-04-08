@@ -58,10 +58,18 @@ export const removeEmployeeLocationAsync = createAsyncAction(
   "REMOVE_EMPLOYEE_LOCATION_FAILURE",
 )<string, undefined, string>();
 
-export const selectEmployeeSync = createAction("SELECT_EMPLOYEE")<
-  string | null
->();
+export const openLocationAssignForm = createAction(
+  "OPEN_LOCATIONS_ASSIGN_FORM",
+)<string | null>();
 
-export const selectEmployeeLocationSync = createAction(
-  "SELECT_EMPLOYEE_LOCATION",
-)<EmployeeLocation | null>();
+export const closeLocationAssignForm = createAction(
+  "CLOSE_LOCATIONS_ASSIGN_FORM",
+)();
+
+export const openEmployeeLocationEditForm = createAction(
+  "OPEN_EMPLOYEE_LOCATION_EDIT_FORM",
+)<EmployeeLocation>();
+
+export const closeEmployeeLocationEditForm = createAction(
+  "CLOSE_EMPLOYEE_LOCATION_EDIT_FORM",
+)();

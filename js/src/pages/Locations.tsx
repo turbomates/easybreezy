@@ -9,8 +9,10 @@ import {
   assignLocationAsync,
   fetchEmployeeLocationsAsync,
   removeEmployeeLocationAsync,
-  selectEmployeeSync,
-  selectEmployeeLocationSync,
+  openLocationAssignForm,
+  closeLocationAssignForm,
+  openEmployeeLocationEditForm,
+  closeEmployeeLocationEditForm,
   editEmployeeLocationAsync,
 } from "features/human-location/actions";
 import {
@@ -69,29 +71,31 @@ export const LocationsPage: React.FC = () => {
     [dispatch],
   );
 
-  const selectEmployee = useCallback(
-    (id: string | null) => dispatch(selectEmployeeSync(id)),
-    [dispatch],
-  );
-
-  const selectEmployeeLocation = useCallback(
-    (employeeLocation: EmployeeLocation | null) =>
-      dispatch(selectEmployeeLocationSync(employeeLocation)),
-    [dispatch],
-  );
-
   const removeEmployeeLocation = useCallback(
     (id: string) => dispatch(removeEmployeeLocationAsync.request(id)),
     [dispatch],
   );
 
-  const handleCancelAssign = useCallback(() => selectEmployee(null), [
-    selectEmployee,
-  ]);
+  const handleOpenAssignForm = useCallback(
+    (id: string) => dispatch(openLocationAssignForm(id)),
+    [dispatch],
+  );
 
-  const handleCancelEdit = useCallback(() => selectEmployeeLocation(null), [
-    selectEmployeeLocation,
-  ]);
+  const handleOpenEditForm = useCallback(
+    (employeeLocation: EmployeeLocation) =>
+      dispatch(openEmployeeLocationEditForm(employeeLocation)),
+    [dispatch],
+  );
+
+  const handleCloseAssignForm = useCallback(
+    () => dispatch(closeLocationAssignForm()),
+    [dispatch],
+  );
+
+  const handleCloseEditForm = useCallback(
+    () => dispatch(closeEmployeeLocationEditForm()),
+    [dispatch],
+  );
 
   return (
     <>
@@ -112,10 +116,9 @@ export const LocationsPage: React.FC = () => {
               renderItem={(item) => (
                 <EmployeeListItem
                   employee={item}
-                  employeeLocation={employeeLocations.data[item.userId]}
-                  locations={locations.items}
-                  selectEmployee={selectEmployee}
-                  selectEmployeeLocation={selectEmployeeLocation}
+                  employeeLocations={employeeLocations.data[item.userId]}
+                  openLocationAssignForm={handleOpenAssignForm}
+                  openEmployeeLocationEditForm={handleOpenEditForm}
                   remove={removeEmployeeLocation}
                 />
               )}
@@ -126,7 +129,7 @@ export const LocationsPage: React.FC = () => {
       <Modal
         title="Assign location"
         visible={isAssignVisible}
-        onCancel={handleCancelAssign}
+        onCancel={handleCloseAssignForm}
         footer={null}
       >
         {isAssignVisible && (
@@ -141,7 +144,7 @@ export const LocationsPage: React.FC = () => {
       <Modal
         title="Edit employee location"
         visible={isEditVisible}
-        onCancel={handleCancelEdit}
+        onCancel={handleCloseEditForm}
         footer={null}
       >
         {isEditVisible && (

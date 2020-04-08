@@ -49,6 +49,21 @@ export const createLocationEpic: RootEpic = (action$, state$, { api }) =>
     ),
   );
 
+export const removeLocationEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(removeLocationAsync.request)),
+    switchMap((action) =>
+      from(api.location.remove(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? removeLocationAsync.success()
+            : removeLocationAsync.failure(result.reason),
+        ),
+        catchError((message) => of(removeLocationAsync.failure(message))),
+      ),
+    ),
+  );
+
 export const removeEmployeeLocationEpic: RootEpic = (
   action$,
   state$,

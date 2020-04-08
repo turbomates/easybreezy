@@ -3,6 +3,8 @@ import { Form, Input, Button, Select, DatePicker } from "antd";
 import { Location, AssignLocationForm } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
+import { filterOptions } from "utils/filterOptions";
+
 const { Option } = Select;
 
 interface Props {
@@ -93,9 +95,7 @@ export const LocationAssignForm: React.FC<Props> = ({
           showSearch
           placeholder="Select a location"
           optionFilterProp="children"
-          filterOption={(input, option) =>
-            option!.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
+          filterOption={filterOptions}
         >
           {locations.map((item) => (
             <Option key={item.id} value={item.id}>

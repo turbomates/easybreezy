@@ -1,6 +1,10 @@
 import { createReducer } from "typesafe-actions";
 import { EmployeeShort } from "LocationModels";
-import { fetchEmployeesAsync, selectEmployeeSync } from "./actions";
+import {
+  fetchEmployeesAsync,
+  openLocationAssignForm,
+  closeLocationAssignForm,
+} from "./actions";
 
 export type State = {
   items: EmployeeShort[];
@@ -35,7 +39,13 @@ export const reducer = createReducer<State>(initialState)
     }),
   )
   .handleAction(fetchEmployeesAsync.failure, () => initialState)
-  .handleAction(selectEmployeeSync, (state, action) => ({
+  .handleAction(openLocationAssignForm, (state, action) => ({
     ...state,
+    formErrors: {},
     idToAssign: action.payload,
+  }))
+  .handleAction(closeLocationAssignForm, (state, action) => ({
+    ...state,
+    formErrors: {},
+    idToAssign: null,
   }));

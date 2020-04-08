@@ -5,7 +5,7 @@ import { EmployeeLocation } from "LocationModels";
 
 interface Props {
   item: EmployeeLocation;
-  edit: (val: EmployeeLocation | null) => void;
+  edit: (val: EmployeeLocation) => void;
   remove: (id: string) => void;
 }
 

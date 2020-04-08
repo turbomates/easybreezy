@@ -3,7 +3,8 @@ import { EmployeeLocationsMap, EmployeeLocation } from "LocationModels";
 import {
   fetchEmployeeLocationsAsync,
   assignLocationAsync,
-  selectEmployeeLocationSync,
+  openEmployeeLocationEditForm,
+  closeEmployeeLocationEditForm,
   editEmployeeLocationAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
@@ -38,10 +39,15 @@ export const reducer = createReducer<State>(initialState)
     ...state,
     formErrors: normalizeErrors(action.payload),
   }))
-  .handleAction(selectEmployeeLocationSync, (state, action) => ({
+  .handleAction(openEmployeeLocationEditForm, (state, action) => ({
     ...state,
     formErrors: {},
     employeeLocationToEdit: action.payload,
+  }))
+  .handleAction(closeEmployeeLocationEditForm, (state, action) => ({
+    ...state,
+    formErrors: {},
+    employeeLocationToEdit: null,
   }))
   .handleAction(editEmployeeLocationAsync.success, (state, action) => ({
     ...state,
