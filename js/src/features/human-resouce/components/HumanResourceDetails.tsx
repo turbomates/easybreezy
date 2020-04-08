@@ -52,6 +52,11 @@ export const HumanResourceDetails: React.FC<Props> = props => {
             {user && <Profile user={user} canEdit={canEdit} />}
           </Card>
           <Card
+            title="Locations"
+            className="human-resource-details__card user-locations"
+            loading={loading}
+          ></Card>
+          <Card
             title="Positions"
             className="human-resource-details__card user-positions"
             loading={loading}

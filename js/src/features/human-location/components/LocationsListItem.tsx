@@ -8,12 +8,9 @@ interface Props {
   remove: (id: string) => void;
 }
 
-export const LocationsListItem: React.FC<Props> = ({
-  item,
-  remove,
-  ...rest
-}) => (
-  <List.Item {...rest}>
-    {item.name} <CloseCircleOutlined onClick={() => remove(item.id)} />
+export const LocationsListItem: React.FC<Props> = ({ item, remove }) => (
+  <List.Item>
+    {item.name} {item.vacationDays}{" "}
+    <CloseCircleOutlined onClick={() => remove(item.id)} />
   </List.Item>
 );
