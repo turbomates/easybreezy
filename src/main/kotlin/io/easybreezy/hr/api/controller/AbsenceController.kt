@@ -2,10 +2,7 @@ package io.easybreezy.hr.api.controller
 
 import com.google.inject.Inject
 import io.easybreezy.hr.application.absence.CreateAbsence
-import io.easybreezy.hr.application.absence.EditWorkingHours
 import io.easybreezy.hr.application.absence.Handler
-import io.easybreezy.hr.application.absence.NoteWorkingHours
-import io.easybreezy.hr.application.absence.RemoveWorkingHours
 import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.Validation
 import io.easybreezy.hr.application.absence.queryobject.Absence
@@ -14,12 +11,6 @@ import io.easybreezy.hr.application.absence.queryobject.Absences
 import io.easybreezy.hr.application.absence.queryobject.AbsencesQO
 import io.easybreezy.hr.application.absence.queryobject.UserAbsences
 import io.easybreezy.hr.application.absence.queryobject.UserAbsencesQO
-import io.easybreezy.hr.application.absence.queryobject.UserWorkingHours
-import io.easybreezy.hr.application.absence.queryobject.UserWorkingHoursQO
-import io.easybreezy.hr.application.absence.queryobject.WorkingHour
-import io.easybreezy.hr.application.absence.queryobject.WorkingHourQO
-import io.easybreezy.hr.application.absence.queryobject.WorkingHours
-import io.easybreezy.hr.application.absence.queryobject.WorkingHoursQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
@@ -60,27 +51,6 @@ class AbsenceController @Inject constructor(
         return Response.Ok
     }
 
-    suspend fun noteWorkingHours(command: NoteWorkingHours): Response.Ok {
-        validation.onNoteWorkingHours(command)
-        handler.handleNoteWorkingHours(command)
-
-        return Response.Ok
-    }
-
-    suspend fun editWorkingHours(command: EditWorkingHours): Response.Ok {
-        validation.onEditWorkingHours(command)
-        handler.handleEditWorkingHours(command)
-
-        return Response.Ok
-    }
-
-    suspend fun removeWorkingHours(command: RemoveWorkingHours): Response.Ok {
-        validation.onRemoveWorkingHours(command)
-        handler.handleRemoveWorkingHours(command)
-
-        return Response.Ok
-    }
-
     suspend fun showAbsence(id: UUID): Response.Data<Absence> {
         return Response.Data(queryExecutor.execute(AbsenceQO(id)))
     }
@@ -93,19 +63,5 @@ class AbsenceController @Inject constructor(
 
     suspend fun absences(): Response.Data<Absences> {
         return Response.Data(queryExecutor.execute(AbsencesQO(call.request.extractDateRange())))
-    }
-
-    suspend fun showWorkingHour(id: UUID): Response.Data<WorkingHour> {
-        return Response.Data(queryExecutor.execute(WorkingHourQO(id)))
-    }
-
-    suspend fun myWorkingHours(userId: UUID): Response.Data<UserWorkingHours> {
-        return Response.Data(
-            queryExecutor.execute(UserWorkingHoursQO(userId))
-        )
-    }
-
-    suspend fun workingHours(): Response.Data<WorkingHours> {
-        return Response.Data(queryExecutor.execute(WorkingHoursQO(call.request.extractDateRange())))
     }
 }

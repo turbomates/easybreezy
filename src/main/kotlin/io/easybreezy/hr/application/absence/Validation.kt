@@ -4,7 +4,6 @@ import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import org.valiktor.functions.isLessThan
 import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isPositive
 
@@ -53,12 +52,6 @@ class Validation {
                 validate(WorkingHour::day).isNotNull()
                 validate(WorkingHour::count).isNotNull().isPositive().isLessThan(FULL_WORKING_HOURS)
             }
-        }
-    }
-
-    fun onRemoveWorkingHours(command: RemoveWorkingHours): List<Error> {
-        return validate(command) {
-            validate(RemoveWorkingHours::workingHours).isNotNull().isNotEmpty()
         }
     }
 }

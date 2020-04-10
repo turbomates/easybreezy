@@ -7,16 +7,10 @@ import io.easybreezy.hr.api.controller.HRController
 import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.api.controller.VacationController
 import io.easybreezy.hr.application.absence.CreateAbsence
-import io.easybreezy.hr.application.absence.EditWorkingHours
-import io.easybreezy.hr.application.absence.NoteWorkingHours
-import io.easybreezy.hr.application.absence.RemoveWorkingHours
 import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.queryobject.Absence
 import io.easybreezy.hr.application.absence.queryobject.Absences
 import io.easybreezy.hr.application.absence.queryobject.UserAbsences
-import io.easybreezy.hr.application.absence.queryobject.UserWorkingHours
-import io.easybreezy.hr.application.absence.queryobject.WorkingHour
-import io.easybreezy.hr.application.absence.queryobject.WorkingHours
 import io.easybreezy.hr.application.calendar.command.AddHoliday
 import io.easybreezy.hr.application.calendar.command.EditCalendar
 import io.easybreezy.hr.application.calendar.command.EditHoliday
@@ -42,7 +36,6 @@ import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocations
 import io.easybreezy.hr.application.RemainingTime
 import io.easybreezy.hr.application.RemainingTimes
-import io.easybreezy.infrastructure.ktor.EmptyParams
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
@@ -80,8 +73,6 @@ class Router @Inject constructor(
 
     private fun absencesRouting(route: Route) {
         route.route("/absences") {
-            workingHoursRouting(this)
-
             post<Response.Either<Response.Ok, Response.Errors>, CreateAbsence>("") { command ->
                 controller<AbsenceController>(this).createAbsence(
                     command
@@ -105,35 +96,6 @@ class Router @Inject constructor(
             }
             get<Response.Data<UserAbsences>>("/me") { controller<AbsenceController>(this).myAbsences(resolvePrincipal<UserPrincipal>()) }
             get<Response.Data<Absences>>("") { controller<AbsenceController>(this).absences() }
-        }
-    }
-
-    private fun workingHoursRouting(route: Route) {
-        route.route("/working-hours") {
-            post<Response.Ok, NoteWorkingHours>("") { command ->
-                controller<AbsenceController>(this).noteWorkingHours(
-                    command
-                )
-            }
-            post<Response.Ok, EditWorkingHours>("/update") { command ->
-                controller<AbsenceController>(this).editWorkingHours(
-                    command
-                )
-            }
-            delete<Response.Ok, EmptyParams, EmptyParams, RemoveWorkingHours>("") { _, _, command ->
-                controller<AbsenceController>(this).removeWorkingHours(
-                    command
-                )
-            }
-            get<Response.Data<WorkingHour>, ID>("/{id}") { routeParams ->
-                controller<AbsenceController>(this).showWorkingHour(routeParams.id)
-            }
-            get<Response.Data<UserWorkingHours>>("/me") {
-                controller<AbsenceController>(this).myWorkingHours(
-                    resolvePrincipal<UserPrincipal>()
-                )
-            }
-            get<Response.Data<WorkingHours>>("") { controller<AbsenceController>(this).workingHours() }
         }
     }
 

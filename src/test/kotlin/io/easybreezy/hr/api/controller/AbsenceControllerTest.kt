@@ -1,7 +1,6 @@
 package io.easybreezy.hr.api.controller
 
 import io.easybreezy.hr.createAbsence
-import io.easybreezy.hr.createWorkingHour
 import io.easybreezy.rollbackTransaction
 import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
@@ -10,9 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.json
-import kotlinx.serialization.json.jsonArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -141,154 +138,6 @@ class AbsenceControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/$absenceId")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `working hours create`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                with(handleRequest(HttpMethod.Post, "/api/hr/absences/working-hours") {
-                    addHeader("Content-Type", "application/json")
-                    setBody(
-                        json {
-                            "userId" to memberId.toString()
-                            "workingHours" to jsonArray {
-                                +json {
-                                    "day" to "2020-05-12"
-                                    "count" to 5
-                                }
-                                +json {
-                                    "day" to "2020-05-16"
-                                    "count" to 6
-                                }
-                            }
-                        }.toString()
-
-                    )
-                }) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
-                    Assertions.assertTrue(response.content?.contains("2020-05-16")!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `working hours update`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                val workingHourId = database.createWorkingHour(memberId)
-
-                with(handleRequest(HttpMethod.Post, "/api/hr/absences/working-hours/update") {
-                    addHeader("Content-Type", "application/json")
-                    setBody(
-                        json {
-                            "workingHours" to json {
-                                workingHourId.toString() to json {
-                                    "day" to "2020-09-19"
-                                    "count" to 4
-                                }
-                                // ...
-                            }
-                        }.toString()
-                    )
-                }) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
-                    Assertions.assertTrue(response.content?.contains("2020-09-19")!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `working hours delete`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                val workingHourId = database.createWorkingHour(memberId)
-
-                with(handleRequest(HttpMethod.Delete, "/api/hr/absences/working-hours") {
-                    addHeader("Content-Type", "application/json")
-                    setBody(
-                        json {
-                            "workingHours" to jsonArray {
-                                +JsonPrimitive(workingHourId.toString())
-                            }
-                        }.toString()
-                    )
-                }) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours?from=2010-04-04&to=2030-04-04")) {
-                    Assertions.assertFalse(response.content?.contains("5")!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `my working hours`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                database.createWorkingHour(memberId)
-
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/me")) {
-                    Assertions.assertTrue(response.content?.contains("5")!!)
-                    Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `working hours`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                database.createWorkingHour(memberId)
-
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours?from=2010-04-04&to=2030-04-04")) {
-                    Assertions.assertTrue(response.content?.contains("5")!!)
-                    Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `working hour show`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                val workingHourId = database.createWorkingHour(memberId)
-
-                with(handleRequest(HttpMethod.Get, "/api/hr/absences/working-hours/$workingHourId")) {
-                    Assertions.assertTrue(response.content?.contains("5")!!)
-                    Assertions.assertTrue(response.content?.contains(memberId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
