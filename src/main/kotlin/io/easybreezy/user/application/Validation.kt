@@ -37,6 +37,15 @@ class Validation @Inject constructor(
         }
     }
 
+    fun onConfirm(command: Confirm): List<Error> {
+        return validate(command) {
+            validate(Confirm::token).isNotNull().isNotBlank()
+            validate(Confirm::password).isNotNull().isNotBlank()
+            validate(Confirm::firstName).isNotNull().isNotBlank()
+            validate(Confirm::lastName).isNotNull().isNotBlank()
+        }
+    }
+
     fun onUpdateContacts(command: UpdateContacts): List<Error> {
         return validate(command) {
             validate(UpdateContacts::contacts)

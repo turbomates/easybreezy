@@ -10,6 +10,8 @@ import io.easybreezy.hr.model.calendar.Holidays
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations
 import io.easybreezy.infrastructure.exposed.toUUID
+import io.easybreezy.user.model.Users
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -71,7 +73,7 @@ internal fun Database.createUserLocation(
             it[this.endedAt] = endedAt
             it[location] = LocationRepository().getOne(locationId).id
             it[this.extraVacationDays] = extraVacations
-            it[this.userId] = userId
+            it[this.userId] = EntityID(userId, Users)
         } get UserLocations.id
         id.toUUID()
     }

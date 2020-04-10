@@ -1,7 +1,6 @@
 package io.easybreezy.user.api
 
 import com.google.inject.Inject
-import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
@@ -31,7 +30,9 @@ class Router @Inject constructor(
                 authenticate(*Auth.user) {
                     userRouting(this)
                 }
-                post<Response.Ok, Confirm>("/confirm") { command -> controller<UserController>(this).confirm(command) }
+                post<Response.Either<Response.Ok, Response.Errors>, Confirm>("/confirm") {
+                        command -> controller<UserController>(this).confirm(command)
+                }
             }
         }
     }

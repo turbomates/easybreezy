@@ -52,9 +52,13 @@ class UserController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun confirm(command: Confirm): Response.Ok {
+    suspend fun confirm(command: Confirm): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.onConfirm(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
         handler.handleConfirm(command)
 
-        return Response.Ok
+        return Response.Either(Either.Left(Response.Ok))
     }
 }

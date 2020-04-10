@@ -1,6 +1,7 @@
 package io.easybreezy.hr.model.location
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -29,7 +30,7 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 this.startedAt = startedAt
                 this.endedAt = endedAt
                 this.location = location
-                this.userId = userId
+                this.userId = EntityID(userId, Users)
             }
         }
     }
@@ -55,6 +56,6 @@ object UserLocations : UUIDTable("user_locations") {
     val startedAt = date("started_at").uniqueIndex()
     val endedAt = date("ended_at").uniqueIndex()
     val location = reference("location", Locations)
-    val userId = uuid("user_id")
+    val userId = reference("user_id", Users)
     val extraVacationDays = integer("extra_vacation_days").nullable()
 }
