@@ -120,11 +120,6 @@ class Router @Inject constructor(
                         command
                     )
                 }
-                delete<Response.Ok, ID>("/{id}") { params ->
-                    controller<LocationController>(this).removeUserLocation(
-                        params.id
-                    )
-                }
                 get<Response.Data<UserLocation>, ID>("/{id}") { params ->
                     controller<LocationController>(this).showUserLocation(params.id)
                 }

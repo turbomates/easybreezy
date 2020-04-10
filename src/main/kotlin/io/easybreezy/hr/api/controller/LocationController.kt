@@ -12,8 +12,6 @@ import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocationQO
 import io.easybreezy.hr.application.location.queryobject.UserLocations
 import io.easybreezy.hr.application.location.queryobject.UserLocationsQO
-import io.easybreezy.hr.infrastructure.LocationRepository
-import io.easybreezy.hr.infrastructure.UserLocationRepository
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
@@ -24,8 +22,6 @@ import java.util.UUID
 class LocationController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val locationRepository: LocationRepository,
-    private val userLocationRepository: UserLocationRepository,
     private val queryExecutor: QueryExecutor
 ) : Controller() {
 
@@ -67,12 +63,6 @@ class LocationController @Inject constructor(
         handler.handleEditUserLocation(command)
 
         return Response.Either(Either.Left(Response.Ok))
-    }
-
-    suspend fun removeUserLocation(id: UUID): Response.Ok {
-        handler.handleRemoveUserLocation(id)
-
-        return Response.Ok
     }
 
     suspend fun showUserLocation(id: UUID): Response.Data<UserLocation> {

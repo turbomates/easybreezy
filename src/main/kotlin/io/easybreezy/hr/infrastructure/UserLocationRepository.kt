@@ -13,9 +13,4 @@ class UserLocationRepository : UserLocation.Repository() {
     private fun find(id: UUID): UserLocation? {
         return find { UserLocations.id eq id }.firstOrNull()
     }
-
-    fun remove(id: UUID) {
-        val location = find(id)
-        location?.delete()
-    }
 }

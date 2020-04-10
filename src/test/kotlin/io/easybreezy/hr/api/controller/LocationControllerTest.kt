@@ -142,28 +142,6 @@ class LocationControllerTest {
     }
 
     @Test
-    fun `remove user location`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userLocationId = database.createUserLocation(memberId, locationId)
-
-                with(handleRequest(HttpMethod.Delete, "/api/hr/locations/user/$userLocationId")) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user")) {
-                    Assertions.assertFalse(response.content?.contains("Best Location For a Job")!!)
-                    Assertions.assertFalse(response.content?.contains(memberId.toString())!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
     fun `user location show`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase

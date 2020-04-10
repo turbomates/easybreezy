@@ -41,10 +41,4 @@ class Handler @Inject constructor(
             locationRepository.remove(id)
         }
     }
-
-    suspend fun handleRemoveUserLocation(id: UUID) {
-        transaction {
-            userLocationRepository.remove(id)
-        }
-    }
 }

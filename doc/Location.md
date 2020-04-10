@@ -9,7 +9,6 @@
 
   * [User locations](#1-user-locations)
   * [User location show](#2-user-location-show)
-  * [User location delete](#3-user-location-delete)
   * [User location edit](#4-user-location-edit)
   * [User location assign](#5-user-location-assign)
   * [Locations](#6-locations)
@@ -65,35 +64,6 @@ Method: GET
 Type: RAW
 URL: localhost:3000/api/hr/locations/user/40598ad4-3063-44ff-a6f7-2e8bd1b60a6a
 ```
-
-
-***Headers:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
-### 3. User location delete
-
-
-
-***Endpoint:***
-
-```bash
-Method: DELETE
-Type: RAW
-URL: localhost:3000/api/hr/locations/user/1ba9bbe3-c677-4f30-9112-a03befa24eb6
-```
-
-
-***Headers:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
 
 
 ### 4. User location edit
@@ -176,15 +146,6 @@ Type: RAW
 URL: localhost:3000/api/hr/locations
 ```
 
-
-***Headers:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
 ### 7. Location Remove
 
 
@@ -196,14 +157,6 @@ Method: DELETE
 Type: RAW
 URL: localhost:3000/api/hr/locations/fc16b88c-67e6-4606-aa01-bb1459615123
 ```
-
-
-***Headers:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
 
 
 ### 8. Location create
