@@ -1,16 +1,14 @@
 package io.easybreezy.hr.application.absence
 
-import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
-import io.easybreezy.user.infrastructure.UserRepository
 import org.valiktor.functions.isLessThan
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotEmpty
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.isPositive
 
-class Validation @Inject constructor(private val repository: UserRepository) {
+class Validation {
 
     companion object {
         private const val FULL_WORKING_HOURS = 8

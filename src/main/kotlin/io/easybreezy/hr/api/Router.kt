@@ -285,5 +285,3 @@ class Router @Inject constructor(
     internal data class ID(val id: UUID)
     internal data class UserId(val userId: UUID)
 }
-
-

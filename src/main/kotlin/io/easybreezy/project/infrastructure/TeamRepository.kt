@@ -16,7 +16,6 @@ class TeamRepository : Repository, Team.Repository() {
                     Roles.id eq role and (Teams.id eq toTeam)
                 }
                 .count() > 0
-
     }
 
     override fun isNoActualTickets(member: UUID): Boolean {

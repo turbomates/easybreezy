@@ -81,7 +81,7 @@ class VacationControllerTest {
     }
 
     private fun createVacationParts(memberId: UUID, database: Database, locationId: UUID = database.createLocation()) {
-        //user earn 25 vacation days per year (2 per month)
+        // user earn 25 vacation days per year (2 per month)
         // +10d + 2*6d = 22d
         database.createUserLocation(
             memberId,
@@ -91,7 +91,7 @@ class VacationControllerTest {
             LocalDate.of(2019, 9, 10)
         )
         // +22d -5h
-        database.createWorkingHour(memberId,LocalDate.of(2019, 3, 6))
+        database.createWorkingHour(memberId, LocalDate.of(2019, 3, 6))
         // +22d -11h
         database.createWorkingHour(memberId, LocalDate.of(2019, 3, 7), 6)
         // +22d - 5d -11h

@@ -35,4 +35,3 @@ class ProjectModule : AbstractModule() {
         return GuiceSubscriberFactory(injector)
     }
 }
-

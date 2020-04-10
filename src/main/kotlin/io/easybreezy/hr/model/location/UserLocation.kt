@@ -1,7 +1,6 @@
 package io.easybreezy.hr.model.location
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.infrastructure.exposed.dao.embedded
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
