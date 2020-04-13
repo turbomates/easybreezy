@@ -38,6 +38,20 @@ class ProjectControllerTest {
         }
     }
 
+    @Test fun `list of projects`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            testDatabase.createMyProject()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Get, "/api/projects")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("My Project")!!)
+                }
+            }
+        }
+    }
+
     @Test fun `suspend project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()

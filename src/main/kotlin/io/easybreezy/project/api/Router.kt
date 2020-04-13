@@ -11,6 +11,7 @@ import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.project.command.*
+import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.*
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
@@ -39,6 +40,10 @@ class Router @Inject constructor(
 
             post<Response.Either<Response.Ok, Response.Errors>, New>("") {
                     new -> controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
+            }
+
+            get<Response.Listing<Project>>("") {
+                controller<ProjectController>(this).list()
             }
         }
 
