@@ -16,6 +16,7 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var endedAt by Absences.endedAt
     private var reason by Absences.reason
     private var userId by Absences.userId
+    private var isApproved by Absences.isApproved
     var comment by Absences.comment
 
     companion object : PrivateEntityClass<UUID, Absence>(object : Repository() {}) {
@@ -25,6 +26,7 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
                 this.endedAt = endedAt
                 this.reason = reason
                 this.userId = userId
+                this.isApproved = false
             }
         }
     }
@@ -33,6 +35,10 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         this.startedAt = startedAt
         this.endedAt = endedAt
         this.reason = reason
+    }
+
+    fun approve() {
+        isApproved = true
     }
 
     abstract class Repository : UUIDEntityClass<Absence>(Absences, Absence::class.java) {
@@ -53,6 +59,7 @@ object Absences : UUIDTable("absences") {
         { PGEnum("absence_reason", it) }
     )
     val userId = uuid("user_id")
+    val isApproved = bool("is_approved").default(false)
 }
 
 enum class Reason {

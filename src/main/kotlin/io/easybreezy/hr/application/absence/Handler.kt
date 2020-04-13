@@ -60,6 +60,13 @@ class Handler @Inject constructor(
         }
     }
 
+    suspend fun handleApproveAbsence(id: UUID) {
+        transaction {
+            val absence = absenceRepository.findById(id)
+            absence?.approve()
+        }
+    }
+
     suspend fun handlerRemoveAbsence(id: UUID) {
         transaction {
             absenceRepository.remove(id)

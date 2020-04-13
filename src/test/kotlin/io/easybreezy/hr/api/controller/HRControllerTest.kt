@@ -37,7 +37,6 @@ class HRControllerTest {
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/employee/$userId")) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("PM")!!)
                     Assertions.assertTrue(response.content?.contains("1000")!!)

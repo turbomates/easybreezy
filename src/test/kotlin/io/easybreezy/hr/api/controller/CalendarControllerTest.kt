@@ -149,7 +149,6 @@ class CalendarControllerTest {
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays")) {
-                    println(response.content)
                     Assertions.assertTrue(response.content?.contains("2020-07-19")!!)
                     Assertions.assertTrue(response.content?.contains(name)!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())

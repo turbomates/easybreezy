@@ -58,7 +58,8 @@ private fun ResultRow.toAbsence() = Absence(
     endedAt = this[AbsencesTable.endedAt].toString(),
     comment = this[AbsencesTable.comment],
     reason = this[AbsencesTable.reason],
-    userId = this[AbsencesTable.userId]
+    userId = this[AbsencesTable.userId],
+    isApproved = this[AbsencesTable.isApproved]
 )
 
 @Serializable
@@ -68,7 +69,8 @@ data class Absence(
     val endedAt: String,
     val comment: String?,
     val reason: Reason,
-    @Serializable(with = UUIDSerializer::class) val userId: UUID
+    @Serializable(with = UUIDSerializer::class) val userId: UUID,
+    val isApproved: Boolean
 )
 
 @Serializable

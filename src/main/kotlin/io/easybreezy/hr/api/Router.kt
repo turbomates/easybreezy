@@ -36,15 +36,10 @@ import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocations
 import io.easybreezy.hr.application.RemainingTime
 import io.easybreezy.hr.application.RemainingTimes
-import io.easybreezy.infrastructure.ktor.GenericPipeline
-import io.easybreezy.infrastructure.ktor.Response
+import io.easybreezy.infrastructure.ktor.*
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
-import io.easybreezy.infrastructure.ktor.delete
-import io.easybreezy.infrastructure.ktor.deleteWithBody
-import io.easybreezy.infrastructure.ktor.get
-import io.easybreezy.infrastructure.ktor.post
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
 import io.ktor.routing.Route
@@ -82,6 +77,11 @@ class Router @Inject constructor(
                 controller<AbsenceController>(this).updateAbsence(
                     params.id,
                     command
+                )
+            }
+            postParams<Response.Ok, ID>("/{id}/approve") { params ->
+                controller<AbsenceController>(this).approveAbsence(
+                    params.id
                 )
             }
             delete<Response.Ok, ID>("/{id}") { params ->

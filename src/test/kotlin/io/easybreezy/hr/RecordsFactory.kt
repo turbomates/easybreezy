@@ -30,6 +30,7 @@ internal fun Database.createAbsence(
             it[comment] = "Test Comment"
             it[reason] = Reason.VACATION
             it[this.userId] = userId
+            it[isApproved] = true
         } get Absences.id
         id.toUUID()
     }
