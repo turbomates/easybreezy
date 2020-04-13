@@ -83,6 +83,22 @@ class Router @Inject constructor(
                 command.project = params.slug
                 controller<ProjectController>(this).removeRole(command)
             }
+
+            data class ProjectCategory(val slug: String, val categoryId: UUID)
+            post<Response.Either<Response.Ok, Response.Errors>, NewCategory, Project>("/categories/add") { command, params ->
+                command.project = params.slug
+                controller<ProjectController>(this).addCategory(command)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, ChangeCategory, ProjectCategory>("/categories/{categoryId}/change") { command, params ->
+                command.project = params.slug
+                command.categoryId = params.categoryId
+                controller<ProjectController>(this).changeCategory(command)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, RemoveCategory, ProjectCategory>("/categories/{categoryId}/remove") { command, params ->
+                command.categoryId = params.categoryId
+                command.project = params.slug
+                controller<ProjectController>(this).removeCategory(command)
+            }
         }
 
         route.route("/teams") {

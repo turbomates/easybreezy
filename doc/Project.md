@@ -16,7 +16,9 @@
   * [Close](#7-close)
   * [Suspend](#8-suspend)
   * [Add project](#9-add-project)
-
+  * [Remove category from project](#10-remove-category-from-project)
+  * [Change category to project](#11-change-category-to-project)
+  * [Add category to project](#12-add-category-to-project)
 
 --------
 
@@ -276,6 +278,82 @@ URL: localhost:3000/api/projects
 ```
 
 
+### 10. Remove category from project
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/categories/{category-id}/remove
+```
+
+
+
+***Body:***
+
+```js        
+{}
+```
+
+
+
+### 11. Change category to project
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/categories/{category-id}/change
+```
+
+
+
+***Body:***
+
+```js        
+{
+  "name": "Feature",
+  "parent": "2721fe9e-d326-4f99-b79f-459ece0fbc6a"
+}
+```
+
+
+
+### 12. Add category to project
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/categories/add
+```
+
+
+
+***Body:***
+
+```js        
+{
+  "name": "Epic"
+}
+```
+***Or Body:***
+
+```js        
+{
+  "name": "Feature",
+  "parent": "2721fe9e-d326-4f99-b79f-459ece0fbc6a"
+}
+```
 
 ---
 [Back to top](#projects)

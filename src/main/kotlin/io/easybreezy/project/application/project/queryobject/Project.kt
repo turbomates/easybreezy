@@ -6,6 +6,7 @@ import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.project.model.Projects
+import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
 import kotlinx.serialization.Serializable
@@ -19,6 +20,7 @@ class ProjectQO(private val slug: String) : QueryObject<Project> {
     override suspend fun getData() =
         Projects
         .leftJoin(Roles)
+        .leftJoin(Categories)
         .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
         .select {
             Projects.slug eq slug
@@ -47,9 +49,13 @@ fun Iterable<ResultRow>.toProjectJoined(): List<Project> {
         val teamId = resultRow.getOrNull(Teams.id)
         val teams = teamId?.let { resultRow.toTeam() }
 
+        val categoryId = resultRow.getOrNull(Categories.id)
+        val categories = categoryId?.let { resultRow.toCategory() }
+
         map[project.slug] = current.copy(
             roles = current.roles.plus(listOfNotNull(roles)).distinct(),
-            teams = current.teams.plus(listOfNotNull(teams)).distinct()
+            teams = current.teams.plus(listOfNotNull(teams)).distinct(),
+            categories = current.categories.plus(listOfNotNull(categories)).distinct()
         )
         map
     }.values.toList()
@@ -74,6 +80,12 @@ fun ResultRow.toTeam() = Team(
     this[Teams.name]
 )
 
+fun ResultRow.toCategory() = Category(
+    this[Categories.id].value,
+    this[Categories.name],
+    this[Categories.parent]
+)
+
 @Serializable
 data class Project(
     @Serializable(with = UUIDSerializer::class)
@@ -83,7 +95,8 @@ data class Project(
     val status: String,
     val description: String?,
     var roles: List<Role> = listOf(),
-    var teams: List<Team> = listOf()
+    var teams: List<Team> = listOf(),
+    var categories: List<Category> = listOf()
 )
 
 @Serializable
@@ -99,4 +112,13 @@ data class Team(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val name: String
+)
+
+@Serializable
+data class Category(
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
+    val name: String,
+    @Serializable(with = UUIDSerializer::class)
+    val parent: UUID?
 )
