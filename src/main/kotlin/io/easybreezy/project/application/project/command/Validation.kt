@@ -4,6 +4,8 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
+import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.project.application.issue.queryobject.HasIssuesQO
 import io.easybreezy.project.model.Repository
 import org.valiktor.Constraint
 import org.valiktor.Validator
@@ -14,7 +16,8 @@ import java.util.*
 
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,
-    private val repository: Repository
+    private val repository: Repository,
+    private val queryExecutor: QueryExecutor
 ) {
     fun validateCommand(command: New): List<Error> {
 
@@ -35,7 +38,7 @@ class Validation @Inject constructor(
     fun validateCommand(command: ChangeRole): List<Error> {
 
         return validate(command) {
-            validate(ChangeRole::name).hasSize(0, 25)
+            validate(ChangeRole::name).hasSize(2, 25)
             validate(ChangeRole::permissions).isNotEmpty()
         }
     }
@@ -79,7 +82,7 @@ class Validation @Inject constructor(
     suspend fun validateCommand(command: ChangeCategory): List<Error> {
         return transactionManager {
             validate(command) {
-                validate(ChangeCategory::name).hasSize(0, 25)
+                validate(ChangeCategory::name).hasSize(2, 25)
                 validate(ChangeCategory::parent).isNullOrProjectCategory(command.project)
             }
         }
@@ -97,13 +100,10 @@ class Validation @Inject constructor(
     }
 
     suspend fun validateCommand(command: RemoveCategory): List<Error> {
-
-        return transactionManager {
-            if (repository.hasIssues(command.categoryId)) {
-                listOf(Error(HasIssues.name))
-            } else {
-                listOf<Error>()
-            }
+        if (queryExecutor.execute(HasIssuesQO(command.categoryId))) {
+            return listOf(Error(HasIssues.name))
         }
+        return listOf()
     }
+
 }

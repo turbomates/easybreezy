@@ -147,6 +147,5 @@ object Projects : UUIDTable("projects") {
 interface Repository {
     fun getBySlug(slug: String): Project
     fun hasMembers(withRoleId: UUID): Boolean
-    fun hasIssues(withCategoryId: UUID): Boolean
     fun isProjectCategory(category: UUID, project: String): Boolean
 }

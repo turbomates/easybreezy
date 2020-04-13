@@ -22,10 +22,6 @@ class ProjectRepository : Project.Repository(), Repository {
         return Members.select { Members.role eq withRoleId }.count() > 0
     }
 
-    override fun hasIssues(withCategoryId: UUID): Boolean {
-        return Issues.select { Issues.category eq withCategoryId }.count() > 0
-    }
-
     override fun isProjectCategory(category: UUID, project: String): Boolean {
         return Categories
             .join(Projects, JoinType.INNER, Categories.project, Projects.id)
