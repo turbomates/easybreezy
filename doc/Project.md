@@ -19,6 +19,7 @@
   * [Remove category from project](#10-remove-category-from-project)
   * [Change category to project](#11-change-category-to-project)
   * [Add category to project](#12-add-category-to-project)
+  * [List of projects](#13-list-of-project)
 
 --------
 
@@ -352,6 +353,37 @@ URL: localhost:3000/api/projects/{project-slug}/categories/add
 {
   "name": "Feature",
   "parent": "2721fe9e-d326-4f99-b79f-459ece0fbc6a"
+}
+```
+
+### 13. List of projects
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: localhost:3000/api/projects
+```
+
+***Response:***
+
+```js        
+{
+    "pageSize": 30,
+    "currentPage": 1,
+    "hasMore": false,
+    "data": [
+        {
+            "id": "4a658ede-b156-4f10-9d49-2fbaf802b4f2",
+            "slug": "myproject",
+            "name": "My project",
+            "status": "Active",
+            "description": "New description"
+        }
+    ]
 }
 ```
 
