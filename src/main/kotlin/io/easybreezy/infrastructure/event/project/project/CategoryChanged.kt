@@ -10,15 +10,15 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Serializable
-data class RoleAdded(
+data class CategoryChanged(
     val project: UUID,
-    val role: UUID,
+    val category: UUID,
     val name: String,
-    val permissions: List<String>,
+    val parent: UUID?,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key
         get() = Companion
 
-    companion object : Event.Key<RoleAdded>
+    companion object : Event.Key<CategoryChanged>
 }

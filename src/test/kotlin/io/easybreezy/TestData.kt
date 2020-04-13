@@ -5,6 +5,7 @@ import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
+import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
@@ -61,6 +62,16 @@ internal fun Database.createProjectRole(projectId: EntityID<UUID>, role: String)
             it[name] = role
             it[permissions] = listOf()
         } get Roles.id
+        id.toUUID()
+    }
+}
+
+internal fun Database.createProjectCategory(projectId: EntityID<UUID>, category: String): UUID {
+    return transaction(this) {
+        val id = Categories.insert {
+            it[project] = projectId
+            it[name] = category
+        } get Categories.id
         id.toUUID()
     }
 }
