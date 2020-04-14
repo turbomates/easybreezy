@@ -20,10 +20,10 @@ export const SiderMenu: FC<{}> = () => (
       </Link>
     </Menu.Item>
     <Menu.Item key="projects">
-      <span>
+      <Link to="/projects">
         <LaptopOutlined />
         <span>Projects</span>
-      </span>
+      </Link>
     </Menu.Item>
     <Menu.Item key="31">
       <Link to="/locations">

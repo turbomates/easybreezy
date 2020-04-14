@@ -9,6 +9,7 @@ import { UserDetailsPage } from "./pages/UserDetails";
 import { LocationsPage } from "./pages/Locations";
 import { NotFoundPage } from "./pages/NotFound";
 import { LoginPage } from "./pages/Login";
+import { ProjectsPage } from "./pages/Projects";
 
 import { isAuthorized } from "./features/auth/selectors";
 import { canRender } from "./features/app/selectors";
@@ -29,6 +30,7 @@ export const Routes: React.FC = () => {
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
         <Route path="/locations" component={LocationsPage} />
+        <Route path="/projects" component={ProjectsPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </Main>

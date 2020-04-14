@@ -5,6 +5,7 @@ import * as auth from "./auth-api-client";
 import * as humanResource from "./stub/human-resource-api";
 import * as location from "./location-api";
 import * as realHr from "./human-resource-api";
+import * as project from "./project-api";
 
 export default {
   logger,
@@ -16,5 +17,6 @@ export default {
     humanResource,
     location,
     realHr,
+    project
   },
 };
