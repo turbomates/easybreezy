@@ -62,8 +62,7 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 }
 
 object Salaries : UUIDTable("employee_salaries") {
-
-    val employee = reference("employee_id", Employees)
+    val employee = reference("user_id", Employees)
     val amount = integer("amount")
     val since = date("since")
     val till = date("till").nullable()

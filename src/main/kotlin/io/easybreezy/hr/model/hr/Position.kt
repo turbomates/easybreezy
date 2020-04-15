@@ -6,8 +6,8 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.`java-time`.datetime
 import org.jetbrains.exposed.sql.`java-time`.date
+import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -54,7 +54,7 @@ class Position private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 }
 
 object Positions : UUIDTable("employee_positions") {
-    val employee = reference("employee_id", Employees)
+    val employee = reference("user_id", Employees)
     val title = varchar("title", 100)
     val since = date("since")
     val till = date("till").nullable()
