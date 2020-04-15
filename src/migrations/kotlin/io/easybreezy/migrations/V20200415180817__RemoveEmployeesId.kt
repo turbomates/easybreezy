@@ -13,9 +13,9 @@ class V20200415180817__RemoveEmployeesId : BaseJavaMigration() {
           ALTER TABLE employee_positions DROP CONSTRAINT employee_positions_employee_id_fkey;
           ALTER TABLE employees DROP CONSTRAINT employees_pkey;
           ALTER TABLE employees ADD PRIMARY KEY (user_id);
-          UPDATE employee_positions SET employee_id= (Select user_id from employees where id=employee_id)
-          UPDATE employee_salaries SET employee_id= (Select user_id from employees where id=employee_id)
-          UPDATE employee_notes SET employee_id= (Select user_id from employees where id=employee_id)
+          UPDATE employee_positions SET employee_id= (Select user_id from employees where id=employee_id);
+          UPDATE employee_salaries SET employee_id= (Select user_id from employees where id=employee_id);
+          UPDATE employee_notes SET employee_id= (Select user_id from employees where id=employee_id);
           ALTER TABLE employee_positions RENAME COLUMN employee_id TO user_id;
           ALTER TABLE employee_salaries RENAME COLUMN employee_id TO user_id;
           ALTER TABLE employee_notes RENAME COLUMN employee_id TO user_id;
