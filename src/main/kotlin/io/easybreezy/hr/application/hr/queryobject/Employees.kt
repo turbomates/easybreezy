@@ -17,7 +17,7 @@ import java.util.UUID
 
 class EmployeesQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Employee>> {
     override suspend fun getData() =
-        Employees.innerJoin(Users, { Employees.userId }, { Users.id })
+        Employees.innerJoin(Users, { Employees.id }, { Users.id })
             .selectAll()
             .andWhere { Employees.fired eq false }
             .limit(paging.pageSize, paging.offset)
@@ -26,7 +26,7 @@ class EmployeesQO(private val paging: PagingParameters) : QueryObject<Continuous
 }
 
 internal fun ResultRow.toEmployee() = Employee(
-    this[Employees.userId],
+    this[Employees.id].value,
     this[Users.name[NameTable.firstName]],
     this[Users.name[NameTable.lastName]]
 )

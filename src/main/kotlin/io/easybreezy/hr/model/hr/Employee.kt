@@ -8,7 +8,8 @@ import kotlinx.serialization.builtins.list
 import kotlinx.serialization.serializer
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDate
@@ -16,8 +17,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-
-    private var userId by Employees.userId
+    private var userId by Employees.id
     private var personalData by Employees.personalData
     private var fired by Employees.fired
 
@@ -30,7 +30,7 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
 
     companion object : PrivateEntityClass<UUID, Employee>(object : Repository() {}) {
         fun registerCard(userId: UUID) = Employee.new {
-            this.userId = userId
+            this.userId = EntityID(userId, Employees)
         }
     }
 
@@ -84,8 +84,10 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
     }
 }
 
-object Employees : UUIDTable() {
-    val userId = uuid("user_id")
+object Employees : IdTable<UUID>() {
+    override val id: Column<EntityID<UUID>> = uuid("user_id")
+        .entityId()
+    override val primaryKey by lazy { super.primaryKey ?: PrimaryKey(id) }
     val fired = bool("fired").default(false)
     val skills = jsonb("skills", String::class.serializer().list).default(listOf())
     val createdAt = datetime("created_at").default(LocalDateTime.now())

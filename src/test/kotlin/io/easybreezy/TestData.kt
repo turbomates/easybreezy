@@ -99,16 +99,16 @@ internal fun Database.createTeamMember(teamId: UUID, member: UUID, roleId: UUID)
 
 internal fun Database.createEmployee(): UUID {
     return transaction(this) {
-        val id = Users.insert {
+        val userId = Users.insert {
             it[status] = Status.ACTIVE
             it[email[EmailTable.email]] = "employee@gmail.com"
             it[roles] = setOf(Role.MEMBER)
         } get Users.id
 
         Employees.insert {
-            it[userId] = id.value
+            it[id] = EntityID(userId.value, Employees)
         }
 
-        id.toUUID()
+        userId.toUUID()
     }
 }

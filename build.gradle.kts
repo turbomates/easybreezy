@@ -196,14 +196,13 @@ tasks.register("migrationsGenerate") {
     group = "migrations"
 
     doLast {
-
         val migrationName = properties["migname"]
             ?: throw IllegalArgumentException("You must specify `migname` argument")
 
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss")
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         val timestamp = dateFormat.format(Date())
-
+        print(migrationsPath)
         val fullMigrationName = "V${timestamp}__$migrationName"
         val fullMigrationPath = "$migrationsPath/$fullMigrationName.kt"
 
