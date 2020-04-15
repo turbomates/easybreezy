@@ -1,10 +1,10 @@
 import { createReducer } from "typesafe-actions";
-import { UserDetails } from "HumanResourceModels";
 import { fetchProfileAsync } from "./actions";
+import { Profile } from "AccountModules";
 
 export type State = {
   loading: boolean;
-  profile: UserDetails | null;
+  profile: Profile | null;
 };
 
 const initialState: State = {

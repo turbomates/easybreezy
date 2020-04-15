@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
 import { List, Button, Typography } from "antd";
-import { EmployeeShort, EmployeeLocation } from "LocationModels";
+import { EmployeeLocation } from "LocationModels";
 import { EmployeeLocationListItem } from "./EmployeeLocationListItem";
+import { EmployeeShort } from "HumanResourceModels";
 
 const { Text } = Typography;
 

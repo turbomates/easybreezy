@@ -1,10 +1,5 @@
 declare module "HumanResourceModels" {
-  export type User = {
-    id: number;
-    username: string;
-    avatar: string;
-  };
-
+  /** START types for stubs */
   type UserVacation = {
     from: string;
     to: string;
@@ -27,49 +22,96 @@ declare module "HumanResourceModels" {
   };
 
   export type CalendarVacationGroup = {
-    id: number;
+    id: string;
     title: string;
-    item: User;
+    item: EmployeeShort;
   };
 
-  export type UserContact = {
+  /** END types for stubs */
+
+  export type EmployeeShort = {
+    userId: string;
+    firstName: string | null;
+    lastName: string | null;
+  };
+
+  export type EmployeeNote = {
+    id: string;
+    text: string;
+    archived: boolean;
+    authorId: string;
+    createdAt: string; // "2020-04-10T16:51:07.575132";
+  };
+
+  export type EmployeeSalary = {
+    id: string;
+    amount: number;
+    comment: string;
+    since: string;
+    till: string;
+  };
+
+  export type EmployeePosition = {
+    id: string;
+    title: string;
+    since: string;
+    till: string | null;
+  };
+
+  export type Employee = {
+    userId: string;
+    firstName: string | null;
+    lastName: string | null;
+    birthday: string | null; // "2000-01-01";
+    bio: string | null;
+    skills: string[];
+    notes?: EmployeeNote[];
+    salaries?: EmployeeSalary[];
+    positions?: EmployeePosition[];
+    contacts?: EmployeeContact[];
+  };
+
+  export type EmployeeResponse = {
+    data: Employee;
+  };
+
+  export type UpdateBirthdayRequestParams = {
+    userId: string;
+    birthday: string;
+  };
+
+  export type EmployeeContact = {
     type: string;
     value: string;
   };
 
-  export type UserNote = {
-    id: number;
-    text: string;
-    archived: boolean;
-    createdAt: string;
+  export type ContactsForm = {
+    contacts: EmployeeContact[];
   };
 
-  export type UserDetails = {
-    id: number;
-    username: string;
-    email: string;
-    avatar: string;
-    firstName: string;
-    lastName: string;
-    birthday: string;
-    phone: string;
-    description: string;
-    position: string;
+  export type SpecifySkillsRequestParams = {
+    userId: string;
     skills: string[];
-    vacations: UserVacation[];
-    contacts: UserContact[];
-    notes: UserNote[];
   };
 
-  export type UsersListing = {
-    items: User[];
-    page: number;
-    perPage: number;
-    haveMore: boolean;
+  export type AddNoteRequestParams = {
+    userId: string;
+    text: string;
   };
 
-  export type UsersParams = {
-    page?: number;
-    perPage?: number;
+  export type ApplyPositionRequestParams = {
+    userId: string;
+    position: string;
+  };
+
+  export type ApplySalaryRequestParams = {
+    userId: string;
+    amount: string;
+    comment: string;
+  };
+
+  export type ApplySalaryForm = {
+    amount: string;
+    comment: string;
   };
 }
