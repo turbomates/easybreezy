@@ -11,6 +11,7 @@ import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.project.command.*
+import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.*
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
@@ -39,6 +40,10 @@ class Router @Inject constructor(
 
             post<Response.Either<Response.Ok, Response.Errors>, New>("") {
                     new -> controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
+            }
+
+            get<Response.Listing<Project>>("") {
+                controller<ProjectController>(this).list()
             }
         }
 
@@ -77,6 +82,22 @@ class Router @Inject constructor(
                 command.roleId = params.roleId
                 command.project = params.slug
                 controller<ProjectController>(this).removeRole(command)
+            }
+
+            data class ProjectCategory(val slug: String, val categoryId: UUID)
+            post<Response.Either<Response.Ok, Response.Errors>, NewCategory, Project>("/categories/add") { command, params ->
+                command.project = params.slug
+                controller<ProjectController>(this).addCategory(command)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, ChangeCategory, ProjectCategory>("/categories/{categoryId}/change") { command, params ->
+                command.project = params.slug
+                command.categoryId = params.categoryId
+                controller<ProjectController>(this).changeCategory(command)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, RemoveCategory, ProjectCategory>("/categories/{categoryId}/remove") { command, params ->
+                command.categoryId = params.categoryId
+                command.project = params.slug
+                controller<ProjectController>(this).removeCategory(command)
             }
         }
 

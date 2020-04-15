@@ -3,6 +3,8 @@ package io.easybreezy.project.model
 import io.easybreezy.infrastructure.event.project.project.*
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.issue.Category
 import io.easybreezy.project.model.team.Role
 import io.easybreezy.project.model.team.Roles
 import org.jetbrains.exposed.dao.*
@@ -22,6 +24,7 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var status by Projects.status
     private var updatedAt by Projects.updatedAt
     private val roles by Role referrersOn Roles.project
+    private val categories by Category referrersOn Categories.project
 
     fun writeDescription(description: String) {
         this.description = description
@@ -66,6 +69,28 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         this.updatedAt = LocalDateTime.now()
         addEvent(RoleRemoved(id.value, role.id.value, role.name, this.updatedAt))
     }
+
+    fun addCategory(name: String, parent: UUID?) {
+        val newCategory = Category.new(this, name, parent)
+        this.updatedAt = LocalDateTime.now()
+        addEvent(CategoryAdded(id.value, newCategory.id.value, newCategory.name, parent, this.updatedAt))
+    }
+
+    fun changeCategory(categoryId: UUID, newParent: UUID?, newName: String? = null) {
+        val category = categories.first { it.id.value == categoryId }
+        newName?.let { category.rename(it) }
+        category.changeParent(newParent)
+        this.updatedAt = LocalDateTime.now()
+        addEvent(CategoryChanged(id.value, category.id.value, category.name, newParent, this.updatedAt))
+    }
+
+    fun removeCategory(categoryId: UUID) {
+        val category = categories.first { it.id.value == categoryId }
+        category.delete()
+        this.updatedAt = LocalDateTime.now()
+        addEvent(RoleRemoved(id.value, category.id.value, category.name, this.updatedAt))
+    }
+
 
     enum class Status {
         Active,
@@ -122,4 +147,5 @@ object Projects : UUIDTable("projects") {
 interface Repository {
     fun getBySlug(slug: String): Project
     fun hasMembers(withRoleId: UUID): Boolean
+    fun isProjectCategory(category: UUID, project: String): Boolean
 }

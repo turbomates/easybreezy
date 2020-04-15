@@ -38,6 +38,20 @@ class ProjectControllerTest {
         }
     }
 
+    @Test fun `list of projects`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            testDatabase.createMyProject()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Get, "/api/projects")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("My Project")!!)
+                }
+            }
+        }
+    }
+
     @Test fun `suspend project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
@@ -235,6 +249,80 @@ class ProjectControllerTest {
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Tester")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `add category to project`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            testDatabase.createMyProject()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/categories/add") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {
+                        "name" to "Epic"
+                    }
+                        .toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("Epic")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `change category of project`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val parent = testDatabase.createProjectCategory(project, "Epic")
+            val category = testDatabase.createProjectCategory(project, "Feature")
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/categories/$category/change") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "name" to "Feature"
+                            "parent" to parent.toString()
+                        }
+                            .toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
+
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("Feature")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `remove category from project`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val category = testDatabase.createProjectCategory(project, "TestCat")
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/categories/$category/remove") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {}.toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertFalse(response.content?.contains("TestCat")!!)
                 }
             }
         }

@@ -93,4 +93,34 @@ class ProjectController @Inject constructor(
         handler.removeRole(command)
         return Response.Either(Either.Left(Response.Ok))
     }
+
+    suspend fun addCategory(command: NewCategory): Response.Either<Response.Ok, Response.Errors> {
+
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.addCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun changeCategory(command: ChangeCategory): Response.Either<Response.Ok, Response.Errors> {
+
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.changeCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun removeCategory(command: RemoveCategory): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+
+        handler.removeCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
 }
