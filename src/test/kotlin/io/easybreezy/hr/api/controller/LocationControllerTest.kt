@@ -14,6 +14,8 @@ import io.ktor.server.testing.withTestApplication
 import kotlinx.serialization.json.json
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class LocationControllerTest {
@@ -65,7 +67,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun `locations`() {
+    fun locations() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
@@ -95,7 +97,6 @@ class LocationControllerTest {
                         json {
                             "userId" to userId.toString()
                             "startedAt" to "2020-07-19"
-                            "endedAt" to "2020-08-19"
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -105,7 +106,62 @@ class LocationControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
-                    Assertions.assertTrue(response.content?.contains("2020-08-19")!!)
+                    Assertions.assertTrue(response.content?.contains("2020-07-19")!!)
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `close user location`() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                val locationId = database.createLocation()
+                val userId = database.createMember()
+                val userLocationId = database.createUserLocation(userId, locationId, endedAt = null)
+
+                with(handleRequest(HttpMethod.Post, "/api/hr/locations/user/$userLocationId/close") {}) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                val df: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user/$userLocationId")) {
+                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `user assign new location and previous should be closed`() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                val locationId = database.createLocation()
+                val userId = database.createMember()
+                val userLocationId = database.createUserLocation(userId, locationId, endedAt = null)
+
+                with(handleRequest(HttpMethod.Post, "/api/hr/locations/user") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "userId" to userId.toString()
+                            "startedAt" to "2020-07-19"
+                            "locationId" to locationId.toString()
+                        }.toString()
+                    )
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                val df: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user/$userLocationId")) {
+                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -127,7 +183,6 @@ class LocationControllerTest {
                     setBody(
                         json {
                             "startedAt" to "2020-03-19"
-                            "endedAt" to "2020-04-19"
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -137,7 +192,6 @@ class LocationControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("2020-03-19")!!)
-                    Assertions.assertTrue(response.content?.contains("2020-04-19")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }

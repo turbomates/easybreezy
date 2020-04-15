@@ -1,6 +1,7 @@
 package io.easybreezy.hr.model.location
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -22,27 +23,29 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : PrivateEntityClass<UUID, UserLocation>(object : Repository() {}) {
         fun create(
             startedAt: LocalDate,
-            endedAt: LocalDate,
             location: Location,
             userId: UUID
         ): UserLocation {
             return UserLocation.new {
                 this.startedAt = startedAt
-                this.endedAt = endedAt
                 this.location = location
                 this.userId = EntityID(userId, Users)
             }
         }
     }
 
-    fun edit(startedAt: LocalDate, endedAt: LocalDate, location: Location) {
+    fun edit(startedAt: LocalDate, location: Location) {
         this.startedAt = startedAt
-        this.endedAt = endedAt
         this.location = location
     }
 
     fun addVacationDays(days: Int) {
         this.extraVacationDays = days
+    }
+
+    fun close() {
+        if (endedAt != null) throw LogicException("User location have been already closed")
+        endedAt = LocalDate.now()
     }
 
     abstract class Repository : UUIDEntityClass<UserLocation>(UserLocations, UserLocation::class.java) {
@@ -54,7 +57,7 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 
 object UserLocations : UUIDTable("user_locations") {
     val startedAt = date("started_at").uniqueIndex()
-    val endedAt = date("ended_at").uniqueIndex()
+    val endedAt = date("ended_at").uniqueIndex().nullable()
     val location = reference("location", Locations)
     val userId = reference("user_id", Users)
     val extraVacationDays = integer("extra_vacation_days").nullable()

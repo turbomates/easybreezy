@@ -29,7 +29,7 @@ class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocati
             .innerJoin(Users)
             .selectAll()
             .andWhere { UserLocationsTable.startedAt greater dateRange.from }
-            .andWhere { UserLocationsTable.endedAt less dateRange.to }
+            .andWhere { coalesce(UserLocationsTable.endedAt, UserLocationsTable.startedAt) less dateRange.to }
             .toUserLocations()
 }
 

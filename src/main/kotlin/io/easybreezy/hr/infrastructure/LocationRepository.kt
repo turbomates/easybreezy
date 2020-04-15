@@ -10,12 +10,12 @@ class LocationRepository : Location.Repository() {
         return find(id) ?: throw LocationNotFoundException(id)
     }
 
-    private fun find(id: UUID): Location? {
-        return find { Locations.id eq id }.firstOrNull()
-    }
-
     fun remove(id: UUID) {
         val location = find(id)
         location?.delete()
+    }
+
+    private fun find(id: UUID): Location? {
+        return find { Locations.id eq id }.firstOrNull()
     }
 }

@@ -120,6 +120,11 @@ class Router @Inject constructor(
                         command
                     )
                 }
+                postParams<Response.Ok, ID>("/{id}/close") { params ->
+                    controller<LocationController>(this).closeUserLocation(
+                        params.id
+                    )
+                }
                 get<Response.Data<UserLocation>, ID>("/{id}") { params ->
                     controller<LocationController>(this).showUserLocation(params.id)
                 }
