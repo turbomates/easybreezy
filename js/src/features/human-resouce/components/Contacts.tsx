@@ -1,11 +1,11 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { UserContact } from "HumanResourceModels";
+import { EmployeeContact } from "HumanResourceModels";
 import { ContactIcon } from "./ContactIcon";
 
 interface Props {
-  contacts: UserContact[];
+  contacts: EmployeeContact[];
   canEdit: boolean;
 }
 
@@ -13,7 +13,7 @@ export const Contacts: React.FC<Props> = ({ contacts, canEdit }) => (
   <>
     {contacts.length && (
       <Form layout="horizontal">
-        {contacts.map(contact => (
+        {contacts.map((contact) => (
           <Form.Item
             key={`${contact.type}${contact.value}`}
             labelCol={{ span: 5 }}

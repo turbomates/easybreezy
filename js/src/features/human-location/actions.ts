@@ -1,6 +1,5 @@
-import { Paging, FormError } from "MyTypes";
+import { FormError } from "MyTypes";
 import {
-  EmployeeShort,
   Location,
   LocationForm,
   AssignLocationForm,
@@ -27,12 +26,6 @@ export const removeLocationAsync = createAsyncAction(
   "REMOVE_LOCATION_SUCCESS",
   "REMOVE_LOCATION_FAILURE",
 )<string, undefined, string>();
-
-export const fetchEmployeesAsync = createAsyncAction(
-  "FETCH_EMPLOYEES_REQUEST",
-  "FETCH_EMPLOYEES_SUCCESS",
-  "FETCH_EMPLOYEES_FAILURE",
-)<undefined, Paging<EmployeeShort>, string>();
 
 export const assignLocationAsync = createAsyncAction(
   "ASSIGN_LOCATION_REQUEST",

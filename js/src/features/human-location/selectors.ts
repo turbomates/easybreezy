@@ -1,14 +1,14 @@
 import { RootState } from "MyTypes";
 
-export const location = (state: RootState) => state.humanLocation.location;
+export const location = (state: RootState) => state.humanLocation;
 
-export const employee = (state: RootState) => state.humanLocation.employee;
+// export const employee = (state: RootState) => state.humanLocation.employee;
 
-export const isAssignLocationFormVisible = (state: RootState) =>
-  state.humanLocation.employee.idToAssign !== null;
+// export const isAssignLocationFormVisible = (state: RootState) =>
+//   state.humanLocation.employee.idToAssign !== null;
 
-export const isEditEmployeeLocationFormVisible = (state: RootState) =>
-  state.humanLocation.employeeLocation.employeeLocationToEdit !== null;
+// export const isEditEmployeeLocationFormVisible = (state: RootState) =>
+//   state.humanLocation.employeeLocation.employeeLocationToEdit !== null;
 
-export const employeeLocation = (state: RootState) =>
-  state.humanLocation.employeeLocation;
+// export const employeeLocation = (state: RootState) =>
+//   state.humanLocation.employeeLocation;

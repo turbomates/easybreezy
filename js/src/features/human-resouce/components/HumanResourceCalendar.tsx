@@ -2,10 +2,7 @@ import React from "react";
 import Timeline from "react-calendar-timeline";
 import moment from "moment";
 import { HumanResourceCalendarGroup } from "./HumanResourceCalendarGroup";
-import {
-  CalendarVacationItem,
-  CalendarVacationGroup,
-} from "HumanResourceModels";
+import { CalendarVacationGroup } from "HumanResourceModels";
 
 import "react-calendar-timeline/lib/Timeline.css";
 import "./HumanResourceCalendar.scss";
@@ -47,22 +44,22 @@ const verticalLineClassNamesForTime = (timeStart: number, timeEnd: number) => {
 };
 
 interface Props {
-  items: CalendarVacationItem[];
   groups: CalendarVacationGroup[];
 }
 
-export const HumanResourceCalendar: React.FC<Props> = ({ items, groups }) => (
+export const HumanResourceCalendar: React.FC<Props> = ({ groups }) => (
   <div className="content human-resource-calendar">
     <Timeline
       groups={groups}
-      groupRenderer={data => (
+      groupRenderer={({ group }) => (
         <HumanResourceCalendarGroup
-          username={data.group.item.username}
-          avatar={data.group.item.avatar}
-          id={data.group.item.id}
+          firstName={group.item.firstName}
+          lastName={group.item.lastName}
+          avatar={null}
+          id={group.item.userId}
         />
       )}
-      items={items}
+      items={[]}
       itemHeightRatio={0.7}
       lineHeight={LINE_HEIGHT}
       defaultTimeStart={moment().add(-6, "month")}

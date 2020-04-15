@@ -6,7 +6,6 @@ import {
   fetchLocationsAsync,
   createLocationAsync,
   removeLocationAsync,
-  fetchEmployeesAsync,
   assignLocationAsync,
   fetchEmployeeLocationsAsync,
   removeEmployeeLocationAsync,
@@ -81,21 +80,6 @@ export const removeEmployeeLocationEpic: RootEpic = (
         catchError((message) =>
           of(removeEmployeeLocationAsync.failure(message)),
         ),
-      ),
-    ),
-  );
-
-export const fetchEmployeesEpic: RootEpic = (action$, state$, { api }) =>
-  action$.pipe(
-    filter(isActionOf([fetchEmployeesAsync.request])),
-    switchMap((action) =>
-      from(api.realHr.fetchEmployees()).pipe(
-        map((result) =>
-          result.success
-            ? fetchEmployeesAsync.success(result.data)
-            : fetchEmployeesAsync.failure(result.reason),
-        ),
-        catchError((message) => of(fetchEmployeesAsync.failure(message))),
       ),
     ),
   );
