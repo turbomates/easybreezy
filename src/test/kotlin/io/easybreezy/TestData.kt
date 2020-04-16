@@ -1,7 +1,6 @@
 package io.easybreezy
 
 import io.easybreezy.hr.model.hr.Employees
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
@@ -26,7 +25,7 @@ internal fun Database.createAdmin(): UUID {
             it[email[EmailTable.email]] = "admin@gmail.com"
             it[roles] = setOf(Role.ADMIN)
         } get Users.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -39,7 +38,7 @@ internal fun Database.createMember(firstName: String = "John", lastName: String 
             it[name[NameTable.lastName]] = lastName
             it[roles] = setOf(Role.MEMBER)
         } get Users.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -62,7 +61,7 @@ internal fun Database.createProjectRole(projectId: EntityID<UUID>, role: String)
             it[name] = role
             it[permissions] = listOf()
         } get Roles.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -72,7 +71,7 @@ internal fun Database.createProjectCategory(projectId: EntityID<UUID>, category:
             it[project] = projectId
             it[name] = category
         } get Categories.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -83,7 +82,7 @@ internal fun Database.createProjectTeam(projectId: UUID, team: String): UUID {
             it[name] = team
             it[status] = io.easybreezy.project.model.team.Status.Active
         } get Teams.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -109,6 +108,6 @@ internal fun Database.createEmployee(): UUID {
             it[id] = EntityID(userId.value, Employees)
         }
 
-        userId.toUUID()
+        userId.value
     }
 }

@@ -2,7 +2,6 @@ package io.easybreezy.hr.application.location.queryobject
 
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations as UserLocationsTable
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
@@ -34,11 +33,11 @@ class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocati
 }
 
 private fun ResultRow.toUserLocation() = UserLocation(
-    id = this[UserLocationsTable.id].toUUID(),
+    id = this[UserLocationsTable.id].value,
     startedAt = this[UserLocationsTable.startedAt].toString(),
     endedAt = this[UserLocationsTable.endedAt].toString(),
     location = this.toLocation(),
-    userId = this[UserLocationsTable.userId].toUUID(),
+    userId = this[UserLocationsTable.userId].value,
     email = this[Users.email[EmailTable.email]],
     firstName = this[Users.name[NameTable.firstName]],
     lastName = this[Users.name[NameTable.lastName]]

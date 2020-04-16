@@ -5,7 +5,7 @@ import io.easybreezy.hr.infrastructure.CalendarRepository
 import io.easybreezy.hr.infrastructure.LocationRepository
 import io.easybreezy.hr.model.calendar.Calendar
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.infrastructure.exposed.toLocalDate
+import io.easybreezy.infrastructure.toLocalDate
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.property.DtStart
 import net.fortuna.ical4j.model.property.Summary

@@ -9,7 +9,6 @@ import io.easybreezy.hr.model.calendar.Calendars
 import io.easybreezy.hr.model.calendar.Holidays
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Database
@@ -32,7 +31,7 @@ internal fun Database.createAbsence(
             it[this.userId] = userId
             it[isApproved] = true
         } get Absences.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -47,7 +46,7 @@ internal fun Database.createWorkingHour(
             it[this.count] = count
             it[this.userId] = userId
         } get WorkingHours.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -57,7 +56,7 @@ internal fun Database.createLocation(): UUID {
             it[name] = "Best Location For a Job"
             it[vacationDays] = 25
         } get Locations.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -76,7 +75,7 @@ internal fun Database.createUserLocation(
             it[this.extraVacationDays] = extraVacations
             it[this.userId] = EntityID(userId, Users)
         } get UserLocations.id
-        id.toUUID()
+        id.value
     }
 }
 
@@ -87,7 +86,7 @@ internal fun Database.createCalendar(locationId: UUID): UUID {
             it[location] = LocationRepository().getOne(locationId).id
         } get Calendars.id
 
-        id.toUUID()
+        id.value
     }
 }
 
