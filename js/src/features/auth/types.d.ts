@@ -1,7 +1,11 @@
 declare module "AuthModels" {
   export type User = {
-    username: string;
-    email: string;
+    sub: string;
+    aud: "easybreezy";
+    once: boolean;
+    rnd: number;
+    exp: number;
+    iat: number;
   };
 
   export type SignInData = {

@@ -1,23 +1,24 @@
 import React from "react";
-import { Form } from "antd";
-import { UserNote } from "HumanResourceModels";
-import Paragraph from "antd/lib/typography/Paragraph";
+import { List } from "antd";
+import { EmployeeNote } from "HumanResourceModels";
 
 interface Props {
-  notes: UserNote[];
+  notes: EmployeeNote[];
   canEdit: boolean;
 }
 
 export const Notes: React.FC<Props> = ({ notes, canEdit }) => {
-  if (notes.length) return null;
+  if (!notes.length) return null;
 
   return (
-    <Form layout="vertical">
-      {notes.map(note => (
-        <Form.Item key={note.id} label={<span>{note.createdAt}</span>}>
-          <Paragraph editable={canEdit}>{note.text}</Paragraph>
-        </Form.Item>
-      ))}
-    </Form>
+    <List
+      dataSource={notes}
+      renderItem={(note) => (
+        <List.Item>
+          <List.Item.Meta description={note.createdAt} />
+          {note.text}
+        </List.Item>
+      )}
+    />
   );
 };

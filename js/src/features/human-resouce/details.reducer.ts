@@ -1,25 +1,25 @@
 import { createReducer } from "typesafe-actions";
-import { UserDetails } from "HumanResourceModels";
-import { fetchUserDetailsAsync } from "./actions";
+import { Employee } from "HumanResourceModels";
+import { fetchEmployeeAsync } from "./actions";
 
 export type State = {
   loading: boolean;
-  user: UserDetails | null;
+  employee: Employee | null;
 };
 
 const initialState: State = {
   loading: false,
-  user: null,
+  employee: null,
 };
 
 export const reducer = createReducer<State>(initialState)
-  .handleAction(fetchUserDetailsAsync.request, (state, action) => ({
+  .handleAction(fetchEmployeeAsync.request, (state, action) => ({
     ...state,
     loading: true,
   }))
-  .handleAction(fetchUserDetailsAsync.success, (state, action) => ({
+  .handleAction(fetchEmployeeAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    user: action.payload,
+    employee: action.payload,
   }))
-  .handleAction(fetchUserDetailsAsync.failure, (state, action) => initialState);
+  .handleAction(fetchEmployeeAsync.failure, (state, action) => initialState);

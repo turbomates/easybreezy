@@ -6,7 +6,8 @@ import { MenuOutlined } from "@ant-design/icons";
 import { SiderMenu } from "features/app/components/SiderMenu";
 import { HeaderProfileDropdown } from "features/app/components/HeaderProfileDropdown";
 import { account } from "features/account/selectors";
-import { fetchProfileAsync } from "features/human-resouce/actions";
+import { isAuthorized } from "features/auth/selectors";
+import { fetchProfileAsync } from "features/account/actions";
 import { signOutAsync } from "features/auth/actions";
 
 import "./Main.scss";
@@ -19,12 +20,12 @@ export const Main: FC<Props> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   // TODO check relogin bugs
   const { profile, loading } = useSelector(account);
+  const authorized = useSelector(isAuthorized);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchProfileAsync.request());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (authorized) dispatch(fetchProfileAsync.request());
+  }, [authorized, dispatch]);
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -69,9 +70,6 @@ export const Main: FC<Props> = ({ children }) => {
           />
         </Header>
         <Content>{children}</Content>
-        {/* <Footer className="footer">
-          Turbomates Soft {new Date().getFullYear()}
-        </Footer> */}
       </Layout>
     </Layout>
   );
