@@ -72,7 +72,6 @@ export const updateEmployeeBirthdayEpic: RootEpic = (
 ) =>
   action$.pipe(
     filter(isActionOf(updateEmployeeBirthdayAsync.request)),
-    debounceTime(500),
     switchMap((action, t) =>
       from(api.humanResource.updateBirthday(action.payload)).pipe(
         map((result) =>
