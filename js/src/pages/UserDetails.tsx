@@ -19,6 +19,7 @@ import {
   ApplySalaryForm,
 } from "HumanResourceModels";
 import { authUserId } from "features/auth/selectors";
+import { isAdmin as isAdminSelector } from "features/account/selectors";
 import { employeeDetails } from "../features/human-resouce/selectors";
 import { Profile } from "features/human-resouce/components/Profile";
 import { ContactsForm } from "features/human-resouce/components/ContactsForm";
@@ -35,11 +36,11 @@ export const UserDetailsPage: React.FC = () => {
   const [selected, setSelected] = useState("general");
   const { id } = useParams<{ id: string }>();
   const { employee, loading } = useSelector(employeeDetails);
+  const isAdmin = useSelector(isAdminSelector);
   const authId = useSelector(authUserId);
   const dispatch = useDispatch();
 
   const canEdit = authId === id;
-  const canSeeAdminStuff = canEdit;
 
   const load = useCallback(
     (id: string) => dispatch(fetchEmployeeAsync.request(id)),
@@ -172,7 +173,7 @@ export const UserDetailsPage: React.FC = () => {
           </Card>
         </Col>
         <Col lg={12} md={24}>
-          {canSeeAdminStuff && (
+          {(isAdmin || canEdit) && (
             <Card
               title="Salaries"
               className="human-resource-details__card"
