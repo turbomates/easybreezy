@@ -202,7 +202,6 @@ tasks.register("migrationsGenerate") {
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss")
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         val timestamp = dateFormat.format(Date())
-        print(migrationsPath)
         val fullMigrationName = "V${timestamp}__$migrationName"
         val fullMigrationPath = "$migrationsPath/$fullMigrationName.kt"
 
