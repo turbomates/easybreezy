@@ -25,10 +25,10 @@ class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails>
             .leftJoin(Salaries)
             .leftJoin(Positions)
             .leftJoin(Notes)
-            .innerJoin(Users, { Employees.userId }, { Users.id })
-            .join(Contacts, JoinType.LEFT, Employees.userId, Contacts.user)
+            .innerJoin(Users, { Employees.id }, { Users.id })
+            .join(Contacts, JoinType.LEFT, Employees.id, Contacts.user)
             .select {
-                Employees.userId eq userId
+                Employees.id eq userId
             }.toEmployeeDetailsJoined().single()
 }
 
@@ -57,7 +57,7 @@ fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {
 }
 
 fun ResultRow.toEmployeeDetails() = EmployeeDetails(
-    this[Employees.userId],
+    this[Employees.id].value,
     this[Users.name[NameTable.firstName]],
     this[Users.name[NameTable.lastName]],
     this[Employees.skills],

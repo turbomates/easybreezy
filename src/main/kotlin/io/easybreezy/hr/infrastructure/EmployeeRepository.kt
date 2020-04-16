@@ -7,6 +7,6 @@ import java.util.UUID
 
 class EmployeeRepository : Employee.Repository(), Repository {
     override fun getByUserId(userId: UUID): Employee {
-        return find { Employees.userId eq userId }.first()
+        return find { Employees.id eq userId }.first()
     }
 }

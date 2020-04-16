@@ -49,7 +49,7 @@ class Note private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
 }
 
 object Notes : UUIDTable("employee_notes") {
-    val employee = reference("employee_id", Employees)
+    val employee = reference("user_id", Employees)
     val text = text("text")
     val archived = bool("archived").default(false)
     val hrManager = uuid("hr_manager_id")
