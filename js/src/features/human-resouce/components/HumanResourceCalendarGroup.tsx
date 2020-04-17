@@ -6,14 +6,22 @@ import { Link } from "react-router-dom";
 import "./HumanResourceCalendarGroup.scss";
 
 interface Props {
-  username: string;
-  avatar: string;
-  id: number;
+  firstName: string | null;
+  lastName: string | null;
+  avatar: string | null;
+  id: string;
 }
 
-export const HumanResourceCalendarGroup: React.FC<Props> = props => (
-  <Link to={`/users/${props.id}`} className="human-resource-calendar-group">
-    <Avatar icon={<UserOutlined />} src={props.avatar} />{" "}
-    <span className="title">{props.username}</span>
-  </Link>
-);
+export const HumanResourceCalendarGroup: React.FC<Props> = (props) => {
+  const name =
+    props.firstName && props.lastName
+      ? `${props.firstName} ${props.lastName}`
+      : props.id;
+
+  return (
+    <Link to={`/users/${props.id}`} className="human-resource-calendar-group">
+      <Avatar icon={<UserOutlined />} src={props.avatar || ""} />{" "}
+      <span className="title">{name}</span>
+    </Link>
+  );
+};

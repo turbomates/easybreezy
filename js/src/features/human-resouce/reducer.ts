@@ -1,10 +1,8 @@
 import { combineReducers } from "redux";
-import { reducer as vacations } from "./vacations.reducer";
 import { reducer as details } from "./details.reducer";
-import { reducer as profile } from "./profile.reducer";
+import { reducer as employees } from "./employee.reducer";
 
 export default combineReducers({
-  vacations,
+  employees,
   details,
-  profile,
 });

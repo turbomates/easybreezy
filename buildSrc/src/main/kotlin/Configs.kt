@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlin = "1.3.71"
+    const val kotlin = "1.3.72"
     const val ktor = "1.3.2"
     const val junit = "5.4.2"
     const val test_logger = "1.7.0"
@@ -15,7 +15,7 @@ object Versions {
     const val rabbitmq_amqp_client = "5.8.0"
     const val ktlint_gradle = "9.2.1"
     const val exposed = "0.23.1"
-    const val kotlin_serialization = "1.3.71"
+    const val kotlin_serialization = "1.3.72"
     const val kotlin_serialization_runtime = "0.20.0"
     const val ical4j = "3.0.14"
 }

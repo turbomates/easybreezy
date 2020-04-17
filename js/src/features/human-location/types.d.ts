@@ -56,10 +56,4 @@ declare module "LocationModels" {
       userLocations: EmployeeLocationsMap;
     };
   };
-
-  export type EmployeeShort = {
-    userId: string;
-    firstName: string | null;
-    lastName: string | null;
-  };
 }

@@ -1,7 +1,6 @@
 package io.easybreezy.hr.application.location.queryobject
 
 import io.easybreezy.hr.model.location.Locations as LocationsTable
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
@@ -20,7 +19,7 @@ class LocationsQO : QueryObject<Locations> {
 }
 
 internal fun ResultRow.toLocation() = Location(
-    id = this[LocationsTable.id].toUUID(),
+    id = this[LocationsTable.id].value,
     name = this[LocationsTable.name],
     vacationDays = this[LocationsTable.vacationDays]
 )

@@ -2,7 +2,6 @@ package io.easybreezy.hr.application.absence.queryobject
 
 import io.easybreezy.hr.model.absence.Absences as AbsencesTable
 import io.easybreezy.hr.model.absence.Reason
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
@@ -53,7 +52,7 @@ private fun Iterable<ResultRow>.toAbsences(): Absences {
 }
 
 private fun ResultRow.toAbsence() = Absence(
-    id = this[AbsencesTable.id].toUUID(),
+    id = this[AbsencesTable.id].value,
     startedAt = this[AbsencesTable.startedAt].toString(),
     endedAt = this[AbsencesTable.endedAt].toString(),
     comment = this[AbsencesTable.comment],

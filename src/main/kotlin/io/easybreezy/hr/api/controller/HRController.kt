@@ -38,7 +38,6 @@ class HRController @Inject constructor(
     }
 
     suspend fun fire(command: Fire, employeeUser: UUID, hrManager: UUID): Response.Either<Response.Ok, Response.Errors> {
-
         val errors = validation.onFire(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
@@ -103,8 +102,8 @@ class HRController @Inject constructor(
 
     suspend fun employees(): Response.Listing<Employee> {
         return Response.Listing(
-             queryExecutor.execute(EmployeesQO(call.request.pagingParameters()))
-             )
+            queryExecutor.execute(EmployeesQO(call.request.pagingParameters()))
+            )
     }
 
     suspend fun employee(employeeUser: UUID): Response.Data<EmployeeDetails> {

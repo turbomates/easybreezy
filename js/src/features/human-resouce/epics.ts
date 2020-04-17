@@ -1,58 +1,194 @@
 import { RootEpic } from "MyTypes";
 import { from, of } from "rxjs";
-import { filter, switchMap, map, catchError, delay } from "rxjs/operators";
+import {
+  filter,
+  switchMap,
+  map,
+  catchError,
+  debounceTime,
+} from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 
 import {
-  fetchUsersVacationsAsync,
-  fetchUserDetailsAsync,
-  fetchProfileAsync,
+  fetchEmployeeAsync,
+  fetchEmployeesAsync,
+  updateEmployeeBirthdayAsync,
+  updateContactsAsync,
+  specifyEmployeeSkillsAsync,
+  addEmployeeNoteAsync,
+  applyEmployeePositionAsync,
+  applyEmployeeSalaryAsync,
 } from "./actions";
 
-export const fetchUsersEpic: RootEpic = (action$, state$, { api }) =>
+// export const fetchUsersEpic: RootEpic = (action$, state$, { api }) =>
+//   action$.pipe(
+//     filter(isActionOf(fetchUsersVacationsAsync.request)),
+//     switchMap((action) =>
+//       from(api.humanResource.fetchVacations()).pipe(
+//         map((result) =>
+//           result.success
+//             ? fetchUsersVacationsAsync.success(result.data)
+//             : fetchUsersVacationsAsync.failure(result.reason),
+//         ),
+//         catchError((message) => of(fetchUsersVacationsAsync.failure(message))),
+//       ),
+//     ),
+//   );
+
+export const fetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
-    filter(isActionOf(fetchUsersVacationsAsync.request)),
-    switchMap(action =>
-      from(api.humanResource.fetchVacations()).pipe(
-        delay(1000),
-        map(result =>
+    filter(isActionOf(fetchEmployeeAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.fetchEmployee(action.payload)).pipe(
+        map((result) =>
           result.success
-            ? fetchUsersVacationsAsync.success(result.data)
-            : fetchUsersVacationsAsync.failure(result.reason),
+            ? fetchEmployeeAsync.success(result.data)
+            : fetchEmployeeAsync.failure(result.reason),
         ),
-        catchError(message => of(fetchUsersVacationsAsync.failure(message))),
+        catchError((message) => of(fetchEmployeeAsync.failure(message))),
       ),
     ),
   );
 
-export const fetchUserDetailsEpic: RootEpic = (action$, state$, { api }) =>
+export const fetchEmployeesEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
-    filter(isActionOf(fetchUserDetailsAsync.request)),
-    switchMap(action =>
-      from(api.humanResource.fetchUserDetails(action.payload)).pipe(
-        delay(1000),
-        map(result =>
+    filter(isActionOf([fetchEmployeesAsync.request])),
+    switchMap((action) =>
+      from(api.humanResource.fetchEmployees()).pipe(
+        map((result) =>
           result.success
-            ? fetchUserDetailsAsync.success(result.data)
-            : fetchUserDetailsAsync.failure(result.reason),
+            ? fetchEmployeesAsync.success(result.data)
+            : fetchEmployeesAsync.failure(result.reason),
         ),
-        catchError(message => of(fetchUserDetailsAsync.failure(message))),
+        catchError((message) => of(fetchEmployeesAsync.failure(message))),
       ),
     ),
   );
 
-export const fetchProfileEpic: RootEpic = (action$, state$, { api }) =>
+export const updateEmployeeBirthdayEpic: RootEpic = (
+  action$,
+  state$,
+  { api },
+) =>
   action$.pipe(
-    filter(isActionOf(fetchProfileAsync.request)),
+    filter(isActionOf(updateEmployeeBirthdayAsync.request)),
+    switchMap((action, t) =>
+      from(api.humanResource.updateBirthday(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? updateEmployeeBirthdayAsync.success()
+            : updateEmployeeBirthdayAsync.failure(result.reason),
+        ),
+        catchError((message) =>
+          of(updateEmployeeBirthdayAsync.failure(message)),
+        ),
+      ),
+    ),
+  );
+
+export const updateContactsEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(updateContactsAsync.request)),
+    debounceTime(500),
+    switchMap((action) =>
+      from(api.humanResource.updateContacts(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? updateContactsAsync.success()
+            : updateContactsAsync.failure(result.reason),
+        ),
+        catchError((message) => of(updateContactsAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const specifySkillsEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(specifyEmployeeSkillsAsync.request)),
+    debounceTime(500),
+    switchMap((action) =>
+      from(api.humanResource.specifySkills(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? specifyEmployeeSkillsAsync.success()
+            : specifyEmployeeSkillsAsync.failure(result.reason),
+        ),
+        catchError((message) =>
+          of(specifyEmployeeSkillsAsync.failure(message)),
+        ),
+      ),
+    ),
+  );
+
+export const addEmployeeNoteEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(addEmployeeNoteAsync.request)),
+    debounceTime(500),
+    switchMap((action) =>
+      from(api.humanResource.addNote(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? addEmployeeNoteAsync.success()
+            : addEmployeeNoteAsync.failure(result.reason),
+        ),
+        catchError((message) => of(addEmployeeNoteAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const applyEmployeePositionEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(applyEmployeePositionAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.applyPosition(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? applyEmployeePositionAsync.success()
+            : applyEmployeePositionAsync.failure(result.reason),
+        ),
+        catchError((message) =>
+          of(applyEmployeePositionAsync.failure(message)),
+        ),
+      ),
+    ),
+  );
+
+export const applyEmployeeSalaryEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(applyEmployeeSalaryAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.applySalary(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? applyEmployeeSalaryAsync.success()
+            : applyEmployeeSalaryAsync.failure(result.reason),
+        ),
+        catchError((message) => of(applyEmployeeSalaryAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const refetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(
+      isActionOf([
+        addEmployeeNoteAsync.success,
+        applyEmployeePositionAsync.success,
+        applyEmployeeSalaryAsync.success,
+      ]),
+    ),
     switchMap(() =>
-      from(api.humanResource.fetchProfile()).pipe(
-        delay(1000),
-        map(result =>
-          result.success
-            ? fetchProfileAsync.success(result.data)
-            : fetchProfileAsync.failure(result.reason),
+      from(
+        api.humanResource.fetchEmployee(
+          state$.value.humanResource.details.employee!.userId,
         ),
-        catchError(message => of(fetchProfileAsync.failure(message))),
+      ).pipe(
+        map((result) =>
+          result.success
+            ? fetchEmployeeAsync.success(result.data)
+            : fetchEmployeeAsync.failure(result.reason),
+        ),
+        catchError((message) => of(fetchEmployeeAsync.failure(message))),
       ),
     ),
   );

@@ -1,6 +1,5 @@
 package io.easybreezy.user.application.queryobject
 
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
@@ -32,7 +31,7 @@ class UsersQO(private val paging: PagingParameters) : QueryObject<ContinuousList
 
 private fun ResultRow.toUser(): User {
     return User(
-        id = this[Users.id].toUUID(),
+        id = this[Users.id].value,
         email = this[Users.email[EmailTable.email]],
         status = this[Users.status].toString(),
         roles = this[Users.roles]

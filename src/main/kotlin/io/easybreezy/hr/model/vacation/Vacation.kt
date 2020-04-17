@@ -8,7 +8,7 @@ object Vacations : Table("vacations") {
     val absenceHours = integer("absence_hours").nullable()
     val absenceDays = integer("absence_days").nullable()
     val locationStartedAt = date("location_started_at")
-    val locationEndedAt = date("location_ended_at")
+    val locationEndedAt = date("location_ended_at").nullable()
     val extraVacationDays = integer("extra_vacation_days").nullable()
     val vacationDaysPerYear = integer("vacation_days")
 }

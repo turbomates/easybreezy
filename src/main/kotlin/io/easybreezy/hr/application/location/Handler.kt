@@ -19,10 +19,12 @@ class Handler @Inject constructor(
     }
 
     suspend fun handleAssignLocation(command: AssignLocation) = transaction {
+        val openedLocation = userLocationRepository.findOneOpened(command.userId)
+        openedLocation?.close()
+
         val location = locationRepository.getOne(command.locationId)
         val userLocation = UserLocation.create(
             command.startedAt,
-            command.endedAt,
             location,
             command.userId
         )
@@ -33,7 +35,12 @@ class Handler @Inject constructor(
         val userLocation = userLocationRepository.getOne(command.userLocationId)
         val location = locationRepository.getOne(command.locationId)
 
-        userLocation.edit(command.startedAt, command.endedAt, location)
+        userLocation.edit(command.startedAt, location)
+    }
+
+    suspend fun closeUserLocation(locationId: UUID) = transaction {
+        val userLocation = userLocationRepository.getOne(locationId)
+        userLocation.close()
     }
 
     suspend fun handleRemoveLocation(id: UUID) {

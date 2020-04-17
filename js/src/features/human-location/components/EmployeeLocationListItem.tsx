@@ -16,7 +16,7 @@ export const EmployeeLocationListItem: React.FC<Props> = ({
   ...rest
 }) => {
   const handleEdit = useCallback(() => edit(item), [item, edit]);
-  const handleRemove = useCallback(() => remove(item.userId), [item, remove]);
+  const handleRemove = useCallback(() => remove(item.id), [item, remove]);
 
   return (
     <List.Item {...rest} key={item.id}>
