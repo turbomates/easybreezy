@@ -18,13 +18,21 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonOutput
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.serializer
+import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.ResultRow
 import kotlin.reflect.KClass
 import kotlin.reflect.full.starProjectedType
 
-fun <T> List<T>.toContinuousList(pageSize: Int, currentPage: Int): ContinuousList<T> {
-    val hasMore = size > pageSize
-    val list = take(pageSize)
-    return ContinuousList(list, pageSize, currentPage, hasMore)
+fun <T> Query.toContinuousList(page: PagingParameters, map: ResultRow.() -> T): ContinuousList<T> {
+    this.limit(page.pageSize + 1, page.offset)
+    var result = this.map { map(it) }
+    var hasMore = false
+    if (result.count() > page.pageSize) {
+        hasMore = result.count() > page.pageSize
+        result = result.dropLast(1)
+    }
+
+    return ContinuousList(result, page.pageSize, page.currentPage, hasMore)
 }
 
 class ContinuousList<T>(
@@ -36,6 +44,7 @@ class ContinuousList<T>(
 
 object ContinuousListSerializer : KSerializer<ContinuousList<*>> {
     override val descriptor: SerialDescriptor = SerialDescriptor("ContinuousListDescriptor")
+
     @Suppress("UNCHECKED_CAST")
     override fun serialize(encoder: Encoder, value: ContinuousList<*>) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
@@ -63,7 +72,7 @@ private fun Collection<*>.elementSerializer(): KSerializer<*> {
     if (serializers.size > 1) {
         error(
             "Serializing collections of different element types is not yet supported. " +
-                    "Selected serializers: ${serializers.map { it.descriptor.serialName }}"
+                "Selected serializers: ${serializers.map { it.descriptor.serialName }}"
         )
     }
 

@@ -8,12 +8,12 @@ import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.user.model.EmailTable
+import io.easybreezy.user.model.Users
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.UUID
-import io.easybreezy.user.model.Users
-import kotlinx.serialization.Serializable
 
 class UserQO(private val userId: UUID) : QueryObject<User> {
     override suspend fun getData() =
@@ -27,9 +27,7 @@ class UsersQO(private val paging: PagingParameters) : QueryObject<ContinuousList
     override suspend fun getData() =
         Users
             .selectAll()
-            .limit(paging.pageSize, paging.offset)
-            .map { it.toUser() }
-            .toContinuousList(paging.pageSize, paging.currentPage)
+            .toContinuousList(paging, ResultRow::toUser)
 }
 
 private fun ResultRow.toUser(): User {

@@ -19,23 +19,21 @@ import java.util.*
 class ProjectQO(private val slug: String) : QueryObject<Project> {
     override suspend fun getData() =
         Projects
-        .leftJoin(Roles)
-        .leftJoin(Categories)
-        .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
-        .select {
-            Projects.slug eq slug
-        }
-        .toProjectJoined()
-        .single()
+            .leftJoin(Roles)
+            .leftJoin(Categories)
+            .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
+            .select {
+                Projects.slug eq slug
+            }
+            .toProjectJoined()
+            .single()
 }
 
 class ProjectsQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Project>> {
     override suspend fun getData() =
         Projects
             .selectAll()
-            .limit(paging.pageSize, paging.offset)
-            .map { it.toProject() }
-            .toContinuousList(paging.pageSize, paging.currentPage)
+            .toContinuousList(paging, ResultRow::toProject)
 }
 
 fun Iterable<ResultRow>.toProjectJoined(): List<Project> {

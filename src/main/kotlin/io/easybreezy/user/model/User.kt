@@ -69,15 +69,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.addEvent(Invited(this.id.value))
             }
         }
-
-        fun createAdmin(email: Email, password: Password): User {
-            return User.new {
-                this.email = email
-                this.password = password
-                this.roles = mutableSetOf(Role.ADMIN)
-                this.status = Status.ACTIVE
-            }
-        }
     }
 
     class Name private constructor() : Embeddable() {

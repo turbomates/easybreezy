@@ -20,9 +20,7 @@ class EmployeesQO(private val paging: PagingParameters) : QueryObject<Continuous
         Employees.innerJoin(Users, { Employees.userId }, { Users.id })
             .selectAll()
             .andWhere { Employees.fired eq false }
-            .limit(paging.pageSize, paging.offset)
-            .map { it.toEmployee() }
-            .toContinuousList(paging.pageSize, paging.currentPage)
+            .toContinuousList(paging, ResultRow::toEmployee)
 }
 
 internal fun ResultRow.toEmployee() = Employee(

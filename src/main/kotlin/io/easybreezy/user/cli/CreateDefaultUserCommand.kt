@@ -16,7 +16,6 @@ class CreateDefaultUserCommand {
 
     companion object {
         private const val EMAIL = "admin@admin.my"
-
         @JvmStatic
         fun main(args: Array<String>): Unit = runBlocking {
             val configProvider = SystemConfiguration
@@ -25,10 +24,11 @@ class CreateDefaultUserCommand {
             val transaction = TransactionManager(database)
             transaction {
                 if (Users.select { Users.email[EmailTable.email] eq EMAIL }.count().compareTo(0) == 0) {
-                    User.createAdmin(
+                    val user = User.invite(
                         Email.create(EMAIL),
-                        Password.create("123")
+                        mutableSetOf()
                     )
+                    user.confirm(Password.create("adminpass"), "admin", "admin")
                 }
             }
         }
