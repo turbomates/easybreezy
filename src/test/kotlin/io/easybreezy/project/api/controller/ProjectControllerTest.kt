@@ -1,6 +1,13 @@
 package io.easybreezy.project.api.controller
 
-import io.easybreezy.*
+import io.easybreezy.createMember
+import io.easybreezy.createMyProject
+import io.easybreezy.createProjectCategory
+import io.easybreezy.createProjectRole
+import io.easybreezy.createProjectTeam
+import io.easybreezy.project.model.team.Role
+import io.easybreezy.rollbackTransaction
+import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -151,8 +158,8 @@ class ProjectControllerTest {
                     setBody(json {
                         "name" to "Tester"
                         "permissions" to jsonArray {
-                            + "testing"
-                            + "building"
+                            + Role.Permission.PROJECT.name
+                            + Role.Permission.TEAM.name
                         }
                     }
                         .toString())
@@ -180,8 +187,7 @@ class ProjectControllerTest {
                     setBody(
                         json {
                             "permissions" to jsonArray {
-                                + "testing"
-                                + "building"
+                                + Role.Permission.PROJECT.name
                             }
                         }
                             .toString())
@@ -191,7 +197,7 @@ class ProjectControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                    Assertions.assertTrue(response.content?.contains("building")!!)
+                    Assertions.assertTrue(response.content?.contains(Role.Permission.PROJECT.name)!!)
                 }
             }
         }

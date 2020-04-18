@@ -1,20 +1,29 @@
 package io.easybreezy.project.model
 
-import io.easybreezy.infrastructure.event.project.project.*
+import io.easybreezy.infrastructure.event.project.project.Activated
+import io.easybreezy.infrastructure.event.project.project.CategoryAdded
+import io.easybreezy.infrastructure.event.project.project.CategoryChanged
+import io.easybreezy.infrastructure.event.project.project.Closed
+import io.easybreezy.infrastructure.event.project.project.Created
+import io.easybreezy.infrastructure.event.project.project.DescriptionWritten
+import io.easybreezy.infrastructure.event.project.project.RoleAdded
+import io.easybreezy.infrastructure.event.project.project.RoleChanged
+import io.easybreezy.infrastructure.event.project.project.RoleRemoved
+import io.easybreezy.infrastructure.event.project.project.Suspended
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Category
 import io.easybreezy.project.model.team.Role
 import io.easybreezy.project.model.team.Roles
-import org.jetbrains.exposed.dao.*
-import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.text.Normalizer
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var name by Projects.name
@@ -49,13 +58,13 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         addEvent(Activated(id.value, this.updatedAt))
     }
 
-    fun addRole(name: String, permissions: List<String>) {
+    fun addRole(name: String, permissions: List<Role.Permission>) {
         val newRole = Role.new(this, name, permissions)
         this.updatedAt = LocalDateTime.now()
         addEvent(RoleAdded(id.value, newRole.id.value, newRole.name, permissions, this.updatedAt))
     }
 
-    fun changeRole(roleId: UUID, permissions: List<String>, newName: String? = null) {
+    fun changeRole(roleId: UUID, permissions: List<Role.Permission>, newName: String? = null) {
         val role = roles.first { it.id.value == roleId }
         newName?.let { role.rename(it) }
         role.changePermissions(permissions)
@@ -90,7 +99,6 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         this.updatedAt = LocalDateTime.now()
         addEvent(RoleRemoved(id.value, category.id.value, category.name, this.updatedAt))
     }
-
 
     enum class Status {
         Active,

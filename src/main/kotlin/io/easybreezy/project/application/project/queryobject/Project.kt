@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import java.util.*
+import java.util.UUID
 
 class ProjectQO(private val slug: String) : QueryObject<Project> {
     override suspend fun getData() =
@@ -102,7 +102,7 @@ data class Role(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val name: String,
-    val permissions: List<String>
+    val permissions: List<io.easybreezy.project.model.team.Role.Permission>
 )
 
 @Serializable

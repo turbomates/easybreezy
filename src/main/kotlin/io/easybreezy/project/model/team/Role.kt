@@ -4,6 +4,7 @@ import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.list
 import kotlinx.serialization.serializer
 import org.jetbrains.exposed.dao.UUIDEntity
@@ -23,12 +24,12 @@ class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
         this.name = name
     }
 
-    fun changePermissions(permissions: List<String>) {
+    fun changePermissions(permissions: List<Permission>) {
         this.permissions = permissions
     }
 
     companion object : PrivateEntityClass<UUID, Role>(object : Repository() {}) {
-        fun new(project: Project, name: String, permissions: List<String>): Role {
+        fun new(project: Project, name: String, permissions: List<Permission>): Role {
             return Role.new {
                 this.project = project
                 this.name = name
@@ -42,10 +43,16 @@ class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             return Role(entityId)
         }
     }
+
+    @Serializable
+    enum class Permission {
+        PROJECT,
+        TEAM,
+    }
 }
 
 object Roles : UUIDTable("project_roles") {
     val project = reference("project", Projects)
     val name = varchar("name", 25)
-    val permissions = jsonb("permissions", String::class.serializer().list)
+    val permissions = jsonb("permissions", Role.Permission::class.serializer().list)
 }
