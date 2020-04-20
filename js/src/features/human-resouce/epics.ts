@@ -18,22 +18,11 @@ import {
   addEmployeeNoteAsync,
   applyEmployeePositionAsync,
   applyEmployeeSalaryAsync,
+  assignLocationAsync,
+  fetchEmployeeLocationsAsync,
+  removeEmployeeLocationAsync,
+  editEmployeeLocationAsync,
 } from "./actions";
-
-// export const fetchUsersEpic: RootEpic = (action$, state$, { api }) =>
-//   action$.pipe(
-//     filter(isActionOf(fetchUsersVacationsAsync.request)),
-//     switchMap((action) =>
-//       from(api.humanResource.fetchVacations()).pipe(
-//         map((result) =>
-//           result.success
-//             ? fetchUsersVacationsAsync.success(result.data)
-//             : fetchUsersVacationsAsync.failure(result.reason),
-//         ),
-//         catchError((message) => of(fetchUsersVacationsAsync.failure(message))),
-//       ),
-//     ),
-//   );
 
 export const fetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
@@ -189,6 +178,85 @@ export const refetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
             : fetchEmployeeAsync.failure(result.reason),
         ),
         catchError((message) => of(fetchEmployeeAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const removeEmployeeLocationEpic: RootEpic = (action$, _, { api }) =>
+  action$.pipe(
+    filter(isActionOf(removeEmployeeLocationAsync.request)),
+    switchMap((action) =>
+      from(api.location.removeUserLocation(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? removeEmployeeLocationAsync.success()
+            : removeEmployeeLocationAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const assignLocationEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(assignLocationAsync.request)),
+    switchMap((action) =>
+      from(
+        api.location.assignUserLocations({
+          ...action.payload,
+          userId: state$.value.humanResource.details.employee?.userId!,
+        }),
+      ).pipe(
+        map((result) =>
+          result.success
+            ? assignLocationAsync.success()
+            : assignLocationAsync.failure(result.errors),
+        ),
+      ),
+    ),
+  );
+
+export const editEmployeeLocationEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(editEmployeeLocationAsync.request)),
+    switchMap((action) =>
+      from(api.location.editUserLocation(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? editEmployeeLocationAsync.success()
+            : editEmployeeLocationAsync.failure(result.errors),
+        ),
+      ),
+    ),
+  );
+
+export const fetchEmployeeLocationsEpic: RootEpic = (action$, _, { api }) =>
+  action$.pipe(
+    filter(isActionOf([fetchEmployeeLocationsAsync.request])),
+    switchMap((action) =>
+      from(api.location.fetchUserLocations(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? fetchEmployeeLocationsAsync.success(result.data)
+            : fetchEmployeeLocationsAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const refetchEmployeeLocationsEpic: RootEpic = (action$, state$) =>
+  action$.pipe(
+    filter(
+      isActionOf([
+        assignLocationAsync.success,
+        removeEmployeeLocationAsync.success,
+        editEmployeeLocationAsync.success,
+      ]),
+    ),
+    switchMap(() =>
+      of(
+        fetchEmployeeLocationsAsync.request(
+          state$.value.humanResource.details.employee?.userId!,
+        ),
       ),
     ),
   );
