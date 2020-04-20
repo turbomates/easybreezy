@@ -54,7 +54,7 @@ class Router @Inject constructor(
 
     private fun projectRoutes(route: Route) {
         route.route("/projects") {
-            authorize(setOf(io.easybreezy.infrastructure.ktor.auth.Role.ADMIN)) {
+            authorize(setOf(io.easybreezy.infrastructure.ktor.auth.Role.MEMBER)) {
                 post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
                     controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
                 }

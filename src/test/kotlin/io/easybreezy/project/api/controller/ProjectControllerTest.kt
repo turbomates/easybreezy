@@ -24,7 +24,7 @@ class ProjectControllerTest {
     @Test fun `add project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, setOf(io.easybreezy.infrastructure.ktor.auth.Role.MEMBER), testDatabase) }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects") {
                     addHeader("Content-Type", "application/json")
                     setBody(
@@ -48,7 +48,7 @@ class ProjectControllerTest {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, setOf(io.easybreezy.infrastructure.ktor.auth.Role.MEMBER), testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Get, "/api/projects")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
