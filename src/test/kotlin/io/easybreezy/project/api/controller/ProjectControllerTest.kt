@@ -5,6 +5,7 @@ import io.easybreezy.createMyProject
 import io.easybreezy.createProjectCategory
 import io.easybreezy.createProjectRole
 import io.easybreezy.createProjectTeam
+import io.easybreezy.createProjectStatus
 import io.easybreezy.project.model.team.Role
 import io.easybreezy.rollbackTransaction
 import io.easybreezy.testApplication
@@ -361,6 +362,77 @@ class ProjectControllerTest {
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertFalse(response.content?.contains("TestCat")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `add status to project`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            testDatabase.createMyProject()
+            withTestApplication({ testApplication(userId, testDatabase) }) {
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/statuses/add") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {
+                        "name" to "OpenSt"
+                    }
+                        .toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("OpenSt")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `change status of project`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val statusId = testDatabase.createProjectStatus(project, "StatusName")
+            withTestApplication({ testApplication(userId, testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/statuses/$statusId/change") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "name" to "ChangedStatus"
+                        }
+                            .toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("ChangedStatus")!!)
+                }
+            }
+        }
+    }
+
+    @Test fun `remove status from project`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            val project = testDatabase.createMyProject()
+            val statusId = testDatabase.createProjectStatus(project, "StatusName")
+            withTestApplication({ testApplication(userId, testDatabase) }) {
+
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/statuses/$statusId/remove") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json {}.toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertFalse(response.content?.contains("StatusName")!!)
                 }
             }
         }

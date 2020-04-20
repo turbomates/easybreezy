@@ -17,15 +17,7 @@ import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
 import io.easybreezy.project.application.member.queryobject.MemberActivities
-import io.easybreezy.project.application.project.command.ChangeCategory
-import io.easybreezy.project.application.project.command.ChangeRole
-import io.easybreezy.project.application.project.command.ChangeSlug
-import io.easybreezy.project.application.project.command.New
-import io.easybreezy.project.application.project.command.NewCategory
-import io.easybreezy.project.application.project.command.NewRole
-import io.easybreezy.project.application.project.command.RemoveCategory
-import io.easybreezy.project.application.project.command.RemoveRole
-import io.easybreezy.project.application.project.command.WriteDescription
+import io.easybreezy.project.application.project.command.*
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.ActivateTeam
 import io.easybreezy.project.application.team.command.ChangeMemberRole
@@ -191,6 +183,21 @@ class Router @Inject constructor(
                     command.categoryId = params.categoryId
                     command.project = params.slug
                     controller<ProjectController>(this).removeCategory(command)
+                }
+                data class ProjectStatus(val slug: String, val statusId: UUID)
+                post<Response.Either<Response.Ok, Response.Errors>, NewStatus, SlugParam>("/statuses/add") { command, params ->
+                    command.project = params.slug
+                    controller<ProjectController>(this).addStatus(command)
+                }
+                post<Response.Either<Response.Ok, Response.Errors>, ChangeStatus, ProjectStatus>("/statuses/{statusId}/change") { command, params ->
+                    command.project = params.slug
+                    command.statusId = params.statusId
+                    controller<ProjectController>(this).changeStatus(command)
+                }
+                post<Response.Either<Response.Ok, Response.Errors>, RemoveStatus, ProjectStatus>("/statuses/{statusId}/remove") { command, params ->
+                    command.statusId = params.statusId
+                    command.project = params.slug
+                    controller<ProjectController>(this).removeStatus(command)
                 }
             }
         }

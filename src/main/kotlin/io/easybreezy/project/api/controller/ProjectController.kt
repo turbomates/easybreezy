@@ -6,17 +6,7 @@ import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
-import io.easybreezy.project.application.project.command.ChangeCategory
-import io.easybreezy.project.application.project.command.ChangeRole
-import io.easybreezy.project.application.project.command.ChangeSlug
-import io.easybreezy.project.application.project.command.Handler
-import io.easybreezy.project.application.project.command.New
-import io.easybreezy.project.application.project.command.NewCategory
-import io.easybreezy.project.application.project.command.NewRole
-import io.easybreezy.project.application.project.command.RemoveCategory
-import io.easybreezy.project.application.project.command.RemoveRole
-import io.easybreezy.project.application.project.command.Validation
-import io.easybreezy.project.application.project.command.WriteDescription
+import io.easybreezy.project.application.project.command.*
 import io.easybreezy.project.application.project.queryobject.MyProjectsQO
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.project.queryobject.ProjectQO
@@ -143,6 +133,36 @@ class ProjectController @Inject constructor(
         }
 
         handler.removeCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun addStatus(command: NewStatus): Response.Either<Response.Ok, Response.Errors> {
+
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.addIssueStatus(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun changeStatus(command: ChangeStatus): Response.Either<Response.Ok, Response.Errors> {
+
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.changeIssueStatus(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun removeStatus(command: RemoveStatus): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+
+        handler.removeIssueStatus(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 

@@ -2,6 +2,7 @@ package io.easybreezy.project.model.issue
 
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.type.jsonb
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
@@ -11,11 +12,33 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
+    private var assignee by Issues.assignee
+    private var category by Issues.category
+    private var author by Issues.author
+    private var updatedAt by Issues.updatedAt
+    private var project by Issues.project
+    private var title by Issues.title
+    private var description by Issues.description
+   // private var watchers by Issues.watchers
+    private var status by Issues.status
+
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {
-        fun create(name: String, project: UUID): Issue {
+        fun open(author: UUID, project: UUID, title: String, description: String, assignee: UUID? = null, category: UUID? = null, watchers: List<UUID>? = null): Issue {
             return Issue.new {
+                this.author = author
+                this.project = project
+                this.title = title
+                this.description = description
+                this.assignee = assignee
+                this.category = category
+                //this.watchers = watchers
             }
         }
+    }
+
+    fun reassign(reassigned: UUID) {
+        assignee = reassigned
+        updatedAt = LocalDateTime.now()
     }
 
     abstract class Repository : EntityClass<UUID, Issue>(Issues, Issue::class.java) {
@@ -26,10 +49,14 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 }
 
 object Issues : UUIDTable("issues") {
-    val category = uuid("category")
-//    val name = Issues.varchar("name", 25)
-//    val project = Issues.uuid("project")
-//    val status = Issues.enumerationByName("status", 25, Status::class).default(Status.Active)
+    val category = uuid("category").nullable()
+    val assignee = uuid("assignee").nullable()
+    val author = uuid("author")
+    val project = uuid("project")
+    val title = varchar("title", 255)
+    val description = text("description")
+   // val watchers = jsonb("watchers", UUID::class.serializer().list).default(listOf()).nullable()
+    val status = reference("status", Statuses).nullable()
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
 }
