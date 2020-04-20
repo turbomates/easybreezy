@@ -25,7 +25,6 @@ class ProjectControllerTest {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
-
                 with(handleRequest(HttpMethod.Post, "/api/projects") {
                     addHeader("Content-Type", "application/json")
                     setBody(

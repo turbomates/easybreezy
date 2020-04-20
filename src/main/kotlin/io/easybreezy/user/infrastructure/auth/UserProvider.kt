@@ -3,6 +3,7 @@ package io.easybreezy.user.infrastructure.auth
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.auth.PrincipalProvider
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.user.infrastructure.UserRepository
 import io.easybreezy.user.model.EmailTable
@@ -26,7 +27,10 @@ class UserProvider @Inject constructor(
             resultRow?.let {
                 val user = repository.wrapRow(it)
                 if (user.password().isValid(credential.password)) {
-                    UserPrincipal(UUID.fromString(resultRow[Users.id].toString()), setOf())
+                    UserPrincipal(
+                        UUID.fromString(resultRow[Users.id].toString()),
+                        resultRow[Users.roles].map { roleName -> Role.valueOf(roleName) }.toSet()
+                    )
                 } else null
             }
         }
