@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { List } from "antd";
 import { CloseCircleOutlined, EditOutlined } from "@ant-design/icons";
 import { EmployeeLocation } from "LocationModels";
 
@@ -9,20 +8,18 @@ interface Props {
   remove: (id: string) => void;
 }
 
-export const EmployeeLocationListItem: React.FC<Props> = ({
+export const EmployeeLocationListInner: React.FC<Props> = ({
   item,
-  edit,
   remove,
-  ...rest
+  edit,
 }) => {
   const handleEdit = useCallback(() => edit(item), [item, edit]);
   const handleRemove = useCallback(() => remove(item.id), [item, remove]);
 
   return (
-    <List.Item {...rest} key={item.id}>
-      from {item.startedAt} to {item.endedAt} in {item.location.name}{" "}
-      <EditOutlined onClick={handleEdit} />{" "}
+    <>
+      {item.location.name} <EditOutlined onClick={handleEdit} />{" "}
       <CloseCircleOutlined onClick={handleRemove} />
-    </List.Item>
+    </>
   );
 };

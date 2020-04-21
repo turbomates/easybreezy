@@ -9,8 +9,13 @@ import {
   ApplyPositionRequestParams,
   ApplySalaryRequestParams,
 } from "HumanResourceModels";
-import { createAsyncAction } from "typesafe-actions";
-import { Paging } from "MyTypes";
+import { createAsyncAction, createAction } from "typesafe-actions";
+import { Paging, FormError } from "MyTypes";
+import {
+  AssignLocationForm,
+  EditEmployeeLocationData,
+  EmployeeLocation,
+} from "LocationModels";
 
 export const fetchUsersVacationsAsync = createAsyncAction(
   "FETCH_USERS_VACATIONS_REQUEST",
@@ -65,3 +70,43 @@ export const applyEmployeeSalaryAsync = createAsyncAction(
   "APPLY_EMPLOYEE_SALARY_SUCCESS",
   "APPLY_EMPLOYEE_SALARY_FAILURE",
 )<ApplySalaryRequestParams, undefined, string>();
+
+export const assignLocationAsync = createAsyncAction(
+  "ASSIGN_LOCATION_REQUEST",
+  "ASSIGN_LOCATION_SUCCESS",
+  "ASSIGN_LOCATION_FAILURE",
+)<AssignLocationForm, undefined, FormError[]>();
+
+export const fetchEmployeeLocationsAsync = createAsyncAction(
+  "FETCH_EMPLOYEE_LOCATIONS_REQUEST",
+  "FETCH_EMPLOYEE_LOCATIONS_SUCCESS",
+  "FETCH_EMPLOYEE_LOCATIONS_FAILURE",
+)<string, EmployeeLocation[], string>();
+
+export const editEmployeeLocationAsync = createAsyncAction(
+  "EDIT_EMPLOYEE_LOCATION_REQUEST",
+  "EDIT_EMPLOYEE_LOCATION_SUCCESS",
+  "EDIT_EMPLOYEE_LOCATION_FAILURE",
+)<EditEmployeeLocationData, undefined, FormError[]>();
+
+export const removeEmployeeLocationAsync = createAsyncAction(
+  "REMOVE_EMPLOYEE_LOCATION_REQUEST",
+  "REMOVE_EMPLOYEE_LOCATION_SUCCESS",
+  "REMOVE_EMPLOYEE_LOCATION_FAILURE",
+)<string, undefined, string>();
+
+export const openLocationAssignForm = createAction(
+  "OPEN_LOCATIONS_ASSIGN_FORM",
+)();
+
+export const closeLocationAssignForm = createAction(
+  "CLOSE_LOCATIONS_ASSIGN_FORM",
+)();
+
+export const openEmployeeLocationEditForm = createAction(
+  "OPEN_EMPLOYEE_LOCATION_EDIT_FORM",
+)<EmployeeLocation>();
+
+export const closeEmployeeLocationEditForm = createAction(
+  "CLOSE_EMPLOYEE_LOCATION_EDIT_FORM",
+)();

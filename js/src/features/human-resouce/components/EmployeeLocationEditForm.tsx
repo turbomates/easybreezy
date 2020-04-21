@@ -29,17 +29,15 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
 }) => {
   const [form] = Form.useForm();
 
-  useFormServerErrors(form, errors, ["startedAt", "endedAt", "locationId"]);
+  useFormServerErrors(form, errors, ["startedAt", "locationId"]);
 
   const onFinish = useCallback(
     (values: any) => {
       const startedAt = values.startedAt.format(DATE_FORMAT);
-      const endedAt = values.endedAt.format(DATE_FORMAT);
 
       edit({
         form: {
           startedAt,
-          endedAt,
           locationId: values.locationId,
         },
         employeeLocationId: employeeLocation.id,
@@ -55,7 +53,6 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
   const initialFormValues = useMemo(
     () => ({
       startedAt: moment(employeeLocation.startedAt),
-      endedAt: moment(employeeLocation.endedAt),
       locationId: employeeLocation.location.id,
     }),
     [employeeLocation],
@@ -73,14 +70,10 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
         label="Started at"
         name="startedAt"
         rules={[{ required: true, message: "Please input Started at!" }]}
-      >
-        <DatePicker />
-      </Form.Item>
-
-      <Form.Item
-        label="Ended at"
-        name="endedAt"
-        rules={[{ required: true, message: "Please input Ended at!" }]}
+        normalize={(value) => {
+          console.log(value);
+          return value.format(DATE_FORMAT);
+        }}
       >
         <DatePicker />
       </Form.Item>

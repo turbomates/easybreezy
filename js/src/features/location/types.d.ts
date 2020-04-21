@@ -17,17 +17,19 @@ declare module "LocationModels" {
   };
 
   export type AssignLocationForm = {
-    userId: string;
     locationId: string;
     startedAt: string;
     endedAt: string;
     extraVacationDays: number;
   };
 
+  export type AssignLocationData = {
+    userId: string;
+  } & AssignLocationForm;
+
   export type EditEmployeeLocationForm = {
     locationId: string;
     startedAt: string;
-    endedAt: string;
   };
 
   export type EditEmployeeLocationData = {

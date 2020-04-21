@@ -5,7 +5,7 @@ import { History } from "history";
 import auth from "../features/auth/reducer";
 import humanResource from "../features/human-resouce/reducer";
 import account from "../features/account/reducer";
-import { reducer as humanLocation } from "../features/human-location/reducer";
+import { reducer as location } from "../features/location/reducer";
 
 const rootReducer = (history: History<any>) =>
   combineReducers({
@@ -13,7 +13,7 @@ const rootReducer = (history: History<any>) =>
     auth,
     humanResource,
     account,
-    humanLocation,
+    location,
   });
 
 export default rootReducer;
