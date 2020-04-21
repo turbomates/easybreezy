@@ -7,6 +7,7 @@ import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.auth.Auth
+import io.easybreezy.infrastructure.ktor.auth.Authorization
 import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
@@ -104,7 +105,19 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
             }
         }
     }
-
+    install(Authorization) {
+        validate { permissions ->
+            for (permission in permissions) {
+                if (roles.contains(permission)) {
+                    return@validate true
+                }
+            }
+            false
+        }
+        challenge {
+            context.response.call.respond(HttpStatusCode.Forbidden, "Unauthorized for this action")
+        }
+    }
     install(DataConversion) {
         convert<UUID> {
             decode { values, _ ->

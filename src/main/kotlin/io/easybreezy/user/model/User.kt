@@ -9,8 +9,8 @@ import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
-import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.postgresql.PGEnum
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.builtins.set
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -59,7 +59,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     companion object : PrivateEntityClass<UUID, User>(object : Repository() {}) {
-        fun invite(email: Email, roles: MutableSet<Role>): User {
+        fun invite(email: Email, roles: MutableSet<String>): User {
             return User.new {
                 this.email = email
                 this.roles = roles
@@ -107,7 +107,7 @@ object Users : UUIDTable() {
         "user_status",
         { value -> Status.valueOf(value as String) },
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
-    val roles = jsonb("roles", Role.serializer().set)
+    val roles = jsonb("roles", String.serializer().set)
     val password = embedded<Password>(PasswordTable)
     val email = embedded<Email>(EmailTable)
     val name = embedded<User.Name>(NameTable)

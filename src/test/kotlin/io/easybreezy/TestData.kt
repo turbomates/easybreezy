@@ -23,7 +23,7 @@ internal fun Database.createAdmin(): UUID {
         val id = Users.insert {
             it[status] = Status.ACTIVE
             it[email[EmailTable.email]] = "admin@gmail.com"
-            it[roles] = setOf(Role.ADMIN)
+            it[roles] = setOf(Role.ADMIN.name)
         } get Users.id
         id.value
     }
@@ -36,7 +36,7 @@ internal fun Database.createMember(firstName: String = "John", lastName: String 
             it[email[EmailTable.email]] = "member@gmail.com"
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName
-            it[roles] = setOf(Role.MEMBER)
+            it[roles] = setOf(Role.MEMBER.name)
         } get Users.id
         id.value
     }
@@ -101,7 +101,7 @@ internal fun Database.createEmployee(): UUID {
         val userId = Users.insert {
             it[status] = Status.ACTIVE
             it[email[EmailTable.email]] = "employee@gmail.com"
-            it[roles] = setOf(Role.MEMBER)
+            it[roles] = setOf(Role.MEMBER.name)
         } get Users.id
 
         Employees.insert {

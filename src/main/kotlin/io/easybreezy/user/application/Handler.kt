@@ -2,7 +2,6 @@ package io.easybreezy.user.application
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.user.model.Email
 import io.easybreezy.user.model.Password
 import io.easybreezy.user.model.Repository
@@ -18,7 +17,7 @@ class Handler @Inject constructor(
         transaction {
             User.invite(
                 Email.create(command.email),
-                mutableSetOf(Role.valueOf(command.role))
+                mutableSetOf(command.role)
             )
         }
     }

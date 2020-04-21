@@ -1,6 +1,5 @@
 package io.easybreezy.user.application.queryobject
 
-import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
@@ -44,5 +43,5 @@ data class User(
     val id: UUID,
     val email: String?,
     val status: String,
-    val roles: Set<Role>
+    val roles: Set<String>
 )

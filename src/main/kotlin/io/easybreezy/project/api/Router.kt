@@ -6,6 +6,7 @@ import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
+import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.project.api.controller.ProjectController
@@ -53,14 +54,15 @@ class Router @Inject constructor(
 
     private fun projectRoutes(route: Route) {
         route.route("/projects") {
-            post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
-                controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
-            }
+            authorize(setOf(io.easybreezy.infrastructure.ktor.auth.Role.MEMBER)) {
+                post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
+                    controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
+                }
+                get<Response.Listing<Project>>("") {
+                    controller<ProjectController>(this).list()
+                }
 
-            get<Response.Listing<Project>>("") {
-                controller<ProjectController>(this).list()
             }
-
             get<Response.Data<List<Role.Permission>>>("/permissions") {
                 controller<ProjectController>(this).permissions()
             }

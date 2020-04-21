@@ -138,7 +138,6 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.get(
 ): Route {
     return route(path, HttpMethod.Get) {
         handle {
-
             call.respond(body(locations.resolve(TParams::class, call)))
         }
     }

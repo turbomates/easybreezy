@@ -3,6 +3,7 @@ package io.easybreezy.user.cli
 import io.easybreezy.application.HikariDataSource
 import io.easybreezy.application.SystemConfiguration
 import io.easybreezy.infrastructure.exposed.TransactionManager
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.user.model.Email
 import io.easybreezy.user.model.EmailTable
 import io.easybreezy.user.model.Password
@@ -16,6 +17,7 @@ class CreateDefaultUserCommand {
 
     companion object {
         private const val EMAIL = "admin@admin.my"
+
         @JvmStatic
         fun main(args: Array<String>): Unit = runBlocking {
             val configProvider = SystemConfiguration
@@ -26,7 +28,7 @@ class CreateDefaultUserCommand {
                 if (Users.select { Users.email[EmailTable.email] eq EMAIL }.count().compareTo(0) == 0) {
                     val user = User.invite(
                         Email.create(EMAIL),
-                        mutableSetOf()
+                        mutableSetOf(Role.ADMIN.name)
                     )
                     user.confirm(Password.create("adminpass"), "admin", "admin")
                 }
