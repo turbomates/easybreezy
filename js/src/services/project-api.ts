@@ -3,13 +3,17 @@ import {
   ProjectResponse,
   EditProjectStatusRequest,
   CreateProjectRequest,
-  EditProjectDescriptionRequest, EditProjectRoleRequest, RemoveProjectRoleRequest, CreateProjectRoleRequest
+  EditProjectDescriptionRequest,
+  EditProjectRoleRequest,
+  RemoveProjectRoleRequest,
+  CreateProjectRoleRequest,
+  ProjectsRequest
 } from "ProjectModels"
 import { Failure, FormFailure, Paging, Success } from "MyTypes";
 import { api } from "./api";
 
-export const fetchProjects = () => {
-  return api.get<Paging<ProjectList>>(`/projects`)
+export const fetchProjects = (params: ProjectsRequest) => {
+  return api.get<Paging<ProjectList>>(`/projects`, {params})
     .then<Success<Paging<ProjectList>>>((resp) => ({
       success: true,
       data: resp.data,
@@ -81,8 +85,8 @@ export const editDescription = ({slug, description}: EditProjectDescriptionReque
     }));
 }
 
-export const editStatus = ({name, statusType}: EditProjectStatusRequest) => {
-  return api.post(`/projects/${name}/${statusType}`, {})
+export const editStatus = ({slug, statusType}: EditProjectStatusRequest) => {
+  return api.post(`/projects/${slug}/${statusType}`, {})
     .then<Success<null>>(() => ({success: true, data: null}))
     .catch<FormFailure>((resp) => ({
       success: false,

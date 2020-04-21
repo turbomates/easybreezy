@@ -1,0 +1,32 @@
+.role-form {
+  &__controls-btn {
+    margin: 0 5px 0 5px;
+  }
+
+  &__description {
+    display: flex;
+    align-items: center;
+  }
+
+  &__input-wrapper {
+    display: flex;
+    justify-content: space-between;
+    min-width: 290px;
+  }
+
+  th {
+    font-weight: 500;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  tfoot > tr > td {
+    border: none;
+  }
+}

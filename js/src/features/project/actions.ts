@@ -1,6 +1,6 @@
-import { createAction, createAsyncAction } from "typesafe-actions"
+import { createAction, createAsyncAction } from "typesafe-actions";
 
-import { FormError, Paging } from "MyTypes"
+import { FormError, Paging } from "MyTypes";
 import {
   ProjectList,
   EditProjectStatusRequest,
@@ -9,92 +9,76 @@ import {
   EditProjectRoleRequest,
   RemoveProjectRoleRequest,
   CreateProjectRoleRequest,
-  Project
-} from "ProjectModels"
+  Project,
+  ProjectsRequest,
+} from "ProjectModels";
 
 //PROJECT
 export const fetchProjectAsync = createAsyncAction(
   "FETCH_PROJECT_REQUEST",
   "FETCH_PROJECT_SUCCESS",
   "FETCH_PROJECT_FAILURE",
-)<string, Project, any>()
+)<string, Project, any>();
 
 // PROJECTS
 export const fetchProjectsAsync = createAsyncAction(
   "FETCH_PROJECTS_REQUEST",
   "FETCH_PROJECTS_SUCCESS",
   "FETCH_PROJECTS_FAILURE",
-)<undefined, Paging<ProjectList>, string>()
+)<ProjectsRequest, Paging<ProjectList>, string>();
 
 //CREATE PROJECT
-export const openProjectCreateForm = createAction(
-  "OPEN_PROJECT_CREATE_FORM"
-)()
+export const openProjectCreateForm = createAction("OPEN_PROJECT_CREATE_FORM")();
 
 export const closeProjectCreateForm = createAction(
-  "CLOSE_PROJECT_CREATE_FORM"
-)()
+  "CLOSE_PROJECT_CREATE_FORM",
+)();
 
 export const createProjectAsync = createAsyncAction(
   "CREATE_PROJECT_REQUEST",
   "CREATE_PROJECT_SUCCESS",
   "CREATE_PROJECT_FAILURE",
-)<CreateProjectRequest, undefined, FormError[]>()
+)<CreateProjectRequest, undefined, FormError[]>();
 
 // ROLE
-export const openProjectRoleForm = createAction(
-  "OPEN_PROJECT_ROLE_FORM"
-)()
-
-export const closeProjectRoleForm = createAction(
-  "CLOSE_PROJECT_ROLE_FORM"
-)()
-
 export const createProjectRoleAsync = createAsyncAction(
   "CREATE_PROJECT_ROLE_REQUEST",
   "CREATE_PROJECT_ROLE_SUCCESS",
   "CREATE_PROJECT_ROLE_FAILURE",
-)<CreateProjectRoleRequest, undefined, FormError[]>()
+)<CreateProjectRoleRequest, undefined, FormError[]>();
 
 export const editProjectRoleAsync = createAsyncAction(
   "EDIT_PROJECT_ROLE_REQUEST",
   "EDIT_PROJECT_ROLE_SUCCESS",
   "EDIT_PROJECT_ROLE_FAILURE",
-)<EditProjectRoleRequest, undefined, FormError[]>()
+)<EditProjectRoleRequest, undefined, FormError[]>();
 
 export const removeProjectRoleAsync = createAsyncAction(
   "REMOVE_PROJECT_ROLE_REQUEST",
   "REMOVE_PROJECT_ROLE_SUCCESS",
   "REMOVE_PROJECT_ROLE_FAILURE",
-)<RemoveProjectRoleRequest, undefined, FormError[]>()
+)<RemoveProjectRoleRequest, undefined, FormError[]>();
 
 // STATUS
-export const openProjectStatusForm = createAction(
-  "OPEN_PROJECT_STATUS_FORM"
-)()
-
-export const closeProjectStatusForm = createAction(
-  "CLOSE_PROJECT_STATUS_FORM"
-)()
-
 export const changeProjectStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_STATUS_REQUEST",
   "CHANGE_PROJECT_STATUS_SUCCESS",
   "CHANGE_PROJECT_STATUS_FAILURE",
-)<EditProjectStatusRequest, undefined, FormError[]>()
+)<EditProjectStatusRequest, undefined, FormError[]>();
 
 // DESCRIPTION
-export const openProjectDescriptionForm = createAction(
-  "OPEN_PROJECT_DESCRIPTION_FORM"
-)()
-
-export const closeProjectDescriptionForm = createAction(
-  "CLOSE_PROJECT_DESCRIPTION_FORM"
-)()
-
 export const editProjectDescriptionAsync = createAsyncAction(
   "EDIT_PROJECT_DESCRIPTION_REQUEST",
   "EDIT_PROJECT_DESCRIPTION_SUCCESS",
   "EDIT_PROJECT_DESCRIPTION_FAILURE",
-)<EditProjectDescriptionRequest, undefined, FormError[]>()
+)<EditProjectDescriptionRequest, undefined, FormError[]>();
 
+export const openProjectDescriptionFormAction = createAction(
+  "OPEN_PROJECT_DESCRIPTION_FORM",
+)();
+
+export const closeProjectDescriptionFormAction = createAction(
+  "CLOSE_PROJECT_DESCRIPTION_FORM",
+)();
+
+export const clearStateAction = createAction("CLEAR_STATE_ACTION")();

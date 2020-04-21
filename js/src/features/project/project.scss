@@ -1,0 +1,13 @@
+.project {
+  &__link:hover {
+    text-decoration: none !important;
+  }
+
+  &__create-btn {
+    margin-bottom: 8px;
+  }
+
+  &__item {
+    height: 100%;
+  }
+}

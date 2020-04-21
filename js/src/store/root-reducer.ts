@@ -6,7 +6,7 @@ import auth from "../features/auth/reducer";
 import humanResource from "../features/human-resouce/reducer";
 import account from "../features/account/reducer";
 import { reducer as humanLocation } from "../features/human-location/reducer";
-import { projectReducer } from "../features/project/reducer";
+import project from "../features/project/reducer";
 
 
 const rootReducer = (history: History<any>) =>
@@ -16,7 +16,7 @@ const rootReducer = (history: History<any>) =>
     humanResource,
     account,
     humanLocation,
-    projectReducer
+    project,
   });
 
 export default rootReducer;

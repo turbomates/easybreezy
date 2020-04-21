@@ -3,13 +3,16 @@ import { useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 
 import { Main } from "layouts/Main";
+import { Project } from "./layouts/Project"
 import { HomePage } from "./pages/Home";
 import { HumanResourcesPage } from "./pages/HumanResources";
 import { UserDetailsPage } from "./pages/UserDetails";
 import { LocationsPage } from "./pages/Locations";
 import { NotFoundPage } from "./pages/NotFound";
 import { LoginPage } from "./pages/Login";
-import { ProjectsPage } from "./pages/Projects";
+import { ProjectsPage } from "./pages/ProjectsPage";
+import { ProjectPage } from "./pages/ProjectPage";
+import { ProjectRolePage } from "./pages/ProjectRolePage";
 
 import { isAuthorized } from "./features/auth/selectors";
 import { canRender } from "./features/app/selectors";
@@ -30,6 +33,16 @@ export const Routes: React.FC = () => {
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
         <Route path="/locations" component={LocationsPage} />
+        <Route path="/projects/:slug/role" >
+            <Project>
+                <ProjectRolePage/>
+            </Project>
+        </Route>
+        <Route path="/projects/:slug">
+          <Project>
+            <ProjectPage/>
+          </Project>
+        </Route>
         <Route path="/projects" component={ProjectsPage} />
         <Route component={NotFoundPage} />
       </Switch>

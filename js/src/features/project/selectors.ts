@@ -1,16 +1,16 @@
 import { RootState } from "MyTypes";
 
-export const getProject = (state: RootState) => state.projectReducer.project
+export const getProjects = (state: RootState) =>
+  state.project.projects.projects;
 
-export const isOpenProjectCreateForm = (state: RootState) => state.projectReducer.isOpenCreateForm
+export const getProject = (state: RootState) => state.project.project.project;
 
-export const isOpenProjectRoleForm = (state: RootState) => state.projectReducer.isOpenRoleForm
+export const getIsOpenProjectCreateForm = (state: RootState) =>
+  state.project.projects.isOpenCreateForm;
 
-export const isOpenProjectStatusForm = (state: RootState) => state.projectReducer.isOpenStatusForm
+export const getIsLoading = (state: RootState) => state.project.project.loading;
 
-export const isOpenProjectDescriptionForm = (state: RootState) => state.projectReducer.isOpenDescriptionForm
+export const getErrors = (state: RootState) => state.project.project.errors;
 
-export const isLoading = (state: RootState) => state.projectReducer.loading
-
-export const getErrors = (state: RootState) => state.projectReducer.errors
-
+export const getIsOpenProjectDescriptionForm = (state: RootState) =>
+  state.project.project.isOpenDescriptionForm;

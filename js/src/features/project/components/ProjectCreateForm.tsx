@@ -3,25 +3,29 @@ import { Button, Form, Input } from "antd";
 
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
-import { CreateProjectRequest } from "ProjectModels"
+import { CreateProjectRequest } from "ProjectModels";
 
 interface Props {
-  create: (form: CreateProjectRequest) => void
-  errors: FormErrorMap
-  loading: boolean
+  create: (form: CreateProjectRequest) => void;
+  errors: FormErrorMap;
+  loading: boolean;
 }
 
-export const CreateProjectForm: React.FC<Props> = ({errors, create, loading}) => {
+export const CreateProjectForm: React.FC<Props> = ({
+  errors,
+  create,
+  loading,
+}) => {
   const [form] = Form.useForm();
 
-  useFormServerErrors(form, errors, [
-    "name",
-    "description",
-  ]);
+  useFormServerErrors(form, errors, ["name", "description"]);
 
-  const onFinish = useCallback((values: any) => {
-    create(values)
-  }, [create]);
+  const onFinish = useCallback(
+    (values: any) => {
+      create(values);
+    },
+    [create],
+  );
 
   const onFinishFailed = useCallback((errorInfo: any) => {
     console.log("onFinishFailed:", errorInfo);
@@ -30,24 +34,24 @@ export const CreateProjectForm: React.FC<Props> = ({errors, create, loading}) =>
   return (
     <Form
       form={form}
-      labelCol={{span: 8}}
+      labelCol={{ span: 8 }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
       <Form.Item
         label="Name"
         name="name"
-        rules={[{required: true, message: "Please input Name!"}]}
+        rules={[{ required: true, message: "Please input Name!" }]}
       >
-        <Input/>
+        <Input />
       </Form.Item>
 
       <Form.Item
         label="Description"
         name="description"
-        rules={[{required: true, message: "Please input Description!"}]}
+        rules={[{ required: true, message: "Please input Description!" }]}
       >
-        <Input/>
+        <Input />
       </Form.Item>
 
       <Form.Item>
@@ -56,5 +60,5 @@ export const CreateProjectForm: React.FC<Props> = ({errors, create, loading}) =>
         </Button>
       </Form.Item>
     </Form>
-  )
+  );
 };

@@ -1,66 +1,75 @@
 declare module "ProjectModels" {
-  export type StatusType = 'activate' | 'close' | 'suspend' | string
+  export type ProjectStatusTypeResponse = "Active" | "Closed" | "Suspended";
+  export type ProjectStatusTypeRequest = "activate" | "close" | "suspend";
 
   export interface ProjectResponse {
-    data: Project
+    data: Project;
   }
 
   export interface ProjectList {
-    id: string
-    slug: string
-    name: string
-    status: StatusType
-    description: string
+    id: string;
+    slug: string;
+    name: string;
+    status: ProjectStatusTypeResponse;
+    description: string;
   }
 
   export interface Project {
-    id: string
-    slug: string
-    name: string
-    status: StatusType
-    description: string
-    roles: Role[]
-    teams: Team[]
+    id: string;
+    slug: string;
+    name: string;
+    status: ProjectStatusTypeResponse;
+    description: string;
+    roles: Role[];
+    teams: Team[];
   }
 
   interface Role {
-    id: string
-    name: string
-    permissions: string[]
+    id: string;
+    name: string;
+    permissions: string[];
   }
 
   interface Team {
-    id: string
-    name: string
+    id: string;
+    name: string;
   }
 
   export interface EditProjectStatusRequest {
-    statusType: StatusType
-    name: string
+    statusType: ProjectStatusTypeRequest;
+    slug: string;
   }
 
   export interface CreateProjectRoleRequest {
-    slug: string,
-    roles: Role
+    slug: string;
+    roles: {
+      name: string;
+      permissions: string[];
+    };
   }
 
   export interface EditProjectRoleRequest {
-    slug: string,
-    roles: Role
+    slug: string;
+    roles: Role;
   }
 
   export interface RemoveProjectRoleRequest {
-    slug: string,
-    roleId: string
+    slug: string;
+    roleId: string;
   }
 
   export interface CreateProjectRequest {
-    name: string
-    description: string
+    name: string;
+    description: string;
   }
 
   export interface EditProjectDescriptionRequest {
-    slug: string
-    description: string
+    slug: string;
+    description: string;
+  }
+
+  export interface ProjectsRequest {
+    pageSize?: number;
+    currentPage?: number;
   }
 }
