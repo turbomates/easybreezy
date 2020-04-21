@@ -1,34 +1,25 @@
-
 # Hr/Location
-
-
 
 ## Indices
 
-* [Default](#default)
+- [Default](#default)
 
-  * [User locations](#1-user-locations)
-  * [User location show](#2-user-location-show)
-  * [User location close](#3-user-location-close)
-  * [User location edit](#4-user-location-edit)
-  * [User location assign](#5-user-location-assign)
-  * [Locations](#6-locations)
-  * [Location Remove](#7-location-remove)
-  * [Location create](#8-location-create)
+  - [User locations](#1-user-locations)
+  - [User location show](#2-user-location-show)
+  - [User location close](#3-user-location-close)
+  - [User location edit](#4-user-location-edit)
+  - [User location assign](#5-user-location-assign)
+  - [Locations](#6-locations)
+  - [Location Remove](#7-location-remove)
+  - [Location create](#8-location-create)
 
-
---------
-
+---
 
 ## Default
 
-
-
 ### 1. User locations
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: GET
@@ -36,32 +27,24 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/user
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
+**_Query params:_**
 
+| Key  | Value      | Description |
+| ---- | ---------- | ----------- |
+| from | 2006-12-12 |             |
+| to   | 2030-06-16 |             |
 
-
-***Query params:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| from | 2006-12-12 |  |
-| to | 2030-06-16 |  |
-
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
-
-
-***Response Headers:***
+**_Response Headers:_**
 
 ```js
 {
@@ -102,13 +85,9 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ### 2. User location show
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: GET
@@ -116,23 +95,17 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/user/063b3fdb-f066-4c1d-8b69-dae325a2e7fa
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
-
-
-***Response Headers:***
+**_Response Headers:_**
 
 ```js
 {
@@ -153,15 +126,11 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ### 3. User location close
-
 
 Role: Admin
 
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: POST
@@ -169,18 +138,15 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/user/54e667d1-02bd-4395-92d9-1b0f9c0041c3/close
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
+**_Body:_**
 
-
-
-***Body:***
-
-```js        
+```js
 {
 	"startedAt": "2020-07-12",
 	"endedAt": "2020-08-12",
@@ -188,24 +154,17 @@ URL: localhost:3000/api/hr/locations/user/54e667d1-02bd-4395-92d9-1b0f9c0041c3/c
 }
 ```
 
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
-
-
-***Response Headers:***
+**_Response Headers:_**
 
 ```js
 {
     "status": "ok"
 }
 ```
-
-
 
 Status: Already Closed | Code: 422
 
@@ -215,13 +174,9 @@ Status: Already Closed | Code: 422
 }
 ```
 
-
-
 ### 4. User location edit
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: POST
@@ -229,34 +184,26 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/user/063b3fdb-f066-4c1d-8b69-dae325a2e7fa
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
+**_Body:_**
 
-
-
-***Body:***
-
-```js        
+```js
 {
 	"startedAt": "2020-09-12",
 	"locationId": "5d4892b1-5c41-485a-a177-d1c19b895230"
 }
 ```
 
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
-
-
-***Response Headers:***
+**_Response Headers:_**
 
 ```js
 {
@@ -264,13 +211,9 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ### 5. User location assign
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: POST
@@ -278,18 +221,15 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/user
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
+**_Body:_**
 
-
-
-***Body:***
-
-```js        
+```js
 {
 	"userId": "8f631c73-a516-4576-b19b-4929b665e9dc",
 	"startedAt": "2020-07-19",
@@ -298,10 +238,7 @@ URL: localhost:3000/api/hr/locations/user
 }
 ```
 
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
@@ -311,13 +248,9 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ### 6. Locations
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: GET
@@ -325,23 +258,17 @@ Type: RAW
 URL: localhost:3000/api/hr/locations
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
-
-
-***Response Headers:***
+**_Response Headers:_**
 
 ```js
 {
@@ -362,13 +289,9 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ### 7. Location Remove
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: DELETE
@@ -376,20 +299,15 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/fc60cb5a-2867-4a67-ad68-b07f33829c98
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
-
 
 ```js
 {
@@ -397,13 +315,9 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ### 8. Location create
 
-
-
-***Endpoint:***
+**_Endpoint:_**
 
 ```bash
 Method: POST
@@ -411,28 +325,22 @@ Type: RAW
 URL: localhost:3000/api/hr/locations
 ```
 
+**_Headers:_**
 
-***Headers:***
+| Key          | Value            | Description |
+| ------------ | ---------------- | ----------- |
+| Content-Type | application/json |             |
 
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
+**_Body:_**
 
-
-
-***Body:***
-
-```js        
+```js
 {
 	"name": "Argentine",
 	"vacationDays": 25
 }
 ```
 
-
-
-***Responses:***
-
+**_Responses:_**
 
 Status: Success | Code: 200
 
@@ -442,8 +350,8 @@ Status: Success | Code: 200
 }
 ```
 
-
-
 ---
+
 [Back to top](#hrlocation)
+
 > Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-15 13:36:18 by [docgen](https://github.com/thedevsaddam/docgen)

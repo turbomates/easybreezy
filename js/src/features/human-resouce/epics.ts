@@ -22,7 +22,23 @@ import {
   fetchEmployeeLocationsAsync,
   removeEmployeeLocationAsync,
   editEmployeeLocationAsync,
+  fetchAbsencesAsync,
 } from "./actions";
+
+export const fetchAbsencesEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchAbsencesAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.fetchAbsences()).pipe(
+        map((result) =>
+          result.success
+            ? fetchAbsencesAsync.success(result.data)
+            : fetchAbsencesAsync.failure(result.reason),
+        ),
+        catchError((message) => of(fetchAbsencesAsync.failure(message))),
+      ),
+    ),
+  );
 
 export const fetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(

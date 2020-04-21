@@ -183,7 +183,6 @@ export const UserDetailsPage: React.FC = () => {
     <div className="human-resource-details">
       <Menu
         onClick={(e: any) => {
-          console.log(e);
           setSelected(e.key);
         }}
         selectedKeys={[selected]}

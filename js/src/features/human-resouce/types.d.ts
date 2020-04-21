@@ -13,26 +13,27 @@ declare module "HumanResourceModels" {
     vacations: UserVacation[];
   };
 
-  export type CalendarVacationItem = {
-    id: string;
-    group: number;
-    title: string;
-    start_time: number;
-    end_time: number;
-  };
-
-  export type CalendarVacationGroup = {
-    id: string;
-    title: string;
-    item: EmployeeShort;
-  };
-
   /** END types for stubs */
 
   export type EmployeeShort = {
     userId: string;
     firstName: string | null;
     lastName: string | null;
+    currentLocationId: string | null;
+  };
+
+  export type Absence = {
+    id: string;
+    startedAt: string;
+    endedAt: string;
+    comment: string;
+    reason: string;
+    userId: string;
+    isApproved: boolean;
+  };
+
+  export type AbsencesMap = {
+    [userId: string]: Absence[];
   };
 
   export type EmployeeNote = {

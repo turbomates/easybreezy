@@ -1,72 +1,162 @@
-import React from "react";
-import Timeline from "react-calendar-timeline";
-import moment from "moment";
-import { HumanResourceCalendarGroup } from "./HumanResourceCalendarGroup";
-import { CalendarVacationGroup } from "HumanResourceModels";
+import React, { useReducer, useRef } from "react";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import eachDay from "date-fns/fp/eachDayOfInterval";
+import getYear from "date-fns/fp/getYear";
+import addDate from "date-fns/fp/add";
+import parseISO from "date-fns/fp/parseISO";
+import formatDate from "date-fns/fp/format";
+import isWithinInterval from "date-fns/fp/isWithinInterval";
+import isWeekend from "date-fns/fp/isWeekend";
+import compose from "lodash/fp/compose";
+import groupBy from "lodash/fp/groupBy";
+import toPairs from "lodash/fp/toPairs";
+import toLower from "lodash/fp/toLower";
 
-import "react-calendar-timeline/lib/Timeline.css";
 import "./HumanResourceCalendar.scss";
 
-const LINE_HEIGHT = 45;
+import { EmployeeShort, AbsencesMap, Absence } from "HumanResourceModels";
+import { Tooltip } from "antd";
+import { Link } from "react-router-dom";
 
-const day = 60 * 60 * 24 * 1000;
+type State = { date: Date; daysCount: number };
+type Action =
+  | { type: "move"; direction: "back" | "forward" }
+  | { type: "setDaysCount"; daysCount: number };
 
-const format = "DD.MM.YYYY";
-const holidays = [
-  moment("08.12.2019", format),
-  moment("24.12.2019", format),
-  moment("25.12.2019", format),
-  moment("26.12.2019", format),
-  moment("31.12.2019", format),
-  moment("01.01.2020", format),
-  moment("06.01.2020", format),
-  moment("23.01.2020", format),
-  moment("24.01.2020", format),
-  moment("25.01.2020", format),
-];
-
-// TODO disable default behaviour and render working days and holidays
-const verticalLineClassNamesForTime = (timeStart: number, timeEnd: number) => {
-  const currentTimeStart = moment(timeStart);
-  const currentTimeEnd = moment(timeEnd);
-
-  let classes = [];
-  for (let holiday of holidays) {
-    if (
-      holiday.isSame(currentTimeStart, "day") &&
-      holiday.isSame(currentTimeEnd, "day")
-    ) {
-      classes.push("holiday");
-    }
-  }
-
-  return classes;
+type Props = {
+  employees: EmployeeShort[];
+  absences: AbsencesMap;
 };
 
-interface Props {
-  groups: CalendarVacationGroup[];
+export const HumanResourceCalendar: React.FC<Props> = ({
+  employees,
+  absences,
+}) => {
+  const tableRef = useRef<HTMLTableElement>(null);
+
+  const [{ date, daysCount }, dispatch] = useReducer(reducer, {
+    date: new Date(),
+    daysCount: 21,
+  });
+
+  const { interval, format, title } = getDateInterval(date, daysCount);
+  const months = compose(toPairs, groupBy(formatDate("MMM")))(interval);
+
+  return (
+    <div className="content human-resource-calendar">
+      <LeftOutlined
+        style={{ userSelect: "none" }}
+        onClick={() => dispatch({ type: "move", direction: "back" })}
+      />
+      <RightOutlined
+        style={{ userSelect: "none" }}
+        onClick={() => dispatch({ type: "move", direction: "forward" })}
+      />
+      <table className="timetable" ref={tableRef}>
+        <thead>
+          <tr>
+            <th className="timetable-title" rowSpan={2}>
+              {title}
+            </th>
+            {months.map(([month, days]) => (
+              <th key={month} colSpan={days.length}>
+                {month}
+              </th>
+            ))}
+          </tr>
+          <tr>
+            {interval.map((date) => (
+              <th key={date.getTime()} className="timetable-date">
+                {formatDate(format, date)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {employees.map((employee) => (
+            <tr key={employee.userId}>
+              <td className="timetable-user">
+                <Link to={`/users/${employee.userId}`}>
+                  {employee.firstName} {employee.lastName}
+                </Link>
+              </td>
+              {interval.map((date) => (
+                <TimelineCell
+                  key={date.toString()}
+                  date={date}
+                  absences={absences[employee.userId]}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+type CellProps = {
+  date: Date;
+  absences: Absence[];
+};
+
+export const TimelineCell: React.FC<CellProps> = ({ date, absences = [] }) => {
+  const { className, title } = generateCellInfo(date, absences);
+
+  if (!className) {
+    return <td className="timetable-cell" />;
+  }
+
+  return (
+    <Tooltip title={title}>
+      <td className={`timetable-cell ${className}`} />
+    </Tooltip>
+  );
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "move":
+      const days =
+        action.direction === "back" ? -state.daysCount : state.daysCount;
+      return { ...state, date: addDate({ days }, state.date) };
+    case "setDaysCount":
+      return {
+        ...state,
+        daysCount: action.daysCount >= 30 ? 30 : action.daysCount,
+      };
+    default:
+      return state;
+  }
 }
 
-export const HumanResourceCalendar: React.FC<Props> = ({ groups }) => (
-  <div className="content human-resource-calendar">
-    <Timeline
-      groups={groups}
-      groupRenderer={({ group }) => (
-        <HumanResourceCalendarGroup
-          firstName={group.item.firstName}
-          lastName={group.item.lastName}
-          avatar={null}
-          id={group.item.userId}
-        />
-      )}
-      items={[]}
-      itemHeightRatio={0.7}
-      lineHeight={LINE_HEIGHT}
-      defaultTimeStart={moment().add(-6, "month")}
-      defaultTimeEnd={moment().add(6, "month")}
-      canResize="both"
-      dragSnap={day}
-      verticalLineClassNamesForTime={verticalLineClassNamesForTime}
-    ></Timeline>
-  </div>
-);
+function getDateInterval(date: Date, cells: number) {
+  const start = addDate({ days: -cells }, date);
+  const end = addDate({ days: cells }, date);
+  const title =
+    getYear(start) === getYear(end)
+      ? `${formatDate("MMM", start)} - ${formatDate("MMM yyyy", end)}`
+      : `${formatDate("MMM yyyy", start)} - ${formatDate("MMM yyyy", end)}`;
+  return { interval: eachDay({ start, end }), format: "dd", title };
+}
+
+function generateCellInfo(date: Date, absences: Absence[] = []) {
+  for (const absence of absences) {
+    const interval = {
+      start: parseISO(absence.startedAt),
+      end: parseISO(absence.endedAt),
+    };
+    if (isWithinInterval(interval, date)) {
+      const reason = toLower(absence.reason);
+      const approved = absence.isApproved ? "" : "not-approved";
+      const title = absence.isApproved
+        ? absence.comment
+        : `${absence.comment} (not approved)`;
+      return { className: `${reason} ${approved}`, title };
+    }
+  }
+  if (isWeekend(date)) {
+    return { className: "weekend", title: formatDate("eeee", date) };
+  }
+  return { className: "", title: "" };
+}
