@@ -8,7 +8,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.json
+import kotlinx.serialization.json.jsonArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -30,7 +32,9 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "testadmin@testadmin.my"
-                            "role" to "MEMBER"
+                            "role" to jsonArray {
+                                +JsonPrimitive("MEMBER")
+                            }
                         }.toString()
                     )
                 }) {
@@ -51,7 +55,9 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "testadmin@testadmin.my"
-                            "role" to "MEMBER"
+                            "role" to jsonArray {
+                                +JsonPrimitive("MEMBER")
+                            }
                         }.toString()
                     )
                 }) {
@@ -63,7 +69,9 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "testadmin@testadmin.my"
-                            "role" to "MEMBER"
+                            "role" to jsonArray {
+                                +JsonPrimitive("MEMBER")
+                            }
                         }.toString()
                     )
                 }) {
@@ -86,7 +94,9 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "candidate@gmail.com"
-                            "role" to "MEMBER"
+                            "role" to jsonArray {
+                                +JsonPrimitive("MEMBER")
+                            }
                             "firstName" to "Interesting"
                             "lastName" to "Candidate"
                         }.toString()
@@ -97,7 +107,7 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains("CREATED") ?: false)
+                    Assertions.assertTrue(response.content?.contains("PENDING") ?: false)
                     Assertions.assertTrue(response.content?.contains("candidate") ?: false)
                 }
             }
@@ -105,21 +115,49 @@ class UserControllerTest {
     }
 
     @Test
-    fun `invite already created user`() {
+    fun `invite pending user`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, emptySet(), database) }) {
             rollbackTransaction(database) {
-                val userId = database.createMember(status = Status.CREATED)
+                val userId = database.createMember(status = Status.PENDING)
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/invite")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
-                    println(response.content)
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                     Assertions.assertTrue(response.content?.contains("WAIT_CONFIRM") ?: false)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `archive pending user`() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                val userId = database.createMember(status = Status.PENDING)
+                val reason = "Some reason to archive"
+
+                withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/archive") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "reason" to reason
+                        }.toString()
+                    )
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
+                    Assertions.assertEquals(response.status(), HttpStatusCode.OK)
+                    Assertions.assertTrue(response.content?.contains("ARCHIVED") ?: false)
+                    Assertions.assertTrue(response.content?.contains(reason) ?: false)
                 }
             }
         }

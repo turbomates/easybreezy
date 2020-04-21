@@ -15,7 +15,7 @@ class Handler @Inject constructor(private val repository: Repository, private va
             User.create(
                 Email.create(command.email),
                 User.Name.create(command.firstName, command.lastName),
-                mutableSetOf(command.role)
+                command.role
             )
         }
     }
@@ -24,7 +24,7 @@ class Handler @Inject constructor(private val repository: Repository, private va
         transaction {
             User.invite(
                 Email.create(command.email),
-                mutableSetOf(command.role)
+                command.role
             )
         }
     }
@@ -33,6 +33,13 @@ class Handler @Inject constructor(private val repository: Repository, private va
         transaction {
             val user = repository.getOne(userId)
             user.invite()
+        }
+    }
+
+    suspend fun handleArchive(command: Archive) {
+        transaction {
+            val user = repository.getOne(command.userId)
+            user.archive(command.reason)
         }
     }
 

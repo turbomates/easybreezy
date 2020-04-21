@@ -10,7 +10,6 @@ import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.ktor.LogicException
-import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.builtins.set
@@ -30,12 +29,19 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var token by Users.token
     private var createdAt by Users.createdAt
     private var name by Users.name
+    private var comment by Users.comment
     private val contacts by Contact referrersOn Contacts.user
 
     fun invite() {
-        require(status == Status.CREATED) { throw LogicException("User have been already invited") }
+        require(status == Status.PENDING) { throw LogicException("User have been already invited") }
         status = Status.WAIT_CONFIRM
         this.addEvent(Invited(this.id.value))
+    }
+
+    fun archive(reason: String?) {
+        require(status == Status.PENDING) { throw LogicException("Users with status Pending only can be approved") }
+        status = Status.ARCHIVED
+        comment = reason
     }
 
     fun confirm(password: Password, firstName: String, lastName: String) {
@@ -67,7 +73,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     companion object : PrivateEntityClass<UUID, User>(object : Repository() {}) {
-        fun invite(email: Email, roles: MutableSet<String>): User {
+        fun invite(email: Email, roles: Set<String>): User {
             return User.new {
                 this.email = email
                 this.roles = roles
@@ -78,12 +84,12 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             }
         }
 
-        fun create(email: Email, name: Name, roles: MutableSet<String>): User {
+        fun create(email: Email, name: Name, roles: Set<String>): User {
             return User.new {
                 this.email = email
                 this.name = name
                 this.roles = roles
-                this.status = Status.CREATED
+                this.status = Status.PENDING
                 this.createdAt = LocalDateTime.now()
 
             }
@@ -116,7 +122,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 }
 
 enum class Status {
-    CREATED, WAIT_CONFIRM, ACTIVE
+    PENDING, ARCHIVED, WAIT_CONFIRM, ACTIVE
 }
 
 object Users : UUIDTable() {
@@ -131,6 +137,7 @@ object Users : UUIDTable() {
     val email = embedded<Email>(EmailTable)
     val name = embedded<User.Name>(NameTable)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
+    val comment = text("comment").nullable()
 }
 
 object NameTable : EmbeddableTable() {

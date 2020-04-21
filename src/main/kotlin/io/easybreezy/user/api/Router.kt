@@ -6,10 +6,7 @@ import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.user.api.controller.UserController
-import io.easybreezy.user.application.Confirm
-import io.easybreezy.user.application.Create
-import io.easybreezy.user.application.Invite
-import io.easybreezy.user.application.UpdateContacts
+import io.easybreezy.user.application.*
 import io.easybreezy.user.application.queryobject.User
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
@@ -45,6 +42,9 @@ class Router @Inject constructor(
             }
             postParams<Response.Ok, ID>("/{id}/invite") { params ->
                 controller<UserController>(this).invite(params.id)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, Archive, ID>("/{id}/archive") { command, params ->
+                controller<UserController>(this).archive(params.id, command)
             }
             post<Response.Either<Response.Ok, Response.Errors>, Create>("") { command ->
                 controller<UserController>(this).create(command)

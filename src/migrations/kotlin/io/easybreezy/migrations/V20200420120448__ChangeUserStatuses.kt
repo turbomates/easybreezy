@@ -8,8 +8,9 @@ class V20200420120448__ChangeUserStatuses : BaseJavaMigration() {
     override fun migrate(context: Context) {
         context.execute(
             """
-            alter type user_status add value 'CREATED' before 'ACTIVE';
-            
+            alter table users add column comment text default null;
+            alter type user_status add value 'PENDING' before 'ACTIVE';
+            alter type user_status add value 'ARCHIVED' after 'PENDING';
         """.trimIndent()
         )
     }

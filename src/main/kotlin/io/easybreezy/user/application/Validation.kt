@@ -35,7 +35,7 @@ class Validation @Inject constructor(
                 validate(Create::email).isNotNull().isNotBlank().isUnique()
                 validate(Create::firstName).isNotNull().isNotBlank()
                 validate(Create::lastName).isNotNull().isNotBlank()
-                validate(Create::role).isNotNull().isNotBlank()
+                validate(Create::role).isNotNull()
             }
         }
     }
@@ -44,8 +44,15 @@ class Validation @Inject constructor(
         return transactionManager {
             validate(command) {
                 validate(Invite::email).isNotNull().isNotBlank().isUnique()
-                validate(Invite::role).isNotNull().isNotBlank()
+                validate(Invite::role).isNotNull()
             }
+        }
+    }
+
+    fun onArchive(command: Archive): List<Error> {
+        return validate(command) {
+            validate(Archive::userId).isNotNull()
+            validate(Archive::reason).isNotBlank()
         }
     }
 

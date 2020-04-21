@@ -54,6 +54,17 @@ class UserController @Inject constructor(
         return Response.Ok
     }
 
+    suspend fun archive(userId: UUID, command: Archive): Response.Either<Response.Ok, Response.Errors> {
+        command.userId = userId
+        val errors = validation.onArchive(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.handleArchive(command)
+
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
     suspend fun updateContacts(command: UpdateContacts, id: UUID): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.onUpdateContacts(command)
         if (errors.isNotEmpty()) {
