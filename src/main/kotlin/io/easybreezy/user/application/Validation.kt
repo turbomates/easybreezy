@@ -29,10 +29,22 @@ class Validation @Inject constructor(
             repository.findByEmail(Email.create(value!!)) !is User
         }
 
+    suspend fun onCreate(command: Create): List<Error> {
+        return transactionManager {
+            validate(command) {
+                validate(Create::email).isNotNull().isNotBlank().isUnique()
+                validate(Create::firstName).isNotNull().isNotBlank()
+                validate(Create::lastName).isNotNull().isNotBlank()
+                validate(Create::role).isNotNull().isNotBlank()
+            }
+        }
+    }
+
     suspend fun onInvite(command: Invite): List<Error> {
         return transactionManager {
             validate(command) {
-                validate(Invite::email).isNotBlank().isNotNull().isUnique()
+                validate(Invite::email).isNotNull().isNotBlank().isUnique()
+                validate(Invite::role).isNotNull().isNotBlank()
             }
         }
     }

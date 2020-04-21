@@ -8,10 +8,17 @@ import io.easybreezy.user.model.Repository
 import io.easybreezy.user.model.User
 import java.util.UUID
 
-class Handler @Inject constructor(
-    private val repository: Repository,
-    private val transaction: TransactionManager
-) {
+class Handler @Inject constructor(private val repository: Repository, private val transaction: TransactionManager) {
+
+    suspend fun handleCreate(command: Create) {
+        transaction {
+            User.create(
+                Email.create(command.email),
+                User.Name.create(command.firstName, command.lastName),
+                mutableSetOf(command.role)
+            )
+        }
+    }
 
     suspend fun handleInvite(command: Invite) {
         transaction {
@@ -19,6 +26,13 @@ class Handler @Inject constructor(
                 Email.create(command.email),
                 mutableSetOf(command.role)
             )
+        }
+    }
+
+    suspend fun handleInvite(userId: UUID) {
+        transaction {
+            val user = repository.getOne(userId)
+            user.invite()
         }
     }
 

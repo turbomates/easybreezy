@@ -169,33 +169,10 @@ Type: RAW
 URL: localhost:3000/api/hr/locations/user/54e667d1-02bd-4395-92d9-1b0f9c0041c3/close
 ```
 
-
-***Headers:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
-***Body:***
-
-```js        
-{
-	"startedAt": "2020-07-12",
-	"endedAt": "2020-08-12",
-	"locationId": "67429926-5ec0-4017-b50a-d99c172d89b6"
-}
-```
-
-
-
 ***Responses:***
 
 
 Status: Success | Code: 200
-
-
 
 ***Response Headers:***
 

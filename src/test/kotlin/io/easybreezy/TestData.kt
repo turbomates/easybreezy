@@ -18,21 +18,10 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
-internal fun Database.createAdmin(): UUID {
+internal fun Database.createMember(firstName: String = "John", lastName: String = "Doe", status: Status = Status.ACTIVE): UUID {
     return transaction(this) {
         val id = Users.insert {
-            it[status] = Status.ACTIVE
-            it[email[EmailTable.email]] = "admin@gmail.com"
-            it[roles] = setOf(Role.ADMIN.name)
-        } get Users.id
-        id.value
-    }
-}
-
-internal fun Database.createMember(firstName: String = "John", lastName: String = "Doe"): UUID {
-    return transaction(this) {
-        val id = Users.insert {
-            it[status] = Status.ACTIVE
+            it[this.status] = status
             it[email[EmailTable.email]] = "member@gmail.com"
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName

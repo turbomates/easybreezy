@@ -9,6 +9,8 @@ import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.ktor.LogicException
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.builtins.set
@@ -29,6 +31,12 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var createdAt by Users.createdAt
     private var name by Users.name
     private val contacts by Contact referrersOn Contacts.user
+
+    fun invite() {
+        require(status == Status.CREATED) { throw LogicException("User have been already invited") }
+        status = Status.WAIT_CONFIRM
+        this.addEvent(Invited(this.id.value))
+    }
 
     fun confirm(password: Password, firstName: String, lastName: String) {
         this.password = password
@@ -69,6 +77,17 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.addEvent(Invited(this.id.value))
             }
         }
+
+        fun create(email: Email, name: Name, roles: MutableSet<String>): User {
+            return User.new {
+                this.email = email
+                this.name = name
+                this.roles = roles
+                this.status = Status.CREATED
+                this.createdAt = LocalDateTime.now()
+
+            }
+        }
     }
 
     class Name private constructor() : Embeddable() {
@@ -97,7 +116,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 }
 
 enum class Status {
-    ACTIVE, WAIT_CONFIRM
+    CREATED, WAIT_CONFIRM, ACTIVE
 }
 
 object Users : UUIDTable() {
