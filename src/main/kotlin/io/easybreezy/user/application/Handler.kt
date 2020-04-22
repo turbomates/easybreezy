@@ -29,10 +29,10 @@ class Handler @Inject constructor(private val repository: Repository, private va
         }
     }
 
-    suspend fun handleInvite(userId: UUID) {
+    suspend fun handleHire(userId: UUID) {
         transaction {
             val user = repository.getOne(userId)
-            user.invite()
+            user.hire()
         }
     }
 

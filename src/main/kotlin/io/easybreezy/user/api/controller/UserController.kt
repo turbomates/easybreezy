@@ -48,8 +48,8 @@ class UserController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun invite(userId: UUID): Response.Ok {
-        handler.handleInvite(userId)
+    suspend fun hire(userId: UUID): Response.Ok {
+        handler.handleHire(userId)
 
         return Response.Ok
     }

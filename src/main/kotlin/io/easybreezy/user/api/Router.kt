@@ -40,8 +40,8 @@ class Router @Inject constructor(
             post<Response.Either<Response.Ok, Response.Errors>, Invite>("/invite") { invite ->
                 controller<UserController>(this).invite(invite)
             }
-            postParams<Response.Ok, ID>("/{id}/invite") { params ->
-                controller<UserController>(this).invite(params.id)
+            postParams<Response.Ok, ID>("/{id}/hire") { params ->
+                controller<UserController>(this).hire(params.id)
             }
             post<Response.Either<Response.Ok, Response.Errors>, Archive, ID>("/{id}/archive") { command, params ->
                 controller<UserController>(this).archive(params.id, command)

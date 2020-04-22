@@ -122,7 +122,7 @@ class UserControllerTest {
             rollbackTransaction(database) {
                 val userId = database.createMember(status = Status.PENDING)
 
-                withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/invite")) {
+                withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/hire")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 

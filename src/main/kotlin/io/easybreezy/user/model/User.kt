@@ -1,6 +1,7 @@
 package io.easybreezy.user.model
 
 import io.easybreezy.infrastructure.event.user.Confirmed
+import io.easybreezy.infrastructure.event.user.Hired
 import io.easybreezy.infrastructure.event.user.Invited
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
@@ -32,10 +33,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var comment by Users.comment
     private val contacts by Contact referrersOn Contacts.user
 
-    fun invite() {
-        require(status == Status.PENDING) { throw LogicException("User have been already invited") }
+    fun hire() {
+        require(status == Status.PENDING) { throw LogicException("User have been already hired") }
         status = Status.WAIT_CONFIRM
-        this.addEvent(Invited(this.id.value))
+        this.addEvent(Hired(this.id.value))
     }
 
     fun archive(reason: String?) {

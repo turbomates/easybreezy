@@ -3,6 +3,7 @@ package io.easybreezy.user.application
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
+import io.easybreezy.infrastructure.ktor.auth.isRoles
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.user.model.Contacts
 import io.easybreezy.user.model.Email
@@ -10,10 +11,7 @@ import io.easybreezy.user.model.Repository
 import io.easybreezy.user.model.User
 import org.valiktor.Constraint
 import org.valiktor.Validator
-import org.valiktor.functions.isEmail
-import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.validateForEach
+import org.valiktor.functions.*
 
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,
@@ -35,7 +33,7 @@ class Validation @Inject constructor(
                 validate(Create::email).isNotNull().isNotBlank().isUnique()
                 validate(Create::firstName).isNotNull().isNotBlank()
                 validate(Create::lastName).isNotNull().isNotBlank()
-                validate(Create::role).isNotNull()
+                validate(Create::role).isNotNull().isRoles()
             }
         }
     }
@@ -44,7 +42,7 @@ class Validation @Inject constructor(
         return transactionManager {
             validate(command) {
                 validate(Invite::email).isNotNull().isNotBlank().isUnique()
-                validate(Invite::role).isNotNull()
+                validate(Invite::role).isNotNull().isRoles()
             }
         }
     }

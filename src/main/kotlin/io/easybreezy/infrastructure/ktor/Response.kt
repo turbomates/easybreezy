@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonOutput
 import kotlinx.serialization.json.JsonPrimitive
 
-@Serializable
+@Serializable(with = ErrorSerializer::class)
 data class Error(val message: String, val property: String? = null, @ContextualSerialization val value: Any? = null)
 
 @Serializable(with = ResponseSerializer::class)
@@ -73,6 +73,28 @@ object ResponseSerializer : KSerializer<Response> {
     }
 
     override fun deserialize(decoder: Decoder): Response {
+        throw NotImplementedError()
+    }
+}
+
+object ErrorSerializer : KSerializer<Error> {
+    override val descriptor: SerialDescriptor = SerialDescriptor("ErrorSerializerDescriptor")
+
+    @Suppress("UNCHECKED_CAST")
+    override fun serialize(encoder: Encoder, value: Error) {
+        val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
+        val errorValue = value.value ?: ""
+        val tree = JsonObject(
+            mapOf(
+                "message" to JsonPrimitive(value.message),
+                "property" to JsonPrimitive(value.property),
+                "value" to output.json.toJson(serializerForSending(errorValue) as KSerializer<Any>, errorValue)
+            )
+        )
+        output.encodeJson(tree)
+    }
+
+    override fun deserialize(decoder: Decoder): Error {
         throw NotImplementedError()
     }
 }
