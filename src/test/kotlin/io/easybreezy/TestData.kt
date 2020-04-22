@@ -1,7 +1,7 @@
 package io.easybreezy
 
 import io.easybreezy.hr.model.hr.Employees
-import io.easybreezy.infrastructure.ktor.auth.Role
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
@@ -18,25 +18,14 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
-internal fun Database.createAdmin(): UUID {
+internal fun Database.createMember(firstName: String = "John", lastName: String = "Doe", status: Status = Status.ACTIVE): UUID {
     return transaction(this) {
         val id = Users.insert {
-            it[status] = Status.ACTIVE
-            it[email[EmailTable.email]] = "admin@gmail.com"
-            it[roles] = setOf(Role.ADMIN.name)
-        } get Users.id
-        id.value
-    }
-}
-
-internal fun Database.createMember(firstName: String = "John", lastName: String = "Doe"): UUID {
-    return transaction(this) {
-        val id = Users.insert {
-            it[status] = Status.ACTIVE
+            it[this.status] = status
             it[email[EmailTable.email]] = "member@gmail.com"
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName
-            it[roles] = setOf(Role.MEMBER.name)
+            it[activities] = setOf(Activity.MEMBER.name)
         } get Users.id
         id.value
     }
@@ -101,7 +90,7 @@ internal fun Database.createEmployee(): UUID {
         val userId = Users.insert {
             it[status] = Status.ACTIVE
             it[email[EmailTable.email]] = "employee@gmail.com"
-            it[roles] = setOf(Role.MEMBER.name)
+            it[activities] = setOf(Activity.MEMBER.name)
         } get Users.id
 
         Employees.insert {

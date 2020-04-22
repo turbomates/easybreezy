@@ -1,27 +1,31 @@
 import { createReducer } from "typesafe-actions";
-import { EmployeeLocationsMap, EmployeeLocation } from "LocationModels";
+import { EmployeeLocation } from "LocationModels";
 import {
   fetchEmployeeLocationsAsync,
-  assignLocationAsync,
   openEmployeeLocationEditForm,
   closeEmployeeLocationEditForm,
   editEmployeeLocationAsync,
+  openLocationAssignForm,
+  closeLocationAssignForm,
+  assignLocationAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
 import { normalizeErrors } from "utils/error";
 
 export type State = {
-  data: EmployeeLocationsMap;
+  data: EmployeeLocation[];
   loading: boolean;
   formErrors: FormErrorMap;
   employeeLocationToEdit: EmployeeLocation | null;
+  showAssignForm: boolean;
 };
 
 const initialState: State = {
-  data: {},
+  data: [],
   loading: false,
   formErrors: {},
   employeeLocationToEdit: null,
+  showAssignForm: false,
 };
 
 export const reducer = createReducer<State>(initialState)
@@ -35,6 +39,11 @@ export const reducer = createReducer<State>(initialState)
     loading: false,
   }))
   .handleAction(fetchEmployeeLocationsAsync.failure, () => initialState)
+  .handleAction(assignLocationAsync.success, (state, action) => ({
+    ...state,
+    formErrors: {},
+    showAssignForm: false,
+  }))
   .handleAction(assignLocationAsync.failure, (state, action) => ({
     ...state,
     formErrors: normalizeErrors(action.payload),
@@ -57,4 +66,12 @@ export const reducer = createReducer<State>(initialState)
   .handleAction(editEmployeeLocationAsync.failure, (state, action) => ({
     ...state,
     formErrors: normalizeErrors(action.payload),
+  }))
+  .handleAction(openLocationAssignForm, (state, action) => ({
+    ...state,
+    showAssignForm: true,
+  }))
+  .handleAction(closeLocationAssignForm, (state, action) => ({
+    ...state,
+    showAssignForm: false,
   }));

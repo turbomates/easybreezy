@@ -21,7 +21,7 @@ fun Collection<*>.elementSerializer(): KSerializer<*> {
     if (serializers.size > 1) {
         error(
             "Serializing collections of different element types is not yet supported. " +
-                "Selected serializers: ${serializers.map { it.descriptor.serialName }}"
+                    "Selected serializers: ${serializers.map { it.descriptor.serialName }}"
         )
     }
 
@@ -69,5 +69,6 @@ fun serializerForSending(value: Any): KSerializer<*> {
             serializer(componentType) as KSerializer<Any>
         )
     }
+
     return value::class.serializer()
 }

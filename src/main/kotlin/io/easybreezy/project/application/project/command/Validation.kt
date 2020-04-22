@@ -7,12 +7,12 @@ import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.application.issue.queryobject.HasIssuesQO
 import io.easybreezy.project.model.Repository
+import io.easybreezy.project.model.team.Role
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.isNotEmpty
-import java.util.*
+import java.util.UUID
 
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,
@@ -28,18 +28,16 @@ class Validation @Inject constructor(
     }
 
     fun validateCommand(command: NewRole): List<Error> {
-
         return validate(command) {
             validate(NewRole::name).hasSize(2, 25)
-            validate(NewRole::permissions).isNotEmpty()
+            validate(NewRole::permissions).inList(Role.Permission.values().map { it.name })
         }
     }
 
     fun validateCommand(command: ChangeRole): List<Error> {
-
         return validate(command) {
             validate(ChangeRole::name).hasSize(2, 25)
-            validate(ChangeRole::permissions).isNotEmpty()
+            validate(ChangeRole::permissions).inList(Role.Permission.values().map { it.name })
         }
     }
 
@@ -59,7 +57,6 @@ class Validation @Inject constructor(
     }
 
     fun validateCommand(command: WriteDescription): List<Error> {
-
         return validate(command) {
             validate(WriteDescription::description).isNotBlank()
         }
@@ -106,4 +103,21 @@ class Validation @Inject constructor(
         return listOf()
     }
 
+    class InList(val values: List<String>) : Constraint {
+        override val name: String
+            get() = "List should has only $values values"
+    }
+
+    private fun <E> Validator<E>.Property<Iterable<String>?>.inList(values: List<String>) {
+        this.validate(InList(values)) { value ->
+            value?.forEach {
+                if (!values.contains(it)) {
+                    return@validate false
+                }
+            }
+            true
+        }
+    }
 }
+
+

@@ -3,6 +3,7 @@ package io.easybreezy.user.application
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
+import io.easybreezy.infrastructure.ktor.auth.isActivities
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.user.model.Contacts
 import io.easybreezy.user.model.Email
@@ -10,10 +11,7 @@ import io.easybreezy.user.model.Repository
 import io.easybreezy.user.model.User
 import org.valiktor.Constraint
 import org.valiktor.Validator
-import org.valiktor.functions.isEmail
-import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.isNotNull
-import org.valiktor.functions.validateForEach
+import org.valiktor.functions.*
 
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,
@@ -29,11 +27,30 @@ class Validation @Inject constructor(
             repository.findByEmail(Email.create(value!!)) !is User
         }
 
+    suspend fun onCreate(command: Create): List<Error> {
+        return transactionManager {
+            validate(command) {
+                validate(Create::email).isNotNull().isNotBlank().isUnique()
+                validate(Create::firstName).isNotNull().isNotBlank()
+                validate(Create::lastName).isNotNull().isNotBlank()
+                validate(Create::activities).isNotNull().isActivities()
+            }
+        }
+    }
+
     suspend fun onInvite(command: Invite): List<Error> {
         return transactionManager {
             validate(command) {
-                validate(Invite::email).isNotBlank().isNotNull().isUnique()
+                validate(Invite::email).isNotNull().isNotBlank().isUnique()
+                validate(Invite::activities).isNotNull().isActivities()
             }
+        }
+    }
+
+    fun onArchive(command: Archive): List<Error> {
+        return validate(command) {
+            validate(Archive::userId).isNotNull()
+            validate(Archive::reason).isNotBlank()
         }
     }
 
@@ -55,6 +72,13 @@ class Validation @Inject constructor(
                         validate(Contact::value).isEmail()
                     }
                 }
+        }
+    }
+
+    fun onUpdateActivities(command: UpdateActivities): List<Error> {
+        return validate(command) {
+            validate(UpdateActivities::userId).isNotNull()
+            validate(UpdateActivities::activities).isNotNull().isActivities()
         }
     }
 }

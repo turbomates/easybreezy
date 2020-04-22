@@ -1,6 +1,7 @@
 package io.easybreezy.user.model
 
 import io.easybreezy.infrastructure.event.user.Confirmed
+import io.easybreezy.infrastructure.event.user.Hired
 import io.easybreezy.infrastructure.event.user.Invited
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
@@ -9,6 +10,7 @@ import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.builtins.set
@@ -23,12 +25,25 @@ import java.util.UUID
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var email by Users.email
     private var password by Users.password
-    private var roles by Users.roles
+    private var activities by Users.activities
     private var status by Users.status
     private var token by Users.token
     private var createdAt by Users.createdAt
     private var name by Users.name
+    private var comment by Users.comment
     private val contacts by Contact referrersOn Contacts.user
+
+    fun hire() {
+        require(status == Status.PENDING) { throw LogicException("User have been already hired") }
+        status = Status.WAIT_CONFIRM
+        this.addEvent(Hired(this.id.value))
+    }
+
+    fun archive(reason: String?) {
+        require(status == Status.PENDING) { throw LogicException("Users with status Pending only can be approved") }
+        status = Status.ARCHIVED
+        comment = reason
+    }
 
     fun confirm(password: Password, firstName: String, lastName: String) {
         this.password = password
@@ -41,6 +56,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
     fun email(): String {
         return this.email.address
+    }
+
+    fun replaceActivities(activities: Set<String>) {
+        this.activities = activities
     }
 
     fun replaceContacts(replaced: List<io.easybreezy.user.application.Contact>) {
@@ -59,14 +78,24 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     companion object : PrivateEntityClass<UUID, User>(object : Repository() {}) {
-        fun invite(email: Email, roles: MutableSet<String>): User {
+        fun invite(email: Email, activities: Set<String>): User {
             return User.new {
                 this.email = email
-                this.roles = roles
+                this.activities = activities
                 this.status = Status.WAIT_CONFIRM
                 this.token = Token.generate()
                 this.createdAt = LocalDateTime.now()
                 this.addEvent(Invited(this.id.value))
+            }
+        }
+
+        fun create(email: Email, name: Name, activities: Set<String>): User {
+            return User.new {
+                this.email = email
+                this.name = name
+                this.activities = activities
+                this.status = Status.PENDING
+                this.createdAt = LocalDateTime.now()
             }
         }
     }
@@ -97,7 +126,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 }
 
 enum class Status {
-    ACTIVE, WAIT_CONFIRM
+    PENDING, ARCHIVED, WAIT_CONFIRM, ACTIVE
 }
 
 object Users : UUIDTable() {
@@ -107,11 +136,12 @@ object Users : UUIDTable() {
         "user_status",
         { value -> Status.valueOf(value as String) },
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
-    val roles = jsonb("roles", String.serializer().set)
+    val activities = jsonb("activities", String.serializer().set)
     val password = embedded<Password>(PasswordTable)
     val email = embedded<Email>(EmailTable)
     val name = embedded<User.Name>(NameTable)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
+    val comment = text("comment").nullable()
 }
 
 object NameTable : EmbeddableTable() {

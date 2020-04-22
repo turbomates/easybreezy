@@ -8,7 +8,6 @@ import { filterOptions } from "utils/filterOptions";
 const { Option } = Select;
 
 interface Props {
-  userId: string;
   locations: Location[];
   errors: FormErrorMap;
   assign: (form: AssignLocationForm) => void;
@@ -18,7 +17,6 @@ const DATE_FORMAT = "YYYY-MM-DD";
 const initialFormValues = { extraVacationDays: 0 };
 
 export const LocationAssignForm: React.FC<Props> = ({
-  userId,
   locations,
   errors,
   assign,
@@ -40,12 +38,11 @@ export const LocationAssignForm: React.FC<Props> = ({
       assign({
         startedAt,
         endedAt,
-        userId,
         locationId: values.locationId,
         extraVacationDays: values.extraVacationDays,
       });
     },
-    [userId, assign],
+    [assign],
   );
 
   const onFinishFailed = useCallback((errorInfo: any) => {

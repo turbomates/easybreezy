@@ -5,10 +5,10 @@ import {
   fetchLocationsAsync,
   createLocationAsync,
   removeLocationAsync,
-} from "features/human-location/actions";
-import { location } from "features/human-location/selectors";
-import { LocationsList } from "features/human-location/components/LocationsList";
-import { LocationForm } from "features/human-location/components/LocationForm";
+} from "features/location/actions";
+import { location } from "features/location/selectors";
+import { LocationsList } from "features/location/components/LocationsList";
+import { LocationForm } from "features/location/components/LocationForm";
 import { LocationForm as LocationFormModel } from "LocationModels";
 
 export const LocationsPage: React.FC = () => {
@@ -16,8 +16,7 @@ export const LocationsPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchLocationsAsync.request());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   const locations = useSelector(location);
 

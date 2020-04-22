@@ -53,5 +53,3 @@ object ContinuousListSerializer : KSerializer<ContinuousList<*>> {
         throw NotImplementedError()
     }
 }
-
-
