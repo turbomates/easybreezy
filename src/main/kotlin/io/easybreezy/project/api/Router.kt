@@ -55,13 +55,11 @@ class Router @Inject constructor(
 
     private fun projectRoutes(route: Route) {
         route.route("/projects") {
-            authorize(setOf(Activity.MEMBER)) {
-                post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
-                    controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
-                }
-                get<Response.Listing<Project>>("") {
-                    controller<ProjectController>(this).list()
-                }
+            post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
+                controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
+            }
+            get<Response.Listing<Project>>("") {
+                controller<ProjectController>(this).list()
             }
             get<Response.Data<List<Role.Permission>>>("/permissions") {
                 controller<ProjectController>(this).permissions()
