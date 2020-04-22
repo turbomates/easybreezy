@@ -25,7 +25,7 @@ import java.util.UUID
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var email by Users.email
     private var password by Users.password
-    private var roles by Users.roles
+    private var activities by Users.activities
     private var status by Users.status
     private var token by Users.token
     private var createdAt by Users.createdAt
@@ -58,6 +58,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         return this.email.address
     }
 
+    fun replaceActivities(activities: Set<String>) {
+        this.activities = activities
+    }
+
     fun replaceContacts(replaced: List<io.easybreezy.user.application.Contact>) {
         contacts.forEach { it.delete() }
         replaced.map {
@@ -74,10 +78,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 
     companion object : PrivateEntityClass<UUID, User>(object : Repository() {}) {
-        fun invite(email: Email, roles: Set<String>): User {
+        fun invite(email: Email, activities: Set<String>): User {
             return User.new {
                 this.email = email
-                this.roles = roles
+                this.activities = activities
                 this.status = Status.WAIT_CONFIRM
                 this.token = Token.generate()
                 this.createdAt = LocalDateTime.now()
@@ -85,11 +89,11 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             }
         }
 
-        fun create(email: Email, name: Name, roles: Set<String>): User {
+        fun create(email: Email, name: Name, activities: Set<String>): User {
             return User.new {
                 this.email = email
                 this.name = name
-                this.roles = roles
+                this.activities = activities
                 this.status = Status.PENDING
                 this.createdAt = LocalDateTime.now()
             }
@@ -132,7 +136,7 @@ object Users : UUIDTable() {
         "user_status",
         { value -> Status.valueOf(value as String) },
         { PGEnum("user_status", it) }).default(Status.ACTIVE)
-    val roles = jsonb("roles", String.serializer().set)
+    val activities = jsonb("activities", String.serializer().set)
     val password = embedded<Password>(PasswordTable)
     val email = embedded<Email>(EmailTable)
     val name = embedded<User.Name>(NameTable)

@@ -3,7 +3,7 @@ package io.easybreezy.user.application
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
-import io.easybreezy.infrastructure.ktor.auth.isRoles
+import io.easybreezy.infrastructure.ktor.auth.isActivities
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.user.model.Contacts
 import io.easybreezy.user.model.Email
@@ -33,7 +33,7 @@ class Validation @Inject constructor(
                 validate(Create::email).isNotNull().isNotBlank().isUnique()
                 validate(Create::firstName).isNotNull().isNotBlank()
                 validate(Create::lastName).isNotNull().isNotBlank()
-                validate(Create::role).isNotNull().isRoles()
+                validate(Create::activities).isNotNull().isActivities()
             }
         }
     }
@@ -42,7 +42,7 @@ class Validation @Inject constructor(
         return transactionManager {
             validate(command) {
                 validate(Invite::email).isNotNull().isNotBlank().isUnique()
-                validate(Invite::role).isNotNull().isRoles()
+                validate(Invite::activities).isNotNull().isActivities()
             }
         }
     }
@@ -72,6 +72,13 @@ class Validation @Inject constructor(
                         validate(Contact::value).isEmail()
                     }
                 }
+        }
+    }
+
+    fun onUpdateActivities(command: UpdateActivities): List<Error> {
+        return validate(command) {
+            validate(UpdateActivities::userId).isNotNull()
+            validate(UpdateActivities::activities).isNotNull().isActivities()
         }
     }
 }

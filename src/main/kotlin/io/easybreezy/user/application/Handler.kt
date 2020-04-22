@@ -15,7 +15,7 @@ class Handler @Inject constructor(private val repository: Repository, private va
             User.create(
                 Email.create(command.email),
                 User.Name.create(command.firstName, command.lastName),
-                command.role
+                command.activities
             )
         }
     }
@@ -24,7 +24,7 @@ class Handler @Inject constructor(private val repository: Repository, private va
         transaction {
             User.invite(
                 Email.create(command.email),
-                command.role
+                command.activities
             )
         }
     }
@@ -54,6 +54,12 @@ class Handler @Inject constructor(private val repository: Repository, private va
     suspend fun handleUpdateContacts(command: UpdateContacts, userId: UUID) {
         transaction {
             repository.getOne(userId).replaceContacts(command.contacts)
+        }
+    }
+
+    suspend fun handleUpdateActivities(command: UpdateActivities) {
+        transaction {
+            repository.getOne(command.userId).replaceActivities(command.activities)
         }
     }
 }

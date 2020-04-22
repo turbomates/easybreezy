@@ -7,5 +7,5 @@ data class Create(
     val email: String,
     val firstName: String,
     val lastName: String,
-    val role: Set<String>
+    val activities: Set<String>
 )

@@ -12,11 +12,12 @@
   * [Logout](#3-logout)
   * [Login User](#4-login-user)
   * [Login Admin](#5-login-admin)
-  * [Confirm](#6-confirm)
-  * [Archive](#7-archive)
-  * [Hire](#8-hire)
-  * [Invite](#9-invite)
-  * [Create](#10-create)
+  * [Update Activities](#6-update-activities)
+  * [Confirm](#7-confirm)
+  * [Archive](#8-archive)
+  * [Hire](#9-hire)
+  * [Invite](#10-invite)
+  * [Create](#11-create)
 
 
 --------
@@ -228,7 +229,54 @@ URL: localhost:3000/api/login
 
 
 
-### 6. Confirm
+### 6. Update Activities
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/users/16ea9f40-1c0d-44b4-81bd-67098d9e42f9/activities
+```
+
+
+***Headers:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| Content-Type | application/json |  |
+
+
+
+***Body:***
+
+```js        
+{
+    "activities": [
+        "MEMBER",
+        "ADMIN"
+    ]
+}
+```
+
+
+
+***Responses:***
+
+
+Status: Success | Code: 200
+
+```js
+{
+    "status": "ok"
+}
+```
+
+
+
+### 7. Confirm
 
 
 
@@ -262,7 +310,7 @@ URL: localhost:3000/api/users/confirm
 
 
 
-### 7. Archive
+### 8. Archive
 
 
 
@@ -318,6 +366,7 @@ Status: Success | Code: 200
 
 Status: Success | Code: 200
 
+
 ```js
 {
     "status": "ok"
@@ -326,7 +375,7 @@ Status: Success | Code: 200
 
 
 
-### 8. Hire
+### 9. Hire
 
 
 
@@ -335,7 +384,7 @@ Status: Success | Code: 200
 ```bash
 Method: POST
 Type: RAW
-URL: localhost:3000/api/users/47cbf3c0-de71-4770-834f-e25c31c927ef/hire
+URL: localhost:3000/api/users/16ea9f40-1c0d-44b4-81bd-67098d9e42f9/hire
 ```
 
 
@@ -352,6 +401,7 @@ URL: localhost:3000/api/users/47cbf3c0-de71-4770-834f-e25c31c927ef/hire
 
 Status: Success | Code: 200
 
+
 ```js
 {
     "status": "ok"
@@ -360,7 +410,17 @@ Status: Success | Code: 200
 
 
 
-### 9. Invite
+Status: Error Already Hired | Code: 422
+
+```js
+{
+    "message": "User have been already hired"
+}
+```
+
+
+
+### 10. Invite
 
 
 
@@ -386,7 +446,7 @@ URL: localhost:3000/api/users/invite
 ```js        
 {
     "email": "novikov.ivan.work3@gmail.com",
-    "role": [
+    "activities": [
         "MEMBER",
         "PROJECTS_LIST"
     ]
@@ -395,7 +455,7 @@ URL: localhost:3000/api/users/invite
 
 
 
-### 10. Create
+### 11. Create
 
 
 
@@ -420,8 +480,8 @@ URL: localhost:3000/api/users
 
 ```js        
 {
-    "email": "novikov.ivan.work4@gmail.com",
-    "role": [
+    "email": "novikov.ivan.work5@gmail.com",
+    "activities": [
         "MEMBER"
     ],
     "firstName": "Ivan",
@@ -446,4 +506,4 @@ Status: Success | Code: 200
 
 ---
 [Back to top](#user)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-22 15:07:48 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-22 17:42:38 by [docgen](https://github.com/thedevsaddam/docgen)

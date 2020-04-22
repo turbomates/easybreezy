@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
@@ -54,7 +55,7 @@ class Router @Inject constructor(
 
     private fun projectRoutes(route: Route) {
         route.route("/projects") {
-            authorize(setOf(io.easybreezy.infrastructure.ktor.auth.Role.MEMBER)) {
+            authorize(setOf(Activity.MEMBER)) {
                 post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
                     controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
                 }

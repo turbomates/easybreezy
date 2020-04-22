@@ -34,7 +34,7 @@ private fun ResultRow.toUser(): User {
         email = this[Users.email[EmailTable.email]],
         status = this[Users.status].toString(),
         comment = this[Users.comment],
-        roles = this[Users.roles]
+        activities = this[Users.activities]
     )
 }
 
@@ -45,5 +45,5 @@ data class User(
     val email: String?,
     val status: String,
     val comment: String?,
-    val roles: Set<String>
+    val activities: Set<String>
 )

@@ -2,6 +2,7 @@ package io.easybreezy.infrastructure.ktor.auth
 
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import java.util.UUID
@@ -18,7 +19,7 @@ data class Session(
 data class UserPrincipal(
     @Serializable(with = UUIDSerializer::class)
     override val id: UUID,
-    val roles: Set<Role>
+    val activities: Set<Activity>
 ) : Principal
 
 interface Principal : io.ktor.auth.Principal {
