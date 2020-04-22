@@ -4,10 +4,8 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
-import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
-import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.project.api.controller.ProjectController
@@ -47,18 +45,18 @@ class Router @Inject constructor(
         application.routing {
             authenticate(*Auth.user) {
                 route("/api/projects") {
-                    projectRoutes(this)
+                    projectRoutes()
                 }
                 route("/api/teams") {
-                    authorize(setOf(Activity.MEMBER)) {
-                        teamRoutes(this)
-                    }
+                    // authorize(setOf(Activity.MEMBER)) {
+                    teamRoutes()
+                    // }
                 }
             }
         }
     }
 
-    private fun Route.teamRoutes(route: Route) {
+    private fun Route.teamRoutes() {
         route("") {
             data class Team(val teamId: UUID)
             post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/add") { command ->
@@ -95,23 +93,20 @@ class Router @Inject constructor(
         }
     }
 
-    private fun Route.projectRoutes(route: Route) {
+    private fun Route.projectRoutes() {
         route("") {
-            authorize(setOf(Activity.MEMBER)) {
-                post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
-                    controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
-                }
-                get<Response.Listing<Project>>("") {
-                    controller<ProjectController>(this).list()
-                }
-                get<Response.Data<List<Role.Permission>>>("/permissions") {
-                    controller<ProjectController>(this).permissions()
-                }
+            post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
+                controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
+            }
+            get<Response.Listing<Project>>("") {
+                controller<ProjectController>(this).list()
+            }
+            get<Response.Data<List<Role.Permission>>>("/permissions") {
+                controller<ProjectController>(this).permissions()
             }
 
         }
-
-        route.route("/{slug}") {
+        route("/{slug}") {
             data class Project(val slug: String)
 
             get<Response.Data<io.easybreezy.project.application.project.queryobject.Project>, Project>("") { params ->
