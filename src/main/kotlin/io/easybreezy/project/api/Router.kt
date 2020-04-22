@@ -50,9 +50,9 @@ class Router @Inject constructor(
                     projectRoutes(this)
                 }
                 route("/api/teams") {
-                    // authorize(setOf(Activity.MEMBER)) {
-                    teamRoutes(this)
-                    // }
+                    authorize(setOf(Activity.MEMBER)) {
+                        teamRoutes(this)
+                    }
                 }
             }
         }

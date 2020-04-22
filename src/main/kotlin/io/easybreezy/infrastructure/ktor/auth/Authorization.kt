@@ -27,7 +27,7 @@ class Authorization(config: Configuration) {
 
     class Configuration() {
         internal var validate: suspend ApplicationCall.(Set<Activity>) -> Boolean = { false }
-        internal var challenge: suspend suspend io.ktor.util.pipeline.PipelineContext<*, ApplicationCall>.() -> Unit =
+        internal var challenge: suspend io.ktor.util.pipeline.PipelineContext<*, ApplicationCall>.() -> Unit =
             { call.respond(HttpStatusCode.Forbidden) }
 
         fun validate(block: suspend ApplicationCall.(Set<Activity>) -> Boolean) {
@@ -50,7 +50,8 @@ class Authorization(config: Configuration) {
      */
     fun interceptPipeline(
         pipeline: ApplicationCallPipeline,
-        activities: Set<Activity>
+        activities: Set<Activity>,
+        block: ApplicationCall.() -> Boolean = { true }
     ) {
         require(activities.isNotEmpty()) { "At least one role should bet set" }
         (pipeline as? Route)?.parent?.let {
@@ -58,7 +59,7 @@ class Authorization(config: Configuration) {
         }
         pipeline.insertPhaseBefore(ApplicationCallPipeline.Call, AuthorizationCheckPhase)
         pipeline.intercept(AuthorizationCheckPhase) {
-            if (!config.validate(call, activities)) {
+            if (!config.validate(call, activities) && !call.block()) {
                 logger.debug("Unauthorized for activities: " + activities.joinToString(","))
                 config.challenge(this)
                 finish()
@@ -85,14 +86,20 @@ class Authorization(config: Configuration) {
     }
 }
 
-fun Route.authorize(activities: Set<Activity>, build: Route.() -> Unit): Route {
+fun Route.authorize(
+    activities: Set<Activity>,
+    block: ApplicationCall.() -> Boolean = { true },
+    build: Route.() -> Unit
+): Route {
     val authenticatedRoute = createChild(AuthorizationRouteSelector(activities))
-    application.feature(Authorization).interceptPipeline(authenticatedRoute, activities)
+    application.feature(Authorization).interceptPipeline(authenticatedRoute, activities, block)
     authenticatedRoute.build()
     return authenticatedRoute
 }
 
-class AuthorizationRouteSelector(internal val activities: Set<Activity>) :
+class AuthorizationRouteSelector(
+    internal val activities: Set<Activity>
+) :
     RouteSelector(RouteSelectorEvaluation.qualityConstant) {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Constant
@@ -109,9 +116,6 @@ class RouteAuthorizationRules() {
 
     fun buildMap(): Map<String, List<String>> {
         val map = mutableMapOf<String, List<String>>()
-        val builder: (Route, List<String>) -> Unit = { route, activities ->
-        }
-        // it.key
         list.forEach { conditions ->
             map += conditions.first.buildPath(emptySet())
         }
