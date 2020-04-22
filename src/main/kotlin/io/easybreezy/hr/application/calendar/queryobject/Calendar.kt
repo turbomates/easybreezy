@@ -3,7 +3,6 @@ package io.easybreezy.hr.application.calendar.queryobject
 import io.easybreezy.hr.application.location.queryobject.Location
 import io.easybreezy.hr.application.location.queryobject.toLocation
 import io.easybreezy.hr.model.location.Locations
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.hr.model.calendar.Calendars as CalendarsTable
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
@@ -23,7 +22,7 @@ class CalendarsQO() : QueryObject<Calendars> {
 }
 
 private fun ResultRow.toCalendar() = Calendar(
-    this[CalendarsTable.id].toUUID(),
+    this[CalendarsTable.id].value,
     this[CalendarsTable.name],
     this.toLocation()
 )

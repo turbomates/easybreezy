@@ -2,19 +2,19 @@ package io.easybreezy.infrastructure.ktor
 
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.ContinuousListSerializer
+import io.easybreezy.infrastructure.serialization.serializerForSending
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonOutput
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.builtins.list
-import kotlinx.serialization.serializer
 
 @Serializable
 data class Error(val message: String, val property: String? = null, @ContextualSerialization val value: Any? = null)
@@ -37,6 +37,7 @@ sealed class Response {
 
 object ResponseSerializer : KSerializer<Response> {
     override val descriptor: SerialDescriptor = SerialDescriptor("ResponseSerializerDescriptor")
+
     @Suppress("UNCHECKED_CAST")
     override fun serialize(encoder: Encoder, value: Response) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
@@ -51,7 +52,7 @@ object ResponseSerializer : KSerializer<Response> {
                 JsonObject(
                     mapOf(
                         "data" to output.json.toJson(
-                            value.data::class.serializer() as KSerializer<Any>,
+                            serializerForSending(value.data) as KSerializer<Any>,
                             value.data
                         )
                     )
@@ -75,3 +76,4 @@ object ResponseSerializer : KSerializer<Response> {
         throw NotImplementedError()
     }
 }
+

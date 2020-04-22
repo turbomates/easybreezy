@@ -34,7 +34,6 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
@@ -64,12 +63,30 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment 2")!!)
                     Assertions.assertTrue(response.content?.contains("DAYON")!!)
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `approve absence`() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                val absenceId = database.createAbsence(memberId)
+
+                with(handleRequest(HttpMethod.Post, "/api/hr/absences/$absenceId/approve")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+                with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
+                    Assertions.assertTrue(response.content?.contains("\"isApproved\": true")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -88,7 +105,6 @@ class AbsenceControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
-                    println(response.content)
                     Assertions.assertFalse(response.content?.contains("Test Comment")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }

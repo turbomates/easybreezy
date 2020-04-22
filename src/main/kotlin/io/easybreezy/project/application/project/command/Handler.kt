@@ -57,5 +57,24 @@ class Handler @Inject constructor(
             project(command.project).removeRole(command.roleId)
         }
     }
+
+    suspend fun addCategory(command: NewCategory) {
+        transaction {
+            project(command.project).addCategory(command.name, command.parent)
+        }
+    }
+
+    suspend fun changeCategory(command: ChangeCategory) {
+        transaction {
+            project(command.project).changeCategory(command.categoryId, command.parent, command.name)
+        }
+    }
+
+    suspend fun removeCategory(command: RemoveCategory) {
+        transaction {
+            project(command.project).removeCategory(command.categoryId)
+        }
+    }
+
     private fun project(slug: String) = repository.getBySlug(slug)
 }

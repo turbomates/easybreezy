@@ -25,7 +25,13 @@ easybreezy.rabbit.api=http://localhost:15672
 ./gradlew migrationsMigrate
 ```
 
-#### Reformat code 
+### Create Default Admin
+
+```bash
+./gradlew createDefaultUser
+```
+
+### Reformat code
 ```bash
 ./gradlew ktlintFormat
 ```

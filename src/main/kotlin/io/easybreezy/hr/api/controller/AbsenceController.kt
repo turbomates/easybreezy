@@ -45,6 +45,12 @@ class AbsenceController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
+    suspend fun approveAbsence(id: UUID): Response.Ok {
+        handler.handleApproveAbsence(id)
+
+        return Response.Ok
+    }
+
     suspend fun removeAbsence(id: UUID): Response.Ok {
         handler.handlerRemoveAbsence(id)
 

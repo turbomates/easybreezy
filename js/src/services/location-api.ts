@@ -2,9 +2,9 @@ import {
   LocationResponse,
   Location,
   LocationForm,
-  AssignLocationForm,
+  AssignLocationData,
   EmployeeLocationsResponse,
-  EmployeeLocationsMap,
+  EmployeeLocation,
   EditEmployeeLocationData,
 } from "LocationModels";
 import { Failure, Success, FormFailure } from "MyTypes";
@@ -37,21 +37,22 @@ export const remove = (locationId: string) =>
       reason: resp?.response?.data?.error || "Error",
     }));
 
-export const fetchUserLocations = () =>
+// TODO refactor when back is ready
+export const fetchUserLocations = (userId: string) =>
   api
     .get<EmployeeLocationsResponse>("/hr/locations/user")
-    .then<Success<EmployeeLocationsMap>>(({ data }) => ({
+    .then<Success<EmployeeLocation[]>>(({ data }) => ({
       success: true,
-      data: data.data.userLocations,
+      data: data.data.userLocations[userId] || [],
     }))
     .catch<Failure>((resp) => ({
       success: false,
       reason: resp?.response?.data?.error || "Error",
     }));
 
-export const assignUserLocations = (form: AssignLocationForm) =>
+export const assignUserLocations = (data: AssignLocationData) =>
   api
-    .post("/hr/locations/user", form)
+    .post("/hr/locations/user", data)
     .then<Success<null>>(() => ({ success: true, data: null }))
     .catch<FormFailure>((resp) => ({
       success: false,
@@ -75,6 +76,3 @@ export const editUserLocation = (data: EditEmployeeLocationData) =>
       success: false,
       errors: resp?.response?.data?.errors || [],
     }));
-
-// export const getUserLocation = (userLocationId: string) =>
-//   api.get(`/hr/locations/user/${userLocationId}`);

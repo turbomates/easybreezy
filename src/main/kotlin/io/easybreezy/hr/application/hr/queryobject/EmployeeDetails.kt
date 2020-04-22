@@ -7,6 +7,7 @@ import io.easybreezy.hr.model.hr.Positions
 import io.easybreezy.hr.model.hr.Salaries
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
+import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.user.model.Contacts
 import io.easybreezy.user.model.NameTable
@@ -17,6 +18,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.select
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails> {
@@ -25,10 +27,10 @@ class EmployeeDetailsQO(private val userId: UUID) : QueryObject<EmployeeDetails>
             .leftJoin(Salaries)
             .leftJoin(Positions)
             .leftJoin(Notes)
-            .innerJoin(Users, { Employees.userId }, { Users.id })
-            .join(Contacts, JoinType.LEFT, Employees.userId, Contacts.user)
+            .innerJoin(Users, { Employees.id }, { Users.id })
+            .join(Contacts, JoinType.LEFT, Employees.id, Contacts.user)
             .select {
-                Employees.userId eq userId
+                Employees.id eq userId
             }.toEmployeeDetailsJoined().single()
 }
 
@@ -57,7 +59,7 @@ fun Iterable<ResultRow>.toEmployeeDetailsJoined(): List<EmployeeDetails> {
 }
 
 fun ResultRow.toEmployeeDetails() = EmployeeDetails(
-    this[Employees.userId],
+    this[Employees.id].value,
     this[Users.name[NameTable.firstName]],
     this[Users.name[NameTable.lastName]],
     this[Employees.skills],
@@ -70,22 +72,22 @@ fun ResultRow.toNote() = Note(
     this[Notes.text],
     this[Notes.archived],
     this[Notes.hrManager],
-    this[Notes.createdAt].toString()
+    this[Notes.createdAt]
 )
 
 fun ResultRow.toSalary() = Salary(
     this[Salaries.id].value,
     this[Salaries.amount],
     this[Salaries.comment],
-    this[Salaries.since].toString(),
-    this[Salaries.till].toString()
+    this[Salaries.since],
+    this[Salaries.till]
 )
 
 fun ResultRow.toPosition() = Position(
     this[Positions.id].value,
     this[Positions.title],
-    this[Positions.since].toString(),
-    this[Positions.till].toString()
+    this[Positions.since],
+    this[Positions.till]
 )
 
 fun ResultRow.toContact() = Contact(
@@ -117,7 +119,7 @@ data class Note(
     val archived: Boolean,
     @Serializable(with = UUIDSerializer::class)
     val authorId: UUID,
-    val createdAt: String
+    @Serializable(with = LocalDateTimeSerializer::class) val createdAt: LocalDateTime?
 )
 
 @Serializable
@@ -125,8 +127,8 @@ data class Position(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val title: String,
-    val since: String,
-    val till: String?
+    @Serializable(with = LocalDateSerializer::class) val since: LocalDate?,
+    @Serializable(with = LocalDateSerializer::class) val till: LocalDate?
 )
 
 @Serializable
@@ -135,8 +137,8 @@ data class Salary(
     val id: UUID,
     val amount: Int,
     val comment: String,
-    val since: String,
-    val till: String?
+    @Serializable(with = LocalDateSerializer::class) val since: LocalDate?,
+    @Serializable(with = LocalDateSerializer::class) val till: LocalDate?
 )
 
 @Serializable

@@ -1,0 +1,24 @@
+.human-resource-details {
+  &__card {
+    &.ant-card {
+      margin-bottom: 10px;
+    }
+  }
+
+  .vacations {
+    &__item {
+      display: flex;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+
+    &__item-description {
+      padding-left: 10px;
+      flex-basis: 70%;
+    }
+  }
+
+  .ant-input[disabled] {
+    color: rgba(0, 0, 0, 0.85);
+  }
+}

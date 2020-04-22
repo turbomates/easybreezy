@@ -3,6 +3,7 @@ package io.easybreezy.user.cli
 import io.easybreezy.application.HikariDataSource
 import io.easybreezy.application.SystemConfiguration
 import io.easybreezy.infrastructure.exposed.TransactionManager
+import io.easybreezy.infrastructure.ktor.auth.Role
 import io.easybreezy.user.model.Email
 import io.easybreezy.user.model.EmailTable
 import io.easybreezy.user.model.Password
@@ -25,10 +26,11 @@ class CreateDefaultUserCommand {
             val transaction = TransactionManager(database)
             transaction {
                 if (Users.select { Users.email[EmailTable.email] eq EMAIL }.count().compareTo(0) == 0) {
-                    User.createAdmin(
+                    val user = User.invite(
                         Email.create(EMAIL),
-                        Password.create("123")
+                        mutableSetOf(Role.ADMIN.name)
                     )
+                    user.confirm(Password.create("adminpass"), "admin", "admin")
                 }
             }
         }

@@ -1,10 +1,6 @@
 import { createReducer } from "typesafe-actions";
-import { EmployeeShort } from "LocationModels";
-import {
-  fetchEmployeesAsync,
-  openLocationAssignForm,
-  closeLocationAssignForm,
-} from "./actions";
+import { EmployeeShort } from "HumanResourceModels";
+import { fetchEmployeesAsync } from "./actions";
 
 export type State = {
   items: EmployeeShort[];
@@ -12,7 +8,6 @@ export type State = {
   pageSize: number;
   hasMore: boolean;
   loading: boolean;
-  idToAssign: string | null;
 };
 
 const initialState: State = {
@@ -21,7 +16,6 @@ const initialState: State = {
   pageSize: 30,
   hasMore: false,
   loading: false,
-  idToAssign: null,
 };
 
 export const reducer = createReducer<State>(initialState)
@@ -38,14 +32,4 @@ export const reducer = createReducer<State>(initialState)
       loading: false,
     }),
   )
-  .handleAction(fetchEmployeesAsync.failure, () => initialState)
-  .handleAction(openLocationAssignForm, (state, action) => ({
-    ...state,
-    formErrors: {},
-    idToAssign: action.payload,
-  }))
-  .handleAction(closeLocationAssignForm, (state, action) => ({
-    ...state,
-    formErrors: {},
-    idToAssign: null,
-  }));
+  .handleAction(fetchEmployeesAsync.failure, () => initialState);

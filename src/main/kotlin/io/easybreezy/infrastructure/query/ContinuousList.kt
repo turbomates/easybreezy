@@ -1,30 +1,28 @@
 package io.easybreezy.infrastructure.query
 
+import io.easybreezy.infrastructure.serialization.elementSerializer
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.builtins.ArraySerializer
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.MapEntrySerializer
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.builtins.list
-import kotlinx.serialization.builtins.nullable
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonElementSerializer
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonOutput
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.serializer
-import kotlin.reflect.KClass
-import kotlin.reflect.full.starProjectedType
+import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.ResultRow
 
-fun <T> List<T>.toContinuousList(pageSize: Int, currentPage: Int): ContinuousList<T> {
-    val hasMore = size > pageSize
-    val list = take(pageSize)
-    return ContinuousList(list, pageSize, currentPage, hasMore)
+fun <T> Query.toContinuousList(page: PagingParameters, map: ResultRow.() -> T): ContinuousList<T> {
+    this.limit(page.pageSize + 1, page.offset)
+    var result = this.map { map(it) }
+    var hasMore = false
+    if (result.count() > page.pageSize) {
+        hasMore = result.count() > page.pageSize
+        result = result.dropLast(1)
+    }
+
+    return ContinuousList(result, page.pageSize, page.currentPage, hasMore)
 }
 
 class ContinuousList<T>(
@@ -36,6 +34,7 @@ class ContinuousList<T>(
 
 object ContinuousListSerializer : KSerializer<ContinuousList<*>> {
     override val descriptor: SerialDescriptor = SerialDescriptor("ContinuousListDescriptor")
+
     @Suppress("UNCHECKED_CAST")
     override fun serialize(encoder: Encoder, value: ContinuousList<*>) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
@@ -55,61 +54,4 @@ object ContinuousListSerializer : KSerializer<ContinuousList<*>> {
     }
 }
 
-private fun Collection<*>.elementSerializer(): KSerializer<*> {
-    val serializers = mapNotNull { value ->
-        value?.let { serializerForSending(it) }
-    }.distinctBy { it.descriptor.serialName }
 
-    if (serializers.size > 1) {
-        error(
-            "Serializing collections of different element types is not yet supported. " +
-                    "Selected serializers: ${serializers.map { it.descriptor.serialName }}"
-        )
-    }
-
-    val selected: KSerializer<*> = serializers.singleOrNull() ?: String::class.serializer()
-    if (selected.descriptor.isNullable) {
-        return selected
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    selected as KSerializer<Any>
-
-    if (any { it == null }) {
-        return selected.nullable
-    }
-
-    return selected
-}
-
-private fun serializerForSending(value: Any): KSerializer<*> {
-    if (value is JsonElement) {
-        return JsonElementSerializer
-    }
-    if (value is List<*>) {
-        return ListSerializer(value.elementSerializer())
-    }
-    if (value is Set<*>) {
-        return SetSerializer(value.elementSerializer())
-    }
-    if (value is Map<*, *>) {
-        return MapSerializer(value.keys.elementSerializer(), value.values.elementSerializer())
-    }
-    if (value is Map.Entry<*, *>) {
-        return MapEntrySerializer(
-            serializerForSending(value.key ?: error("Map.Entry(null, ...) is not supported")),
-            serializerForSending(value.value ?: error("Map.Entry(..., null) is not supported)"))
-        )
-    }
-    if (value is Array<*>) {
-        val componentType = value.javaClass.componentType.kotlin.starProjectedType
-        val componentClass =
-            componentType.classifier as? KClass<*> ?: error("Unsupported component type $componentType")
-        @Suppress("UNCHECKED_CAST")
-        return ArraySerializer(
-            componentClass as KClass<Any>,
-            serializer(componentType) as KSerializer<Any>
-        )
-    }
-    return value::class.serializer()
-}

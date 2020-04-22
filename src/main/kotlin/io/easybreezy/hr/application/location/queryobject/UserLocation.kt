@@ -2,10 +2,11 @@ package io.easybreezy.hr.application.location.queryobject
 
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations as UserLocationsTable
-import io.easybreezy.infrastructure.exposed.toUUID
 import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import io.easybreezy.user.model.*
+import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
@@ -15,26 +16,31 @@ import java.util.UUID
 
 class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocation> {
     override suspend fun getData() =
-        (UserLocationsTable innerJoin Locations).select {
+        (UserLocationsTable innerJoin Locations innerJoin Users).select {
             UserLocationsTable.id eq userLocationId
         }.first().toUserLocation()
 }
 
 class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocations> {
     override suspend fun getData() =
-        (UserLocationsTable innerJoin Locations)
+        UserLocationsTable
+            .innerJoin(Locations)
+            .innerJoin(Users)
             .selectAll()
             .andWhere { UserLocationsTable.startedAt greater dateRange.from }
-            .andWhere { UserLocationsTable.endedAt less dateRange.to }
+            .andWhere { coalesce(UserLocationsTable.endedAt, UserLocationsTable.startedAt) less dateRange.to }
             .toUserLocations()
 }
 
 private fun ResultRow.toUserLocation() = UserLocation(
-    id = this[UserLocationsTable.id].toUUID(),
+    id = this[UserLocationsTable.id].value,
     startedAt = this[UserLocationsTable.startedAt].toString(),
     endedAt = this[UserLocationsTable.endedAt].toString(),
     location = this.toLocation(),
-    userId = this[UserLocationsTable.userId]
+    userId = this[UserLocationsTable.userId].value,
+    email = this[Users.email[EmailTable.email]],
+    firstName = this[Users.name[NameTable.firstName]],
+    lastName = this[Users.name[NameTable.lastName]]
 )
 
 private fun Iterable<ResultRow>.toUserLocations(): UserLocations {
@@ -57,7 +63,11 @@ data class UserLocation(
     val endedAt: String,
     val location: Location,
     @Serializable(with = UUIDSerializer::class)
-    val userId: UUID
+    val userId: UUID,
+    @ContextualSerialization
+    val email: String?,
+    val firstName: String?,
+    val lastName: String?
 )
 
 @Serializable

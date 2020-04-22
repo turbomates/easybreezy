@@ -6,10 +6,20 @@ import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
-import io.easybreezy.project.application.project.command.*
+import io.easybreezy.project.application.project.command.ChangeCategory
+import io.easybreezy.project.application.project.command.ChangeRole
+import io.easybreezy.project.application.project.command.Handler
+import io.easybreezy.project.application.project.command.New
+import io.easybreezy.project.application.project.command.NewCategory
+import io.easybreezy.project.application.project.command.NewRole
+import io.easybreezy.project.application.project.command.RemoveCategory
+import io.easybreezy.project.application.project.command.RemoveRole
+import io.easybreezy.project.application.project.command.Validation
+import io.easybreezy.project.application.project.command.WriteDescription
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.project.queryobject.ProjectQO
 import io.easybreezy.project.application.project.queryobject.ProjectsQO
+import io.easybreezy.project.model.team.Role
 import java.util.UUID
 
 class ProjectController @Inject constructor(
@@ -65,7 +75,6 @@ class ProjectController @Inject constructor(
     }
 
     suspend fun addRole(command: NewRole): Response.Either<Response.Ok, Response.Errors> {
-
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
@@ -92,5 +101,39 @@ class ProjectController @Inject constructor(
 
         handler.removeRole(command)
         return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun addCategory(command: NewCategory): Response.Either<Response.Ok, Response.Errors> {
+
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.addCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun changeCategory(command: ChangeCategory): Response.Either<Response.Ok, Response.Errors> {
+
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.changeCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun removeCategory(command: RemoveCategory): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.validateCommand(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+
+        handler.removeCategory(command)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    fun permissions(): Response.Data<List<Role.Permission>> {
+        return Response.Data(Role.Permission.values().toList())
     }
 }

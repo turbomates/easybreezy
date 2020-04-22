@@ -39,7 +39,7 @@ private fun ResultRow.toVacation() = Vacation(
     this[Vacations.absenceHours] ?: 0,
     this[Vacations.absenceDays] ?: 0,
     this[Vacations.locationStartedAt],
-    this[Vacations.locationEndedAt],
+    this[Vacations.locationEndedAt] ?: LocalDate.now(),
     this[Vacations.extraVacationDays] ?: 0,
     this[Vacations.vacationDaysPerYear]
 )

@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Interceptor
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.auth.Auth
+import io.easybreezy.infrastructure.ktor.auth.Authorization
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.jsonForm
@@ -13,6 +14,7 @@ import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.user.infrastructure.auth.UserProvider
 import io.easybreezy.user.infrastructure.security.JWT
 import io.ktor.application.call
+import io.ktor.application.feature
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
@@ -53,11 +55,33 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
                 }
             }
         }
-        login(route)
+        application.install(Authorization) {
+            validate { permissions ->
+                val principal = principal<UserPrincipal>()
+                principal?.let {
+                    val roles = it.roles
+                    for (permission in permissions) {
+                        if (roles.contains(permission)) {
+                            return@let true
+                        }
+                    }
+                    return@let false
+                } ?: false
+            }
+            challenge {
+                context.response.call.respond(HttpStatusCode.Forbidden, "Unauthorized for this action")
+            }
+        }
+        routes(route)
     }
 
-    private fun login(route: Route) {
-
+    private fun routes(route: Route) {
+        route.route("/api/authorization/rules") {
+            get<Response.Data<Map<String, List<String>>>> {
+                Response.Data(
+                    call.application.feature(Authorization).rules().mapKeys { it.key.replace(Regex("\\(.*?\\)"), "*") })
+            }
+        }
         route.route("/api/login") {
             authenticate(Auth.UserFormAuth) {
                 post<Response.Either<Response.Ok, Response.Data<String>>> {

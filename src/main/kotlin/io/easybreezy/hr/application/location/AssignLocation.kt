@@ -10,8 +10,6 @@ import java.util.UUID
 data class AssignLocation(
     @Serializable(with = LocalDateSerializer::class)
     val startedAt: LocalDate,
-    @Serializable(with = LocalDateSerializer::class)
-    val endedAt: LocalDate,
     @Serializable(with = UUIDSerializer::class)
     val locationId: UUID,
     @Serializable(with = UUIDSerializer::class)
