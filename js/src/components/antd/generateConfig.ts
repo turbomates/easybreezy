@@ -64,12 +64,10 @@ export const generateConfig: GenerateConfig<Date> = {
     getWeek: (locale, value) =>
       getWeekYear(value, { locale: parseLocale(locale) }),
 
-    format: (locale, date, fmt) => {
-      // console.log(fmt);
-      return format(date, fmt.replace("YYYY", "yyyy").replace("DD", "dd"), {
+    format: (locale, date, fmt) =>
+      format(date, fmt.replace("YYYY", "yyyy").replace("DD", "dd"), {
         locale: parseLocale(locale),
-      });
-    },
+      }),
 
     parse: (locale, text, formats) => {
       const localeObj = parseLocale(locale);
