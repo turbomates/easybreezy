@@ -83,14 +83,12 @@ object ErrorSerializer : KSerializer<Error> {
     @Suppress("UNCHECKED_CAST")
     override fun serialize(encoder: Encoder, value: Error) {
         val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
-        val errorValue = value.value ?: ""
-        val tree = JsonObject(
-            mapOf(
-                "message" to JsonPrimitive(value.message),
-                "property" to JsonPrimitive(value.property),
-                "value" to output.json.toJson(serializerForSending(errorValue) as KSerializer<Any>, errorValue)
-            )
-        )
+        val error: MutableMap<String, JsonElement> = mutableMapOf("message" to JsonPrimitive(value.message))
+        if (value.property != null && !value.property.isBlank()) error["property"] = JsonPrimitive(value.property)
+        if (value.value != null)
+            error["value"] = output.json.toJson(serializerForSending(value.value) as KSerializer<Any>, value.value)
+
+        val tree = JsonObject(error)
         output.encodeJson(tree)
     }
 

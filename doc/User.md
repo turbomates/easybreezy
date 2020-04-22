@@ -12,11 +12,11 @@
   * [Logout](#3-logout)
   * [Login User](#4-login-user)
   * [Login Admin](#5-login-admin)
-  * [User confirm](#6-user-confirm)
-  * [User archive](#7-user-archive)
-  * [User invite exist user](#8-user-invite-exist-user)
-  * [User invite new user](#9-user-invite-new-user)
-  * [User create](#10-user-create)
+  * [Confirm](#6-confirm)
+  * [Archive](#7-archive)
+  * [Hire](#8-hire)
+  * [Invite](#9-invite)
+  * [Create](#10-create)
 
 
 --------
@@ -164,17 +164,6 @@ URL: localhost:3000/api/logout
 
 
 
-***Body:***
-
-```js        
-{
-    "email": "novikov.ivan.work@gmail.com",
-    "password": "123"
-}
-```
-
-
-
 ### 4. Login User
 
 
@@ -200,7 +189,7 @@ URL: localhost:3000/api/login
 
 ```js        
 {
-    "email": "admin@admin.my",
+    "email": "user@user.my",
     "password": "123"
 }
 ```
@@ -239,7 +228,7 @@ URL: localhost:3000/api/login
 
 
 
-### 6. User confirm
+### 6. Confirm
 
 
 
@@ -273,7 +262,7 @@ URL: localhost:3000/api/users/confirm
 
 
 
-### 7. User archive
+### 7. Archive
 
 
 
@@ -309,10 +298,6 @@ URL: localhost:3000/api/users/1628ccbb-81b1-4667-b3a9-d61ec14fe7de/archive
 
 Status: Error already invited | Code: 422
 
-
-
-***Response Headers:***
-
 ```js
 {
     "message": "User have been already invited"
@@ -333,10 +318,6 @@ Status: Success | Code: 200
 
 Status: Success | Code: 200
 
-
-
-***Response Headers:***
-
 ```js
 {
     "status": "ok"
@@ -345,7 +326,7 @@ Status: Success | Code: 200
 
 
 
-### 8. User invite exist user
+### 8. Hire
 
 
 
@@ -354,7 +335,7 @@ Status: Success | Code: 200
 ```bash
 Method: POST
 Type: RAW
-URL: localhost:3000/api/users/47cbf3c0-de71-4770-834f-e25c31c927ef/invite
+URL: localhost:3000/api/users/47cbf3c0-de71-4770-834f-e25c31c927ef/hire
 ```
 
 
@@ -369,16 +350,6 @@ URL: localhost:3000/api/users/47cbf3c0-de71-4770-834f-e25c31c927ef/invite
 ***Responses:***
 
 
-Status: Error already invited | Code: 422
-
-```js
-{
-    "message": "User have been already invited"
-}
-```
-
-
-
 Status: Success | Code: 200
 
 ```js
@@ -389,7 +360,7 @@ Status: Success | Code: 200
 
 
 
-### 9. User invite new user
+### 9. Invite
 
 
 
@@ -424,7 +395,7 @@ URL: localhost:3000/api/users/invite
 
 
 
-### 10. User create
+### 10. Create
 
 
 
@@ -449,10 +420,9 @@ URL: localhost:3000/api/users
 
 ```js        
 {
-    "email": "novikov.ivan.work7@gmail.com",
+    "email": "novikov.ivan.work4@gmail.com",
     "role": [
-        "MEMBER",
-        "PROJECT_LIST"
+        "MEMBER"
     ],
     "firstName": "Ivan",
     "lastName": "Novikov"
@@ -476,4 +446,4 @@ Status: Success | Code: 200
 
 ---
 [Back to top](#user)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-21 18:18:59 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-22 15:07:48 by [docgen](https://github.com/thedevsaddam/docgen)
