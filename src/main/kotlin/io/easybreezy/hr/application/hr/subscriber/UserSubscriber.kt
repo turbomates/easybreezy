@@ -17,7 +17,7 @@ class UserSubscriber @Inject constructor(private val handler: Handler) : EventsS
                     handler.registerCard(RegisterCard(event.user))
                 }
             },
-            Hired to object: EventSubscriber<Hired> {
+            Hired to object : EventSubscriber<Hired> {
                 override suspend fun invoke(event: Hired) {
                     handler.registerCard(RegisterCard(event.user))
                 }

@@ -3,7 +3,6 @@ package io.easybreezy.project.model.issue
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
-import io.easybreezy.project.model.team.Roles
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -92,7 +92,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.roles = roles
                 this.status = Status.PENDING
                 this.createdAt = LocalDateTime.now()
-
             }
         }
     }

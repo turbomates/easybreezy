@@ -61,7 +61,6 @@ class Router @Inject constructor(
                 get<Response.Listing<Project>>("") {
                     controller<ProjectController>(this).list()
                 }
-
             }
             get<Response.Data<List<Role.Permission>>>("/permissions") {
                 controller<ProjectController>(this).permissions()

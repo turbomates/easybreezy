@@ -12,7 +12,7 @@ enum class Role {
     ADMIN, MEMBER
 }
 
-object Roles: Constraint {
+object Roles : Constraint {
     override val name: String
         get() = "Invalid role"
 }

@@ -96,4 +96,3 @@ object ErrorSerializer : KSerializer<Error> {
         throw NotImplementedError()
     }
 }
-
