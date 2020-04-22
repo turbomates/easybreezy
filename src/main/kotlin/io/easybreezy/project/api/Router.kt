@@ -50,9 +50,9 @@ class Router @Inject constructor(
                     projectRoutes(this)
                 }
                 route("/api/teams") {
-                    authorize(setOf(Activity.MEMBER)) {
-                        teamRoutes(this)
-                    }
+                    // authorize(setOf(Activity.MEMBER)) {
+                    teamRoutes(this)
+                    // }
                 }
             }
         }
@@ -61,7 +61,6 @@ class Router @Inject constructor(
     private fun Route.teamRoutes(route: Route) {
         route("") {
             data class Team(val teamId: UUID)
-
             post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/add") { command ->
                 controller<TeamController>(this).newTeam(command)
             }

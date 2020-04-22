@@ -8,7 +8,7 @@ import io.ktor.application.call
 import io.ktor.application.feature
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.routing.PathSegmentConstantRouteSelector
+import io.ktor.routing.HttpMethodRouteSelector
 import io.ktor.routing.Route
 import io.ktor.routing.RouteSelector
 import io.ktor.routing.RouteSelectorEvaluation
@@ -92,7 +92,7 @@ fun Route.authorize(activities: Set<Activity>, build: Route.() -> Unit): Route {
     return authenticatedRoute
 }
 
-class AuthorizationRouteSelector(private val activities: Set<Activity>) :
+class AuthorizationRouteSelector(internal val activities: Set<Activity>) :
     RouteSelector(RouteSelectorEvaluation.qualityConstant) {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Constant
@@ -100,6 +100,7 @@ class AuthorizationRouteSelector(private val activities: Set<Activity>) :
 
     override fun toString(): String = "(authorize ${activities.joinToString { it.name }})"
 }
+
 class RouteAuthorizationRules() {
     private val list: MutableList<Pair<Route, List<String>>> = mutableListOf()
     internal fun addRule(route: Route, permission: Set<Activity>) {
@@ -108,32 +109,31 @@ class RouteAuthorizationRules() {
 
     fun buildMap(): Map<String, List<String>> {
         val map = mutableMapOf<String, List<String>>()
-        // it.key.replace(Regex("\\(.*?\\)"), "*")
+        val builder: (Route, List<String>) -> Unit = { route, activities ->
+        }
+        // it.key
         list.forEach { conditions ->
-            conditions.first.children.forEach {
-                val test = it.buildPath()
-                map[it.toString()] = conditions.second
-            }
+            map += conditions.first.buildPath(emptySet())
         }
         return map
     }
 }
 
-private fun Route.buildPath(): String {
-    val test = selector
-    return when {
-        parent == null && selector is PathSegmentConstantRouteSelector -> "/$selector"
-        parent == null && selector !is PathSegmentConstantRouteSelector -> ""
-        parent !== null && selector is PathSegmentConstantRouteSelector -> "${parent!!.buildPath()}/$selector"
-        else -> parent!!.buildPath()
-        // parent?.parent == null -> parent?.buildPath().let { parentText ->
-        //     when {
-        //         parentText!!.endsWith('/') && selector is PathSegmentConstantRouteSelector -> "$parentText$selector"
-        //         selector is PathSegmentConstantRouteSelector -> "$parentText/$selector"
-        //         else -> ""
-        //     }
-        // }
-        // selector is PathSegmentConstantRouteSelector -> "${parent!!.buildPath()}/$selector"
-        // else -> "${parent!!.buildPath()}"
+private fun Route.buildPath(activities: Set<String>): Map<String, List<String>> {
+    val currentActivities = activities.toMutableList()
+    if (selector is AuthorizationRouteSelector) {
+        currentActivities.addAll((selector as AuthorizationRouteSelector).activities.map { it.name })
+    }
+    return if (children.isEmpty()) {
+        val method = (selector as? HttpMethodRouteSelector)?.let { it.method.value }
+        if (activities.isEmpty()) {
+            emptyMap()
+        } else {
+            mapOf(method + ":" + toString().replace(Regex("\\/\\(.*?\\)"), "") to currentActivities)
+        }
+    } else {
+        val result = mutableMapOf<String, List<String>>()
+        children.forEach { result.putAll(it.buildPath(currentActivities.toSet())) }
+        result
     }
 }
