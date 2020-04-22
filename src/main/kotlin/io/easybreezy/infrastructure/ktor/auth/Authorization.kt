@@ -8,6 +8,7 @@ import io.ktor.application.call
 import io.ktor.application.feature
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.routing.PathSegmentConstantRouteSelector
 import io.ktor.routing.Route
 import io.ktor.routing.RouteSelector
 import io.ktor.routing.RouteSelectorEvaluation
@@ -22,7 +23,7 @@ class Authorization(config: Configuration) {
 
     private val logger = LoggerFactory.getLogger(Authorization::class.java)
     private var config = config
-    private val rules: MutableMap<String, List<String>> = mutableMapOf()
+    private val rules = RouteAuthorizationRules()
 
     class Configuration() {
         internal var validate: suspend ApplicationCall.(Set<Role>) -> Boolean = { false }
@@ -38,7 +39,7 @@ class Authorization(config: Configuration) {
         }
     }
 
-    fun rules(): Map<String, List<String>> {
+    fun rules(): RouteAuthorizationRules {
         return this.rules
     }
 
@@ -52,7 +53,9 @@ class Authorization(config: Configuration) {
         roles: Set<Role>
     ) {
         require(roles.isNotEmpty()) { "At least one role should bet set" }
-        rules[pipeline.toString()] = roles.map { it.name }
+        (pipeline as? Route)?.parent?.let {
+            rules.addRule(it, roles)
+        }
         pipeline.insertPhaseBefore(ApplicationCallPipeline.Call, AuthorizationCheckPhase)
         pipeline.intercept(AuthorizationCheckPhase) {
             if (!config.validate(call, roles)) {
@@ -96,4 +99,42 @@ class AuthorizationRouteSelector(private val roles: Set<Role>) :
     }
 
     override fun toString(): String = "(authorize ${roles.joinToString { it.name }})"
+}
+
+class RouteAuthorizationRules() {
+    private val list: MutableList<Pair<Route, List<String>>> = mutableListOf()
+    internal fun addRule(route: Route, permission: Set<Role>) {
+        list.add(route to permission.map { it.name })
+    }
+
+    fun buildMap(): Map<String, List<String>> {
+        val map = mutableMapOf<String, List<String>>()
+        // it.key.replace(Regex("\\(.*?\\)"), "*")
+        list.forEach { conditions ->
+            conditions.first.children.forEach {
+                val test = it.buildPath()
+                map[it.toString()] = conditions.second
+            }
+        }
+        return map
+    }
+}
+
+private fun Route.buildPath(): String {
+    val test = selector
+    return when {
+        parent == null && selector is PathSegmentConstantRouteSelector -> "/$selector"
+        parent == null && selector !is PathSegmentConstantRouteSelector -> ""
+        parent !== null && selector is PathSegmentConstantRouteSelector -> "${parent!!.buildPath()}/$selector"
+        else -> parent!!.buildPath()
+        // parent?.parent == null -> parent?.buildPath().let { parentText ->
+        //     when {
+        //         parentText!!.endsWith('/') && selector is PathSegmentConstantRouteSelector -> "$parentText$selector"
+        //         selector is PathSegmentConstantRouteSelector -> "$parentText/$selector"
+        //         else -> ""
+        //     }
+        // }
+        // selector is PathSegmentConstantRouteSelector -> "${parent!!.buildPath()}/$selector"
+        // else -> "${parent!!.buildPath()}"
+    }
 }
