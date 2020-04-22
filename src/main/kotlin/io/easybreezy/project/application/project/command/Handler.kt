@@ -4,7 +4,8 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Repository
-import java.util.*
+import io.easybreezy.project.model.team.Role
+import java.util.UUID
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
@@ -42,13 +43,17 @@ class Handler @Inject constructor(
 
     suspend fun addRole(command: NewRole) {
         transaction {
-            project(command.project).addRole(command.name, command.permissions)
+            project(command.project).addRole(command.name, command.permissions.map { Role.Permission.valueOf(it) })
         }
     }
 
     suspend fun changeRole(command: ChangeRole) {
         transaction {
-            project(command.project).changeRole(command.roleId, command.permissions, command.name)
+            project(command.project).changeRole(
+                command.roleId,
+                command.permissions.map { Role.Permission.valueOf(it) },
+                command.name
+            )
         }
     }
 
