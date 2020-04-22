@@ -59,9 +59,9 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
             validate { permissions ->
                 val principal = principal<UserPrincipal>()
                 principal?.let {
-                    val roles = it.roles
+                    val activities = it.activities
                     for (permission in permissions) {
-                        if (roles.contains(permission)) {
+                        if (activities.contains(permission)) {
                             return@let true
                         }
                     }

@@ -8,7 +8,7 @@ import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Authorization
-import io.easybreezy.infrastructure.ktor.auth.Role
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
@@ -42,7 +42,7 @@ import org.jetbrains.exposed.sql.Database
 import java.util.UUID
 import javax.sql.DataSource
 
-fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Database) {
+fun Application.testApplication(userId: UUID, activities: Set<Activity>, database: Database) {
     val dataSource = TestDataSource
     val eventSubscribers = EventSubscribers()
     val injector = Guice.createInjector(object : AbstractModule() {
@@ -85,7 +85,7 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
 
     intercept(ApplicationCallPipeline.Call) {
         val session = Session()
-        call.sessions.set(session.copy(principal = UserPrincipal(userId, roles)))
+        call.sessions.set(session.copy(principal = UserPrincipal(userId, activities)))
     }
 
     install(Authentication) {
@@ -96,7 +96,7 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
         }
         session<Session>(Auth.UserSessionAuth) {
             validate {
-                UserPrincipal(userId, roles)
+                UserPrincipal(userId, activities)
             }
         }
         basic(Auth.JWTAuth) {
@@ -108,7 +108,7 @@ fun Application.testApplication(userId: UUID, roles: Set<Role>, database: Databa
     install(Authorization) {
         validate { permissions ->
             for (permission in permissions) {
-                if (roles.contains(permission)) {
+                if (activities.contains(permission)) {
                     return@validate true
                 }
             }

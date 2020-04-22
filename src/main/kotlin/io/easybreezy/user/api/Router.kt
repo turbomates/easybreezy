@@ -53,6 +53,9 @@ class Router @Inject constructor(
             post<Response.Either<Response.Ok, Response.Errors>, UpdateContacts>("/update-contacts") { command ->
                 controller<UserController>(this).updateContacts(command, resolvePrincipal<UserPrincipal>())
             }
+            post<Response.Either<Response.Ok, Response.Errors>, UpdateActivities, ID>("/{id}/activities") { command, params ->
+                controller<UserController>(this).updateActivities(params.id, command)
+            }
         }
     }
 

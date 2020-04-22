@@ -32,7 +32,7 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "testadmin@testadmin.my"
-                            "role" to jsonArray {
+                            "activities" to jsonArray {
                                 +JsonPrimitive("MEMBER")
                             }
                         }.toString()
@@ -55,7 +55,7 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "testadmin@testadmin.my"
-                            "role" to jsonArray {
+                            "activities" to jsonArray {
                                 +JsonPrimitive("MEMBER")
                             }
                         }.toString()
@@ -69,7 +69,7 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "testadmin@testadmin.my"
-                            "role" to jsonArray {
+                            "activities" to jsonArray {
                                 +JsonPrimitive("MEMBER")
                             }
                         }.toString()
@@ -94,7 +94,7 @@ class UserControllerTest {
                     setBody(
                         json {
                             "email" to "candidate@gmail.com"
-                            "role" to jsonArray {
+                            "activities" to jsonArray {
                                 +JsonPrimitive("MEMBER")
                             }
                             "firstName" to "Interesting"
@@ -158,6 +158,37 @@ class UserControllerTest {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                     Assertions.assertTrue(response.content?.contains("ARCHIVED") ?: false)
                     Assertions.assertTrue(response.content?.contains(reason) ?: false)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `update user activities`() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+            rollbackTransaction(database) {
+                val userId = database.createMember()
+
+                withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/activities") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "activities" to jsonArray {
+                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive("ADMIN")
+                            }
+                        }.toString()
+                    )
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
+                    Assertions.assertEquals(response.status(), HttpStatusCode.OK)
+                    Assertions.assertTrue(response.content?.contains("MEMBER") ?: false)
+                    Assertions.assertTrue(response.content?.contains("ADMIN") ?: false)
                 }
             }
         }

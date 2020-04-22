@@ -75,6 +75,18 @@ class UserController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
+    suspend fun updateActivities(userId: UUID, command: UpdateActivities): Response.Either<Response.Ok, Response.Errors> {
+        command.userId = userId
+        val errors = validation.onUpdateActivities(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+
+        handler.handleUpdateActivities(command)
+
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
     suspend fun confirm(command: Confirm): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.onConfirm(command)
         if (errors.isNotEmpty()) {

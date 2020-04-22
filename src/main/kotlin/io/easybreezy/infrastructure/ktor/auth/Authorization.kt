@@ -17,19 +17,18 @@ import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
 import org.slf4j.LoggerFactory
 
-class Authorization(config: Configuration) {
+class Authorization(private var config: Configuration) {
     constructor() : this(Configuration())
 
     private val logger = LoggerFactory.getLogger(Authorization::class.java)
-    private var config = config
     private val rules: MutableMap<String, List<String>> = mutableMapOf()
 
     class Configuration() {
-        internal var validate: suspend ApplicationCall.(Set<Role>) -> Boolean = { false }
+        internal var validate: suspend ApplicationCall.(Set<Activity>) -> Boolean = { false }
         internal var challenge: suspend suspend io.ktor.util.pipeline.PipelineContext<*, ApplicationCall>.() -> Unit =
             { call.respond(HttpStatusCode.Forbidden) }
 
-        fun validate(block: suspend ApplicationCall.(Set<Role>) -> Boolean) {
+        fun validate(block: suspend ApplicationCall.(Set<Activity>) -> Boolean) {
             this.validate = block
         }
 
@@ -49,14 +48,14 @@ class Authorization(config: Configuration) {
      */
     fun interceptPipeline(
         pipeline: ApplicationCallPipeline,
-        roles: Set<Role>
+        activities: Set<Activity>
     ) {
-        require(roles.isNotEmpty()) { "At least one role should bet set" }
-        rules[pipeline.toString()] = roles.map { it.name }
+        require(activities.isNotEmpty()) { "At least one activity should be in set" }
+        rules[pipeline.toString()] = activities.map { it.name }
         pipeline.insertPhaseBefore(ApplicationCallPipeline.Call, AuthorizationCheckPhase)
         pipeline.intercept(AuthorizationCheckPhase) {
-            if (!config.validate(call, roles)) {
-                logger.debug("Unauthorized for roles: " + roles.joinToString(","))
+            if (!config.validate(call, activities)) {
+                logger.debug("Unauthorized for activities: " + activities.joinToString(","))
                 config.challenge(this)
                 finish()
             }
@@ -82,18 +81,18 @@ class Authorization(config: Configuration) {
     }
 }
 
-fun Route.authorize(roles: Set<Role>, build: Route.() -> Unit): Route {
-    val authenticatedRoute = createChild(AuthorizationRouteSelector(roles))
-    application.feature(Authorization).interceptPipeline(authenticatedRoute, roles)
+fun Route.authorize(activities: Set<Activity>, build: Route.() -> Unit): Route {
+    val authenticatedRoute = createChild(AuthorizationRouteSelector(activities))
+    application.feature(Authorization).interceptPipeline(authenticatedRoute, activities)
     authenticatedRoute.build()
     return authenticatedRoute
 }
 
-class AuthorizationRouteSelector(private val roles: Set<Role>) :
+class AuthorizationRouteSelector(private val activities: Set<Activity>) :
     RouteSelector(RouteSelectorEvaluation.qualityConstant) {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Constant
     }
 
-    override fun toString(): String = "(authorize ${roles.joinToString { it.name }})"
+    override fun toString(): String = "(authorize ${activities.joinToString { it.name }})"
 }

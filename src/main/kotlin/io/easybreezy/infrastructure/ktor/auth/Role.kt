@@ -8,7 +8,7 @@ import org.valiktor.Validator
  * This class should contains list of all activities for example PROJECT_LIST, PROJECT_EDIT
  */
 @Serializable
-enum class Role {
+enum class Activity {
     ADMIN, MEMBER
 }
 
@@ -17,10 +17,10 @@ object Roles : Constraint {
         get() = "Invalid role"
 }
 
-fun <E> Validator<E>.Property<Iterable<String>?>.isRoles() {
+fun <E> Validator<E>.Property<Iterable<String>?>.isActivities() {
     this.validate(Roles) { value ->
         value?.all { role ->
-            Role.values().any { it.name == role }
+            Activity.values().any { it.name == role }
         } ?: false
     }
 }
