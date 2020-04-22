@@ -71,7 +71,7 @@ export const ProjectRoleForm: React.FC<Props> = ({
   function editRole(index: number) {
     const fields = form.getFieldValue("roles");
 
-    if (!fields[index].permission) return;
+    if (!fields[index].permissions) return;
 
     edit({
       roles: fields[index],
