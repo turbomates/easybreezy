@@ -1,7 +1,8 @@
 import React from "react";
 import { Timeline } from "antd";
 import { EmployeeLocation } from "LocationModels";
-import { isTodayInRange } from "utils/date";
+import isWithinInterval from "date-fns/fp/isWithinInterval";
+import parseISO from "date-fns/fp/parseISO";
 import { EmployeeLocationListInner } from "./EmployeeLocationListInner";
 
 interface Props {
@@ -20,7 +21,14 @@ export const EmployeeLocationList: React.FC<Props> = ({
       <Timeline.Item
         key={item.id}
         label={`${item.startedAt} - ${item.endedAt}`}
-        color={isTodayInRange(item.startedAt, item.endedAt) ? "green" : "blue"}
+        color={
+          isWithinInterval(
+            { start: parseISO(item.startedAt), end: parseISO(item.endedAt) },
+            new Date(),
+          )
+            ? "green"
+            : "blue"
+        }
       >
         <EmployeeLocationListInner
           item={item}

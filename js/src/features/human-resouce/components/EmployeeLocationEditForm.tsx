@@ -1,12 +1,16 @@
 import React, { useCallback, useMemo } from "react";
-import moment from "moment";
-import { Form, Button, Select, DatePicker } from "antd";
+import { Form, Button, Select } from "antd";
+import parseISO from "date-fns/esm/parseISO";
+import formatISO from "date-fns/esm/formatISO";
+
 import {
   Location,
   EditEmployeeLocationData,
   EmployeeLocation,
 } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
+
+import DatePicker from "components/antd/DatePicker";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { filterOptions } from "utils/filterOptions";
 
@@ -18,8 +22,6 @@ interface Props {
   errors: FormErrorMap;
   edit: (data: EditEmployeeLocationData) => void;
 }
-
-const DATE_FORMAT = "YYYY-MM-DD";
 
 export const EmployeeLocationEditForm: React.FC<Props> = ({
   locations,
@@ -33,7 +35,7 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
 
   const onFinish = useCallback(
     (values: any) => {
-      const startedAt = values.startedAt.format(DATE_FORMAT);
+      const startedAt = formatISO(values.startedAt, { representation: "date" });
 
       edit({
         form: {
@@ -52,7 +54,7 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
 
   const initialFormValues = useMemo(
     () => ({
-      startedAt: moment(employeeLocation.startedAt),
+      startedAt: parseISO(employeeLocation.startedAt),
       locationId: employeeLocation.location.id,
     }),
     [employeeLocation],
@@ -70,10 +72,7 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
         label="Started at"
         name="startedAt"
         rules={[{ required: true, message: "Please input Started at!" }]}
-        normalize={(value) => {
-          console.log(value);
-          return value.format(DATE_FORMAT);
-        }}
+        normalize={formatISO}
       >
         <DatePicker />
       </Form.Item>

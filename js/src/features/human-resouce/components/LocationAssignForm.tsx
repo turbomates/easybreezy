@@ -1,9 +1,12 @@
 import React, { useCallback } from "react";
-import { Form, Input, Button, Select, DatePicker } from "antd";
+import { Form, Input, Button, Select } from "antd";
+
 import { Location, AssignLocationForm } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
+
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { filterOptions } from "utils/filterOptions";
+import DatePicker from "components/antd/DatePicker";
 
 const { Option } = Select;
 

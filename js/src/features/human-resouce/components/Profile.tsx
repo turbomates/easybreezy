@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { DatePicker, Avatar, Select } from "antd";
+import React from "react";
+import { Avatar, Select } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
-import moment, { Moment } from "moment";
+import parseISO from "date-fns/parseISO";
+import formatISO from "date-fns/formatISO";
 import {
   Employee,
   UpdateBirthdayRequestParams,
   SpecifySkillsRequestParams,
 } from "HumanResourceModels";
 
+import DatePicker from "components/antd/DatePicker";
 import "./Profile.scss";
 
 interface Props {
@@ -18,23 +20,16 @@ interface Props {
   specifySkills: (data: SpecifySkillsRequestParams) => any;
 }
 
-const DATE_FORMAT = "YYYY-MM-DD";
-
 export const Profile: React.FC<Props> = ({
   employee,
   canEdit,
   updateBirthday,
   specifySkills,
 }) => {
-  const [birthday, setBirthday] = useState<Moment | null>(
-    employee.birthday ? moment(employee.birthday) : null,
-  );
-
-  const handleBirthdayChange = (value: Moment | null) => {
-    setBirthday(value);
+  const handleBirthdayChange = (value: Date | null) => {
     updateBirthday({
       userId: employee.userId,
-      birthday: value ? value.format(DATE_FORMAT) : "",
+      birthday: value ? formatISO(value, { representation: "date" }) : "",
     });
   };
 
@@ -73,7 +68,9 @@ export const Profile: React.FC<Props> = ({
             <DatePicker
               placeholder="Birthday"
               onChange={handleBirthdayChange}
-              value={birthday}
+              defaultValue={
+                employee.birthday ? parseISO(employee.birthday) : new Date()
+              }
               disabled={!canEdit}
             />
           </div>

@@ -182,9 +182,8 @@ export const UserDetailsPage: React.FC = () => {
   return (
     <div className="human-resource-details">
       <Menu
-        onClick={(e: any) => {
-          console.log(e);
-          setSelected(e.key);
+        onClick={({ key }) => {
+          setSelected(key);
         }}
         selectedKeys={[selected]}
         mode="horizontal"

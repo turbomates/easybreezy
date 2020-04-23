@@ -1,8 +1,12 @@
 import React from "react";
-import { DatePicker, Button } from "antd";
+import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import parseDate from "date-fns/parse";
+
 import { UserVacation } from "HumanResourceModels";
-import moment from "moment";
+
+import DatePicker from "components/antd/DatePicker";
+import { DEFAULT_DATE_FORMAT } from "../../../constants";
 
 const { RangePicker } = DatePicker;
 
@@ -16,7 +20,10 @@ export const Vacations: React.FC<Props> = ({ vacations, canEdit }) => (
     {vacations.map((vacation, index) => (
       <span key={index} className="vacations__item">
         <RangePicker
-          defaultValue={[moment(vacation.from), moment(vacation.to)]}
+          defaultValue={[
+            parseDate(vacation.from, DEFAULT_DATE_FORMAT, new Date()),
+            parseDate(vacation.to, DEFAULT_DATE_FORMAT, new Date()),
+          ]}
           format="DD/MM/YYYY"
         />
         <span className="vacations__item-description">

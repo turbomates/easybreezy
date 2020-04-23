@@ -1,0 +1,54 @@
+.react-calendar-timeline .rct-header-root {
+  background-color: #00a896;
+}
+
+.holiday {
+  background-color: rgba(255, 0, 0, 0.05);
+}
+
+.timetable {
+  .timetable-title {
+    font-weight: bold;
+  }
+  .timetable-date {
+    font-size: 10;
+    font-weight: 200;
+  }
+  .timetable-user {
+    width: 150px;
+    height: 20px;
+    padding: 0;
+
+    a {
+      color: black;
+      white-space: nowrap;
+    }
+  }
+  .timetable-cell {
+    width: 20px;
+    border: 2px solid white;
+    background-color: rgb(142, 195, 81);
+
+    &.holiday {
+      background-color: violet;
+    }
+    &.vacation {
+      background-color: skyblue;
+    }
+    &.sick {
+      background-color: slateblue;
+    }
+    &.dayon {
+      background-color: purple;
+    }
+    &.personal {
+      background-color: salmon;
+    }
+    &.weekend {
+      background-color: turquoise;
+    }
+    &.not-approved {
+      opacity: 0.5;
+    }
+  }
+}
