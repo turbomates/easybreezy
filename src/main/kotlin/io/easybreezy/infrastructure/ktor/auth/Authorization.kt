@@ -8,6 +8,7 @@ import io.ktor.application.call
 import io.ktor.application.feature
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.routing.HttpMethodRouteSelector
 import io.ktor.routing.Route
 import io.ktor.routing.RouteSelector
 import io.ktor.routing.RouteSelectorEvaluation
@@ -17,15 +18,16 @@ import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
 import org.slf4j.LoggerFactory
 
-class Authorization(private var config: Configuration) {
+class Authorization(config: Configuration) {
     constructor() : this(Configuration())
 
     private val logger = LoggerFactory.getLogger(Authorization::class.java)
-    private val rules: MutableMap<String, List<String>> = mutableMapOf()
+    private var config = config
+    private val rules = RouteAuthorizationRules()
 
     class Configuration() {
         internal var validate: suspend ApplicationCall.(Set<Activity>) -> Boolean = { false }
-        internal var challenge: suspend suspend io.ktor.util.pipeline.PipelineContext<*, ApplicationCall>.() -> Unit =
+        internal var challenge: suspend io.ktor.util.pipeline.PipelineContext<*, ApplicationCall>.() -> Unit =
             { call.respond(HttpStatusCode.Forbidden) }
 
         fun validate(block: suspend ApplicationCall.(Set<Activity>) -> Boolean) {
@@ -37,7 +39,7 @@ class Authorization(private var config: Configuration) {
         }
     }
 
-    fun rules(): Map<String, List<String>> {
+    fun rules(): RouteAuthorizationRules {
         return this.rules
     }
 
@@ -48,13 +50,16 @@ class Authorization(private var config: Configuration) {
      */
     fun interceptPipeline(
         pipeline: ApplicationCallPipeline,
-        activities: Set<Activity>
+        activities: Set<Activity>,
+        block: ApplicationCall.() -> Boolean = { true }
     ) {
-        require(activities.isNotEmpty()) { "At least one activity should be in set" }
-        rules[pipeline.toString()] = activities.map { it.name }
+        require(activities.isNotEmpty()) { "At least one role should bet set" }
+        (pipeline as? Route)?.parent?.let {
+            rules.addRule(it, activities)
+        }
         pipeline.insertPhaseBefore(ApplicationCallPipeline.Call, AuthorizationCheckPhase)
         pipeline.intercept(AuthorizationCheckPhase) {
-            if (!config.validate(call, activities)) {
+            if (!config.validate(call, activities) && !call.block()) {
                 logger.debug("Unauthorized for activities: " + activities.joinToString(","))
                 config.challenge(this)
                 finish()
@@ -81,18 +86,58 @@ class Authorization(private var config: Configuration) {
     }
 }
 
-fun Route.authorize(activities: Set<Activity>, build: Route.() -> Unit): Route {
+fun Route.authorize(
+    activities: Set<Activity>,
+    block: ApplicationCall.() -> Boolean = { true },
+    build: Route.() -> Unit
+): Route {
     val authenticatedRoute = createChild(AuthorizationRouteSelector(activities))
-    application.feature(Authorization).interceptPipeline(authenticatedRoute, activities)
+    application.feature(Authorization).interceptPipeline(authenticatedRoute, activities, block)
     authenticatedRoute.build()
     return authenticatedRoute
 }
 
-class AuthorizationRouteSelector(private val activities: Set<Activity>) :
+class AuthorizationRouteSelector(
+    internal val activities: Set<Activity>
+) :
     RouteSelector(RouteSelectorEvaluation.qualityConstant) {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Constant
     }
 
     override fun toString(): String = "(authorize ${activities.joinToString { it.name }})"
+}
+
+class RouteAuthorizationRules() {
+    private val list: MutableList<Pair<Route, List<String>>> = mutableListOf()
+    internal fun addRule(route: Route, permission: Set<Activity>) {
+        list.add(route to permission.map { it.name })
+    }
+
+    fun buildMap(): Map<String, List<String>> {
+        val map = mutableMapOf<String, List<String>>()
+        list.forEach { conditions ->
+            map += conditions.first.buildPath(emptySet())
+        }
+        return map
+    }
+}
+
+private fun Route.buildPath(activities: Set<String>): Map<String, List<String>> {
+    val currentActivities = activities.toMutableList()
+    if (selector is AuthorizationRouteSelector) {
+        currentActivities.addAll((selector as AuthorizationRouteSelector).activities.map { it.name })
+    }
+    return if (children.isEmpty()) {
+        val method = (selector as? HttpMethodRouteSelector)?.let { it.method.value }
+        if (activities.isEmpty()) {
+            emptyMap()
+        } else {
+            mapOf(method + ":" + toString().replace(Regex("\\/\\(.*?\\)"), "") to currentActivities)
+        }
+    } else {
+        val result = mutableMapOf<String, List<String>>()
+        children.forEach { result.putAll(it.buildPath(currentActivities.toSet())) }
+        result
+    }
 }

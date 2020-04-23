@@ -387,6 +387,28 @@ URL: localhost:3000/api/projects
 }
 ```
 
+### 14. List of permissions 
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: localhost:3000/api/projects/permissions
+```
+
+***Response:***
+
+```js        
+{
+    "data": [
+        "PROJECT",
+        "TEAM"
+    ]
+}
+```
 ---
 [Back to top](#projects)
 > Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-06 16:45:49 by [docgen](https://github.com/thedevsaddam/docgen)

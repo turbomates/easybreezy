@@ -79,7 +79,8 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
         route.route("/api/authorization/rules") {
             get<Response.Data<Map<String, List<String>>>> {
                 Response.Data(
-                    call.application.feature(Authorization).rules().mapKeys { it.key.replace(Regex("\\(.*?\\)"), "*") })
+                    call.application.feature(Authorization).rules().buildMap()
+                )
             }
         }
         route.route("/api/login") {

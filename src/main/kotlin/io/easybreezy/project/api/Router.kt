@@ -4,10 +4,8 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
-import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
-import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.project.api.controller.ProjectController
@@ -46,15 +44,57 @@ class Router @Inject constructor(
     init {
         application.routing {
             authenticate(*Auth.user) {
-                route("/api") {
-                    projectRoutes(this)
+                route("/api/projects") {
+                    projectRoutes()
+                }
+                route("/api/teams") {
+                    // authorize(setOf(Activity.MEMBER)) {
+                    teamRoutes()
+                    // }
                 }
             }
         }
     }
 
-    private fun projectRoutes(route: Route) {
-        route.route("/projects") {
+    private fun Route.teamRoutes() {
+        route("") {
+            data class Team(val teamId: UUID)
+            post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/add") { command ->
+                controller<TeamController>(this).newTeam(command)
+            }
+            get<Response.Data<io.easybreezy.project.application.team.queryobject.Team>, Team>("/{teamId}") { params ->
+                controller<TeamController>(this).show(params.teamId)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, NewMember, Team>("/{teamId}/members/add") { command, params ->
+                command.team = params.teamId
+                controller<TeamController>(this).newMember(command)
+            }
+
+            post<Response.Ok, ActivateTeam, Team>("/{teamId}/activate") { _, params ->
+                controller<TeamController>(this).activate(params.teamId)
+            }
+
+            post<Response.Ok, CloseTeam, Team>("/{teamId}/close") { _, params ->
+                controller<TeamController>(this).close(params.teamId)
+            }
+
+            data class TeamMember(val teamId: UUID, val memberId: UUID)
+            post<Response.Either<Response.Ok, Response.Errors>, RemoveMember, TeamMember>("/{teamId}/members/{memberId}/remove") { command, params ->
+                command.memberId = params.memberId
+                command.team = params.teamId
+                controller<TeamController>(this).removeMember(command)
+            }
+
+            post<Response.Either<Response.Ok, Response.Errors>, ChangeMemberRole, TeamMember>("/{teamId}/members/{memberId}/change-role") { command, params ->
+                command.team = params.teamId
+                command.memberId = params.memberId
+                controller<TeamController>(this).changeMemberRole(command)
+            }
+        }
+    }
+
+    private fun Route.projectRoutes() {
+        route("") {
             post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
                 controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
             }
@@ -64,9 +104,9 @@ class Router @Inject constructor(
             get<Response.Data<List<Role.Permission>>>("/permissions") {
                 controller<ProjectController>(this).permissions()
             }
-        }
 
-        route.route("/projects/{slug}") {
+        }
+        route("/{slug}") {
             data class Project(val slug: String)
 
             get<Response.Data<io.easybreezy.project.application.project.queryobject.Project>, Project>("") { params ->
@@ -117,42 +157,6 @@ class Router @Inject constructor(
                 command.categoryId = params.categoryId
                 command.project = params.slug
                 controller<ProjectController>(this).removeCategory(command)
-            }
-        }
-
-        route.route("/teams") {
-            data class Team(val teamId: UUID)
-
-            post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/add") { command ->
-                controller<TeamController>(this).newTeam(command)
-            }
-            get<Response.Data<io.easybreezy.project.application.team.queryobject.Team>, Team>("/{teamId}") { params ->
-                controller<TeamController>(this).show(params.teamId)
-            }
-            post<Response.Either<Response.Ok, Response.Errors>, NewMember, Team>("/{teamId}/members/add") { command, params ->
-                command.team = params.teamId
-                controller<TeamController>(this).newMember(command)
-            }
-
-            post<Response.Ok, ActivateTeam, Team>("/{teamId}/activate") { _, params ->
-                controller<TeamController>(this).activate(params.teamId)
-            }
-
-            post<Response.Ok, CloseTeam, Team>("/{teamId}/close") { _, params ->
-                controller<TeamController>(this).close(params.teamId)
-            }
-
-            data class TeamMember(val teamId: UUID, val memberId: UUID)
-            post<Response.Either<Response.Ok, Response.Errors>, RemoveMember, TeamMember>("/{teamId}/members/{memberId}/remove") { command, params ->
-                command.memberId = params.memberId
-                command.team = params.teamId
-                controller<TeamController>(this).removeMember(command)
-            }
-
-            post<Response.Either<Response.Ok, Response.Errors>, ChangeMemberRole, TeamMember>("/{teamId}/members/{memberId}/change-role") { command, params ->
-                command.team = params.teamId
-                command.memberId = params.memberId
-                controller<TeamController>(this).changeMemberRole(command)
             }
         }
     }

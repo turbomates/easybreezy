@@ -17,7 +17,6 @@ class CreateDefaultUserCommand {
 
     companion object {
         private const val EMAIL = "admin@admin.my"
-
         @JvmStatic
         fun main(args: Array<String>): Unit = runBlocking {
             val configProvider = SystemConfiguration
