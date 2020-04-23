@@ -41,6 +41,12 @@ class Validation @Inject constructor(
         }
     }
 
+    fun validateCommand(command: ChangeSlug): List<Error> {
+        return validate(command) {
+            validate(ChangeSlug::new).hasSize(2, 25)
+        }
+    }
+
     object HasMembers : Constraint {
         override val name: String
             get() = "There are members with this role"

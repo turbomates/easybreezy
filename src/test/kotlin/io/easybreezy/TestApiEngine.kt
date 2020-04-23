@@ -6,9 +6,9 @@ import io.easybreezy.hr.HRModule
 import io.easybreezy.infrastructure.event.EventSubscribers
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Authorization
-import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
@@ -77,6 +77,9 @@ fun Application.testApplication(userId: UUID, activities: Set<Activity>, databas
     install(StatusPages) {
         status(HttpStatusCode.Unauthorized) {
             call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
+        }
+        exception<NoSuchElementException> {
+            call.respond(HttpStatusCode.NotFound, Error(it.localizedMessage))
         }
         exception<Exception> {
             call.respond(HttpStatusCode.ServiceUnavailable, Error(it.localizedMessage))

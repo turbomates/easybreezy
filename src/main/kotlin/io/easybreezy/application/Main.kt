@@ -122,6 +122,9 @@ suspend fun main() {
                 call.respond(HttpStatusCode.UnprocessableEntity, Error(it.message ?: "Unprocessable Entity"))
                 throw it
             }
+            exception<NoSuchElementException> {
+                call.respond(HttpStatusCode.NotFound, Error("Page not found"))
+            }
             exception<Exception> {
                 call.respond(HttpStatusCode.ServiceUnavailable, Error("Something is wrong"))
                 throw it

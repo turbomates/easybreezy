@@ -8,18 +8,17 @@ import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
+import io.easybreezy.infrastructure.ktor.postParams
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
-import io.easybreezy.project.application.project.command.Activate
 import io.easybreezy.project.application.project.command.ChangeCategory
 import io.easybreezy.project.application.project.command.ChangeRole
-import io.easybreezy.project.application.project.command.Close
+import io.easybreezy.project.application.project.command.ChangeSlug
 import io.easybreezy.project.application.project.command.New
 import io.easybreezy.project.application.project.command.NewCategory
 import io.easybreezy.project.application.project.command.NewRole
 import io.easybreezy.project.application.project.command.RemoveCategory
 import io.easybreezy.project.application.project.command.RemoveRole
-import io.easybreezy.project.application.project.command.Suspend
 import io.easybreezy.project.application.project.command.WriteDescription
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.ActivateTeam
@@ -34,6 +33,7 @@ import io.ktor.auth.authenticate
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
 class Router @Inject constructor(
@@ -95,8 +95,14 @@ class Router @Inject constructor(
 
     private fun Route.projectRoutes() {
         route("") {
-            post<Response.Either<Response.Ok, Response.Errors>, New>("") { new ->
-                controller<ProjectController>(this).create(new, resolvePrincipal<UserPrincipal>())
+            @Serializable
+            data class NewRequest(val name: String, val description: String, val slug: String? = null) {
+                fun makeCommand(principal: UUID): New {
+                    return New(principal, name, description, slug)
+                }
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, NewRequest>("") { request ->
+                controller<ProjectController>(this).create(request.makeCommand(resolvePrincipal<UserPrincipal>()))
             }
             get<Response.Listing<Project>>("") {
                 controller<ProjectController>(this).list()
@@ -107,28 +113,32 @@ class Router @Inject constructor(
 
         }
         route("/{slug}") {
-            data class Project(val slug: String)
-
-            get<Response.Data<io.easybreezy.project.application.project.queryobject.Project>, Project>("") { params ->
+            @Serializable
+            data class SlugParam(val slug: String)
+            get<Response.Data<Project>, SlugParam>("") { params ->
                 controller<ProjectController>(this).show(params.slug)
             }
 
-            post<Response.Ok, Activate, Project>("/activate") { _, params ->
+            post<Response.Either<Response.Ok, Response.Errors>, SlugParam, SlugParam>("/change-slug") { new, params ->
+                controller<ProjectController>(this).changeSlug(ChangeSlug(params.slug, new.slug))
+            }
+
+            postParams<Response.Ok, SlugParam>("/activate") { params ->
                 controller<ProjectController>(this).activate(params.slug)
             }
-            post<Response.Ok, Suspend, Project>("/suspend") { _, params ->
+            postParams<Response.Ok, SlugParam>("/suspend") { params ->
                 controller<ProjectController>(this).suspendProject(params.slug)
             }
-            post<Response.Ok, Close, Project>("/close") { _, params ->
+            postParams<Response.Ok, SlugParam>("/close") { params ->
                 controller<ProjectController>(this).close(params.slug)
             }
-            post<Response.Either<Response.Ok, Response.Errors>, WriteDescription, Project>("/write-description") { command, params ->
+            post<Response.Either<Response.Ok, Response.Errors>, WriteDescription, SlugParam>("/write-description") { command, params ->
                 command.project = params.slug
                 controller<ProjectController>(this).writeDescription(command)
             }
 
             data class ProjectRole(val slug: String, val roleId: UUID)
-            post<Response.Either<Response.Ok, Response.Errors>, NewRole, Project>("/roles/add") { command, params ->
+            post<Response.Either<Response.Ok, Response.Errors>, NewRole, SlugParam>("/roles/add") { command, params ->
                 command.project = params.slug
                 controller<ProjectController>(this).addRole(command)
             }
@@ -144,7 +154,7 @@ class Router @Inject constructor(
             }
 
             data class ProjectCategory(val slug: String, val categoryId: UUID)
-            post<Response.Either<Response.Ok, Response.Errors>, NewCategory, Project>("/categories/add") { command, params ->
+            post<Response.Either<Response.Ok, Response.Errors>, NewCategory, SlugParam>("/categories/add") { command, params ->
                 command.project = params.slug
                 controller<ProjectController>(this).addCategory(command)
             }

@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test
 
 class ProjectControllerTest {
 
-    @Test fun `add project`() {
+    @Test
+    fun `add project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             withTestApplication({ testApplication(userId, setOf(Activity.MEMBER), testDatabase) }) {
@@ -33,7 +34,7 @@ class ProjectControllerTest {
                             "name" to "My Project"
                             "description" to "Project description"
                         }
-                        .toString())
+                            .toString())
                 }) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -45,7 +46,28 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `list of projects`() {
+    @Test
+    fun `change project slug`() {
+        rollbackTransaction(testDatabase) {
+            val userId = testDatabase.createMember()
+            testDatabase.createMyProject()
+            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+                with(handleRequest(HttpMethod.Post, "/api/projects/my-project/change-slug") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(json { "slug" to "my-project-new" }.toString())
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project-new")) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `list of projects`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -59,7 +81,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `suspend project`() {
+    @Test
+    fun `suspend project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -79,7 +102,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `close project`() {
+    @Test
+    fun `close project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -99,7 +123,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `activate project`() {
+    @Test
+    fun `activate project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -126,7 +151,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `write description to project`() {
+    @Test
+    fun `write description to project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -148,7 +174,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `add role to project`() {
+    @Test
+    fun `add role to project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -158,8 +185,8 @@ class ProjectControllerTest {
                     setBody(json {
                         "name" to "Tester"
                         "permissions" to jsonArray {
-                            + Role.Permission.PROJECT.name
-                            + Role.Permission.TEAM.name
+                            +Role.Permission.PROJECT.name
+                            +Role.Permission.TEAM.name
                         }
                     }
                         .toString())
@@ -175,7 +202,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `change role of project`() {
+    @Test
+    fun `change role of project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
@@ -187,7 +215,7 @@ class ProjectControllerTest {
                     setBody(
                         json {
                             "permissions" to jsonArray {
-                                + Role.Permission.PROJECT.name
+                                +Role.Permission.PROJECT.name
                             }
                         }
                             .toString())
@@ -203,7 +231,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `remove role from project`() {
+    @Test
+    fun `remove role from project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
@@ -225,7 +254,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `try to remove role from project with members`() {
+    @Test
+    fun `try to remove role from project with members`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
@@ -260,7 +290,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `add category to project`() {
+    @Test
+    fun `add category to project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
@@ -283,7 +314,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `change category of project`() {
+    @Test
+    fun `change category of project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
@@ -312,7 +344,8 @@ class ProjectControllerTest {
         }
     }
 
-    @Test fun `remove category from project`() {
+    @Test
+    fun `remove category from project`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
