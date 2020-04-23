@@ -59,9 +59,9 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
             validate { permissions ->
                 val principal = principal<UserPrincipal>()
                 principal?.let {
-                    val roles = it.roles
+                    val activities = it.activities
                     for (permission in permissions) {
-                        if (roles.contains(permission)) {
+                        if (activities.contains(permission)) {
                             return@let true
                         }
                     }
@@ -79,7 +79,8 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
         route.route("/api/authorization/rules") {
             get<Response.Data<Map<String, List<String>>>> {
                 Response.Data(
-                    call.application.feature(Authorization).rules().mapKeys { it.key.replace(Regex("\\(.*?\\)"), "*") })
+                    call.application.feature(Authorization).rules().buildMap()
+                )
             }
         }
         route.route("/api/login") {

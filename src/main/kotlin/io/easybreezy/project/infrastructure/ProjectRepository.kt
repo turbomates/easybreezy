@@ -4,10 +4,7 @@ import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.Repository
 import io.easybreezy.project.model.issue.Categories
-import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.team.Members
-import io.easybreezy.project.model.team.Roles
-import io.easybreezy.project.model.team.Teams
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -25,7 +22,7 @@ class ProjectRepository : Project.Repository(), Repository {
     override fun isProjectCategory(category: UUID, project: String): Boolean {
         return Categories
             .join(Projects, JoinType.INNER, Categories.project, Projects.id)
-            .select { Categories.id eq category and (Projects.slug eq project)}
+            .select { Categories.id eq category and (Projects.slug eq project) }
             .count() > 0
     }
 }

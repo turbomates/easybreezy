@@ -72,7 +72,7 @@ inline fun <reified TResponse : Response, reified TBody : Any> Route.post(
     }
 }
 
-inline fun <reified TResponse : Response, reified TParams: Any> Route.postParams(
+inline fun <reified TResponse : Response, reified TParams : Any> Route.postParams(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
 ): Route {

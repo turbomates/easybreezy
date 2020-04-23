@@ -12,21 +12,24 @@ import io.easybreezy.project.model.team.Teams
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.UUID
 
 class ProjectQO(private val slug: String) : QueryObject<Project> {
-    override suspend fun getData() =
-        Projects
+    override suspend fun getData(): Project {
+        return Projects
             .leftJoin(Roles)
             .leftJoin(Categories)
             .join(Teams, JoinType.LEFT, Projects.id, Teams.project)
             .select {
                 Projects.slug eq slug
             }
+            .orderBy(Teams.name to SortOrder.ASC, Categories.name to SortOrder.ASC, Roles.name to SortOrder.ASC)
             .toProjectJoined()
             .single()
+    }
 }
 
 class ProjectsQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Project>> {

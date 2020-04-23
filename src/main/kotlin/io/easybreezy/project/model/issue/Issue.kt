@@ -14,8 +14,6 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {
         fun create(name: String, project: UUID): Issue {
             return Issue.new {
-
-
             }
         }
     }

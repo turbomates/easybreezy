@@ -84,7 +84,6 @@ class ProjectController @Inject constructor(
     }
 
     suspend fun changeRole(command: ChangeRole): Response.Either<Response.Ok, Response.Errors> {
-
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))

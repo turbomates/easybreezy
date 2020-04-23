@@ -1,3 +1,3 @@
 package io.easybreezy.infrastructure.ktor
 
-class LogicException(message: String): Exception(message)
+class LogicException(message: String) : Exception(message)
