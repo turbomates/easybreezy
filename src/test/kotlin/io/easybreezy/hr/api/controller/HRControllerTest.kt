@@ -19,7 +19,7 @@ class HRControllerTest {
     @Test fun `hire employee`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/hire") {
                     addHeader("Content-Type", "application/json")
@@ -51,7 +51,7 @@ class HRControllerTest {
     @Test fun `fire employee`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/fire") {
                     addHeader("Content-Type", "application/json")
@@ -71,7 +71,7 @@ class HRControllerTest {
     @Test fun `add employee note`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/write-note") {
                     addHeader("Content-Type", "application/json")
@@ -91,7 +91,7 @@ class HRControllerTest {
     @Test fun `add employee position`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
@@ -112,7 +112,7 @@ class HRControllerTest {
     @Test fun `keep employee position history`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-position") {
                     addHeader("Content-Type", "application/json")
@@ -142,7 +142,7 @@ class HRControllerTest {
     @Test fun `add employee salary`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-salary") {
                     addHeader("Content-Type", "application/json")
@@ -167,7 +167,7 @@ class HRControllerTest {
     @Test fun `keep employee salary history`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/apply-salary") {
                     addHeader("Content-Type", "application/json")
@@ -203,7 +203,7 @@ class HRControllerTest {
     @Test fun `add employee skills`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/specify-skills") {
                     addHeader("Content-Type", "application/json")
@@ -230,7 +230,7 @@ class HRControllerTest {
     @Test fun `update employee bio`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/update-bio") {
                     addHeader("Content-Type", "application/json")
@@ -250,7 +250,7 @@ class HRControllerTest {
     @Test fun `update employee birthday`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/employee/$userId/update-birthday") {
                     addHeader("Content-Type", "application/json")
@@ -270,7 +270,7 @@ class HRControllerTest {
     @Test fun `update employee contacts`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createEmployee()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/users/update-contacts") {
                     addHeader("Content-Type", "application/json")

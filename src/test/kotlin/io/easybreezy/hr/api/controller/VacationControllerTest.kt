@@ -23,7 +23,7 @@ class VacationControllerTest {
     fun `user vacation`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
 
                 createVacationParts(memberId, database)
@@ -41,7 +41,7 @@ class VacationControllerTest {
     fun `user vacation with many locations`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 createVacationParts(memberId, database, locationId)
@@ -67,7 +67,7 @@ class VacationControllerTest {
     fun `users vacation`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 createVacationParts(memberId, database)
 

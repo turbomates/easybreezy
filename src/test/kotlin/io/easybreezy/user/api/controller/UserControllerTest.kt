@@ -21,7 +21,7 @@ class UserControllerTest {
     fun `user invite`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
@@ -33,7 +33,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive("USERS_LIST")
                             }
                         }.toString()
                     )
@@ -48,7 +48,7 @@ class UserControllerTest {
     fun `user invite twice`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 with(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
@@ -56,7 +56,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive("USERS_LIST")
                             }
                         }.toString()
                     )
@@ -70,7 +70,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive("USERS_LIST")
                             }
                         }.toString()
                     )
@@ -86,7 +86,7 @@ class UserControllerTest {
     fun `user create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users") {
@@ -95,7 +95,7 @@ class UserControllerTest {
                         json {
                             "email" to "candidate@gmail.com"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive("USERS_LIST")
                             }
                             "firstName" to "Interesting"
                             "lastName" to "Candidate"
@@ -118,7 +118,7 @@ class UserControllerTest {
     fun `invite pending user`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val userId = database.createMember(status = Status.PENDING)
 
@@ -138,7 +138,7 @@ class UserControllerTest {
     fun `archive pending user`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val userId = database.createMember(status = Status.PENDING)
                 val reason = "Some reason to archive"
@@ -167,7 +167,7 @@ class UserControllerTest {
     fun `update user activities`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val userId = database.createMember()
 
@@ -176,8 +176,8 @@ class UserControllerTest {
                     setBody(
                         json {
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
-                                +JsonPrimitive("ADMIN")
+                                +JsonPrimitive("USERS_LIST")
+                                +JsonPrimitive("PROJECTS_SHOW_ANY")
                             }
                         }.toString()
                     )
@@ -187,8 +187,8 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains("MEMBER") ?: false)
-                    Assertions.assertTrue(response.content?.contains("ADMIN") ?: false)
+                    Assertions.assertTrue(response.content?.contains("USERS_LIST") ?: false)
+                    Assertions.assertTrue(response.content?.contains("PROJECTS_SHOW_ANY") ?: false)
                 }
             }
         }

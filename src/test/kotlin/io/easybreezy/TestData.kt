@@ -25,7 +25,7 @@ internal fun Database.createMember(firstName: String = "John", lastName: String 
             it[email[EmailTable.email]] = "member@gmail.com"
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName
-            it[activities] = setOf(Activity.MEMBER.name)
+            it[activities] = Activity.values().map { enum -> enum.name }.toSet()
         } get Users.id
         id.value
     }
@@ -90,7 +90,7 @@ internal fun Database.createEmployee(): UUID {
         val userId = Users.insert {
             it[status] = Status.ACTIVE
             it[email[EmailTable.email]] = "employee@gmail.com"
-            it[activities] = setOf(Activity.MEMBER.name)
+            it[activities] = Activity.values().map { enum -> enum.name }.toSet()
         } get Users.id
 
         Employees.insert {

@@ -48,13 +48,13 @@ enum class Activity {
 
 object Activities : Constraint {
     override val name: String
-        get() = "Invalid role"
+        get() = "Not enough permissions"
 }
 
 fun <E> Validator<E>.Property<Iterable<String>?>.isActivities() {
     this.validate(Activities) { value ->
-        value?.all { role ->
-            Activity.values().any { it.name == role }
+        value?.all { activity ->
+            Activity.values().any { it.name == activity }
         } ?: false
     }
 }

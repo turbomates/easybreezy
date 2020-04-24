@@ -22,7 +22,7 @@ class CalendarControllerTest {
     fun `calendar import`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val name = "Belarus custom calendar"
@@ -52,7 +52,7 @@ class CalendarControllerTest {
     fun `calendar edit`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val calendarId = database.createCalendar(locationId)
@@ -82,7 +82,7 @@ class CalendarControllerTest {
     fun calendars() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 database.createCalendar(locationId)
@@ -99,7 +99,7 @@ class CalendarControllerTest {
     fun `calendar remove`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val calendarId = database.createCalendar(locationId)
@@ -128,7 +128,7 @@ class CalendarControllerTest {
     fun `add holiday`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val calendarId = database.createCalendar(locationId)
@@ -161,7 +161,7 @@ class CalendarControllerTest {
     fun holidays() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val calendarId = database.createCalendar(locationId)

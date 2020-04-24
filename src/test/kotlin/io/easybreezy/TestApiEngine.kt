@@ -42,9 +42,10 @@ import org.jetbrains.exposed.sql.Database
 import java.util.UUID
 import javax.sql.DataSource
 
-fun Application.testApplication(userId: UUID, activities: Set<Activity>, database: Database) {
+fun Application.testApplication(userId: UUID, database: Database) {
     val dataSource = TestDataSource
     val eventSubscribers = EventSubscribers()
+    val activities = Activity.values().toSet()
     val injector = Guice.createInjector(object : AbstractModule() {
         override fun configure() {
             bind(DataSource::class.java).toInstance(dataSource)

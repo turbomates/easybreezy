@@ -24,7 +24,7 @@ class LocationControllerTest {
     fun `location create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 with(handleRequest(HttpMethod.Post, "/api/hr/locations") {
                     addHeader("Content-Type", "application/json")
@@ -50,7 +50,7 @@ class LocationControllerTest {
     fun `remove location`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
 
@@ -70,7 +70,7 @@ class LocationControllerTest {
     fun locations() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 database.createLocation()
 
@@ -86,7 +86,7 @@ class LocationControllerTest {
     fun `user location assign`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
@@ -117,7 +117,7 @@ class LocationControllerTest {
     fun `close user location`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
@@ -140,7 +140,7 @@ class LocationControllerTest {
     fun `user assign new location and previous should be closed`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
@@ -172,7 +172,7 @@ class LocationControllerTest {
     fun `user location edit`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
@@ -202,7 +202,7 @@ class LocationControllerTest {
     fun `user location show`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
@@ -221,7 +221,7 @@ class LocationControllerTest {
     fun `user locations listing`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
