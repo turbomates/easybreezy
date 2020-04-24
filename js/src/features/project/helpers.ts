@@ -17,3 +17,7 @@ export function switchProjectStatus(
       return "activate";
   }
 }
+
+export function convertToSlug(name: string) {
+  return name.toLocaleLowerCase().split(" ").join("-")
+}

@@ -4,6 +4,7 @@ import { Button, Form, Input } from "antd";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { CreateProjectRequest } from "ProjectModels";
+import { convertToSlug } from "../helpers"
 
 interface Props {
   create: (form: CreateProjectRequest) => void;
@@ -22,7 +23,11 @@ export const CreateProjectForm: React.FC<Props> = ({
 
   const onFinish = useCallback(
     (values: any) => {
-      create(values);
+      create({
+        description: values.description,
+        name: values.name,
+        slug: convertToSlug(values.name)
+      });
     },
     [create],
   );
