@@ -6,10 +6,7 @@ import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import java.util.UUID
 
 class AbsenceQO(private val absenceId: UUID) : QueryObject<Absence> {
@@ -30,6 +27,12 @@ class AbsencesQO(private val dateRange: DateRange) : QueryObject<Absences> {
     }
 }
 
+class IsAbsenceOwner(val id: UUID, val userId: UUID): QueryObject<Boolean> {
+    override suspend fun getData(): Boolean {
+        return AbsencesTable.select { AbsencesTable.id eq id and (AbsencesTable.userId eq userId) }.count() > 0
+    }
+}
+
 class UserAbsencesQO(private val userId: UUID) : QueryObject<UserAbsences> {
     override suspend fun getData(): UserAbsences {
         val absences = AbsencesTable
@@ -44,7 +47,8 @@ class UserAbsencesQO(private val userId: UUID) : QueryObject<UserAbsences> {
 private fun Iterable<ResultRow>.toAbsences(): Absences {
     val data = fold(mutableMapOf<UUID, MutableList<Absence>>()) { map, resultRaw ->
         val absence = resultRaw.toAbsence()
-        if (map.containsKey(absence.userId)) map[absence.userId]?.add(absence) else map[absence.userId] = mutableListOf(absence)
+        if (map.containsKey(absence.userId)) map[absence.userId]?.add(absence) else map[absence.userId] =
+            mutableListOf(absence)
         map
     }
 

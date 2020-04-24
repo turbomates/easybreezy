@@ -51,7 +51,7 @@ class Authorization(config: Configuration) {
     fun interceptPipeline(
         pipeline: ApplicationCallPipeline,
         activities: Set<Activity>,
-        block: ApplicationCall.() -> Boolean = { true }
+        block: suspend ApplicationCall.() -> Boolean = { true }
     ) {
         require(activities.isNotEmpty()) { "At least one role should bet set" }
         (pipeline as? Route)?.parent?.let {
@@ -59,7 +59,7 @@ class Authorization(config: Configuration) {
         }
         pipeline.insertPhaseBefore(ApplicationCallPipeline.Call, AuthorizationCheckPhase)
         pipeline.intercept(AuthorizationCheckPhase) {
-            if (!config.validate(call, activities) && !call.block()) {
+            if (!config.validate(call, activities) || !call.block()) {
                 logger.debug("Unauthorized for activities: " + activities.joinToString(","))
                 config.challenge(this)
                 finish()
@@ -88,7 +88,7 @@ class Authorization(config: Configuration) {
 
 fun Route.authorize(
     activities: Set<Activity>,
-    block: ApplicationCall.() -> Boolean = { true },
+    block: suspend ApplicationCall.() -> Boolean = { true },
     build: Route.() -> Unit
 ): Route {
     val authenticatedRoute = createChild(AuthorizationRouteSelector(activities))

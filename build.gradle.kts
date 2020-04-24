@@ -109,9 +109,9 @@ application {
     mainClassName = "io.easybreezy.application.MainKt"
 }
 
-tasks.register("createDefaultUser", JavaExec::class) {
+tasks.register("createDefaultAdmin", JavaExec::class) {
     group = "user"
-    main = "io.easybreezy.user.cli.CreateDefaultUserCommand"
+    main = "io.easybreezy.user.cli.CreateDefaultAdminCommand"
     classpath = sourceSets["main"].runtimeClasspath
 }
 
