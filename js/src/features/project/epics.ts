@@ -14,6 +14,7 @@ import {
   createProjectRoleAsync,
   fetchProjectRoleAsync,
 } from "./actions";
+import { push } from "connected-react-router"
 
 export const fetchProjectsEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
@@ -54,10 +55,7 @@ export const createProject: RootEpic = (action$, state$, { api }) =>
           result.success
             ? [
                 createProjectAsync.success(),
-                fetchProjectsAsync.request({
-                  pageSize: 10,
-                  currentPage: 1,
-                }),
+                push({pathname: `/projects/${action.payload.slug}`})
               ]
             : [createProjectAsync.failure(result.errors)],
         ),

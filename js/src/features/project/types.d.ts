@@ -61,6 +61,7 @@ declare module "ProjectModels" {
   export interface CreateProjectRequest {
     name: string;
     description: string;
+    slug: string
   }
 
   export interface EditProjectDescriptionRequest {
