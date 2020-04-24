@@ -18,7 +18,7 @@ class UserController @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) : Controller() {
 
-    suspend fun index(): Response.Listing<User> {
+    suspend fun users(): Response.Listing<User> {
         return Response.Listing(
             queryExecutor.execute(UsersQO(call.request.pagingParameters()))
         )

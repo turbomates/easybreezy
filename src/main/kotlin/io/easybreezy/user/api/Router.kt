@@ -3,8 +3,10 @@ package io.easybreezy.user.api
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.*
 import io.easybreezy.infrastructure.ktor.Router
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
+import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.user.api.controller.UserController
 import io.easybreezy.user.application.*
 import io.easybreezy.user.application.queryobject.User
@@ -24,19 +26,21 @@ class Router @Inject constructor(
         application.routing {
             route("/api/users") {
                 authenticate(*Auth.user) {
-                    userRouting(this)
+                    userRouting()
                 }
-                post<Response.Either<Response.Ok, Response.Errors>, Confirm>("/confirm") {
-                        command -> controller<UserController>(this).confirm(command)
+                post<Response.Either<Response.Ok, Response.Errors>, Confirm>("/confirm") { command ->
+                    controller<UserController>(this).confirm(command)
                 }
             }
         }
     }
 
-    private fun userRouting(route: Route) {
-        route.route("") {
-            get<Response.Listing<User>>("") { controller<UserController>(this).index() }
-            get<Response.Data<User>>("/me") { controller<UserController>(this).me(resolvePrincipal<UserPrincipal>()) }
+    private fun Route.userRouting() {
+        authorize(setOf(Activity.USERS_LIST)) {
+            get<Response.Listing<User>>("") { controller<UserController>(this).users() }
+        }
+
+        authorize(setOf(Activity.USERS_MANAGE)) {
             post<Response.Either<Response.Ok, Response.Errors>, Invite>("/invite") { invite ->
                 controller<UserController>(this).invite(invite)
             }
@@ -49,14 +53,15 @@ class Router @Inject constructor(
             post<Response.Either<Response.Ok, Response.Errors>, Create>("") { command ->
                 controller<UserController>(this).create(command)
             }
-
-            post<Response.Either<Response.Ok, Response.Errors>, UpdateContacts>("/update-contacts") { command ->
-                controller<UserController>(this).updateContacts(command, resolvePrincipal<UserPrincipal>())
-            }
             post<Response.Either<Response.Ok, Response.Errors>, UpdateActivities, ID>("/{id}/activities") { command, params ->
                 controller<UserController>(this).updateActivities(params.id, command)
             }
         }
+
+        post<Response.Either<Response.Ok, Response.Errors>, UpdateContacts>("/update-contacts") { command ->
+            controller<UserController>(this).updateContacts(command, resolvePrincipal<UserPrincipal>())
+        }
+        get<Response.Data<User>>("/me") { controller<UserController>(this).me(resolvePrincipal<UserPrincipal>()) }
     }
 
     internal data class ID(val id: UUID)

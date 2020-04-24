@@ -1,6 +1,7 @@
 package io.easybreezy.user.api.controller
 
 import io.easybreezy.*
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.testDatabase
 import io.easybreezy.user.model.Status
 import io.ktor.http.HttpMethod
@@ -21,7 +22,7 @@ class UserControllerTest {
     fun `user invite`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
@@ -33,7 +34,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive(Activity.USERS_LIST.name)
                             }
                         }.toString()
                     )
@@ -48,7 +49,7 @@ class UserControllerTest {
     fun `user invite twice`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 with(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
@@ -56,7 +57,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive(Activity.USERS_LIST.name)
                             }
                         }.toString()
                     )
@@ -70,7 +71,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive(Activity.USERS_LIST.name)
                             }
                         }.toString()
                     )
@@ -86,7 +87,7 @@ class UserControllerTest {
     fun `user create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users") {
@@ -95,7 +96,7 @@ class UserControllerTest {
                         json {
                             "email" to "candidate@gmail.com"
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
+                                +JsonPrimitive(Activity.USERS_LIST.name)
                             }
                             "firstName" to "Interesting"
                             "lastName" to "Candidate"
@@ -107,7 +108,7 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains("PENDING") ?: false)
+                    Assertions.assertTrue(response.content?.contains(Status.PENDING.name) ?: false)
                     Assertions.assertTrue(response.content?.contains("candidate") ?: false)
                 }
             }
@@ -118,7 +119,7 @@ class UserControllerTest {
     fun `invite pending user`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val userId = database.createMember(status = Status.PENDING)
 
@@ -128,7 +129,7 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains("WAIT_CONFIRM") ?: false)
+                    Assertions.assertTrue(response.content?.contains(Status.WAIT_CONFIRM.name) ?: false)
                 }
             }
         }
@@ -138,7 +139,7 @@ class UserControllerTest {
     fun `archive pending user`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val userId = database.createMember(status = Status.PENDING)
                 val reason = "Some reason to archive"
@@ -156,7 +157,7 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains("ARCHIVED") ?: false)
+                    Assertions.assertTrue(response.content?.contains(Status.ARCHIVED.name) ?: false)
                     Assertions.assertTrue(response.content?.contains(reason) ?: false)
                 }
             }
@@ -167,7 +168,7 @@ class UserControllerTest {
     fun `update user activities`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val userId = database.createMember()
 
@@ -176,8 +177,8 @@ class UserControllerTest {
                     setBody(
                         json {
                             "activities" to jsonArray {
-                                +JsonPrimitive("MEMBER")
-                                +JsonPrimitive("ADMIN")
+                                +JsonPrimitive(Activity.USERS_LIST.name)
+                                +JsonPrimitive(Activity.PROJECTS_SHOW_ANY.name)
                             }
                         }.toString()
                     )
@@ -187,8 +188,8 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains("MEMBER") ?: false)
-                    Assertions.assertTrue(response.content?.contains("ADMIN") ?: false)
+                    Assertions.assertTrue(response.content?.contains(Activity.USERS_LIST.name) ?: false)
+                    Assertions.assertTrue(response.content?.contains(Activity.PROJECTS_SHOW_ANY.name) ?: false)
                 }
             }
         }

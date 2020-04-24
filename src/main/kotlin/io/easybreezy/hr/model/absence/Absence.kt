@@ -1,6 +1,7 @@
 package io.easybreezy.hr.model.absence
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -32,6 +33,7 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     fun edit(startedAt: LocalDate, endedAt: LocalDate, reason: Reason) {
+        require(!isApproved) { throw LogicException("Approved absence can not be edited") }
         this.startedAt = startedAt
         this.endedAt = endedAt
         this.reason = reason

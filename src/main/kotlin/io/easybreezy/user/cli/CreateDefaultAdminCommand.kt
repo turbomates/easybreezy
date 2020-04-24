@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 
-class CreateDefaultUserCommand {
+class CreateDefaultAdminCommand {
 
     companion object {
         private const val EMAIL = "admin@admin.my"
@@ -27,7 +27,7 @@ class CreateDefaultUserCommand {
                 if (Users.select { Users.email[EmailTable.email] eq EMAIL }.count().compareTo(0) == 0) {
                     val user = User.invite(
                         Email.create(EMAIL),
-                        mutableSetOf(Activity.ADMIN.name)
+                        Activity.values().map { it.name }.toSet()
                     )
                     user.confirm(Password.create("adminpass"), "admin", "admin")
                 }
