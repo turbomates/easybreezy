@@ -50,7 +50,7 @@ class ProjectControllerTest {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/change-slug") {
                     addHeader("Content-Type", "application/json")
                     setBody(json { "slug" to "my-project-new" }.toString())
