@@ -7,18 +7,19 @@ import {
   editProjectRoleAsync,
   removeProjectRoleAsync,
   openProjectDescriptionFormAction,
-  clearStateAction,
   closeProjectDescriptionFormAction,
+  fetchProjectRoleAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
 import { normalizeErrors } from "utils/error";
-import { Project } from "ProjectModels";
+import { Project, RolePermissions } from "ProjectModels";
 
 export interface State {
   project: Project | null;
   loading: boolean;
   errors: FormErrorMap;
   isOpenDescriptionForm: boolean;
+  rolePermissions: RolePermissions;
 }
 
 const initialSate: State = {
@@ -26,6 +27,7 @@ const initialSate: State = {
   isOpenDescriptionForm: false,
   loading: false,
   errors: {},
+  rolePermissions: [],
 };
 
 export const reducer = createReducer<State>(initialSate)
@@ -126,4 +128,7 @@ export const reducer = createReducer<State>(initialSate)
     ...state,
     loading: false,
   }))
-  .handleAction(clearStateAction, (state, action) => (state = initialSate));
+  .handleAction(fetchProjectRoleAsync.success, (state, action) => ({
+    ...state,
+    rolePermissions: action.payload,
+  }));

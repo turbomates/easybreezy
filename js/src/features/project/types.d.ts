@@ -72,4 +72,6 @@ declare module "ProjectModels" {
     pageSize?: number;
     currentPage?: number;
   }
+  
+  export type RolePermissions = string[]
 }

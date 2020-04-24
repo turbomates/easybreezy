@@ -9,7 +9,7 @@ export const ProjectRoleFormTableWrapper: React.FC<Props> = ({
   children,
 }) => {
   return (
-    <table>
+    <table className="role-form">
       <thead>
         <tr>
           <th />

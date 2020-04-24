@@ -22,7 +22,7 @@ export const SiderMenu: FC<{}> = () => {
           <UserOutlined /> <span>Timeline</span>
         </Link>
       </Menu.Item>
-      <Menu.Item key="projects">
+      <Menu.Item key="/projects">
         <Link to="/projects">
           <LaptopOutlined />
           <span>Projects</span>
