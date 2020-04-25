@@ -21,7 +21,8 @@
   * [Change category to project](#12-change-category-to-project)
   * [Add category to project](#13-add-category-to-project)
   * [List of projects](#14-list-of-projects)
-  * [List of permissions](#15-list-of-permissions)
+  * [List of my projects](#15-list-of-my-projects)
+  * [List of permissions](#16-list-of-permissions)
 
 --------
 
@@ -410,7 +411,40 @@ URL: localhost:3000/api/projects
 }
 ```
 
-### 15. List of permissions 
+
+### 15. List of my projects
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: localhost:3000/api/projects/my
+```
+
+***Response:***
+
+```js        
+{
+    "pageSize": 30,
+    "currentPage": 1,
+    "hasMore": false,
+    "data": [
+        {
+            "id": "4a658ede-b156-4f10-9d49-2fbaf802b4f2",
+            "slug": "myproject",
+            "name": "My project",
+            "status": "Active",
+            "description": "New description"
+        }
+    ]
+}
+```
+
+
+
+### 16. List of permissions 
 
 
 

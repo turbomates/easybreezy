@@ -1,21 +1,30 @@
 package io.easybreezy.user.api
 
 import com.google.inject.Inject
-import io.easybreezy.infrastructure.ktor.*
+import io.easybreezy.infrastructure.ktor.GenericPipeline
+import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
+import io.easybreezy.infrastructure.ktor.get
+import io.easybreezy.infrastructure.ktor.post
+import io.easybreezy.infrastructure.ktor.postParams
 import io.easybreezy.user.api.controller.UserController
-import io.easybreezy.user.application.*
+import io.easybreezy.user.application.Archive
+import io.easybreezy.user.application.Confirm
+import io.easybreezy.user.application.Create
+import io.easybreezy.user.application.Invite
+import io.easybreezy.user.application.UpdateActivities
+import io.easybreezy.user.application.UpdateContacts
 import io.easybreezy.user.application.queryobject.User
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
 import io.ktor.routing.Route
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import java.util.*
+import java.util.UUID
 
 class Router @Inject constructor(
     application: Application,
@@ -36,11 +45,8 @@ class Router @Inject constructor(
     }
 
     private fun Route.userRouting() {
-        authorize(setOf(Activity.USERS_LIST)) {
-            get<Response.Listing<User>>("") { controller<UserController>(this).users() }
-        }
-
         authorize(setOf(Activity.USERS_MANAGE)) {
+            get<Response.Listing<User>>("") { controller<UserController>(this).users() }
             post<Response.Either<Response.Ok, Response.Errors>, Invite>("/invite") { invite ->
                 controller<UserController>(this).invite(invite)
             }
@@ -55,6 +61,9 @@ class Router @Inject constructor(
             }
             post<Response.Either<Response.Ok, Response.Errors>, UpdateActivities, ID>("/{id}/activities") { command, params ->
                 controller<UserController>(this).updateActivities(params.id, command)
+            }
+            post<Response.Either<Response.Ok, Response.Errors>, UpdateContacts, ID>("/update-contacts/{id}") { command, params ->
+                controller<UserController>(this).updateContacts(command, params.id)
             }
         }
 

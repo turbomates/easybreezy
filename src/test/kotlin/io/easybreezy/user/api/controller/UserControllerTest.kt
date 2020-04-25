@@ -178,7 +178,7 @@ class UserControllerTest {
                         json {
                             "activities" to jsonArray {
                                 +JsonPrimitive(Activity.USERS_LIST.name)
-                                +JsonPrimitive(Activity.PROJECTS_SHOW_ANY.name)
+                                +JsonPrimitive(Activity.PROJECTS_SHOW.name)
                             }
                         }.toString()
                     )
@@ -189,7 +189,7 @@ class UserControllerTest {
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                     Assertions.assertTrue(response.content?.contains(Activity.USERS_LIST.name) ?: false)
-                    Assertions.assertTrue(response.content?.contains(Activity.PROJECTS_SHOW_ANY.name) ?: false)
+                    Assertions.assertTrue(response.content?.contains(Activity.PROJECTS_SHOW.name) ?: false)
                 }
             }
         }

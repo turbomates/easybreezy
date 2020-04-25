@@ -184,8 +184,8 @@ class ProjectControllerTest {
                     setBody(json {
                         "name" to "Tester"
                         "permissions" to jsonArray {
-                            +Role.Permission.PROJECT.name
-                            +Role.Permission.TEAM.name
+                            +Role.Permission.PROJECTS_MANAGE.name
+                            +Role.Permission.PROJECT_SHOW.name
                         }
                     }
                         .toString())
@@ -214,7 +214,7 @@ class ProjectControllerTest {
                     setBody(
                         json {
                             "permissions" to jsonArray {
-                                +Role.Permission.PROJECT.name
+                                +Role.Permission.PROJECTS_MANAGE.name
                             }
                         }
                             .toString())
@@ -224,7 +224,7 @@ class ProjectControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                    Assertions.assertTrue(response.content?.contains(Role.Permission.PROJECT.name)!!)
+                    Assertions.assertTrue(response.content?.contains(Role.Permission.PROJECTS_MANAGE.name)!!)
                 }
             }
         }

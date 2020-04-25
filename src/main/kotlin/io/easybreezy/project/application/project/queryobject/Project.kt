@@ -7,10 +7,16 @@ import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.UUID
 
 class ProjectQO(private val slug: String) : QueryObject<Project> {
@@ -26,6 +32,16 @@ class ProjectQO(private val slug: String) : QueryObject<Project> {
             .toProjectJoined()
             .single()
     }
+}
+
+class MyProjectsQO(private val user: UUID, private val paging: PagingParameters) :
+    QueryObject<ContinuousList<Project>> {
+    override suspend fun getData() =
+        Projects
+            .leftJoin(Teams)
+            .leftJoin(Members)
+            .select { (Projects.author eq user) or (Members.user eq user) }
+            .toContinuousList(paging, ResultRow::toProject)
 }
 
 class ProjectsQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Project>> {

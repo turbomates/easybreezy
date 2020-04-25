@@ -8,15 +8,24 @@ import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
+import io.easybreezy.infrastructure.ktor.auth.containsAny
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
-import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.ktor.postParams
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
-import io.easybreezy.project.application.member.queryobject.IsProjectMember
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
-import io.easybreezy.project.application.project.command.*
+import io.easybreezy.project.application.member.queryobject.MemberActivities
+import io.easybreezy.project.application.project.command.ChangeCategory
+import io.easybreezy.project.application.project.command.ChangeRole
+import io.easybreezy.project.application.project.command.ChangeSlug
+import io.easybreezy.project.application.project.command.New
+import io.easybreezy.project.application.project.command.NewCategory
+import io.easybreezy.project.application.project.command.NewRole
+import io.easybreezy.project.application.project.command.RemoveCategory
+import io.easybreezy.project.application.project.command.RemoveRole
+import io.easybreezy.project.application.project.command.WriteDescription
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.ActivateTeam
 import io.easybreezy.project.application.team.command.ChangeMemberRole
@@ -27,6 +36,7 @@ import io.easybreezy.project.application.team.command.RemoveMember
 import io.easybreezy.project.application.team.queryobject.Team
 import io.easybreezy.project.model.team.Role
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.auth.authenticate
 import io.ktor.auth.principal
 import io.ktor.locations.locations
@@ -57,43 +67,21 @@ class Router @Inject constructor(
 
     private fun Route.teamRoutes() {
         data class TeamId(val teamId: UUID)
-        authorize(setOf(Activity.TEAMS_CREATE)) {
+        authorize(setOf(Activity.PROJECTS_MANAGE)) {
+            data class TeamMember(val teamId: UUID, val memberId: UUID)
             post<Response.Either<Response.Ok, Response.Errors>, NewTeam>("/add") { command ->
                 controller<TeamController>(this).newTeam(command)
             }
-        }
-
-        authorize(setOf(Activity.TEAMS_SHOW_MY, Activity.TEAMS_SHOW_ANY), {
-            val principal = principal<UserPrincipal>()
-            if (!principal?.activities?.contains(Activity.TEAMS_SHOW_ANY)!!) {
-                val teamId = locations.resolve<TeamId>(this).teamId
-                queryExecutor.execute(IsTeamMember(principal.id, teamId))
-            } else true
-        }) {
-            get<Response.Data<Team>, TeamId>("/{teamId}") { params ->
-                controller<TeamController>(this).show(params.teamId)
-            }
-        }
-
-        authorize(setOf(Activity.TEAMS_ADD_MEMBERS)) {
             post<Response.Either<Response.Ok, Response.Errors>, NewMember, TeamId>("/{teamId}/members/add") { command, params ->
                 command.team = params.teamId
                 controller<TeamController>(this).newMember(command)
             }
-        }
-
-        authorize(setOf(Activity.TEAMS_MANAGE)) {
             post<Response.Ok, ActivateTeam, TeamId>("/{teamId}/activate") { _, params ->
                 controller<TeamController>(this).activate(params.teamId)
             }
             post<Response.Ok, CloseTeam, TeamId>("/{teamId}/close") { _, params ->
                 controller<TeamController>(this).close(params.teamId)
             }
-        }
-
-
-        authorize(setOf(Activity.TEAMS_MEMBERS_MANAGE)) {
-            data class TeamMember(val teamId: UUID, val memberId: UUID)
             post<Response.Either<Response.Ok, Response.Errors>, RemoveMember, TeamMember>("/{teamId}/members/{memberId}/remove") { command, params ->
                 command.memberId = params.memberId
                 command.team = params.teamId
@@ -103,6 +91,18 @@ class Router @Inject constructor(
                 command.team = params.teamId
                 command.memberId = params.memberId
                 controller<TeamController>(this).changeMemberRole(command)
+            }
+        }
+
+        authorize(setOf(Activity.PROJECTS_SHOW), {
+            val principal = principal<UserPrincipal>()
+            principal?.let {
+                val teamId = locations.resolve<TeamId>(this).teamId
+                queryExecutor.execute(IsTeamMember(principal.id, teamId))
+            } ?: false
+        }) {
+            get<Response.Data<Team>, TeamId>("/{teamId}") { params ->
+                controller<TeamController>(this).show(params.teamId)
             }
         }
     }
@@ -115,15 +115,19 @@ class Router @Inject constructor(
             }
         }
 
-        authorize(setOf(Activity.PROJECTS_CREATE)) {
+        authorize(setOf(Activity.PROJECTS_MANAGE)) {
             post<Response.Either<Response.Ok, Response.Errors>, NewRequest>("") { request ->
                 controller<ProjectController>(this).create(request.makeCommand(resolvePrincipal<UserPrincipal>()))
             }
         }
-        authorize(setOf(Activity.PROJECTS_SHOW_ANY)) {
+        authorize(setOf(Activity.PROJECTS_SHOW)) {
             get<Response.Listing<Project>>("") {
                 controller<ProjectController>(this).list()
             }
+        }
+
+        get<Response.Listing<Project>>("/my") {
+            controller<ProjectController>(this).myList(resolvePrincipal<UserPrincipal>())
         }
 
         get<Response.Data<List<Role.Permission>>>("/permissions") {
@@ -131,16 +135,7 @@ class Router @Inject constructor(
         }
 
         route("/{slug}") {
-            @Serializable
-            data class SlugParam(val slug: String)
-
-            authorize(setOf(Activity.PROJECTS_SHOW_MY, Activity.PROJECTS_SHOW_ANY), {
-                val principal = principal<UserPrincipal>()
-                if (!principal?.activities?.contains(Activity.PROJECTS_SHOW_ANY)!!) {
-                    val slug = locations.resolve<SlugParam>(this).slug
-                    queryExecutor.execute(IsProjectMember(principal.id, slug))
-                } else true
-            }) {
+            authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
                 }
@@ -163,9 +158,6 @@ class Router @Inject constructor(
                     command.project = params.slug
                     controller<ProjectController>(this).writeDescription(command)
                 }
-            }
-
-            authorize(setOf(Activity.PROJECTS_ROLES_MANAGE)) {
                 data class ProjectRole(val slug: String, val roleId: UUID)
                 post<Response.Either<Response.Ok, Response.Errors>, NewRole, SlugParam>("/roles/add") { command, params ->
                     command.project = params.slug
@@ -181,9 +173,6 @@ class Router @Inject constructor(
                     command.project = params.slug
                     controller<ProjectController>(this).removeRole(command)
                 }
-            }
-
-            authorize(setOf(Activity.PROJECTS_CATEGORIES_MANAGE)) {
                 data class ProjectCategory(val slug: String, val categoryId: UUID)
                 post<Response.Either<Response.Ok, Response.Errors>, NewCategory, SlugParam>("/categories/add") { command, params ->
                     command.project = params.slug
@@ -206,4 +195,18 @@ class Router @Inject constructor(
             }
         }
     }
+
+    @Serializable
+    data class SlugParam(val slug: String)
+
+    private suspend fun ApplicationCall.memberHasAccess(activities: Set<Activity>): Boolean {
+        val principal = principal<UserPrincipal>()
+        if (principal === null) {
+            return false
+        }
+        val memberActivities =
+            queryExecutor.execute(MemberActivities(principal.id, locations.resolve<SlugParam>(this).slug))
+        return memberActivities.containsAny(activities)
+    }
 }
+

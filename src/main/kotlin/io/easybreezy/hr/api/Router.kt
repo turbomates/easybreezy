@@ -6,10 +6,13 @@ import io.easybreezy.hr.api.controller.CalendarController
 import io.easybreezy.hr.api.controller.HRController
 import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.api.controller.VacationController
+import io.easybreezy.hr.application.RemainingTime
+import io.easybreezy.hr.application.RemainingTimes
 import io.easybreezy.hr.application.absence.CreateAbsence
 import io.easybreezy.hr.application.absence.UpdateAbsence
 import io.easybreezy.hr.application.absence.queryobject.Absence
 import io.easybreezy.hr.application.absence.queryobject.Absences
+import io.easybreezy.hr.application.absence.queryobject.IsAbsenceOwner
 import io.easybreezy.hr.application.absence.queryobject.UserAbsences
 import io.easybreezy.hr.application.calendar.command.AddHoliday
 import io.easybreezy.hr.application.calendar.command.EditCalendar
@@ -31,19 +34,22 @@ import io.easybreezy.hr.application.hr.queryobject.EmployeeDetails
 import io.easybreezy.hr.application.location.AssignLocation
 import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
+import io.easybreezy.hr.application.location.queryobject.IsUserLocationOwner
 import io.easybreezy.hr.application.location.queryobject.Locations
 import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocations
-import io.easybreezy.hr.application.RemainingTime
-import io.easybreezy.hr.application.RemainingTimes
-import io.easybreezy.hr.application.absence.queryobject.IsAbsenceOwner
-import io.easybreezy.hr.application.location.queryobject.IsUserLocationOwner
-import io.easybreezy.infrastructure.ktor.*
+import io.easybreezy.infrastructure.ktor.GenericPipeline
+import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
 import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
+import io.easybreezy.infrastructure.ktor.delete
+import io.easybreezy.infrastructure.ktor.deleteWithBody
+import io.easybreezy.infrastructure.ktor.get
+import io.easybreezy.infrastructure.ktor.post
+import io.easybreezy.infrastructure.ktor.postParams
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
@@ -77,11 +83,9 @@ class Router @Inject constructor(
 
     private fun Route.absencesRouting() {
         route("/absences") {
-            authorize(setOf(Activity.ABSENCES_SELF_MANAGE, Activity.ABSENCES_MANAGE), {
+            authorize(setOf(Activity.ABSENCES_MANAGE), {
                 val principal = principal<UserPrincipal>()
-                if (!principal?.activities?.contains(Activity.ABSENCES_MANAGE)!!) {
-                    principal.id == receive<CreateAbsence>().userId
-                } else true
+                principal!!.id == receive<CreateAbsence>().userId
             }
             ) {
                 post<Response.Either<Response.Ok, Response.Errors>, CreateAbsence>("") { command ->
@@ -91,12 +95,10 @@ class Router @Inject constructor(
                 }
             }
 
-            authorize(setOf(Activity.ABSENCES_SELF_MANAGE, Activity.ABSENCES_MANAGE), {
+            authorize(setOf(Activity.ABSENCES_MANAGE), {
                 val principal = principal<UserPrincipal>()
-                if (!principal?.activities?.contains(Activity.ABSENCES_MANAGE)!!) {
-                    val absenceId = locations.resolve<ID>(this).id
-                    queryExecutor.execute(IsAbsenceOwner(absenceId, principal.id))
-                } else true
+                val absenceId = locations.resolve<ID>(this).id
+                queryExecutor.execute(IsAbsenceOwner(absenceId, principal!!.id))
             }
             ) {
                 post<Response.Either<Response.Ok, Response.Errors>, UpdateAbsence, ID>("/{id}") { command, params ->
@@ -120,7 +122,7 @@ class Router @Inject constructor(
                 }
             }
 
-            authorize(setOf(Activity.ABSENCES_LIST)) {
+            authorize(setOf(Activity.ABSENCES_LIST, Activity.ABSENCES_MANAGE)) {
                 get<Response.Data<Absences>>("") { controller<AbsenceController>(this).absences() }
             }
 
@@ -137,9 +139,7 @@ class Router @Inject constructor(
 
     private fun Route.locationsRouting() {
         route("/locations") {
-            authorize(
-                setOf(Activity.LOCATIONS_MANAGE)
-            ) {
+            authorize(setOf(Activity.LOCATIONS_MANAGE)) {
                 post<Response.Either<Response.Ok, Response.Errors>, CreateLocation>("") { command ->
                     controller<LocationController>(this).createLocation(command)
                 }
@@ -154,13 +154,10 @@ class Router @Inject constructor(
             }
 
             route("/user") {
-                authorize(setOf(Activity.USER_LOCATIONS_SELF_MANAGE, Activity.USER_LOCATIONS_MANAGE), {
+                authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
                     val principal = principal<UserPrincipal>()
-                    if (!principal?.activities?.contains(Activity.LOCATIONS_MANAGE)!!) {
-                        principal.id == receive<AssignLocation>().userId
-                    } else true
-                }
-                ) {
+                    principal!!.id == receive<AssignLocation>().userId
+                }) {
                     post<Response.Either<Response.Ok, Response.Errors>, AssignLocation>("") { command ->
                         controller<LocationController>(this).assignLocation(
                             command
@@ -168,14 +165,11 @@ class Router @Inject constructor(
                     }
                 }
 
-                authorize(setOf(Activity.USER_LOCATIONS_SELF_MANAGE, Activity.USER_LOCATIONS_MANAGE), {
+                authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
                     val principal = principal<UserPrincipal>()
-                    if (!principal?.activities?.contains(Activity.LOCATIONS_MANAGE)!!) {
-                        val userLocationId = locations.resolve<ID>(this).id
-                        queryExecutor.execute(IsUserLocationOwner(userLocationId, principal.id))
-                    } else true
-                }
-                ) {
+                    val userLocationId = locations.resolve<ID>(this).id
+                    queryExecutor.execute(IsUserLocationOwner(userLocationId, principal!!.id))
+                }) {
                     post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") { command, params ->
                         controller<LocationController>(this).editUserLocation(
                             params.id,
@@ -240,11 +234,9 @@ class Router @Inject constructor(
                 }
             }
 
-            authorize(setOf(Activity.EMPLOYEES_SELF_MANAGE, Activity.EMPLOYEES_MANAGE), {
+            authorize(setOf(Activity.EMPLOYEES_MANAGE), {
                 val principal = principal<UserPrincipal>()
-                if (!principal?.activities?.contains(Activity.EMPLOYEES_MANAGE)!!) {
-                    principal.id == locations.resolve<UserId>(this).userId
-                } else true
+                principal!!.id == locations.resolve<UserId>(this).userId
             }) {
                 post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, UserId>("/specify-skills") { command, params ->
                     controller<HRController>(this).specifySkills(command, params.userId)
@@ -266,7 +258,6 @@ class Router @Inject constructor(
     private fun Route.calendarsRouting() {
         route("/calendars") {
             holidaysRouting()
-
             authorize(setOf(Activity.CALENDARS_MANAGE)) {
                 post<Response.Either<Response.Ok, Response.Errors>, ImportCalendar>("") { command ->
                     controller<CalendarController>(this).importCalendar(command)
@@ -313,18 +304,16 @@ class Router @Inject constructor(
 
     private fun Route.vacationRouting() {
         route("/vacations") {
-            authorize(setOf(Activity.VACATIONS_SHOW_MY, Activity.VACATIONS_SHOW_ANY), {
+            authorize(setOf(Activity.VACATIONS_SHOW), {
                 val principal = principal<UserPrincipal>()
-                if (!principal?.activities?.contains(Activity.VACATIONS_SHOW_ANY)!!) {
-                    principal.id == locations.resolve<UserId>(this).userId
-                } else true
+                principal!!.id == locations.resolve<UserId>(this).userId
             }) {
                 get<Response.Data<RemainingTime>, UserId>("/{userId}") { params ->
                     controller<VacationController>(this).calculateVacation(params.userId)
                 }
             }
 
-            authorize(setOf(Activity.VACATIONS_SHOW_ANY)) {
+            authorize(setOf(Activity.VACATIONS_SHOW)) {
                 get<Response.Data<RemainingTimes>>("") {
                     controller<VacationController>(this).calculateVacations()
                 }
