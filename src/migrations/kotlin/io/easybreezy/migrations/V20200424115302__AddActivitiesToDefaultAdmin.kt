@@ -23,7 +23,7 @@ class V20200424115302__AddActivitiesToDefaultAdmin : BaseJavaMigration() {
                "HOLIDAYS_MANAGE",
                "VACATIONS_SHOW",
                "PROJECTS_MANAGE",
-               "PROJECTS_SHOW",
+               "PROJECTS_SHOW"
             ]' 
             where email_address = 'admin@admin.my';
         """.trimIndent()
