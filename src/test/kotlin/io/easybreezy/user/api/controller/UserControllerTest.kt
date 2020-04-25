@@ -1,9 +1,12 @@
 package io.easybreezy.user.api.controller
 
-import io.easybreezy.*
+import io.easybreezy.createMember
 import io.easybreezy.infrastructure.ktor.auth.Activity
+import io.easybreezy.rollbackTransaction
+import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
 import io.easybreezy.user.model.Status
+import io.easybreezy.withSwagger
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
@@ -34,7 +37,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive(Activity.USERS_LIST.name)
+                                +JsonPrimitive(Activity.USERS_MANAGE.name)
                             }
                         }.toString()
                     )
@@ -57,7 +60,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive(Activity.USERS_LIST.name)
+                                +JsonPrimitive(Activity.USERS_MANAGE.name)
                             }
                         }.toString()
                     )
@@ -71,7 +74,7 @@ class UserControllerTest {
                         json {
                             "email" to "testadmin@testadmin.my"
                             "activities" to jsonArray {
-                                +JsonPrimitive(Activity.USERS_LIST.name)
+                                +JsonPrimitive(Activity.USERS_MANAGE.name)
                             }
                         }.toString()
                     )
@@ -96,7 +99,7 @@ class UserControllerTest {
                         json {
                             "email" to "candidate@gmail.com"
                             "activities" to jsonArray {
-                                +JsonPrimitive(Activity.USERS_LIST.name)
+                                +JsonPrimitive(Activity.USERS_MANAGE.name)
                             }
                             "firstName" to "Interesting"
                             "lastName" to "Candidate"
@@ -177,7 +180,7 @@ class UserControllerTest {
                     setBody(
                         json {
                             "activities" to jsonArray {
-                                +JsonPrimitive(Activity.USERS_LIST.name)
+                                +JsonPrimitive(Activity.USERS_MANAGE.name)
                                 +JsonPrimitive(Activity.PROJECTS_SHOW.name)
                             }
                         }.toString()
@@ -188,7 +191,7 @@ class UserControllerTest {
 
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
-                    Assertions.assertTrue(response.content?.contains(Activity.USERS_LIST.name) ?: false)
+                    Assertions.assertTrue(response.content?.contains(Activity.USERS_MANAGE.name) ?: false)
                     Assertions.assertTrue(response.content?.contains(Activity.PROJECTS_SHOW.name) ?: false)
                 }
             }
