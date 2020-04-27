@@ -2,7 +2,10 @@ package io.easybreezy.project.model.issue
 
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import kotlinx.serialization.builtins.list
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
@@ -19,11 +22,22 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var project by Issues.project
     private var title by Issues.title
     private var description by Issues.description
-   // private var watchers by Issues.watchers
+    private var watchers by Issues.watchers
     private var status by Issues.status
+    private var priority by Issues.priority
 
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {
-        fun open(author: UUID, project: UUID, title: String, description: String, assignee: UUID? = null, category: UUID? = null, watchers: List<UUID>? = null): Issue {
+        fun create(
+            author: UUID,
+            project: UUID,
+            title: String,
+            description: String,
+            priority: Priority = Priority.create(0),
+            assignee: UUID? = null,
+            category: UUID? = null,
+            status: UUID? = null,
+            watchers: List<UUID> = listOf()
+        ): Issue {
             return Issue.new {
                 this.author = author
                 this.project = project
@@ -31,7 +45,9 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.description = description
                 this.assignee = assignee
                 this.category = category
-                //this.watchers = watchers
+                this.watchers = watchers
+                this.status = status
+                this.priority = priority
             }
         }
     }
@@ -55,8 +71,9 @@ object Issues : UUIDTable("issues") {
     val project = uuid("project")
     val title = varchar("title", 255)
     val description = text("description")
-   // val watchers = jsonb("watchers", UUID::class.serializer().list).default(listOf()).nullable()
-    val status = reference("status", Statuses).nullable()
+    val watchers = jsonb("watchers", UUIDSerializer.list)
+    val status = uuid("status").nullable()
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
+    val priority = embedded<Priority>(PriorityTable)
 }

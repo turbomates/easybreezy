@@ -13,8 +13,10 @@ import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.infrastructure.ktor.postParams
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
+import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
 import io.easybreezy.project.application.member.queryobject.MemberActivities
 import io.easybreezy.project.application.project.command.*
@@ -37,6 +39,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import kotlinx.serialization.Serializable
 import java.util.UUID
+import io.easybreezy.project.application.issue.command.New as NewIssue
 
 class Router @Inject constructor(
     application: Application,
@@ -127,6 +130,21 @@ class Router @Inject constructor(
         }
 
         route("/{slug}") {
+
+            authorize(setOf(Activity.ISSUES_SHOW), { memberHasAccess(setOf(Activity.ISSUES_SHOW)) }) {
+                get<Response.Listing<Issue>, SlugParam>("/issues") { params ->
+                    controller<IssueController>(this).list(params.slug)
+                }
+            }
+
+            authorize(setOf(Activity.ISSUES_MANAGE)) {
+                post<Response.Either<Response.Ok, Response.Errors>, NewIssue, SlugParam>("/issues/add") { new, params ->
+                    new.project = params.slug
+                    new.author = resolvePrincipal<UserPrincipal>()
+                    controller<IssueController>(this).create(new)
+                }
+            }
+
             authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
