@@ -37,11 +37,6 @@ export const createProject = (body: CreateProjectRequest) => {
       success: false,
       errors: resp?.response?.data?.errors || [],
     }));
-
-  // return new Promise(resolve => {
-  //   resolve()
-  // })
-  //   .then<Success<null>>(() => ({success: true, data: null}))
 }
 
 export const createRole = ({slug, roles}: CreateProjectRoleRequest) => {
