@@ -2,6 +2,9 @@ package io.easybreezy.infrastructure.ktor
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.auth.Principal
+import io.easybreezy.infrastructure.ktor.openapi.buildOpenApiParametersMap
+import io.easybreezy.infrastructure.ktor.openapi.buildOpenApiResponseMap
+import io.easybreezy.integration.openapi.OpenAPI
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -11,8 +14,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.locations.locations
 import io.ktor.request.receive
 import io.ktor.routing.Route
+import io.ktor.routing.application
 import io.ktor.routing.method
 import io.ktor.routing.route
+import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
@@ -22,6 +27,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonOutput
 import java.util.UUID
+import kotlin.reflect.typeOf
 
 open class Router @Inject constructor(
     protected val application: Application,
@@ -54,6 +60,11 @@ inline fun <reified TResponse : Response> Route.post(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.() -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class)
+    )
     return route(path, HttpMethod.Post) {
         handle {
             call.respond(body())
@@ -65,6 +76,12 @@ inline fun <reified TResponse : Response, reified TBody : Any> Route.post(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody) -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class),
+        buildOpenApiParametersMap(typeOf<TBody>())
+    )
     return route(path, HttpMethod.Post) {
         handle {
             call.respond(body(call.receive()))
@@ -76,6 +93,12 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.postParam
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class),
+        pathParams = buildOpenApiParametersMap(typeOf<TParams>())
+    )
     return route(path, HttpMethod.Post) {
         handle {
             call.respond(body(locations.resolve(TParams::class, call)))
@@ -87,6 +110,13 @@ inline fun <reified TResponse : Response, reified TBody : Any, reified TParams :
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TParams) -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class),
+        buildOpenApiParametersMap(typeOf<TBody>()),
+        buildOpenApiParametersMap(typeOf<TParams>())
+    )
     return route(path, HttpMethod.Post) {
         handle {
             call.respond(body(call.receive(), locations.resolve(TParams::class, call)))
@@ -98,6 +128,13 @@ inline fun <reified TResponse : Response, reified TBody : Any, reified TQuery : 
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody, TPath, TQuery) -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class),
+        buildOpenApiParametersMap(typeOf<TBody>()),
+        buildOpenApiParametersMap(typeOf<TQuery>())
+    )
     return route(path, HttpMethod.Post) {
         handle {
             call.respond(
@@ -125,6 +162,11 @@ inline fun <reified TResponse : Response> Route.get(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.() -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class)
+    )
     return route(path, HttpMethod.Get) {
         handle {
             call.respond(body())
@@ -136,6 +178,12 @@ inline fun <reified TResponse : Response, reified TParams : Any> Route.get(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class),
+        buildOpenApiParametersMap(typeOf<TParams>())
+    )
     return route(path, HttpMethod.Get) {
         handle {
             call.respond(body(locations.resolve(TParams::class, call)))
@@ -147,6 +195,12 @@ inline fun <reified TResponse : Response, reified TQuery : Any, reified TPath : 
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TPath, TQuery) -> TResponse
 ): Route {
+    openApi.addPath(
+        path,
+        OpenAPI.Method.valueOf(HttpMethod.Post.value),
+        buildOpenApiResponseMap(typeOf<TResponse>(), TResponse::class),
+        buildOpenApiParametersMap(typeOf<TQuery>())
+    )
     return route(path, HttpMethod.Get) {
         handle {
             call.respond(body(locations.resolve(TPath::class, call), locations.resolve(TQuery::class, call)))
@@ -256,3 +310,10 @@ data class SerializableResponse(val response: Response) {
         }
     }
 }
+
+val Route.openApi: OpenAPI
+    get() {
+        return this.application.attributes[OpenApiKey]
+    }
+
+val OpenApiKey = AttributeKey<OpenAPI>("OpenApi")

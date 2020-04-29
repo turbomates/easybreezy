@@ -72,7 +72,7 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
 
     private fun routes(route: Route) {
         route.route("/api/authorization/rules") {
-            get<Response.Data<Map<String, List<String>>>> {
+            get {
                 Response.Data(
                     call.application.feature(Authorization).rules().buildMap()
                 )

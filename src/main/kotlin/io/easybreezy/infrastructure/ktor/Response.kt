@@ -31,8 +31,7 @@ sealed class Response {
 
     class Listing<T : Any>(val list: ContinuousList<T>) : Response()
 
-    class Either<TL : Response, TR : Response>(val data: io.easybreezy.infrastructure.structure.Either<TL, TR>) :
-        Response()
+    class Either<TL : Response, TR : Response>(val data: io.easybreezy.infrastructure.structure.Either<TL, TR>) : Response()
 }
 
 object ResponseSerializer : KSerializer<Response> {
