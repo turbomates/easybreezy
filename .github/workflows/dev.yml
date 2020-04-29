@@ -29,18 +29,3 @@ jobs:
         run: ./gradlew migrationsMigrate -Deasybreezy.jdbc.url=jdbc:postgresql://localhost:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
       - name: Run tests
         run: ./gradlew test -Deasybreezy.jdbc.url=jdbc:postgresql://localhost:5432/easybreazy -Deasybreezy.jdbc.user=webmaster -Deasybreezy.jdbc.password=test
-
-  ktlint:
-    name: Check Code Quality
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Clone repo
-        uses: actions/checkout@master
-        with:
-          fetch-depth: 1
-      - name: ktlint
-        uses: ScaCap/action-ktlint@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-check # Change reporter
