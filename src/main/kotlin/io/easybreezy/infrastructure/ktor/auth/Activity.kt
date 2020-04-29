@@ -33,7 +33,7 @@ enum class Activity {
 
 object Activities : Constraint {
     override val name: String
-        get() = "Not enough permissions"
+        get() = "Invalid activity"
 }
 
 fun <E> Validator<E>.Property<Iterable<String>?>.isActivities() {

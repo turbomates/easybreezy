@@ -296,8 +296,8 @@ class Router @Inject constructor(
                 }
             }
 
-            get<Response.Data<Holidays>>("") {
-                controller<CalendarController>(this).holidays()
+            get<Response.Data<Holidays>, ID>("/{id}") { params ->
+                controller<CalendarController>(this).holidays(params.id)
             }
         }
     }

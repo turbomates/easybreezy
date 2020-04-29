@@ -91,7 +91,7 @@ class CalendarController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun holidays(): Response.Data<Holidays> {
-        return Response.Data(queryExecutor.execute(HolidaysQO()))
+    suspend fun holidays(calendarId: UUID): Response.Data<Holidays> {
+        return Response.Data(queryExecutor.execute(HolidaysQO(calendarId)))
     }
 }

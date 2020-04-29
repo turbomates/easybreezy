@@ -132,7 +132,7 @@ URL: localhost:3000/api/hr/calendars/holidays
 ```bash
 Method: GET
 Type: RAW
-URL: localhost:3000/api/hr/calendars/holidays
+URL: localhost:3000/api/hr/calendars/holidays/{calendarId}
 ```
 
 
@@ -142,7 +142,169 @@ URL: localhost:3000/api/hr/calendars/holidays
 | --- | ------|-------------|
 | Content-Type | application/json |  |
 
+***Responses:***
 
+
+Status: Success | Code: 200
+
+```js
+{
+    "data": {
+        "holidays": [
+            {
+                "name": " New Year's Day",
+                "day": "2020-01-01",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Day after New Year's Day",
+                "day": "2020-01-02",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Orthodox Christmas",
+                "day": "2020-01-07",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Women's Day",
+                "day": "2020-03-08",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Commemoration Day",
+                "day": "2020-04-28",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Labour Day",
+                "day": "2020-05-01",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Victory Day",
+                "day": "2020-05-09",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Independence Day",
+                "day": "2020-07-03",
+                "isWorkingDay": false
+            },
+            {
+                "name": " October Revolution Day",
+                "day": "2020-11-07",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Christmas Day (Catholic)",
+                "day": "2020-12-25",
+                "isWorkingDay": false
+            },
+            {
+                "name": " New Year's Day",
+                "day": "2021-01-01",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Day after New Year's Day",
+                "day": "2021-01-02",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Orthodox Christmas",
+                "day": "2021-01-07",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Women's Day",
+                "day": "2021-03-08",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Labour Day",
+                "day": "2021-05-01",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Victory Day",
+                "day": "2021-05-09",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Commemoration Day",
+                "day": "2021-05-11",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Independence Day",
+                "day": "2021-07-03",
+                "isWorkingDay": false
+            },
+            {
+                "name": " October Revolution Day",
+                "day": "2021-11-07",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Christmas Day (Catholic)",
+                "day": "2021-12-25",
+                "isWorkingDay": false
+            },
+            {
+                "name": " New Year's Day",
+                "day": "2022-01-01",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Day after New Year's Day",
+                "day": "2022-01-02",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Orthodox Christmas",
+                "day": "2022-01-07",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Women's Day",
+                "day": "2022-03-08",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Labour Day",
+                "day": "2022-05-01",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Commemoration Day",
+                "day": "2022-05-03",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Victory Day",
+                "day": "2022-05-09",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Independence Day",
+                "day": "2022-07-03",
+                "isWorkingDay": false
+            },
+            {
+                "name": " October Revolution Day",
+                "day": "2022-11-07",
+                "isWorkingDay": false
+            },
+            {
+                "name": " Christmas Day (Catholic)",
+                "day": "2022-12-25",
+                "isWorkingDay": false
+            }
+        ]
+    }
+}
+```
 
 ### 5. Get Calendars
 
