@@ -19,14 +19,14 @@ export const CreateProjectForm: React.FC<Props> = ({
 }) => {
   const [form] = Form.useForm();
 
-  useFormServerErrors(form, errors, ["name", "description"]);
+  useFormServerErrors(form, errors, ["name", "description", "slug"]);
 
   const onFinish = useCallback(
     (values: any) => {
       create({
         description: values.description,
         name: values.name,
-        slug: convertToSlug(values.name)
+        slug: !!values.slug ? convertToSlug(values.slug) : convertToSlug(values.name)
       });
     },
     [create],
@@ -55,6 +55,13 @@ export const CreateProjectForm: React.FC<Props> = ({
         label="Description"
         name="description"
         rules={[{ required: true, message: "Please input Description!" }]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="Slug"
+        name="slug"
       >
         <Input />
       </Form.Item>
