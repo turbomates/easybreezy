@@ -12,8 +12,13 @@ import {
   ApplyPositionRequestParams,
   ApplySalaryRequestParams,
   AbsencesMap,
+  Absence,
+  MyAbsencesResponse,
+  CreateAbsenceData,
+  UpdateAbsenceData,
 } from "HumanResourceModels";
 import { ProfileResponse, Profile } from "AccountModules";
+import { FormFailure } from "MyTypes";
 
 export const fetchEmployees = () =>
   api
@@ -108,5 +113,56 @@ export const fetchAbsences = () =>
     .then<Success<AbsencesMap>>((resp) => ({
       success: true,
       data: resp.data.data.absences,
+    }))
+    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+
+export const fetchMyAbsences = () =>
+  api
+    .get<MyAbsencesResponse>("hr/absences/me")
+    .then<Success<Absence[]>>((resp) => ({
+      success: true,
+      data: resp.data.data.absences,
+    }))
+    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+
+export const approveAbsence = (absenceId: string) =>
+  api
+    .post<MyAbsencesResponse>(`hr/absences/${absenceId}/approve`)
+    .then<Success<null>>((resp) => ({
+      success: true,
+      data: null,
+    }))
+    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+
+export const createAbsence = (data: CreateAbsenceData) =>
+  api
+    .post<MyAbsencesResponse>(`hr/absences`, data)
+    .then<Success<null>>((resp) => ({
+      success: true,
+      data: null,
+    }))
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
+
+export const updateAbsence = (data: UpdateAbsenceData) =>
+  api
+    .post(`hr/absences/${data.absenceId}`, data.form)
+    .then<Success<null>>((resp) => ({
+      success: true,
+      data: null,
+    }))
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
+
+export const removeAbsence = (absenceId: string) =>
+  api
+    .delete(`hr/absences/${absenceId}`)
+    .then<Success<null>>((resp) => ({
+      success: true,
+      data: null,
     }))
     .catch<Failure>(() => ({ success: false, reason: "Error" }));

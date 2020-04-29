@@ -6,6 +6,7 @@ import {
   map,
   catchError,
   debounceTime,
+  mergeMap,
 } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 
@@ -23,6 +24,13 @@ import {
   removeEmployeeLocationAsync,
   editEmployeeLocationAsync,
   fetchAbsencesAsync,
+  fetchMyAbsencesAsync,
+  approveAbsenceAsync,
+  createAbsenceAsync,
+  refetchMyAbsencesAsync,
+  removeAbsenceAsync,
+  updateAbsenceAsync,
+  closeAbsenceUpdateModal,
 } from "./actions";
 
 export const fetchAbsencesEpic: RootEpic = (action$, state$, { api }) =>
@@ -38,6 +46,108 @@ export const fetchAbsencesEpic: RootEpic = (action$, state$, { api }) =>
         catchError((message) => of(fetchAbsencesAsync.failure(message))),
       ),
     ),
+  );
+
+export const fetchMyAbsencesEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchMyAbsencesAsync.request)),
+    switchMap(() =>
+      from(api.humanResource.fetchMyAbsences()).pipe(
+        map((result) =>
+          result.success
+            ? fetchMyAbsencesAsync.success(result.data)
+            : fetchMyAbsencesAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const refetchMyAbsencesEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(refetchMyAbsencesAsync.request)),
+    switchMap(() =>
+      from(api.humanResource.fetchMyAbsences()).pipe(
+        map((result) =>
+          result.success
+            ? refetchMyAbsencesAsync.success(result.data)
+            : refetchMyAbsencesAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const approveAbsenceEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(approveAbsenceAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.approveAbsence(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? approveAbsenceAsync.success()
+            : approveAbsenceAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const createAbsenceEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(createAbsenceAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.createAbsence(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? createAbsenceAsync.success()
+            : createAbsenceAsync.failure(result.errors),
+        ),
+      ),
+    ),
+  );
+
+export const updateAbsenceEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(updateAbsenceAsync.request)),
+    switchMap((action) =>
+      from(
+        api.humanResource.updateAbsence({
+          form: action.payload,
+          absenceId: state$.value.humanResource.absences.my.absenceToUpdateId!,
+        }),
+      ).pipe(
+        mergeMap((result) =>
+          result.success
+            ? of(updateAbsenceAsync.success(), closeAbsenceUpdateModal())
+            : of(updateAbsenceAsync.failure(result.errors)),
+        ),
+      ),
+    ),
+  );
+
+export const removeAbsenceEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(removeAbsenceAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.removeAbsence(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? removeAbsenceAsync.success()
+            : removeAbsenceAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const refetchMyAbsenceEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(
+      isActionOf([
+        approveAbsenceAsync.success,
+        createAbsenceAsync.success,
+        removeAbsenceAsync.success,
+        updateAbsenceAsync.success,
+      ]),
+    ),
+    switchMap(() => of(refetchMyAbsencesAsync.request())),
   );
 
 export const fetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
