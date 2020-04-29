@@ -22,8 +22,8 @@
     min-width: 290px;
   }
 
-  &__input {
-    width: 200px !important;
+  &__input.ant-input {
+    width: 200px;
   }
 
   th {

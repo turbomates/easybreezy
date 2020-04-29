@@ -27,7 +27,7 @@ declare module "ProjectModels" {
   interface Role {
     id: string;
     name: string;
-    permissions: string[];
+    permissions: RolePermissions;
   }
 
   interface Team {

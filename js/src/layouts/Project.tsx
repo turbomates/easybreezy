@@ -2,7 +2,7 @@ import React from "react";
 import { Layout } from "antd";
 import { useParams } from "react-router"
 
-import { ProjectSideMenu } from "../features/project/components/ProjectSideMenu"
+import { ProjectHeaderMenu } from "../features/project/components/ProjectHeaderMenu"
 
 import "./Project.scss";
 
@@ -14,7 +14,7 @@ export const Project: React.FC = ({ children }) => {
   return (
     <Layout className="project-layout">
       <Header className="project-header">
-        <ProjectSideMenu slug={slug}/>
+        <ProjectHeaderMenu slug={slug}/>
       </Header>
       <Layout>
         <Content>{children}</Content>

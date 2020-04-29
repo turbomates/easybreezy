@@ -95,7 +95,7 @@ export const ProjectPage: React.FC = () => {
           />
         )}
 
-        {!!project && isOpenProjectDescriptionForm && (
+        {isOpenProjectDescriptionForm && (
           <ProjectDescriptionForm
             edit={editProjectDescription}
             close={closeProjectDescriptionForm}

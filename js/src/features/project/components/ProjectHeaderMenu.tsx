@@ -6,7 +6,7 @@ interface Props {
   slug: string;
 }
 
-export const ProjectSideMenu: React.FC<Props> = ({ slug }) => {
+export const ProjectHeaderMenu: React.FC<Props> = ({ slug }) => {
   const location = useLocation();
 
   return (

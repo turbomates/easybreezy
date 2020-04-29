@@ -254,7 +254,7 @@ export const ProjectRoleForm: React.FC<Props> = ({
       <tfoot>
         <tr>
           <td>
-            <Button onClick={() => addFormField()} type="primary">
+            <Button onClick={addFormField} type="primary">
               Add role
             </Button>
           </td>

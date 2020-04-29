@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router";
+import { useParams } from "react-router";
 import { Card } from "antd";
 
 import { ProjectRoleForm } from "../features/project/components/ProjectRoleForm";
@@ -23,7 +23,6 @@ import {
 
 export const ProjectRolePage: React.FC = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
   const { slug } = useParams<{ slug: string }>();
 
   const fetchProject = useCallback(
@@ -64,7 +63,7 @@ export const ProjectRolePage: React.FC = () => {
   useEffect(() => {
     fetchProject(slug);
     fetchRolePermissions();
-  }, [location, slug, fetchProject, fetchRolePermissions]);
+  }, [slug, fetchProject, fetchRolePermissions]);
 
   if (!project || slug !== project.slug) return null;
 
