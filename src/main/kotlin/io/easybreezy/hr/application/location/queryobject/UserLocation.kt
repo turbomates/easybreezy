@@ -1,4 +1,5 @@
 @file:UseSerializers(UUIDSerializer::class, LocalDateSerializer::class)
+
 package io.easybreezy.hr.application.location.queryobject
 
 import io.easybreezy.hr.model.location.Locations
@@ -7,10 +8,17 @@ import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
-import io.easybreezy.user.model.*
+import io.easybreezy.user.model.EmailTable
+import io.easybreezy.user.model.NameTable
+import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDate
 import java.util.UUID
 
@@ -22,7 +30,7 @@ class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocatio
 }
 
 class UserLocationsQO(private val userId: UUID) : QueryObject<UserLocations> {
-    override suspend fun getData(): UserLocations  {
+    override suspend fun getData(): UserLocations {
         val result = UserLocationsTable
             .innerJoin(Locations)
             .join(Users, JoinType.INNER, additionalConstraint = { Users.id eq userId })

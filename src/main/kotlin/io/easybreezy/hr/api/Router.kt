@@ -34,7 +34,11 @@ import io.easybreezy.hr.application.hr.queryobject.EmployeeDetails
 import io.easybreezy.hr.application.location.AssignLocation
 import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
-import io.easybreezy.hr.application.location.queryobject.*
+import io.easybreezy.hr.application.location.queryobject.IsUserLocationOwner
+import io.easybreezy.hr.application.location.queryobject.Locations
+import io.easybreezy.hr.application.location.queryobject.UserLocation
+import io.easybreezy.hr.application.location.queryobject.UserLocations
+import io.easybreezy.hr.application.location.queryobject.UsersLocations
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router

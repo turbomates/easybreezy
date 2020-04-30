@@ -6,7 +6,14 @@ import io.easybreezy.hr.application.location.CreateLocation
 import io.easybreezy.hr.application.location.EditUserLocation
 import io.easybreezy.hr.application.location.Handler
 import io.easybreezy.hr.application.location.Validation
-import io.easybreezy.hr.application.location.queryobject.*
+import io.easybreezy.hr.application.location.queryobject.Locations
+import io.easybreezy.hr.application.location.queryobject.LocationsQO
+import io.easybreezy.hr.application.location.queryobject.UserLocation
+import io.easybreezy.hr.application.location.queryobject.UserLocationQO
+import io.easybreezy.hr.application.location.queryobject.UserLocations
+import io.easybreezy.hr.application.location.queryobject.UserLocationsQO
+import io.easybreezy.hr.application.location.queryobject.UsersLocations
+import io.easybreezy.hr.application.location.queryobject.UsersLocationsQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
