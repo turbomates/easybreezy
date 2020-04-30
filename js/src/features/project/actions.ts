@@ -11,6 +11,7 @@ import {
   CreateProjectRoleRequest,
   Project,
   ProjectsRequest,
+  RolePermissions,
 } from "ProjectModels";
 
 //PROJECT
@@ -59,6 +60,12 @@ export const removeProjectRoleAsync = createAsyncAction(
   "REMOVE_PROJECT_ROLE_FAILURE",
 )<RemoveProjectRoleRequest, undefined, FormError[]>();
 
+export const fetchProjectRoleAsync = createAsyncAction(
+  "FETCH_PROJECT_ROLE_PERMISSIONS_REQUEST",
+  "FETCH_PROJECT_ROLE_PERMISSIONS_SUCCESS",
+  "FETCH_PROJECT_ROLE_PERMISSIONS_FAILURE",
+)<undefined, RolePermissions, FormError[]>();
+
 // STATUS
 export const changeProjectStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_STATUS_REQUEST",
@@ -80,5 +87,3 @@ export const openProjectDescriptionFormAction = createAction(
 export const closeProjectDescriptionFormAction = createAction(
   "CLOSE_PROJECT_DESCRIPTION_FORM",
 )();
-
-export const clearStateAction = createAction("CLEAR_STATE_ACTION")();

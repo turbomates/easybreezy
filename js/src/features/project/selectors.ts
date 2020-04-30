@@ -14,3 +14,6 @@ export const getErrors = (state: RootState) => state.project.project.errors;
 
 export const getIsOpenProjectDescriptionForm = (state: RootState) =>
   state.project.project.isOpenDescriptionForm;
+
+export const getRolePermissions = (state: RootState) =>
+  state.project.project.rolePermissions;

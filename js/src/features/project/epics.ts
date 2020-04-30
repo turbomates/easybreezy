@@ -12,6 +12,7 @@ import {
   editProjectRoleAsync,
   removeProjectRoleAsync,
   createProjectRoleAsync,
+  fetchProjectRoleAsync,
 } from "./actions";
 
 export const fetchProjectsEpic: RootEpic = (action$, state$, { api }) =>
@@ -123,13 +124,10 @@ export const editProjectRole: RootEpic = (action$, state$, { api }) =>
     filter(isActionOf(editProjectRoleAsync.request)),
     switchMap((action) =>
       from(api.project.editRole(action.payload)).pipe(
-        mergeMap((result) =>
+        map((result) =>
           result.success
-            ? [
-                editProjectRoleAsync.success(),
-                fetchProjectAsync.request(action.payload.slug),
-              ]
-            : [editProjectRoleAsync.failure(result.errors)],
+            ? editProjectRoleAsync.success()
+            : editProjectRoleAsync.failure(result.errors),
         ),
         catchError((message) => of(editProjectRoleAsync.failure(message))),
       ),
@@ -150,6 +148,25 @@ export const removeProjectRole: RootEpic = (action$, state$, { api }) =>
             : [removeProjectRoleAsync.failure(result.errors)],
         ),
         catchError((message) => of(removeProjectRoleAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const fetchProjectRolePermissionsEpic: RootEpic = (
+  action$,
+  state$,
+  { api },
+) =>
+  action$.pipe(
+    filter(isActionOf(fetchProjectRoleAsync.request)),
+    switchMap((action) =>
+      from(api.project.fetchRolePermissions()).pipe(
+        map((result) =>
+          result.success
+            ? fetchProjectRoleAsync.success(result.data)
+            : fetchProjectRoleAsync.failure(result.errors),
+        ),
+        catchError((message) => of(fetchProjectRoleAsync.failure(message))),
       ),
     ),
   );

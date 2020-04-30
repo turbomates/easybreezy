@@ -9,7 +9,6 @@ import {
 } from "ProjectModels";
 import {
   changeProjectStatusAsync,
-  clearStateAction,
   closeProjectDescriptionFormAction,
   editProjectDescriptionAsync,
   fetchProjectAsync,
@@ -24,7 +23,6 @@ import {
 import { ProjectDescriptionForm } from "../features/project/components/ProjectDescriptionForm";
 import { ProjectStatusForm } from "../features/project/components/ProjectStatusForm";
 import { ProjectDescription } from "../features/project/components/ProjectDescription";
-import { useClearState } from "../hooks/useClearState";
 
 export const ProjectPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -72,7 +70,7 @@ export const ProjectPage: React.FC = () => {
     fetchProject(slug);
   }, [location, slug, fetchProject]);
 
-  useClearState(clearStateAction);
+  if (!project || slug !== project.slug) return null;
 
   return (
     <div>
@@ -97,7 +95,7 @@ export const ProjectPage: React.FC = () => {
           />
         )}
 
-        {!!project && isOpenProjectDescriptionForm && (
+        {isOpenProjectDescriptionForm && (
           <ProjectDescriptionForm
             edit={editProjectDescription}
             close={closeProjectDescriptionForm}
