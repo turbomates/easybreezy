@@ -1,14 +1,17 @@
+@file:UseSerializers(UUIDSerializer::class, LocalDateSerializer::class)
 package io.easybreezy.hr.application.location.queryobject
 
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations as UserLocationsTable
 import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.user.model.*
-import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.sql.*
+import java.time.LocalDate
 import java.util.UUID
 
 class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocation> {
@@ -18,7 +21,19 @@ class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocatio
         }.first().toUserLocation()
 }
 
-class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocations> {
+class UserLocationsQO(private val userId: UUID) : QueryObject<UserLocations> {
+    override suspend fun getData(): UserLocations  {
+        val result = UserLocationsTable
+            .innerJoin(Locations)
+            .join(Users, JoinType.INNER, additionalConstraint = { Users.id eq userId })
+            .selectAll()
+            .map { it.toUserLocation() }
+
+        return UserLocations(result)
+    }
+}
+
+class UsersLocationsQO(private val dateRange: DateRange) : QueryObject<UsersLocations> {
     override suspend fun getData() =
         UserLocationsTable
             .innerJoin(Locations)
@@ -29,7 +44,7 @@ class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocati
             .toUserLocations()
 }
 
-class IsUserLocationOwner(val id: UUID, val userId: UUID): QueryObject<Boolean> {
+class IsUserLocationOwner(val id: UUID, val userId: UUID) : QueryObject<Boolean> {
     override suspend fun getData(): Boolean {
         return UserLocationsTable.select {
             UserLocationsTable.id eq id and (UserLocationsTable.userId eq userId)
@@ -39,8 +54,8 @@ class IsUserLocationOwner(val id: UUID, val userId: UUID): QueryObject<Boolean> 
 
 private fun ResultRow.toUserLocation() = UserLocation(
     id = this[UserLocationsTable.id].value,
-    startedAt = this[UserLocationsTable.startedAt].toString(),
-    endedAt = this[UserLocationsTable.endedAt].toString(),
+    startedAt = this[UserLocationsTable.startedAt],
+    endedAt = this[UserLocationsTable.endedAt],
     location = this.toLocation(),
     userId = this[UserLocationsTable.userId].value,
     email = this[Users.email[EmailTable.email]],
@@ -48,7 +63,7 @@ private fun ResultRow.toUserLocation() = UserLocation(
     lastName = this[Users.name[NameTable.lastName]]
 )
 
-private fun Iterable<ResultRow>.toUserLocations(): UserLocations {
+private fun Iterable<ResultRow>.toUserLocations(): UsersLocations {
     val data = fold(mutableMapOf<UUID, MutableList<UserLocation>>()) { map, resultRaw ->
         val userLocation = resultRaw.toUserLocation()
         if (map.containsKey(userLocation.userId)) map[userLocation.userId]?.add(userLocation)
@@ -57,25 +72,25 @@ private fun Iterable<ResultRow>.toUserLocations(): UserLocations {
         map
     }
 
-    return UserLocations(data)
+    return UsersLocations(data)
 }
 
 @Serializable
 data class UserLocation(
-    @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val startedAt: String,
-    val endedAt: String,
+    val startedAt: LocalDate,
+    val endedAt: LocalDate?,
     val location: Location,
-    @Serializable(with = UUIDSerializer::class)
     val userId: UUID,
-    @ContextualSerialization
     val email: String?,
     val firstName: String?,
     val lastName: String?
 )
 
 @Serializable
-data class UserLocations(
-    val userLocations: Map<@Serializable(with = UUIDSerializer::class) UUID, List<UserLocation>>
+data class UsersLocations(
+    val usersLocations: Map<UUID, List<UserLocation>>
 )
+
+@Serializable
+data class UserLocations(val userLocations: List<UserLocation>)
