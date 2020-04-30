@@ -76,7 +76,7 @@ export const CreateProjectForm: React.FC<Props> = ({
         name="slug"
         rules={[
           { required: true, message: "Please input Slug!" },
-          { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: "Please input valid Slug!" },
+          { pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/, message: "Please input valid Slug!" },
         ]}
       >
         <Input />

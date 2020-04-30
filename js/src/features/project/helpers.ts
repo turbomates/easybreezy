@@ -21,6 +21,5 @@ export function switchProjectStatus(
 export function convertToSlug(name: string) {
   return name
     .toLocaleLowerCase()
-    .replace(/[^\w ]+/g, "")
-    .replace(/ +/g, "-");
+    .replace(/[^\w]+/g, "-")
 }

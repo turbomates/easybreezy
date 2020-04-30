@@ -33,7 +33,6 @@ export const ProjectSlugForm: React.FC<Props> = ({
 
   const onFinish = useCallback(
     (values: any) => {
-      console.log(values)
       edit({
         slug: project.slug,
         newSlug: values.slug,
@@ -58,7 +57,7 @@ export const ProjectSlugForm: React.FC<Props> = ({
         rules={[
           { required: true, message: "Please input Slug!" },
           {
-            pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+            pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
             message: "Please input valid Slug!",
           },
         ]}
