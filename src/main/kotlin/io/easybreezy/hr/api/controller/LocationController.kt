@@ -12,6 +12,8 @@ import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocationQO
 import io.easybreezy.hr.application.location.queryobject.UserLocations
 import io.easybreezy.hr.application.location.queryobject.UserLocationsQO
+import io.easybreezy.hr.application.location.queryobject.UsersLocations
+import io.easybreezy.hr.application.location.queryobject.UsersLocationsQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
@@ -75,9 +77,15 @@ class LocationController @Inject constructor(
         return Response.Data(queryExecutor.execute(UserLocationQO(id)))
     }
 
-    suspend fun userLocations(): Response.Data<UserLocations> {
+    suspend fun userLocations(userId: UUID): Response.Data<UserLocations> {
         return Response.Data(
-            queryExecutor.execute(UserLocationsQO(call.request.extractDateRange()))
+            queryExecutor.execute(UserLocationsQO(userId))
+        )
+    }
+
+    suspend fun usersLocations(): Response.Data<UsersLocations> {
+        return Response.Data(
+            queryExecutor.execute(UsersLocationsQO(call.request.extractDateRange()))
         )
     }
 }

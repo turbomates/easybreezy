@@ -1,12 +1,16 @@
+@file:UseSerializers(UUIDSerializer::class, LocalDateSerializer::class)
 package io.easybreezy.hr.application.absence.queryobject
 
 import io.easybreezy.hr.model.absence.Absences as AbsencesTable
 import io.easybreezy.hr.model.absence.Reason
 import io.easybreezy.infrastructure.query.DateRange
 import io.easybreezy.infrastructure.query.QueryObject
+import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.sql.*
+import java.time.LocalDate
 import java.util.UUID
 
 class AbsenceQO(private val absenceId: UUID) : QueryObject<Absence> {
@@ -57,8 +61,8 @@ private fun Iterable<ResultRow>.toAbsences(): Absences {
 
 private fun ResultRow.toAbsence() = Absence(
     id = this[AbsencesTable.id].value,
-    startedAt = this[AbsencesTable.startedAt].toString(),
-    endedAt = this[AbsencesTable.endedAt].toString(),
+    startedAt = this[AbsencesTable.startedAt],
+    endedAt = this[AbsencesTable.endedAt],
     comment = this[AbsencesTable.comment],
     reason = this[AbsencesTable.reason],
     userId = this[AbsencesTable.userId],
@@ -67,12 +71,12 @@ private fun ResultRow.toAbsence() = Absence(
 
 @Serializable
 data class Absence(
-    @Serializable(with = UUIDSerializer::class) val id: UUID,
-    val startedAt: String,
-    val endedAt: String,
+    val id: UUID,
+    val startedAt: LocalDate,
+    val endedAt: LocalDate,
     val comment: String?,
     val reason: Reason,
-    @Serializable(with = UUIDSerializer::class) val userId: UUID,
+    val userId: UUID,
     val isApproved: Boolean
 )
 
@@ -83,5 +87,5 @@ data class UserAbsences(
 
 @Serializable
 data class Absences(
-    val absences: Map<@Serializable(with = UUIDSerializer::class) UUID, List<Absence>>
+    val absences: Map<UUID, List<Absence>>
 )
