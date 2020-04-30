@@ -61,7 +61,7 @@ declare module "ProjectModels" {
   export interface CreateProjectRequest {
     name: string;
     description: string;
-    slug: string
+    slug: string;
   }
 
   export interface EditProjectDescriptionRequest {
@@ -73,6 +73,11 @@ declare module "ProjectModels" {
     pageSize?: number;
     currentPage?: number;
   }
-  
-  export type RolePermissions = string[]
+
+  export type RolePermissions = string[];
+
+  export interface EditProjectSlugRequest {
+    newSlug: string;
+    slug: string;
+  }
 }

@@ -19,5 +19,8 @@ export function switchProjectStatus(
 }
 
 export function convertToSlug(name: string) {
-  return name.toLocaleLowerCase().split(" ").join("-")
+  return name
+    .toLocaleLowerCase()
+    .replace(/[^\w ]+/g, "")
+    .replace(/ +/g, "-");
 }
