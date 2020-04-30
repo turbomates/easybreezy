@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button, Input, Checkbox } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
 
 import {
   Project,
@@ -15,6 +9,8 @@ import {
   RolePermissions,
 } from "ProjectModels";
 import { ProjectRoleFormTableWrapper } from "./ProjectRoleFormTableWrapper";
+import { ProjectRoleFormEditRoleName } from "./ProjectRoleFormEditRoleName";
+import { ProjectRoleFormViewRoleName } from "./ProjectRoleFormViewRoleName";
 
 import "./ProjectRoleForm.scss";
 
@@ -26,7 +22,7 @@ interface Props {
   rolePermissions: RolePermissions;
 }
 
-interface FormField {
+export interface FormField {
   id: string;
   name: string;
   permissions: string[];
@@ -186,57 +182,21 @@ export const ProjectRoleForm: React.FC<Props> = ({
           return (
             <tr key={fieldIndex}>
               {isOpenInput(fieldIndex) ? (
-                <td>
-                  <div className="role-form__input-wrapper">
-                    <Input
-                      defaultValue={field.name}
-                      ref={inputRef}
-                      onChange={(event) =>
-                        createRole(fieldIndex, event.target.value)
-                      }
-                      className="role-form__input"
-                    />
-                    {!!field.id && (
-                      <div className="role-form__controls-btn">
-                        <Button
-                          onClick={() => editInputRole(fieldIndex)}
-                          type="primary"
-                        >
-                          <CheckCircleOutlined />
-                        </Button>
-                        <Button
-                          onClick={() => setIndexOfEditableInput(-1)}
-                          type="danger"
-                        >
-                          <CloseCircleOutlined />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </td>
+                <ProjectRoleFormEditRoleName
+                  createRole={createRole}
+                  editInputRole={editInputRole}
+                  field={field}
+                  fieldIndex={fieldIndex}
+                  inputRef={inputRef}
+                  setIndexOfEditableInput={setIndexOfEditableInput}
+                />
               ) : (
-                <td>
-                  <div className="role-form__input-wrapper">
-                    <div className="role-form__description">{field.name}</div>
-                    <div className="role-form__controls-btn">
-                      <Button
-                        onClick={() => setIndexOfEditableInput(fieldIndex)}
-                        type="primary"
-                        className="role-form__controls-btn"
-                      >
-                        <EditOutlined />
-                      </Button>
-
-                      <Button
-                        onClick={() => removeRole(fieldIndex)}
-                        type="danger"
-                        className="role-form__controls-btn"
-                      >
-                        <DeleteOutlined />
-                      </Button>
-                    </div>
-                  </div>
-                </td>
+                <ProjectRoleFormViewRoleName
+                  name={field.name}
+                  removeRole={removeRole}
+                  fieldIndex={fieldIndex}
+                  setIndexOfEditableInput={setIndexOfEditableInput}
+                />
               )}
               {rolePermissions.map((permission, index) => (
                 <td key={index}>
