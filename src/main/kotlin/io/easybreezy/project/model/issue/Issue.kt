@@ -32,7 +32,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             project: UUID,
             title: String,
             description: String,
-            priority: Priority = Priority.create(0),
+            priority: Priority = Priority.notDetermined(),
             assignee: UUID? = null,
             category: UUID? = null,
             status: UUID? = null,

@@ -12,9 +12,37 @@ class Priority private constructor() : Embeddable() {
             return Priority()
         }
 
-        fun create(value: Int = 0): Priority {
+        fun notDetermined(): Priority {
             val priority = Priority()
-            priority.value = value
+            priority.value = 0
+
+            return priority
+        }
+
+        fun low(): Priority {
+            val priority = Priority()
+            priority.value = -1
+
+            return priority
+        }
+
+        fun high(): Priority {
+            val priority = Priority()
+            priority.value = 1
+
+            return priority
+        }
+
+        fun highest(lastHighest: Int): Priority {
+            val priority = Priority()
+            priority.value = lastHighest + 1
+
+            return priority
+        }
+
+        fun lowest(lastLowest: Int): Priority {
+            val priority = Priority()
+            priority.value = lastLowest - 1
 
             return priority
         }
