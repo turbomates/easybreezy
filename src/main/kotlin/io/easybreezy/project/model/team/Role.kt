@@ -2,6 +2,7 @@ package io.easybreezy.project.model.team
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
 import kotlinx.serialization.Serializable
@@ -45,9 +46,9 @@ class Role private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     @Serializable
-    enum class Permission {
-        PROJECT,
-        TEAM,
+    enum class Permission(val activity: Activity) {
+        PROJECTS_MANAGE(Activity.PROJECTS_MANAGE),
+        PROJECT_SHOW(Activity.PROJECTS_SHOW),
     }
 }
 

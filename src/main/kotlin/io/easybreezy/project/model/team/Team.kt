@@ -1,15 +1,20 @@
 package io.easybreezy.project.model.team
 
-import io.easybreezy.infrastructure.event.project.team.*
+import io.easybreezy.infrastructure.event.project.team.MemberAdded
+import io.easybreezy.infrastructure.event.project.team.MemberRoleChanged
+import io.easybreezy.infrastructure.event.project.team.NewTeamAdded
+import io.easybreezy.infrastructure.event.project.team.TeamActivated
+import io.easybreezy.infrastructure.event.project.team.TeamClosed
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
+import io.easybreezy.project.model.Projects
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 class Team private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var name by Teams.name
@@ -92,7 +97,7 @@ enum class Status {
 
 object Teams : UUIDTable("project_teams") {
     val name = varchar("name", 25)
-    val project = uuid("project")
+    val project = uuid("project").references(Projects.id)
     val status = enumerationByName("status", 25, Status::class).default(Status.Active)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())

@@ -502,6 +502,68 @@ Status: Success | Code: 200
 }
 ```
 
+### 12. List of permissions
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET 
+Type: RAW
+URL: localhost:3000/api/authorization/rules
+```
+
+
+***Headers:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| Content-Type | application/json |  |
+
+
+***Responses:***
+
+
+Status: Success | Code: 200
+
+```js
+{
+    "data": {
+        "POST:/api/projects": [
+            "MEMBER"
+        ],
+        "GET:/api/projects": [
+            "MEMBER"
+        ],
+        "GET:/api/projects/permissions": [
+            "MEMBER"
+        ],
+        "POST:/api/teams/add": [
+            "MEMBER",
+            "ADMIN"
+        ],
+        "GET:/api/teams/{teamId}": [
+            "MEMBER"
+        ],
+        "POST:/api/teams/{teamId}/members/add": [
+            "MEMBER"
+        ],
+        "POST:/api/teams/{teamId}/members/{memberId}/remove": [
+            "MEMBER"
+        ],
+        "POST:/api/teams/{teamId}/members/{memberId}/change-role": [
+            "MEMBER"
+        ],
+        "POST:/api/teams/{teamId}/activate": [
+            "MEMBER"
+        ],
+        "POST:/api/teams/{teamId}/close": [
+            "MEMBER"
+        ]
+    }
+}
+```
 
 
 ---

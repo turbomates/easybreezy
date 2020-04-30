@@ -7,6 +7,7 @@ import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.Authorization
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
+import io.easybreezy.infrastructure.ktor.auth.containsAny
 import io.easybreezy.infrastructure.ktor.auth.jsonForm
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
@@ -59,13 +60,7 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
             validate { permissions ->
                 val principal = principal<UserPrincipal>()
                 principal?.let {
-                    val activities = it.activities
-                    for (permission in permissions) {
-                        if (activities.contains(permission)) {
-                            return@let true
-                        }
-                    }
-                    return@let false
+                    it.activities.containsAny(permissions)
                 } ?: false
             }
             challenge {
@@ -79,7 +74,8 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
         route.route("/api/authorization/rules") {
             get<Response.Data<Map<String, List<String>>>> {
                 Response.Data(
-                    call.application.feature(Authorization).rules().mapKeys { it.key.replace(Regex("\\(.*?\\)"), "*") })
+                    call.application.feature(Authorization).rules().buildMap()
+                )
             }
         }
         route.route("/api/login") {

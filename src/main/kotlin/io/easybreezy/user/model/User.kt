@@ -84,7 +84,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.activities = activities
                 this.status = Status.WAIT_CONFIRM
                 this.token = Token.generate()
-                this.createdAt = LocalDateTime.now()
                 this.addEvent(Invited(this.id.value))
             }
         }
@@ -95,7 +94,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.name = name
                 this.activities = activities
                 this.status = Status.PENDING
-                this.createdAt = LocalDateTime.now()
             }
         }
     }

@@ -8,10 +8,7 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.user.model.*
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import java.util.UUID
 
 class UserLocationQO(private val userLocationId: UUID) : QueryObject<UserLocation> {
@@ -30,6 +27,14 @@ class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocati
             .andWhere { UserLocationsTable.startedAt greater dateRange.from }
             .andWhere { coalesce(UserLocationsTable.endedAt, UserLocationsTable.startedAt) less dateRange.to }
             .toUserLocations()
+}
+
+class IsUserLocationOwner(val id: UUID, val userId: UUID): QueryObject<Boolean> {
+    override suspend fun getData(): Boolean {
+        return UserLocationsTable.select {
+            UserLocationsTable.id eq id and (UserLocationsTable.userId eq userId)
+        }.count() > 0
+    }
 }
 
 private fun ResultRow.toUserLocation() = UserLocation(

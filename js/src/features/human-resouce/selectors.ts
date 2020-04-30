@@ -2,12 +2,7 @@ import { RootState } from "MyTypes";
 
 export const employees = (state: RootState) => state.humanResource.employees;
 
-export const calendarGroups = (state: RootState) =>
-  state.humanResource.employees.items.map((item) => ({
-    id: item.userId,
-    title: item.userId,
-    item,
-  }));
+export const absences = (state: RootState) => state.humanResource.absences;
 
 export const employeeDetails = (state: RootState) =>
   state.humanResource.details;

@@ -8,6 +8,7 @@ import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.project.application.project.command.ChangeCategory
 import io.easybreezy.project.application.project.command.ChangeRole
+import io.easybreezy.project.application.project.command.ChangeSlug
 import io.easybreezy.project.application.project.command.Handler
 import io.easybreezy.project.application.project.command.New
 import io.easybreezy.project.application.project.command.NewCategory
@@ -16,6 +17,7 @@ import io.easybreezy.project.application.project.command.RemoveCategory
 import io.easybreezy.project.application.project.command.RemoveRole
 import io.easybreezy.project.application.project.command.Validation
 import io.easybreezy.project.application.project.command.WriteDescription
+import io.easybreezy.project.application.project.queryobject.MyProjectsQO
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.project.queryobject.ProjectQO
 import io.easybreezy.project.application.project.queryobject.ProjectsQO
@@ -28,19 +30,33 @@ class ProjectController @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) : Controller() {
 
-    suspend fun create(new: New, author: UUID): Response.Either<Response.Ok, Response.Errors> {
-
+    suspend fun create(new: New): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validateCommand(new)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.new(new, author)
+        handler.new(new)
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun changeSlug(changeSlug: ChangeSlug): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.validateCommand(changeSlug)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.changeSlug(changeSlug)
         return Response.Either(Either.Left(Response.Ok))
     }
 
     suspend fun list(): Response.Listing<Project> {
         return Response.Listing(
             queryExecutor.execute(ProjectsQO(call.request.pagingParameters()))
+        )
+    }
+
+    suspend fun myList(principal: UUID): Response.Listing<Project> {
+        return Response.Listing(
+            queryExecutor.execute(MyProjectsQO(principal, call.request.pagingParameters()))
         )
     }
 
@@ -103,7 +119,6 @@ class ProjectController @Inject constructor(
     }
 
     suspend fun addCategory(command: NewCategory): Response.Either<Response.Ok, Response.Errors> {
-
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
@@ -113,7 +128,6 @@ class ProjectController @Inject constructor(
     }
 
     suspend fun changeCategory(command: ChangeCategory): Response.Either<Response.Ok, Response.Errors> {
-
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))

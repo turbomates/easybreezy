@@ -1,5 +1,4 @@
 import {
-  UserVacations,
   Employee,
   EmployeeShort,
   UpdateBirthdayRequestParams,
@@ -8,6 +7,7 @@ import {
   AddNoteRequestParams,
   ApplyPositionRequestParams,
   ApplySalaryRequestParams,
+  AbsencesMap,
 } from "HumanResourceModels";
 import { createAsyncAction, createAction } from "typesafe-actions";
 import { Paging, FormError } from "MyTypes";
@@ -17,11 +17,11 @@ import {
   EmployeeLocation,
 } from "LocationModels";
 
-export const fetchUsersVacationsAsync = createAsyncAction(
-  "FETCH_USERS_VACATIONS_REQUEST",
-  "FETCH_USERS_VACATIONS_SUCCESS",
-  "FETCH_USERS_VACATIONS_FAILURE",
-)<undefined, UserVacations[], string>();
+export const fetchAbsencesAsync = createAsyncAction(
+  "FETCH_ABSENCES_REQUEST",
+  "FETCH_ABSENCES_SUCCESS",
+  "FETCH_ABSENCES_FAILURE",
+)<undefined, AbsencesMap, string>();
 
 export const fetchEmployeeAsync = createAsyncAction(
   "FETCH_USER_DETAILS_REQUEST",

@@ -1,7 +1,7 @@
 package io.easybreezy.project.model.team
 
-import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.Entity
+import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
@@ -41,5 +41,5 @@ class Member private constructor(id: EntityID<UUID>) : Entity<UUID>(id) {
 object Members : UUIDTable("project_members") {
     val team = reference("team", Teams)
     val user = uuid("user_id")
-    val role = uuid("role")
+    val role = uuid("role").references(Roles.id)
 }

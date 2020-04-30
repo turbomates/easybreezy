@@ -9,6 +9,7 @@ import io.easybreezy.infrastructure.event.project.project.DescriptionWritten
 import io.easybreezy.infrastructure.event.project.project.RoleAdded
 import io.easybreezy.infrastructure.event.project.project.RoleChanged
 import io.easybreezy.infrastructure.event.project.project.RoleRemoved
+import io.easybreezy.infrastructure.event.project.project.SlugChanged
 import io.easybreezy.infrastructure.event.project.project.Suspended
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
@@ -100,6 +101,11 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         addEvent(RoleRemoved(id.value, category.id.value, category.name, this.updatedAt))
     }
 
+    fun changeSlug(new: String) {
+        this.slug = new
+        addEvent(SlugChanged(id.value, this.slug))
+    }
+
     enum class Status {
         Active,
         Closed,
@@ -107,12 +113,12 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     companion object : PrivateEntityClass<UUID, Project>(object : Repository() {}) {
-        fun new(author: UUID, name: String, description: String): Project {
+        fun new(author: UUID, name: String, description: String, slug: String?): Project {
             return Project.new {
                 this.name = name
                 this.author = author
                 this.status = Status.Active
-                this.slug = slugify(name)
+                this.slug = slug?.let { slug } ?: slugify(name)
                 this.description = description
                 defaultRoles(this)
                 addEvent(Created(this.id.value, this.name, LocalDateTime.now()))

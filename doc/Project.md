@@ -15,11 +15,14 @@
   * [Activate](#6-activate)
   * [Close](#7-close)
   * [Suspend](#8-suspend)
-  * [Add project](#9-add-project)
-  * [Remove category from project](#10-remove-category-from-project)
-  * [Change category to project](#11-change-category-to-project)
-  * [Add category to project](#12-add-category-to-project)
-  * [List of projects](#13-list-of-project)
+  * [Suspend](#9-change-slug)
+  * [Add project](#10-add-project)
+  * [Remove category from project](#11-remove-category-from-project)
+  * [Change category to project](#12-change-category-to-project)
+  * [Add category to project](#13-add-category-to-project)
+  * [List of projects](#14-list-of-projects)
+  * [List of my projects](#15-list-of-my-projects)
+  * [List of permissions](#16-list-of-permissions)
 
 --------
 
@@ -253,9 +256,29 @@ URL: localhost:3000/api/projects/{project-slug}/suspend
 {}
 ```
 
+### 9. Change slug 
 
 
-### 9. Add project
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/change-slug
+```
+
+
+
+***Body:***
+
+```js        
+{"slug": "new-slug"}
+```
+
+
+
+### 10. Add project
 
 
 
@@ -274,12 +297,13 @@ URL: localhost:3000/api/projects
 ```js        
 {
 	"name": "My project", 
-	"description": "My project description"
+	"description": "My project description",
+    "slug": "slug" //optional
 }
 ```
 
 
-### 10. Remove category from project
+### 11. Remove category from project
 
 
 
@@ -301,7 +325,7 @@ URL: localhost:3000/api/projects/{project-slug}/categories/{category-id}/remove
 
 
 
-### 11. Change category to project
+### 12. Change category to project
 
 
 
@@ -326,7 +350,7 @@ URL: localhost:3000/api/projects/{project-slug}/categories/{category-id}/change
 
 
 
-### 12. Add category to project
+### 13. Add category to project
 
 
 
@@ -356,7 +380,7 @@ URL: localhost:3000/api/projects/{project-slug}/categories/add
 }
 ```
 
-### 13. List of projects
+### 14. List of projects
 
 
 
@@ -387,6 +411,61 @@ URL: localhost:3000/api/projects
 }
 ```
 
+
+### 15. List of my projects
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: localhost:3000/api/projects/my
+```
+
+***Response:***
+
+```js        
+{
+    "pageSize": 30,
+    "currentPage": 1,
+    "hasMore": false,
+    "data": [
+        {
+            "id": "4a658ede-b156-4f10-9d49-2fbaf802b4f2",
+            "slug": "myproject",
+            "name": "My project",
+            "status": "Active",
+            "description": "New description"
+        }
+    ]
+}
+```
+
+
+
+### 16. List of permissions 
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: 
+URL: localhost:3000/api/projects/permissions
+```
+
+***Response:***
+
+```js        
+{
+    "data": [
+        "PROJECT",
+        "TEAM"
+    ]
+}
+```
 ---
 [Back to top](#projects)
 > Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-06 16:45:49 by [docgen](https://github.com/thedevsaddam/docgen)

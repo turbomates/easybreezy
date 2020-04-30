@@ -28,11 +28,7 @@ import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DataConversion
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
+import io.ktor.features.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
@@ -79,6 +75,9 @@ suspend fun main() {
         val application = this
         install(DefaultHeaders)
         install(Locations)
+        install(DoubleReceive) {
+            receiveEntireContent = true
+        }
         install(CallLogging) {
             level = Level.DEBUG
 
@@ -121,6 +120,9 @@ suspend fun main() {
             exception<LogicException> {
                 call.respond(HttpStatusCode.UnprocessableEntity, Error(it.message ?: "Unprocessable Entity"))
                 throw it
+            }
+            exception<NoSuchElementException> {
+                call.respond(HttpStatusCode.NotFound, Error("Page not found"))
             }
             exception<Exception> {
                 call.respond(HttpStatusCode.ServiceUnavailable, Error("Something is wrong"))

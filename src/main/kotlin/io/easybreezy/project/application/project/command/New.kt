@@ -1,6 +1,5 @@
 package io.easybreezy.project.application.project.command
 
-import kotlinx.serialization.Serializable
+import java.util.UUID
 
-@Serializable
-data class New(val name: String, val description: String)
+data class New(val author: UUID, val name: String, val description: String, val slug: String? = null)

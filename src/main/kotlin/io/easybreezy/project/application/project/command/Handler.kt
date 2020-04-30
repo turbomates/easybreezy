@@ -5,15 +5,20 @@ import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Repository
 import io.easybreezy.project.model.team.Role
-import java.util.UUID
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val repository: Repository
 ) {
-    suspend fun new(command: New, author: UUID) {
+    suspend fun new(command: New) {
         transaction {
-            Project.new(author, command.name, command.description)
+            Project.new(command.author, command.name, command.description, command.slug)
+        }
+    }
+
+    suspend fun changeSlug(command: ChangeSlug) {
+        transaction {
+            project(command.slug).changeSlug(command.new)
         }
     }
 

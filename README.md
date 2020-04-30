@@ -28,7 +28,7 @@ easybreezy.rabbit.api=http://localhost:15672
 ### Create Default Admin
 
 ```bash
-./gradlew createDefaultUser
+./gradlew createDefaultAdmin
 ```
 
 ### Reformat code

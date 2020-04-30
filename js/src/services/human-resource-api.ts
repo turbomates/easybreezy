@@ -11,6 +11,7 @@ import {
   AddNoteRequestParams,
   ApplyPositionRequestParams,
   ApplySalaryRequestParams,
+  AbsencesMap,
 } from "HumanResourceModels";
 import { ProfileResponse, Profile } from "AccountModules";
 
@@ -98,5 +99,14 @@ export const applySalary = ({ userId, ...body }: ApplySalaryRequestParams) =>
     .then<Success<null>>(() => ({
       success: true,
       data: null,
+    }))
+    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+
+export const fetchAbsences = () =>
+  api
+    .get("hr/absences")
+    .then<Success<AbsencesMap>>((resp) => ({
+      success: true,
+      data: resp.data.data.absences,
     }))
     .catch<Failure>(() => ({ success: false, reason: "Error" }));

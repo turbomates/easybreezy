@@ -20,7 +20,7 @@ class AbsenceControllerTest {
     fun `absence create`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 with(handleRequest(HttpMethod.Post, "/api/hr/absences") {
                     addHeader("Content-Type", "application/json")
@@ -48,9 +48,9 @@ class AbsenceControllerTest {
     fun `absence update`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
-                val absenceId = database.createAbsence(memberId)
+                val absenceId = database.createAbsence(memberId, isApproved = false)
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/absences/$absenceId") {
                     addHeader("Content-Type", "application/json")
@@ -63,6 +63,7 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
@@ -78,7 +79,7 @@ class AbsenceControllerTest {
     fun `approve absence`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val absenceId = database.createAbsence(memberId)
 
@@ -97,7 +98,7 @@ class AbsenceControllerTest {
     fun `remove absence`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val absenceId = database.createAbsence(memberId)
 
@@ -116,7 +117,7 @@ class AbsenceControllerTest {
     fun `my absences`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 database.createAbsence(memberId)
 
@@ -132,7 +133,7 @@ class AbsenceControllerTest {
     fun absences() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 database.createAbsence(memberId)
 
@@ -148,7 +149,7 @@ class AbsenceControllerTest {
     fun show() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
-        withTestApplication({ testApplication(memberId, emptySet(), database) }) {
+        withTestApplication({ testApplication(memberId, database) }) {
             rollbackTransaction(database) {
                 val absenceId = database.createAbsence(memberId)
 

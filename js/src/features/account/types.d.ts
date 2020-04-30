@@ -3,7 +3,7 @@ declare module "AccountModules" {
     id: string;
     email: string;
     status: string;
-    roles: string[];
+    activities: string[];
   };
 
   export type ProfileResponse = {

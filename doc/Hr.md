@@ -9,14 +9,15 @@
 
   * [Employees](#1-employees)
   * [Employee](#2-employee)
-  * [Update Contacts](#3-update-contacts)
-  * [Update Birthday](#4-update-birthday)
-  * [Specify Skills](#5-specify-skills)
-  * [Apply Salary](#6-apply-salary)
-  * [Apply position](#7-apply-position)
-  * [Write Note](#8-write-note)
-  * [Fire](#9-fire)
-  * [Hire](#10-hire)
+  * [Update My Contacts](#3-update-my-contacts)
+  * [Update User Contacts](#4-update-user-contacts)
+  * [Update Birthday](#5-update-birthday)
+  * [Specify Skills](#6-specify-skills)
+  * [Apply Salary](#7-apply-salary)
+  * [Apply position](#8-apply-position)
+  * [Write Note](#9-write-note)
+  * [Fire](#10-fire)
+  * [Hire](#11-hire)
 
 
 --------
@@ -157,7 +158,7 @@ Status: Employee | Code: 200
 
 
 
-### 3. Update Contacts
+### 3. Update My Contacts
 
 
 
@@ -222,9 +223,73 @@ Status: Apply Salary | Code: 200
 }
 ```
 
+### 4. Update User Contacts
 
 
-### 4. Update Birthday
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/users/update-contacts/{id}
+```
+
+
+***Headers:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| Content-Type | application/json |  |
+
+
+
+***Body:***
+
+```js        
+{
+    "contacts": [
+        {
+            "type": "SKYPE",
+            "value": "specific contact"
+        },
+        {
+            "type": "PHONE",
+            "value": "specific contact"
+        },
+        {
+            "type": "EMAIL",
+            "value": "specific@gmail.com"
+        },
+        {
+            "type": "TELEGRAM",
+            "value": "specific contact"
+        },
+        {
+            "type": "SLACK",
+            "value": "specific contact"
+        }
+    ]
+}
+```
+
+
+
+***Responses:***
+
+
+Status: Apply Salary | Code: 200
+
+
+
+```js
+{
+    "status": "ok"
+}
+```
+
+
+### 5. Update Birthday
 
 
 
@@ -255,7 +320,7 @@ URL: localhost:3000/api/hr/employee/a2b40e7c-ed59-4b9b-a1bf-6854e611a78c/update-
 
 
 
-### 5. Specify Skills
+### 6. Specify Skills
 
 
 
@@ -286,7 +351,7 @@ URL: localhost:3000/api/hr/employee/a2b40e7c-ed59-4b9b-a1bf-6854e611a78c/specify
 
 
 
-### 6. Apply Salary
+### 7. Apply Salary
 
 
 
@@ -333,7 +398,7 @@ Status: Apply Salary | Code: 200
 
 
 
-### 7. Apply position
+### 8. Apply position
 
 
 
@@ -364,7 +429,7 @@ URL: localhost:3000/api/hr/employee/a2b40e7c-ed59-4b9b-a1bf-6854e611a78c/apply-p
 
 
 
-### 8. Write Note
+### 9. Write Note
 
 
 
@@ -395,7 +460,7 @@ URL: localhost:3000/api/hr/employee/a2b40e7c-ed59-4b9b-a1bf-6854e611a78c/write-n
 
 
 
-### 9. Fire
+### 10. Fire
 
 
 
@@ -441,7 +506,7 @@ Status: Fire | Code: 200
 
 
 
-### 10. Hire
+### 11. Hire
 
 
 

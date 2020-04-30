@@ -17,7 +17,7 @@ class TeamControllerTest {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject().value
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/teams/add") {
                     addHeader("Content-Type", "application/json")
@@ -44,7 +44,7 @@ class TeamControllerTest {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
             val team = testDatabase.createProjectTeam(project.value, "Lite")
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
                 with(handleRequest(HttpMethod.Post, "/api/teams/$team/close") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {}.toString())
@@ -65,7 +65,7 @@ class TeamControllerTest {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
             val team = testDatabase.createProjectTeam(project.value, "Lite")
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
                 with(handleRequest(HttpMethod.Post, "/api/teams/$team/activate") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {}.toString())
@@ -88,7 +88,7 @@ class TeamControllerTest {
             val role = testDatabase.createProjectRole(project, "Dev")
             val team = testDatabase.createProjectTeam(project.value, "Lite")
 
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/add") {
                     addHeader("Content-Type", "application/json")
@@ -118,7 +118,7 @@ class TeamControllerTest {
             val newRole = testDatabase.createProjectRole(project, "PM")
             val team = testDatabase.createProjectTeam(project.value, "Lite")
             testDatabase.createTeamMember(team, userId, role)
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/$userId/change-role") {
                     addHeader("Content-Type", "application/json")
@@ -148,7 +148,7 @@ class TeamControllerTest {
             val team = testDatabase.createProjectTeam(project.value, "Lite")
             testDatabase.createTeamMember(team, userId, role)
 
-            withTestApplication({ testApplication(userId, emptySet(), testDatabase) }) {
+            withTestApplication({ testApplication(userId, testDatabase) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/$userId/remove") {
                     addHeader("Content-Type", "application/json")

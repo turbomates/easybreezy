@@ -20,7 +20,8 @@ import java.util.UUID
 internal fun Database.createAbsence(
     userId: UUID,
     startedAt: LocalDate = LocalDate.now(),
-    endedAt: LocalDate = LocalDate.now().plusDays(20)
+    endedAt: LocalDate = LocalDate.now().plusDays(20),
+    isApproved: Boolean = true
 ): UUID {
     return transaction(this) {
         val id = Absences.insert {
@@ -29,7 +30,7 @@ internal fun Database.createAbsence(
             it[comment] = "Test Comment"
             it[reason] = Reason.VACATION
             it[this.userId] = userId
-            it[isApproved] = true
+            it[this.isApproved] = isApproved
         } get Absences.id
         id.value
     }
