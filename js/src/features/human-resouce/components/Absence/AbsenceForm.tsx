@@ -8,14 +8,14 @@ import { serializeForm, deserializeForm } from "./absence.helper";
 const { RangePicker } = DatePicker;
 
 interface Props {
-  mode?: "CREATE" | "UPDATE";
-  initialValues?: Absence | null;
-  onSubmit: (form: AbsenceFormModel) => any;
+  mode: "CREATE" | "UPDATE";
+  onSubmit: (form: AbsenceFormModel) => void;
   errors: FormErrorMap;
+  initialValues?: Absence;
 }
 
 export const AbsenceForm: React.FC<Props> = (props) => {
-  const { onSubmit, mode = "CREATE" } = props;
+  const { onSubmit, mode } = props;
   const [form] = Form.useForm();
 
   const initialValues = props.initialValues
@@ -44,9 +44,19 @@ export const AbsenceForm: React.FC<Props> = (props) => {
 
       <Form.Item>
         <Button htmlType="submit" loading={false} type="primary">
-          {mode === "CREATE" ? "Create" : "Update"} Absence
+          <ButtonTitle mode={mode} />
         </Button>
       </Form.Item>
     </Form>
   );
 };
+
+function ButtonTitle(props: { mode: "CREATE" | "UPDATE" }) {
+  switch (props.mode) {
+    case "UPDATE":
+      return <span>Update Absence</span>;
+    case "CREATE":
+    default:
+      return <span>Create Absence</span>;
+  }
+}

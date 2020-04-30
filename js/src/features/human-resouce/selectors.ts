@@ -10,7 +10,7 @@ export const isUpdateAbsenceModalVisible = (state: RootState) =>
 export const updateAbsenceFormInitialValues = (state: RootState) => {
   const id = state.humanResource.absences.my.absenceToUpdateId;
 
-  if (!id) return null;
+  if (!id) return undefined;
 
   return state.humanResource.absences.my.items.find((item) => item.id === id);
 };

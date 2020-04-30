@@ -1,7 +1,6 @@
 import { AbsenceForm, Absence } from "HumanResourceModels";
 import parseISO from "date-fns/esm/parseISO";
-import format from "date-fns/format";
-import { BACKEND_DATE_FORMAT } from "../../../../constants";
+import formatISO from "date-fns/esm/formatISO";
 
 export const deserializeForm = (form: Absence) => {
   const startedAt = parseISO(form.startedAt);
@@ -17,8 +16,14 @@ export const deserializeForm = (form: Absence) => {
 };
 
 export const serializeForm = (form: any): AbsenceForm => ({
-  startedAt: format(form.range[0], BACKEND_DATE_FORMAT),
-  endedAt: format(form.range[1], BACKEND_DATE_FORMAT),
+  startedAt: formatISO(form.range[0], { representation: "date" }),
+  endedAt: formatISO(form.range[1], { representation: "date" }),
   reason: form.reason,
   comment: form.comment,
 });
+
+export const getAbsenceTitle = (absence: Absence) =>
+  `${absence.startedAt} ${absence.endedAt}`;
+
+export const getAbsenceDescription = (absence: Absence) =>
+  `${absence.reason}: ${absence.comment}`;

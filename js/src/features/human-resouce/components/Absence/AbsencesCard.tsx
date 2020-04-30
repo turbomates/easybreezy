@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Card, Divider, Modal } from "antd";
-import { Absences } from "./Absences";
+import { Card, Divider, Modal, List } from "antd";
 import { AbsenceForm } from "./AbsenceForm";
 import { AbsenceForm as AbsenceFormModel } from "HumanResourceModels";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,6 +20,7 @@ import {
   closeAbsenceUpdateModal,
   updateAbsenceAsync,
 } from "../../actions";
+import { AbsenceListItem } from "./AbcenceListItem";
 
 interface Props {
   canEdit: boolean;
@@ -91,12 +91,17 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
         className="human-resource-details__card"
         loading={absences.loading}
       >
-        <Absences
-          absences={absences.items}
-          canEdit={false}
-          approve={approve}
-          remove={remove}
-          openUpdateModal={openUpdateModal}
+        <List
+          dataSource={absences.items}
+          renderItem={(absence) => (
+            <AbsenceListItem
+              absence={absence}
+              approve={approve}
+              canEdit={canEdit}
+              remove={remove}
+              openUpdateModal={openUpdateModal}
+            />
+          )}
         />
         {canEdit && (
           <Divider>
@@ -104,7 +109,11 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
           </Divider>
         )}
         {canEdit && absences.createFormVisible && (
-          <AbsenceForm onSubmit={create} errors={absences.errors} />
+          <AbsenceForm
+            onSubmit={create}
+            errors={absences.errors}
+            mode="CREATE"
+          />
         )}
       </Card>
       <Modal

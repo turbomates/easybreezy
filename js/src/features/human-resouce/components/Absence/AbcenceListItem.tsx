@@ -6,16 +6,17 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import { Absence as AbsenceModel } from "HumanResourceModels";
+import { getAbsenceTitle, getAbsenceDescription } from "./absence.helper";
 
 interface Props {
   absence: AbsenceModel;
   canEdit: boolean;
-  approve: (id: string) => any;
-  remove: (id: string) => any;
-  openUpdateModal: (id: string) => any;
+  approve: (id: string) => void;
+  remove: (id: string) => void;
+  openUpdateModal: (id: string) => void;
 }
 
-export const Absence: React.FC<Props> = ({
+export const AbsenceListItem: React.FC<Props> = ({
   absence,
   canEdit,
   approve,
@@ -36,16 +37,11 @@ export const Absence: React.FC<Props> = ({
     openUpdateModal(absence.id);
   }, [absence, openUpdateModal]);
 
-  const title = `${absence.startedAt} ${absence.endedAt}`;
-  const description = `${absence.reason}: ${absence.comment}`;
-  const content = absence.isApproved ? (
-    <Tag color="green">approved</Tag>
-  ) : (
-    <Tag color="red">Not approved</Tag>
-  );
+  const title = getAbsenceTitle(absence);
+  const description = getAbsenceDescription(absence);
 
   const actions = [
-    <Tooltip title="Remove">
+    <Tooltip title="Dismiss">
       <CloseCircleOutlined onClick={handleRemove} />
     </Tooltip>,
     <Tooltip title="Edit">
@@ -67,7 +63,14 @@ export const Absence: React.FC<Props> = ({
   return (
     <List.Item actions={actions}>
       <List.Item.Meta title={title} description={description} />
-      {content}
+      <AbsenceStatus isApproved={absence.isApproved} />
     </List.Item>
   );
 };
+
+const AbsenceStatus = (props: { isApproved: boolean }) =>
+  props.isApproved ? (
+    <Tag color="green">approved</Tag>
+  ) : (
+    <Tag color="red">Not approved</Tag>
+  );
