@@ -11,6 +11,3 @@ export const getIsOpenProjectCreateForm = (state: RootState) =>
 export const getIsLoading = (state: RootState) => state.project.project.loading;
 
 export const getErrors = (state: RootState) => state.project.project.errors;
-
-export const getIsOpenProjectDescriptionForm = (state: RootState) =>
-  state.project.project.isOpenDescriptionForm;

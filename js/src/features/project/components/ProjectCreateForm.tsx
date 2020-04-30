@@ -4,7 +4,7 @@ import { Button, Form, Input } from "antd";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { CreateProjectRequest } from "ProjectModels";
-import { convertToSlug } from "../helpers"
+import { convertToSlug } from "../helpers";
 
 interface Props {
   create: (form: CreateProjectRequest) => void;
@@ -26,7 +26,7 @@ export const CreateProjectForm: React.FC<Props> = ({
       create({
         description: values.description,
         name: values.name,
-        slug: !!values.slug ? convertToSlug(values.slug) : convertToSlug(values.name)
+        slug: values.slug,
       });
     },
     [create],
@@ -35,6 +35,18 @@ export const CreateProjectForm: React.FC<Props> = ({
   const onFinishFailed = useCallback((errorInfo: any) => {
     console.log("onFinishFailed:", errorInfo);
   }, []);
+
+  function changeSlug(value: string) {
+    if (!form.isFieldTouched("slug")) {
+      form.setFields([
+        {
+          value: convertToSlug(value),
+          name: "slug",
+          touched: false,
+        },
+      ]);
+    }
+  }
 
   return (
     <Form
@@ -48,7 +60,7 @@ export const CreateProjectForm: React.FC<Props> = ({
         name="name"
         rules={[{ required: true, message: "Please input Name!" }]}
       >
-        <Input />
+        <Input onChange={(event) => changeSlug(event.target.value)} />
       </Form.Item>
 
       <Form.Item
@@ -62,6 +74,10 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Slug"
         name="slug"
+        rules={[
+          { required: true, message: "Please input Slug!" },
+          { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: "Please input valid Slug!" },
+        ]}
       >
         <Input />
       </Form.Item>

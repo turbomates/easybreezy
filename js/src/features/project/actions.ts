@@ -11,6 +11,7 @@ import {
   CreateProjectRoleRequest,
   Project,
   ProjectsRequest,
+  EditProjectSlugRequest,
 } from "ProjectModels";
 
 //PROJECT
@@ -73,12 +74,11 @@ export const editProjectDescriptionAsync = createAsyncAction(
   "EDIT_PROJECT_DESCRIPTION_FAILURE",
 )<EditProjectDescriptionRequest, undefined, FormError[]>();
 
-export const openProjectDescriptionFormAction = createAction(
-  "OPEN_PROJECT_DESCRIPTION_FORM",
-)();
-
-export const closeProjectDescriptionFormAction = createAction(
-  "CLOSE_PROJECT_DESCRIPTION_FORM",
-)();
-
 export const clearStateAction = createAction("CLEAR_STATE_ACTION")();
+
+// SLUG
+export const editProjectSlugAsync = createAsyncAction(
+  "EDIT_PROJECT_SLUG_REQUEST",
+  "EDIT_PROJECT_SLUG_SUCCESS",
+  "EDIT_PROJECT_SLUG_FAILURE",
+)<EditProjectSlugRequest, undefined, FormError[]>();

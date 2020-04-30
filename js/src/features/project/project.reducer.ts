@@ -6,9 +6,7 @@ import {
   createProjectRoleAsync,
   editProjectRoleAsync,
   removeProjectRoleAsync,
-  openProjectDescriptionFormAction,
   clearStateAction,
-  closeProjectDescriptionFormAction,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
 import { normalizeErrors } from "utils/error";
@@ -18,12 +16,10 @@ export interface State {
   project: Project | null;
   loading: boolean;
   errors: FormErrorMap;
-  isOpenDescriptionForm: boolean;
 }
 
 const initialSate: State = {
   project: null,
-  isOpenDescriptionForm: false,
   loading: false,
   errors: {},
 };
@@ -103,14 +99,6 @@ export const reducer = createReducer<State>(initialSate)
     ...state,
     formErrors: normalizeErrors(action.payload),
     loading: false,
-  }))
-  .handleAction(openProjectDescriptionFormAction, (state, action) => ({
-    ...state,
-    isOpenDescriptionForm: true,
-  }))
-  .handleAction(closeProjectDescriptionFormAction, (state, action) => ({
-    ...state,
-    isOpenDescriptionForm: false,
   }))
   //PROJECT
   .handleAction(fetchProjectAsync.request, (state, action) => ({

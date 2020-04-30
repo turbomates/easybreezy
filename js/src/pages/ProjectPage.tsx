@@ -1,30 +1,34 @@
-import React, { useCallback, useEffect } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState
+} from "react"
 import { useLocation, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Card } from "antd";
 
 import {
-  EditProjectDescriptionRequest,
+  EditProjectDescriptionRequest, EditProjectSlugRequest,
   EditProjectStatusRequest,
-} from "ProjectModels";
+} from "ProjectModels"
 import {
   changeProjectStatusAsync,
   clearStateAction,
-  closeProjectDescriptionFormAction,
   editProjectDescriptionAsync,
+  editProjectSlugAsync,
   fetchProjectAsync,
-  openProjectDescriptionFormAction,
-} from "../features/project/actions";
+} from "../features/project/actions"
 import {
   getErrors,
   getProject,
   getIsLoading,
-  getIsOpenProjectDescriptionForm,
 } from "../features/project/selectors";
 import { ProjectDescriptionForm } from "../features/project/components/ProjectDescriptionForm";
 import { ProjectStatusForm } from "../features/project/components/ProjectStatusForm";
 import { ProjectDescription } from "../features/project/components/ProjectDescription";
 import { useClearState } from "../hooks/useClearState";
+import { ProjectSlug } from "../features/project/components/ProjectSlug"
+import { ProjectSlugForm } from "../features/project/components/ProjectSlugForm"
 
 export const ProjectPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -32,6 +36,8 @@ export const ProjectPage: React.FC = () => {
 
   const { slug } = useParams<{ slug: string }>();
 
+  const [isOpenProjectEditSlugForm, setIsOpenProjectEditSlugForm] = useState(false)
+  const [isOpenProjectDescriptionForm, setIsOpenProjectDescriptionForm] = useState(false)
   const fetchProject = useCallback(
     (slug: string) => {
       dispatch(fetchProjectAsync.request(slug));
@@ -53,20 +59,16 @@ export const ProjectPage: React.FC = () => {
     [dispatch],
   );
 
-  const openProjectDescriptionForm = useCallback(() => {
-    dispatch(openProjectDescriptionFormAction());
-  }, [dispatch]);
-
-  const closeProjectDescriptionForm = useCallback(() => {
-    dispatch(closeProjectDescriptionFormAction());
-  }, [dispatch]);
+  const editProjectSlug = useCallback(
+    (form: EditProjectSlugRequest) => {
+      dispatch(editProjectSlugAsync.request(form));
+    },
+    [dispatch],
+  );
 
   const errors = useSelector(getErrors);
   const loading = useSelector(getIsLoading);
   const project = useSelector(getProject);
-  const isOpenProjectDescriptionForm = useSelector(
-    getIsOpenProjectDescriptionForm,
-  );
 
   useEffect(() => {
     fetchProject(slug);
@@ -92,7 +94,7 @@ export const ProjectPage: React.FC = () => {
       <Card title="Description">
         {!isOpenProjectDescriptionForm && (
           <ProjectDescription
-            openProjectDescriptionForm={openProjectDescriptionForm}
+            openProjectDescriptionForm={setIsOpenProjectDescriptionForm}
             description={project?.description}
           />
         )}
@@ -100,7 +102,26 @@ export const ProjectPage: React.FC = () => {
         {!!project && isOpenProjectDescriptionForm && (
           <ProjectDescriptionForm
             edit={editProjectDescription}
-            close={closeProjectDescriptionForm}
+            close={setIsOpenProjectDescriptionForm}
+            errors={errors}
+            project={project}
+            loading={loading}
+          />
+        )}
+      </Card>
+
+      <Card title="Slug">
+        {!isOpenProjectEditSlugForm && (
+          <ProjectSlug
+            openProjectSlugForm={setIsOpenProjectEditSlugForm}
+            slug={project?.slug}
+          />
+        )}
+
+        {!!project && isOpenProjectEditSlugForm && (
+          <ProjectSlugForm
+            edit={editProjectSlug}
+            close={setIsOpenProjectEditSlugForm}
             errors={errors}
             project={project}
             loading={loading}

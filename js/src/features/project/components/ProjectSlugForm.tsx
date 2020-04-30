@@ -2,18 +2,18 @@ import React, { useCallback, useMemo } from "react";
 import { Button, Col, Form, Input, Row } from "antd";
 
 import { useFormServerErrors } from "hooks/useFormServerErrors";
-import { EditProjectDescriptionRequest, Project } from "ProjectModels";
+import { EditProjectSlugRequest, Project } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
 
 interface Props {
   project: Project;
-  edit: (form: EditProjectDescriptionRequest) => void;
+  edit: (form: EditProjectSlugRequest) => void;
   close: (close: boolean) => void;
   errors: FormErrorMap;
   loading: boolean;
 }
 
-export const ProjectDescriptionForm: React.FC<Props> = ({
+export const ProjectSlugForm: React.FC<Props> = ({
   project,
   errors,
   edit,
@@ -24,18 +24,19 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
 
   const initialValues = useMemo(
     () => ({
-      description: project.description,
+      slug: project.slug,
     }),
-    [project.description],
+    [project.slug],
   );
 
-  useFormServerErrors(form, errors, ["description"]);
+  useFormServerErrors(form, errors, ["slug"]);
 
   const onFinish = useCallback(
     (values: any) => {
+      console.log(values)
       edit({
         slug: project.slug,
-        description: values.description,
+        newSlug: values.slug,
       });
     },
     [project.slug, edit],
@@ -53,15 +54,16 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
       initialValues={initialValues}
     >
       <Form.Item
-        name="description"
+        name="slug"
         rules={[
+          { required: true, message: "Please input Slug!" },
           {
-            required: true,
-            message: "Please input description!",
+            pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+            message: "Please input valid Slug!",
           },
         ]}
       >
-        <Input.TextArea autoSize />
+        <Input />
       </Form.Item>
 
       <Form.Item>

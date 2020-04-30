@@ -73,4 +73,9 @@ declare module "ProjectModels" {
     pageSize?: number;
     currentPage?: number;
   }
+
+  export interface EditProjectSlugRequest {
+    newSlug: string;
+    slug: string
+  }
 }
