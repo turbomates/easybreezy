@@ -8,6 +8,9 @@ import {
   ApplyPositionRequestParams,
   ApplySalaryRequestParams,
   AbsencesMap,
+  Absence,
+  CreateAbsenceData,
+  AbsenceForm,
 } from "HumanResourceModels";
 import { createAsyncAction, createAction } from "typesafe-actions";
 import { Paging, FormError } from "MyTypes";
@@ -22,6 +25,42 @@ export const fetchAbsencesAsync = createAsyncAction(
   "FETCH_ABSENCES_SUCCESS",
   "FETCH_ABSENCES_FAILURE",
 )<undefined, AbsencesMap, string>();
+
+export const fetchMyAbsencesAsync = createAsyncAction(
+  "FETCH_MY_ABSENCES_REQUEST",
+  "FETCH_MY_ABSENCES_SUCCESS",
+  "FETCH_MY_ABSENCES_FAILURE",
+)<undefined, Absence[], string>();
+
+export const refetchMyAbsencesAsync = createAsyncAction(
+  "REFETCH_MY_ABSENCES_REQUEST",
+  "REFETCH_MY_ABSENCES_SUCCESS",
+  "REFETCH_MY_ABSENCES_FAILURE",
+)<undefined, Absence[], string>();
+
+export const createAbsenceAsync = createAsyncAction(
+  "CREATE_ABSENCE_REQUEST",
+  "CREATE_ABSENCE_SUCCESS",
+  "CREATE_ABSENCE_FAILURE",
+)<CreateAbsenceData, undefined, FormError[]>();
+
+export const updateAbsenceAsync = createAsyncAction(
+  "UPDATE_ABSENCE_REQUEST",
+  "UPDATE_ABSENCE_SUCCESS",
+  "UPDATE_ABSENCE_FAILURE",
+)<AbsenceForm, undefined, FormError[]>();
+
+export const removeAbsenceAsync = createAsyncAction(
+  "REMOVE_ABSENCE_REQUEST",
+  "REMOVE_ABSENCE_SUCCESS",
+  "REMOVE_ABSENCE_FAILURE",
+)<string, undefined, string>();
+
+export const approveAbsenceAsync = createAsyncAction(
+  "APPROVE_ABSENCE_REQUEST",
+  "APPROVE_ABSENCE_SUCCESS",
+  "APPROVE_ABSENCE_FAILURE",
+)<string, undefined, string>();
 
 export const fetchEmployeeAsync = createAsyncAction(
   "FETCH_USER_DETAILS_REQUEST",
@@ -109,4 +148,18 @@ export const openEmployeeLocationEditForm = createAction(
 
 export const closeEmployeeLocationEditForm = createAction(
   "CLOSE_EMPLOYEE_LOCATION_EDIT_FORM",
+)();
+
+export const openAbsenceUpdateModal = createAction("OPEN_ABSENCE_UPDATE_MODAL")<
+  string
+>();
+
+export const closeAbsenceUpdateModal = createAction(
+  "CLOSE_ABSENCE_UPDATE_MODAL",
+)();
+
+export const openAbsenceCreateForm = createAction("OPEN_ABSENCE_CREATE_FORM")();
+
+export const closeAbsenceCreateForm = createAction(
+  "CLOSE_ABSENCE_CREATE_FORM",
 )();

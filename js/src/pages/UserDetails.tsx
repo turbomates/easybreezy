@@ -18,6 +18,7 @@ import {
   openLocationAssignForm,
   closeLocationAssignForm,
   assignLocationAsync,
+  fetchMyAbsencesAsync,
 } from "../features/human-resouce/actions";
 import { fetchLocationsAsync } from "features/location/actions";
 import { authUserId } from "features/auth/selectors";
@@ -51,6 +52,7 @@ import { SalaryForm } from "features/human-resouce/components/SalaryForm";
 import { EmployeeLocationList } from "features/human-resouce/components/EmployeeLocationList";
 import { EmployeeLocationEditForm } from "features/human-resouce/components/EmployeeLocationEditForm";
 import { LocationAssignForm } from "features/human-resouce/components/LocationAssignForm";
+import { AbsencesCard } from "features/human-resouce/components/Absence/AbsencesCard";
 
 import "./UserDetails.scss";
 
@@ -177,6 +179,7 @@ export const UserDetailsPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchLocationsAsync.request());
+    dispatch(fetchMyAbsencesAsync.request());
   }, [dispatch]);
 
   return (
@@ -268,6 +271,7 @@ export const UserDetailsPage: React.FC = () => {
             <Notes notes={employee?.notes || []} canEdit={false} />
             {canEdit && <NoteForm addNote={addNote} />}
           </Card>
+          <AbsencesCard canEdit={canEdit} />
         </Col>
       </Row>
       <Modal
