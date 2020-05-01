@@ -93,7 +93,7 @@ ktlint {
     outputColorName.set("RED")
     ignoreFailures.set(true)
     enableExperimentalRules.set(false)
-    disabledRules.set(setOf("import-ordering", "no-wildcard-imports"))
+    disabledRules.set(setOf("import-ordering"))
     reporters {
         reporter(ReporterType.PLAIN)
         reporter(ReporterType.CHECKSTYLE)

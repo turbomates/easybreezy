@@ -31,7 +31,8 @@ private fun ResultRow.toHoliday() = Holiday(
 @Serializable
 data class Holiday(
     val name: String,
-    @Serializable(with = LocalDateSerializer::class) val day: LocalDate,
+    @Serializable(with = LocalDateSerializer::class)
+    val day: LocalDate,
     val isWorkingDay: Boolean
 )
 

@@ -12,7 +12,10 @@ import {
   editProjectRoleAsync,
   removeProjectRoleAsync,
   createProjectRoleAsync,
+  fetchProjectRoleAsync,
+  editProjectSlugAsync,
 } from "./actions";
+import { push } from "connected-react-router";
 
 export const fetchProjectsEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
@@ -53,10 +56,7 @@ export const createProject: RootEpic = (action$, state$, { api }) =>
           result.success
             ? [
                 createProjectAsync.success(),
-                fetchProjectsAsync.request({
-                  pageSize: 10,
-                  currentPage: 1,
-                }),
+                push({ pathname: `/projects/${action.payload.slug}` }),
               ]
             : [createProjectAsync.failure(result.errors)],
         ),
@@ -123,13 +123,10 @@ export const editProjectRole: RootEpic = (action$, state$, { api }) =>
     filter(isActionOf(editProjectRoleAsync.request)),
     switchMap((action) =>
       from(api.project.editRole(action.payload)).pipe(
-        mergeMap((result) =>
+        map((result) =>
           result.success
-            ? [
-                editProjectRoleAsync.success(),
-                fetchProjectAsync.request(action.payload.slug),
-              ]
-            : [editProjectRoleAsync.failure(result.errors)],
+            ? editProjectRoleAsync.success()
+            : editProjectRoleAsync.failure(result.errors),
         ),
         catchError((message) => of(editProjectRoleAsync.failure(message))),
       ),
@@ -150,6 +147,43 @@ export const removeProjectRole: RootEpic = (action$, state$, { api }) =>
             : [removeProjectRoleAsync.failure(result.errors)],
         ),
         catchError((message) => of(removeProjectRoleAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const fetchProjectRolePermissionsEpic: RootEpic = (
+  action$,
+  state$,
+  { api },
+) =>
+  action$.pipe(
+    filter(isActionOf(fetchProjectRoleAsync.request)),
+    switchMap((action) =>
+      from(api.project.fetchRolePermissions()).pipe(
+        map((result) =>
+          result.success
+            ? fetchProjectRoleAsync.success(result.data)
+            : fetchProjectRoleAsync.failure(result.errors),
+        ),
+        catchError((message) => of(fetchProjectRoleAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const editProjectSlug: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(editProjectSlugAsync.request)),
+    switchMap((action) =>
+      from(api.project.editSlug(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                editProjectSlugAsync.success(),
+                push({ pathname: `/projects/${action.payload.newSlug}` }),
+              ]
+            : [editProjectSlugAsync.failure(result.errors)],
+        ),
+        catchError((message) => of(editProjectSlugAsync.failure(message))),
       ),
     ),
   );

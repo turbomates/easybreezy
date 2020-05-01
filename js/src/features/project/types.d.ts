@@ -27,7 +27,7 @@ declare module "ProjectModels" {
   interface Role {
     id: string;
     name: string;
-    permissions: string[];
+    permissions: RolePermissions;
   }
 
   interface Team {
@@ -61,6 +61,7 @@ declare module "ProjectModels" {
   export interface CreateProjectRequest {
     name: string;
     description: string;
+    slug: string;
   }
 
   export interface EditProjectDescriptionRequest {
@@ -71,5 +72,12 @@ declare module "ProjectModels" {
   export interface ProjectsRequest {
     pageSize?: number;
     currentPage?: number;
+  }
+
+  export type RolePermissions = string[];
+
+  export interface EditProjectSlugRequest {
+    newSlug: string;
+    slug: string;
   }
 }
