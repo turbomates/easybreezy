@@ -3,7 +3,7 @@ import { Button } from "antd";
 
 interface Props {
   description?: string;
-  openProjectDescriptionForm: () => void;
+  openProjectDescriptionForm: (open: boolean) => void;
 }
 
 export const ProjectDescription: React.FC<Props> = ({
@@ -13,7 +13,7 @@ export const ProjectDescription: React.FC<Props> = ({
   return (
     <div>
       <p>{description}</p>
-      <Button type="primary" onClick={openProjectDescriptionForm}>
+      <Button type="primary" onClick={()=> openProjectDescriptionForm(true)}>
         Edit
       </Button>
     </div>

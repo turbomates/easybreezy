@@ -9,6 +9,7 @@ import {
   CreateProjectRoleRequest,
   ProjectsRequest,
   RolePermissions,
+  EditProjectSlugRequest,
 } from "ProjectModels";
 import { Failure, FormFailure, Paging, Success } from "MyTypes";
 import { api } from "./api";
@@ -112,6 +113,19 @@ export const fetchRolePermissions = () => {
     .then<Success<RolePermissions>>((resp) => ({
       success: true,
       data: resp.data.data,
+    }))
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
+};
+
+export const editSlug = ({ slug, newSlug }: EditProjectSlugRequest) => {
+  return api
+    .post(`/projects/${slug}/change-slug`, { slug: newSlug })
+    .then<Success<null>>(() => ({
+      success: true,
+      data: null,
     }))
     .catch<FormFailure>((resp) => ({
       success: false,
