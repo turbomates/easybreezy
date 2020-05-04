@@ -18,8 +18,8 @@ export const EmployeeLocationList: React.FC<Props> = ({
     {employeeLocations.map((item) => (
       <Timeline.Item
         key={item.id}
-        label={`${item.startedAt} - ${!!item.endedAt ? item?.endedAt : 'till now'}`}
-        color={!item.endedAt ? "green" : "blue"}
+        label={`${item.startedAt} - ${item.endedAt || 'till now'}`}
+        color={item.endedAt ? "blue" : "green"}
       >
         <EmployeeLocationListInner
           item={item}

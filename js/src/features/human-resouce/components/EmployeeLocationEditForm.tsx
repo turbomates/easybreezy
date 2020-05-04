@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Form, Button, Select } from "antd";
 import parseISO from "date-fns/esm/parseISO";
-import format from "date-fns/esm/format";
+import formatISO from 'date-fns/fp/formatISOWithOptions'
 
 import {
   Location,
@@ -23,8 +23,6 @@ interface Props {
   edit: (data: EditEmployeeLocationData) => void;
 }
 
-const DATE_FORMAT = "yyyy-MM-dd";
-
 export const EmployeeLocationEditForm: React.FC<Props> = ({
   locations,
   employeeLocation,
@@ -37,7 +35,7 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
 
   const onFinish = useCallback(
     (values: any) => {
-      const startedAt = format(values.startedAt, DATE_FORMAT);
+      const startedAt = formatISO({ representation: "date" }, values.startedAt);
 
       edit({
         form: {

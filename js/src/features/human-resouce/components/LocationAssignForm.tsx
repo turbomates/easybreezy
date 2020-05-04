@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Form, Input, Button, Select } from "antd";
-import format from "date-fns/esm/format";
+import formatISO from "date-fns/fp/formatISOWithOptions";
 
 import { Location, AssignLocationForm } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
@@ -17,7 +17,6 @@ interface Props {
   assign: (form: AssignLocationForm) => void;
 }
 
-const DATE_FORMAT = "yyyy-MM-dd";
 const initialFormValues = { extraVacationDays: 0 };
 
 export const LocationAssignForm: React.FC<Props> = ({
@@ -35,7 +34,7 @@ export const LocationAssignForm: React.FC<Props> = ({
 
   const onFinish = useCallback(
     (values: any) => {
-      const startedAt = format(values.startedAt, DATE_FORMAT);
+      const startedAt = formatISO({ representation: "date" }, values.startedAt);
 
       assign({
         startedAt,
