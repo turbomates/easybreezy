@@ -14,6 +14,7 @@ import org.jetbrains.exposed.sql.selectAll
 import java.util.*
 import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.project.application.project.queryobject.toProject
+import io.easybreezy.project.model.issue.PriorityTable
 
 class HasIssuesInCategoryQO(private val inCategory: UUID) : QueryObject<Boolean> {
     override suspend fun getData() =
@@ -44,7 +45,8 @@ class IssuesQO(private val paging: PagingParameters) : QueryObject<ContinuousLis
 
 fun ResultRow.toIssue() = Issue(
     this[Issues.id].value,
-    this[Issues.title]
+    this[Issues.title],
+    this[Issues.priority[PriorityTable.color]]?.rgb
 )
 
 
@@ -52,5 +54,6 @@ fun ResultRow.toIssue() = Issue(
 data class Issue(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val title: String
+    val title: String,
+    val priority: String?
 )

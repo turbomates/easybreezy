@@ -28,11 +28,14 @@ class IssueControllerTest {
                         }
                             .toString())
                 }) {
+                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues")) {
+                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Important")!!)
+                    Assertions.assertTrue(response.content?.contains("#00FF00")!!)
                 }
             }
         }
