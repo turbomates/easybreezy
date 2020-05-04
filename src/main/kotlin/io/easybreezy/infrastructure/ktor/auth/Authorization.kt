@@ -88,7 +88,7 @@ class Authorization(config: Configuration) {
 
 fun Route.authorize(
     activities: Set<Activity>,
-    block: suspend ApplicationCall.() -> Boolean = { true },
+    block: suspend ApplicationCall.() -> Boolean = { false },
     build: Route.() -> Unit
 ): Route {
     val authenticatedRoute = createChild(AuthorizationRouteSelector(activities))
