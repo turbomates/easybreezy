@@ -19,7 +19,6 @@ declare module "LocationModels" {
   export type AssignLocationForm = {
     locationId: string;
     startedAt: string;
-    endedAt: string;
     extraVacationDays: number;
   };
 
@@ -55,7 +54,7 @@ declare module "LocationModels" {
 
   export type EmployeeLocationsResponse = {
     data: {
-      userLocations: EmployeeLocationsMap;
+      usersLocations: EmployeeLocationsMap;
     };
   };
 }

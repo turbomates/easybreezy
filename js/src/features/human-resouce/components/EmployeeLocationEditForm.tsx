@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Form, Button, Select } from "antd";
 import parseISO from "date-fns/esm/parseISO";
-import formatISO from "date-fns/esm/formatISO";
+import formatISO from "date-fns/fp/formatISOWithOptions";
 
 import {
   Location,
@@ -35,7 +35,7 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
 
   const onFinish = useCallback(
     (values: any) => {
-      const startedAt = formatISO(values.startedAt, { representation: "date" });
+      const startedAt = formatISO({ representation: "date" }, values.startedAt);
 
       edit({
         form: {
@@ -72,7 +72,6 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
         label="Started at"
         name="startedAt"
         rules={[{ required: true, message: "Please input Started at!" }]}
-        normalize={formatISO}
       >
         <DatePicker />
       </Form.Item>
