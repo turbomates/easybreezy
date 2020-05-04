@@ -40,7 +40,17 @@ class UserProvider @Inject constructor(
         return UserPrincipal(principal.id, principal.activities)
     }
 
-    fun load(credential: JWTCredential): UserPrincipal? {
-        return UserPrincipal(UUID.fromString(credential.payload.subject), setOf())
+    suspend fun load(credential: JWTCredential): UserPrincipal? {
+        return transaction {
+            val userId = UUID.fromString(credential.payload.subject)
+            val resultRow = Users.select { (Users.id eq userId) and (Users.status eq Status.ACTIVE) }
+                    .singleOrNull()
+            resultRow?.let {
+                UserPrincipal(
+                    userId,
+                    resultRow[Users.activities].map { activityName -> Activity.valueOf(activityName) }.toSet()
+                )
+            }
+        }
     }
 }
