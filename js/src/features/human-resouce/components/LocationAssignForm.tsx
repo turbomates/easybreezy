@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { Form, Input, Button, Select } from "antd";
+import format from "date-fns/esm/format";
 
 import { Location, AssignLocationForm } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
@@ -16,7 +17,7 @@ interface Props {
   assign: (form: AssignLocationForm) => void;
 }
 
-const DATE_FORMAT = "YYYY-MM-DD";
+const DATE_FORMAT = "yyyy-MM-dd";
 const initialFormValues = { extraVacationDays: 0 };
 
 export const LocationAssignForm: React.FC<Props> = ({
@@ -28,19 +29,16 @@ export const LocationAssignForm: React.FC<Props> = ({
 
   useFormServerErrors(form, errors, [
     "startedAt",
-    "endedAt",
     "extraVacationDays",
     "locationId",
   ]);
 
   const onFinish = useCallback(
     (values: any) => {
-      const startedAt = values.startedAt.format(DATE_FORMAT);
-      const endedAt = values.endedAt.format(DATE_FORMAT);
+      const startedAt = format(values.startedAt, DATE_FORMAT);
 
       assign({
         startedAt,
-        endedAt,
         locationId: values.locationId,
         extraVacationDays: values.extraVacationDays,
       });
@@ -64,14 +62,6 @@ export const LocationAssignForm: React.FC<Props> = ({
         label="Started at"
         name="startedAt"
         rules={[{ required: true, message: "Please input Started at!" }]}
-      >
-        <DatePicker />
-      </Form.Item>
-
-      <Form.Item
-        label="Ended at"
-        name="endedAt"
-        rules={[{ required: true, message: "Please input Ended at!" }]}
       >
         <DatePicker />
       </Form.Item>
