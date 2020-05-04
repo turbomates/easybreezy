@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Form, Button, Select } from "antd";
 import parseISO from "date-fns/esm/parseISO";
-import formatISO from 'date-fns/fp/formatISOWithOptions'
+import formatISO from "date-fns/fp/formatISOWithOptions";
 
 import {
   Location,
