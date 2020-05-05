@@ -11,7 +11,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonElementSerializer
 import kotlinx.serialization.serializer
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.starProjectedType
 

@@ -13,7 +13,7 @@ import org.valiktor.functions.isLessThanOrEqualTo
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotNull
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 class Validation @Inject constructor(private val queryExecutor: QueryExecutor) {
