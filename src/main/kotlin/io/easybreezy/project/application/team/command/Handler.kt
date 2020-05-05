@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.project.model.team.Team
 import io.easybreezy.project.model.team.Repository
-import java.util.*
+import java.util.UUID
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,

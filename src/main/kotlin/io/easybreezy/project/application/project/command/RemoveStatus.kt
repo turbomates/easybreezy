@@ -5,9 +5,9 @@ import kotlinx.serialization.Transient
 import java.util.UUID
 
 @Serializable
-class RemoveCategory {
+class RemoveStatus {
     @Transient
-    lateinit var categoryId: UUID
+    lateinit var statusId: UUID
     @Transient
     lateinit var project: String
 }

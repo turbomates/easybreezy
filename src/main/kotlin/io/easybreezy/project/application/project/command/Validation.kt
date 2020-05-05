@@ -5,7 +5,8 @@ import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.infrastructure.query.QueryExecutor
-import io.easybreezy.project.application.issue.queryobject.HasIssuesQO
+import io.easybreezy.project.application.issue.queryobject.HasIssuesInCategoryQO
+import io.easybreezy.project.application.issue.queryobject.HasIssuesInStatusQO
 import io.easybreezy.project.model.Repository
 import io.easybreezy.project.model.team.Role
 import org.valiktor.Constraint
@@ -103,7 +104,7 @@ class Validation @Inject constructor(
     }
 
     suspend fun validateCommand(command: RemoveCategory): List<Error> {
-        if (queryExecutor.execute(HasIssuesQO(command.categoryId))) {
+        if (queryExecutor.execute(HasIssuesInCategoryQO(command.categoryId))) {
             return listOf(Error(HasIssues.name))
         }
         return listOf()
@@ -124,6 +125,29 @@ class Validation @Inject constructor(
             true
         }
     }
+    fun validateCommand(command: NewStatus): List<Error> {
+
+        return validate(command) {
+            validate(NewStatus::name).hasSize(2, 25)
+        }
+    }
+
+    fun validateCommand(command: ChangeStatus): List<Error> {
+
+        return validate(command) {
+            validate(ChangeStatus::name).hasSize(2, 25)
+        }
+    }
+
+    object HasIssuesInStatus : Constraint {
+        override val name: String
+            get() = "There are issues with this status"
+    }
+
+    suspend fun validateCommand(command: RemoveStatus): List<Error> {
+        if (queryExecutor.execute(HasIssuesInStatusQO(command.statusId))) {
+            return listOf(Error(HasIssuesInStatus.name))
+        }
+        return listOf()
+    }
 }
-
-

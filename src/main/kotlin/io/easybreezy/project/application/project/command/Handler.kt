@@ -86,5 +86,23 @@ class Handler @Inject constructor(
         }
     }
 
+    suspend fun addIssueStatus(command: NewStatus) {
+        transaction {
+            project(command.project).addIssueStatus(command.name)
+        }
+    }
+
+    suspend fun changeIssueStatus(command: ChangeStatus) {
+        transaction {
+            project(command.project).changeIssueStatus(command.statusId, command.name)
+        }
+    }
+
+    suspend fun removeIssueStatus(command: RemoveStatus) {
+        transaction {
+            project(command.project).removeIssueStatus(command.statusId)
+        }
+    }
+
     private fun project(slug: String) = repository.getBySlug(slug)
 }
