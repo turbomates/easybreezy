@@ -4,7 +4,7 @@ import io.easybreezy.infrastructure.ktor.validate
 import org.valiktor.functions.isNotBlank
 import io.easybreezy.infrastructure.ktor.Error
 
-class Validation  {
+class Validation {
 
     fun validateCommand(command: New): List<Error> {
 

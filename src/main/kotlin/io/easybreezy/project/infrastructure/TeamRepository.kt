@@ -7,7 +7,7 @@ import io.easybreezy.project.model.team.Teams
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import java.util.*
+import java.util.UUID
 
 class TeamRepository : Repository, Team.Repository() {
     override fun isRoleBelongs(toTeam: UUID, role: UUID): Boolean {

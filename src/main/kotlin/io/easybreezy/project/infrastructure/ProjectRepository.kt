@@ -8,7 +8,7 @@ import io.easybreezy.project.model.team.Members
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import java.util.*
+import java.util.UUID
 
 class ProjectRepository : Project.Repository(), Repository {
     override fun getBySlug(slug: String): Project {

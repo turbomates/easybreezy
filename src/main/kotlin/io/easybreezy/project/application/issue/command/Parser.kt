@@ -2,10 +2,10 @@ package io.easybreezy.project.application.issue.command
 
 import com.google.inject.Inject
 
-//@TODO write parser
+// @TODO write parser
 class Parser @Inject constructor() {
 
-    fun parse(text: String) : Parsed {
+    fun parse(text: String): Parsed {
         return Parsed(text.substring(0, 10), text.substring(11))
     }
 }

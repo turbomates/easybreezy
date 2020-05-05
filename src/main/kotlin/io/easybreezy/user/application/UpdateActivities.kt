@@ -2,7 +2,7 @@ package io.easybreezy.user.application
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import java.util.*
+import java.util.UUID
 
 @Serializable
 data class UpdateActivities(val activities: Set<String>) {

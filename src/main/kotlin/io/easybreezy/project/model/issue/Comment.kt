@@ -17,7 +17,7 @@ class Comment private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var createdAt by Comments.createdAt
 
     companion object : PrivateEntityClass<UUID, Comment>(object : Repository() {}) {
-        fun create(author: UUID, issue: Issue,comment: String) = Comment.new {
+        fun create(author: UUID, issue: Issue, comment: String) = Comment.new {
             this.author = author
             this.issue = issue
             this.comment = comment

@@ -9,7 +9,7 @@ import org.valiktor.Constraint
 import org.valiktor.Validator
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isNotNull
-import java.util.*
+import java.util.UUID
 
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,

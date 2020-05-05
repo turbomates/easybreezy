@@ -1,6 +1,20 @@
 package io.easybreezy.project.model
 
-import io.easybreezy.infrastructure.event.project.project.*
+import io.easybreezy.infrastructure.event.project.project.StatusAdded
+import io.easybreezy.infrastructure.event.project.project.CategoryRemoved
+import io.easybreezy.infrastructure.event.project.project.StatusRemoved
+import io.easybreezy.infrastructure.event.project.project.CategoryChanged
+import io.easybreezy.infrastructure.event.project.project.Activated
+import io.easybreezy.infrastructure.event.project.project.CategoryAdded
+import io.easybreezy.infrastructure.event.project.project.Closed
+import io.easybreezy.infrastructure.event.project.project.Created
+import io.easybreezy.infrastructure.event.project.project.DescriptionWritten
+import io.easybreezy.infrastructure.event.project.project.RoleAdded
+import io.easybreezy.infrastructure.event.project.project.RoleChanged
+import io.easybreezy.infrastructure.event.project.project.RoleRemoved
+import io.easybreezy.infrastructure.event.project.project.SlugChanged
+import io.easybreezy.infrastructure.event.project.project.StatusChanged
+import io.easybreezy.infrastructure.event.project.project.Suspended
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.issue.Categories

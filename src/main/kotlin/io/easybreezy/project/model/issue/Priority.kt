@@ -1,12 +1,10 @@
 package io.easybreezy.project.model.issue
 
-import io.easybreezy.hr.model.profile.Messengers
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import io.ktor.features.NotFoundException
-import org.postgresql.util.PGobject
 
 class Priority private constructor() : Embeddable() {
     var value by PriorityTable.value
@@ -67,9 +65,9 @@ class Priority private constructor() : Embeddable() {
 
         companion object {
             fun byRGB(rgb: String): Color {
-                 values().forEach {
+                values().forEach {
                     if (rgb == it.rgb) {
-                         return it
+                        return it
                     }
                 }
                 throw NotFoundException("Color $rgb not found")
@@ -83,6 +81,6 @@ object PriorityTable : EmbeddableTable() {
     val color = customEnumeration(
         "color",
         "priority_color",
-        {value -> Priority.Color.byRGB(value as String)},
+        { value -> Priority.Color.byRGB(value as String) },
         { PGEnum("priority_color", it) })
 }

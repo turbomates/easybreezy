@@ -19,7 +19,18 @@ import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
 import io.easybreezy.project.application.member.queryobject.MemberActivities
-import io.easybreezy.project.application.project.command.*
+import io.easybreezy.project.application.project.command.ChangeRole
+import io.easybreezy.project.application.project.command.RemoveRole
+import io.easybreezy.project.application.project.command.NewRole
+import io.easybreezy.project.application.project.command.New
+import io.easybreezy.project.application.project.command.WriteDescription
+import io.easybreezy.project.application.project.command.ChangeSlug
+import io.easybreezy.project.application.project.command.RemoveStatus
+import io.easybreezy.project.application.project.command.ChangeStatus
+import io.easybreezy.project.application.project.command.NewStatus
+import io.easybreezy.project.application.project.command.RemoveCategory
+import io.easybreezy.project.application.project.command.ChangeCategory
+import io.easybreezy.project.application.project.command.NewCategory
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.ActivateTeam
 import io.easybreezy.project.application.team.command.ChangeMemberRole
@@ -234,4 +245,3 @@ class Router @Inject constructor(
         return memberActivities.containsAny(activities)
     }
 }
-

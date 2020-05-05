@@ -9,7 +9,7 @@ class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val parser: Parser,
     private val projectRepository: ProjectRepository
-){
+) {
 
     suspend fun newIssue(command: New) {
         val parsed = parser.parse(command.content)

@@ -31,7 +31,7 @@ class AbsencesQO(private val dateRange: DateRange) : QueryObject<Absences> {
     }
 }
 
-class IsAbsenceOwner(val id: UUID, val userId: UUID): QueryObject<Boolean> {
+class IsAbsenceOwner(val id: UUID, val userId: UUID) : QueryObject<Boolean> {
     override suspend fun getData(): Boolean {
         return AbsencesTable.select { AbsencesTable.id eq id and (AbsencesTable.userId eq userId) }.count() > 0
     }

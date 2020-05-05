@@ -2,7 +2,7 @@ package io.easybreezy.project.application.issue.command
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import java.util.*
+import java.util.UUID
 
 @Serializable
 data class New(val content: String) {
