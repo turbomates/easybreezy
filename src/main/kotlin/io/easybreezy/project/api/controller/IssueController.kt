@@ -3,7 +3,7 @@ package io.easybreezy.project.api.controller
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.infrastructure.query.QueryBus
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.project.application.issue.command.Handler
@@ -18,7 +18,7 @@ import java.util.UUID
 class IssueController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryExecutor: QueryExecutor
+    private val queryBus: QueryBus
 ) : Controller() {
 
     suspend fun create(command: New): Response.Either<Response.Ok, Response.Errors> {
@@ -41,13 +41,13 @@ class IssueController @Inject constructor(
 
     suspend fun show(id: UUID): Response.Data<Issue> {
         return Response.Data(
-            queryExecutor.execute(IssueQO(id))
+            queryBus(IssueQO(id))
         )
     }
 
     suspend fun list(project: String): Response.Listing<Issue> {
         return Response.Listing(
-            queryExecutor.execute(IssuesQO(call.request.pagingParameters()))
+            queryBus(IssuesQO(call.request.pagingParameters()))
         )
     }
 }

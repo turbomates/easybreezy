@@ -14,14 +14,14 @@ import io.easybreezy.hr.application.calendar.queryobject.Holidays
 import io.easybreezy.hr.application.calendar.queryobject.HolidaysQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.infrastructure.query.QueryBus
 import io.easybreezy.infrastructure.structure.Either
 import java.util.UUID
 
 class CalendarController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryExecutor: QueryExecutor
+    private val queryBus: QueryBus
 ) : Controller() {
 
     suspend fun importCalendar(command: ImportCalendar): Response.Either<Response.Ok, Response.Errors> {
@@ -54,7 +54,7 @@ class CalendarController @Inject constructor(
     }
 
     suspend fun calendars(): Response.Data<Calendars> {
-        return Response.Data(queryExecutor.execute(CalendarsQO()))
+        return Response.Data(queryBus(CalendarsQO()))
     }
 
     suspend fun addHoliday(command: AddHoliday): Response.Either<Response.Ok, Response.Errors> {
@@ -92,6 +92,6 @@ class CalendarController @Inject constructor(
     }
 
     suspend fun holidays(calendarId: UUID): Response.Data<Holidays> {
-        return Response.Data(queryExecutor.execute(HolidaysQO(calendarId)))
+        return Response.Data(queryBus(HolidaysQO(calendarId)))
     }
 }
