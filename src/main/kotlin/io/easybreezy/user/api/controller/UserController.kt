@@ -3,7 +3,7 @@ package io.easybreezy.user.api.controller
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.user.application.Archive
@@ -22,17 +22,17 @@ import java.util.UUID
 class UserController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun users(): Response.Listing<User> {
         return Response.Listing(
-            queryBus(UsersQO(call.request.pagingParameters()))
+            queryExecutor.execute(UsersQO(call.request.pagingParameters()))
         )
     }
 
     suspend fun me(id: UUID): Response.Data<User> {
-        return Response.Data(queryBus(UserQO(id)))
+        return Response.Data(queryExecutor.execute(UserQO(id)))
     }
 
     suspend fun create(command: Create): Response.Either<Response.Ok, Response.Errors> {
