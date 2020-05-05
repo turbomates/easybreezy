@@ -17,7 +17,7 @@ import io.easybreezy.hr.application.hr.queryobject.EmployeeDetailsQO
 import io.easybreezy.hr.application.hr.queryobject.EmployeesQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import java.util.UUID
@@ -25,7 +25,7 @@ import java.util.UUID
 class HRController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun hire(
@@ -128,11 +128,11 @@ class HRController @Inject constructor(
 
     suspend fun employees(): Response.Listing<Employee> {
         return Response.Listing(
-            queryBus(EmployeesQO(call.request.pagingParameters()))
+            queryExecutor(EmployeesQO(call.request.pagingParameters()))
         )
     }
 
     suspend fun employee(employeeUser: UUID): Response.Data<EmployeeDetails> {
-        return Response.Data(queryBus(EmployeeDetailsQO(employeeUser)))
+        return Response.Data(queryExecutor(EmployeeDetailsQO(employeeUser)))
     }
 }

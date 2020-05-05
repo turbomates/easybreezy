@@ -13,7 +13,7 @@ import io.easybreezy.hr.application.absence.queryobject.UserAbsences
 import io.easybreezy.hr.application.absence.queryobject.UserAbsencesQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.extractDateRange
 import io.easybreezy.infrastructure.structure.Either
 import java.util.UUID
@@ -21,7 +21,7 @@ import java.util.UUID
 class AbsenceController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun createAbsence(command: CreateAbsence): Response.Either<Response.Ok, Response.Errors> {
@@ -58,14 +58,14 @@ class AbsenceController @Inject constructor(
     }
 
     suspend fun showAbsence(id: UUID): Response.Data<Absence> {
-        return Response.Data(queryBus(AbsenceQO(id)))
+        return Response.Data(queryExecutor(AbsenceQO(id)))
     }
 
     suspend fun myAbsences(userId: UUID): Response.Data<UserAbsences> {
-        return Response.Data(queryBus(UserAbsencesQO(userId)))
+        return Response.Data(queryExecutor(UserAbsencesQO(userId)))
     }
 
     suspend fun absences(): Response.Data<Absences> {
-        return Response.Data(queryBus(AbsencesQO(call.request.extractDateRange())))
+        return Response.Data(queryExecutor(AbsencesQO(call.request.extractDateRange())))
     }
 }

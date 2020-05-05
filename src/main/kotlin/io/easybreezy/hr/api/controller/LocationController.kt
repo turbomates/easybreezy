@@ -17,14 +17,14 @@ import io.easybreezy.hr.application.location.queryobject.UsersLocationsQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.extractDateRange
 import java.util.UUID
 
 class LocationController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun createLocation(command: CreateLocation): Response.Either<Response.Ok, Response.Errors> {
@@ -43,7 +43,7 @@ class LocationController @Inject constructor(
     }
 
     suspend fun locations(): Response.Data<Locations> {
-        return Response.Data(queryBus(LocationsQO()))
+        return Response.Data(queryExecutor(LocationsQO()))
     }
 
     suspend fun assignLocation(command: AssignLocation): Response.Either<Response.Ok, Response.Errors> {
@@ -68,18 +68,18 @@ class LocationController @Inject constructor(
     }
 
     suspend fun showUserLocation(id: UUID): Response.Data<UserLocation> {
-        return Response.Data(queryBus(UserLocationQO(id)))
+        return Response.Data(queryExecutor(UserLocationQO(id)))
     }
 
     suspend fun userLocations(userId: UUID): Response.Data<UserLocations> {
         return Response.Data(
-            queryBus(UserLocationsQO(userId))
+            queryExecutor(UserLocationsQO(userId))
         )
     }
 
     suspend fun usersLocations(): Response.Data<UsersLocations> {
         return Response.Data(
-            queryBus(UsersLocationsQO(call.request.extractDateRange()))
+            queryExecutor(UsersLocationsQO(call.request.extractDateRange()))
         )
     }
 }

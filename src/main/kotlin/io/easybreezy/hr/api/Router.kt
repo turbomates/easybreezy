@@ -51,7 +51,7 @@ import io.easybreezy.infrastructure.ktor.deleteWithBody
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.infrastructure.ktor.postParams
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
 import io.ktor.auth.principal
@@ -65,7 +65,7 @@ import java.util.UUID
 class Router @Inject constructor(
     application: Application,
     genericPipeline: GenericPipeline,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Router(application, genericPipeline) {
 
     init {
@@ -99,7 +99,7 @@ class Router @Inject constructor(
             authorize(setOf(Activity.ABSENCES_MANAGE), {
                 val principal = principal<UserPrincipal>()
                 val absenceId = locations.resolve<ID>(this).id
-                queryBus(IsAbsenceOwner(absenceId, principal!!.id))
+                queryExecutor(IsAbsenceOwner(absenceId, principal!!.id))
             }
             ) {
                 post<Response.Either<Response.Ok, Response.Errors>, UpdateAbsence, ID>("/{id}") { command, params ->
@@ -170,7 +170,7 @@ class Router @Inject constructor(
             authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
                 val principal = principal<UserPrincipal>()
                 val userLocationId = locations.resolve<ID>(this).id
-                queryBus(IsUserLocationOwner(userLocationId, principal!!.id))
+                queryExecutor(IsUserLocationOwner(userLocationId, principal!!.id))
             }) {
                 post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") { command, params ->
                     controller<LocationController>(this).editUserLocation(
