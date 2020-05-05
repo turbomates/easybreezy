@@ -142,21 +142,16 @@ class Router @Inject constructor(
 
         route("/{slug}") {
 
-            authorize(setOf(Activity.ISSUES_SHOW), { memberHasAccess(setOf(Activity.ISSUES_SHOW)) }) {
-                get<Response.Listing<Issue>, SlugParam>("/issues") { params ->
-                    controller<IssueController>(this).list(params.slug)
-                }
-            }
-
-            authorize(setOf(Activity.ISSUES_MANAGE)) {
+            authorize(setOf(Activity.PROJECTS_SHOW)) {
                 post<Response.Either<Response.Ok, Response.Errors>, NewIssue, SlugParam>("/issues/add") { new, params ->
                     new.project = params.slug
                     new.author = resolvePrincipal<UserPrincipal>()
                     controller<IssueController>(this).create(new)
                 }
-            }
+                get<Response.Listing<Issue>, SlugParam>("/issues") { params ->
+                    controller<IssueController>(this).list(params.slug)
+                }
 
-            authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
                 }
