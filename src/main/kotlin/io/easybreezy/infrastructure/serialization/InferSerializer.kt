@@ -10,6 +10,8 @@ import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonElementSerializer
 import kotlinx.serialization.serializer
+import java.time.LocalDate
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.starProjectedType
 
@@ -68,6 +70,12 @@ fun serializerForSending(value: Any): KSerializer<*> {
             componentClass as KClass<Any>,
             serializer(componentType) as KSerializer<Any>
         )
+    }
+    if (value is LocalDate) {
+        return LocalDateSerializer
+    }
+    if (value is UUID) {
+        return UUIDSerializer
     }
 
     return value::class.serializer()

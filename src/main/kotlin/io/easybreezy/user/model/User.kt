@@ -10,7 +10,6 @@ import io.easybreezy.infrastructure.exposed.dao.EmbeddableTable
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
-import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.infrastructure.postgresql.PGEnum
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.builtins.set
@@ -34,13 +33,13 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private val contacts by Contact referrersOn Contacts.user
 
     fun hire() {
-        require(status == Status.PENDING) { throw LogicException("User have been already hired") }
+        require(status == Status.PENDING) { throw Exception("User have been already hired") }
         status = Status.WAIT_CONFIRM
         this.addEvent(Hired(this.id.value))
     }
 
     fun archive(reason: String?) {
-        require(status == Status.PENDING) { throw LogicException("Users with status Pending only can be approved") }
+        require(status == Status.PENDING) { throw Exception("Users with status Pending only can be approved") }
         status = Status.ARCHIVED
         comment = reason
     }

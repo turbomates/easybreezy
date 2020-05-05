@@ -17,7 +17,6 @@ import io.easybreezy.infrastructure.event.EventsDatabaseAccess
 import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
-import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
@@ -116,10 +115,6 @@ suspend fun main() {
         install(StatusPages) {
             status(HttpStatusCode.Unauthorized) {
                 call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
-            }
-            exception<LogicException> {
-                call.respond(HttpStatusCode.UnprocessableEntity, Error(it.message ?: "Unprocessable Entity"))
-                throw it
             }
             exception<NoSuchElementException> {
                 call.respond(HttpStatusCode.NotFound, Error("Page not found"))

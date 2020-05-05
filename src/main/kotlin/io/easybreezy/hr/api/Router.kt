@@ -180,13 +180,6 @@ class Router @Inject constructor(
                 }
             }
 
-            authorize(setOf(Activity.USER_LOCATIONS_MANAGE)) {
-                postParams<Response.Ok, ID>("/{id}/close") { params ->
-                    controller<LocationController>(this).closeUserLocation(
-                        params.id
-                    )
-                }
-            }
             authorize(setOf(Activity.USER_LOCATIONS_LIST)) {
                 get<Response.Data<UsersLocations>>("") {
                     controller<LocationController>(this).usersLocations()

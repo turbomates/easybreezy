@@ -1,6 +1,8 @@
 package io.easybreezy.hr.infrastructure
 
-import io.easybreezy.hr.model.location.*
+import io.easybreezy.hr.model.location.UserLocation
+import io.easybreezy.hr.model.location.UserLocationNotFoundException
+import io.easybreezy.hr.model.location.UserLocations
 import org.jetbrains.exposed.sql.and
 import java.util.UUID
 
