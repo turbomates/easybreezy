@@ -6,7 +6,14 @@ import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
-import io.easybreezy.user.application.*
+import io.easybreezy.user.application.Archive
+import io.easybreezy.user.application.Confirm
+import io.easybreezy.user.application.Create
+import io.easybreezy.user.application.Handler
+import io.easybreezy.user.application.Invite
+import io.easybreezy.user.application.UpdateActivities
+import io.easybreezy.user.application.UpdateContacts
+import io.easybreezy.user.application.Validation
 import io.easybreezy.user.application.queryobject.User
 import io.easybreezy.user.application.queryobject.UserQO
 import io.easybreezy.user.application.queryobject.UsersQO

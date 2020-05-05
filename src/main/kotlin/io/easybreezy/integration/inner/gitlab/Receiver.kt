@@ -1,7 +1,14 @@
 package io.easybreezy.integration.inner.gitlab
 
 import io.easybreezy.integration.gitlab.webhook.WebHook
-import io.easybreezy.integration.gitlab.webhook.action.*
+import io.easybreezy.integration.gitlab.webhook.action.Issue
+import io.easybreezy.integration.gitlab.webhook.action.Job
+import io.easybreezy.integration.gitlab.webhook.action.MergeRequest
+import io.easybreezy.integration.gitlab.webhook.action.Note
+import io.easybreezy.integration.gitlab.webhook.action.ObjectKind
+import io.easybreezy.integration.gitlab.webhook.action.Pipeline
+import io.easybreezy.integration.gitlab.webhook.action.Push
+import io.easybreezy.integration.gitlab.webhook.action.WikiPage
 import io.easybreezy.integration.inner.LocalInformation
 import io.easybreezy.integration.inner.MessageHandler
 import kotlinx.serialization.ImplicitReflectionSerializer

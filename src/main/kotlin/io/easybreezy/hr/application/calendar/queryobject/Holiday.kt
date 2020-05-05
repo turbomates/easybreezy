@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import io.easybreezy.hr.model.calendar.Holidays as HolidaysTable
 
 class HolidaysQO(private val calendarId: UUID) : QueryObject<Holidays> {
