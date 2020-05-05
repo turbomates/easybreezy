@@ -65,7 +65,7 @@ internal fun Database.createUserLocation(
     userId: UUID,
     locationId: UUID,
     extraVacations: Int = 0,
-    startedAt: LocalDate = LocalDate.now(),
+    startedAt: LocalDate = LocalDate.now().minusDays(5),
     endedAt: LocalDate? = LocalDate.now().plusDays(20)
 ): UUID {
     return transaction(this) {

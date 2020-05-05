@@ -52,6 +52,22 @@ class UsersLocationsQO(private val dateRange: DateRange) : QueryObject<UsersLoca
             .toUserLocations()
 }
 
+class IsLatestByUserIdQO(private val userId: UUID, private val startedAt: LocalDate) : QueryObject<Boolean> {
+    override suspend fun getData() =
+        UserLocationsTable
+            .select { UserLocationsTable.userId eq userId and (UserLocationsTable.startedAt greaterEq startedAt) }
+            .count() == 0L
+}
+
+class IsLatestByIdQO(private val userLocationId: UUID, private val startedAt: LocalDate) : QueryObject<Boolean> {
+    override suspend fun getData() =
+        UserLocationsTable
+            .innerJoin(Users)
+            .select { (UserLocationsTable.startedAt greaterEq startedAt) }
+            .andWhere { UserLocationsTable.id eq userLocationId }
+            .count() == 0L
+}
+
 class IsUserLocationOwner(val id: UUID, val userId: UUID) : QueryObject<Boolean> {
     override suspend fun getData(): Boolean {
         return UserLocationsTable.select {

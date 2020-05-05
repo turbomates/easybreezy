@@ -11,22 +11,15 @@ import io.easybreezy.user.model.Repository
 import io.easybreezy.user.model.User
 import org.valiktor.Constraint
 import org.valiktor.Validator
-import org.valiktor.functions.*
+import org.valiktor.functions.isEmail
+import org.valiktor.functions.isNotBlank
+import org.valiktor.functions.isNotNull
+import org.valiktor.functions.validateForEach
 
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,
     private val repository: Repository
 ) {
-    object Unique : Constraint {
-        override val name: String
-            get() = "User with this email already exist"
-    }
-
-    private fun <E> Validator<E>.Property<String?>.isUnique(): Validator<E>.Property<String?> =
-        this.validate(Unique) { value ->
-            repository.findByEmail(Email.create(value!!)) !is User
-        }
-
     suspend fun onCreate(command: Create): List<Error> {
         return transactionManager {
             validate(command) {
@@ -81,4 +74,14 @@ class Validation @Inject constructor(
             validate(UpdateActivities::activities).isNotNull().isActivities()
         }
     }
+
+    private object Unique : Constraint {
+        override val name: String
+            get() = "User with this email already exist"
+    }
+
+    private fun <E> Validator<E>.Property<String?>.isUnique(): Validator<E>.Property<String?> =
+        this.validate(Unique) { value ->
+            repository.findByEmail(Email.create(value!!)) !is User
+        }
 }

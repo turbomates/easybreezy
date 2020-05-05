@@ -3,7 +3,6 @@ package io.easybreezy.infrastructure.ktor
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.ContinuousListSerializer
 import io.easybreezy.infrastructure.serialization.serializerForSending
-import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
@@ -17,7 +16,7 @@ import kotlinx.serialization.json.JsonOutput
 import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable(with = ErrorSerializer::class)
-data class Error(val message: String, val property: String? = null, @ContextualSerialization val value: Any? = null)
+data class Error(val message: String, val property: String? = null, val value: Any? = null)
 
 @Serializable(with = ResponseSerializer::class)
 sealed class Response {

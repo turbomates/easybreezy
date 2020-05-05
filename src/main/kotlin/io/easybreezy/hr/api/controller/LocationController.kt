@@ -67,12 +67,6 @@ class LocationController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun closeUserLocation(locationId: UUID): Response.Ok {
-        handler.closeUserLocation(locationId)
-
-        return Response.Ok
-    }
-
     suspend fun showUserLocation(id: UUID): Response.Data<UserLocation> {
         return Response.Data(queryExecutor.execute(UserLocationQO(id)))
     }
