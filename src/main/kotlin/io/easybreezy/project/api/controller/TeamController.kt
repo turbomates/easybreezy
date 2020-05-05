@@ -3,7 +3,7 @@ package io.easybreezy.project.api.controller
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.project.application.team.command.ChangeMemberRole
 import io.easybreezy.project.application.team.command.Handler
@@ -18,7 +18,7 @@ import java.util.UUID
 class TeamController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun newTeam(command: NewTeam): Response.Either<Response.Ok, Response.Errors> {
@@ -41,7 +41,7 @@ class TeamController @Inject constructor(
 
     suspend fun show(id: UUID): Response.Data<Team> {
         return Response.Data(
-            queryBus(TeamQO(id))
+            queryExecutor.execute(TeamQO(id))
         )
     }
 

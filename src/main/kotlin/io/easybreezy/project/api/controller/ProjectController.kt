@@ -3,7 +3,7 @@ package io.easybreezy.project.api.controller
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.project.application.project.command.Handler
@@ -30,7 +30,7 @@ import java.util.UUID
 class ProjectController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Controller() {
 
     suspend fun create(new: New): Response.Either<Response.Ok, Response.Errors> {
@@ -53,19 +53,19 @@ class ProjectController @Inject constructor(
 
     suspend fun list(): Response.Listing<Project> {
         return Response.Listing(
-            queryBus(ProjectsQO(call.request.pagingParameters()))
+            queryExecutor.execute(ProjectsQO(call.request.pagingParameters()))
         )
     }
 
     suspend fun myList(principal: UUID): Response.Listing<Project> {
         return Response.Listing(
-            queryBus(MyProjectsQO(principal, call.request.pagingParameters()))
+            queryExecutor.execute(MyProjectsQO(principal, call.request.pagingParameters()))
         )
     }
 
     suspend fun show(slug: String): Response.Data<Project> {
         return Response.Data(
-            queryBus(ProjectQO(slug))
+            queryExecutor.execute(ProjectQO(slug))
         )
     }
 

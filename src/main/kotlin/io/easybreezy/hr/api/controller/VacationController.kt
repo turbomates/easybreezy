@@ -7,16 +7,16 @@ import io.easybreezy.hr.application.VacationQO
 import io.easybreezy.hr.application.VacationsQO
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import java.util.UUID
 
-class VacationController @Inject constructor(private val queryBus: QueryBus) : Controller() {
+class VacationController @Inject constructor(private val queryExecutor: QueryExecutor) : Controller() {
 
     suspend fun calculateVacation(userId: UUID): Response.Data<RemainingTime> {
-        return Response.Data(queryBus(VacationQO(userId)))
+        return Response.Data(queryExecutor.execute(VacationQO(userId)))
     }
 
     suspend fun calculateVacations(): Response.Data<RemainingTimes> {
-        return Response.Data(queryBus(VacationsQO()))
+        return Response.Data(queryExecutor.execute(VacationsQO()))
     }
 }

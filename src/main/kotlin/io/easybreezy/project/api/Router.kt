@@ -12,7 +12,7 @@ import io.easybreezy.infrastructure.ktor.auth.containsAny
 import io.easybreezy.infrastructure.ktor.get
 import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.infrastructure.ktor.postParams
-import io.easybreezy.infrastructure.query.QueryBus
+import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
@@ -55,7 +55,7 @@ import io.easybreezy.project.application.issue.command.New as NewIssue
 class Router @Inject constructor(
     application: Application,
     genericPipeline: GenericPipeline,
-    private val queryBus: QueryBus
+    private val queryExecutor: QueryExecutor
 ) : Router(application, genericPipeline) {
 
     init {
@@ -104,7 +104,7 @@ class Router @Inject constructor(
             val principal = principal<UserPrincipal>()
             principal?.let {
                 val teamId = locations.resolve<TeamId>(this).teamId
-                queryBus(IsTeamMember(principal.id, teamId))
+                queryExecutor.execute(IsTeamMember(principal.id, teamId))
             } ?: false
         }) {
             get<Response.Data<Team>, TeamId>("/{teamId}") { params ->
@@ -236,7 +236,7 @@ class Router @Inject constructor(
             return false
         }
         val memberActivities =
-            queryBus(MemberActivities(principal.id, locations.resolve<SlugParam>(this).slug))
+            queryExecutor.execute(MemberActivities(principal.id, locations.resolve<SlugParam>(this).slug))
         return memberActivities.containsAny(activities)
     }
 }
