@@ -8,7 +8,7 @@ import { FormErrorMap } from "MyTypes";
 interface Props {
   project: Project;
   edit: (form: EditProjectDescriptionRequest) => void;
-  close: (close: boolean) => void;
+  closeProjectDescriptionForm: () => void;
   errors: FormErrorMap;
   loading: boolean;
 }
@@ -18,7 +18,7 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
   errors,
   edit,
   loading,
-  close,
+  closeProjectDescriptionForm,
 }) => {
   const [form] = Form.useForm();
 
@@ -72,7 +72,7 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
             </Button>
           </Col>
           <Col>
-            <Button type="danger" onClick={() => close(false)} loading={loading}>
+            <Button type="danger" onClick={closeProjectDescriptionForm} loading={loading}>
               Cancel
             </Button>
           </Col>
