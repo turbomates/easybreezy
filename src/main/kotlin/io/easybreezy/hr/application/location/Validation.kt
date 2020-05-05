@@ -6,7 +6,6 @@ import io.easybreezy.hr.model.location.Location.Companion.MIN_VACATIONS_DAYS
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.infrastructure.query.QueryExecutor
-import kotlinx.coroutines.runBlocking
 import org.valiktor.Constraint
 import org.valiktor.Validator
 import org.valiktor.functions.isGreaterThanOrEqualTo
@@ -51,11 +50,11 @@ class Validation @Inject constructor(private val queryExecutor: QueryExecutor) {
 
     private fun <E> Validator<E>.Property<LocalDate?>.isLatestForUser(userId: UUID): Validator<E>.Property<LocalDate?> =
         this.validate(Latest) { value ->
-            value == null || runBlocking { queryExecutor.execute(IsLatestByUserIdQO(userId, value)) }
+            value == null || queryExecutor.executeSync(IsLatestByUserIdQO(userId, value))
         }
 
     private fun <E> Validator<E>.Property<LocalDate?>.isLatest(id: UUID): Validator<E>.Property<LocalDate?> =
         this.validate(Latest) { value ->
-            value == null || runBlocking { queryExecutor.execute(IsLatestByIdQO(id, value)) }
+            value == null || queryExecutor.executeSync(IsLatestByIdQO(id, value))
         }
 }
