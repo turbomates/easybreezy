@@ -2,6 +2,7 @@ package io.easybreezy.hr.application.location
 
 import io.easybreezy.hr.application.location.queryobject.IsLatestByIdQO
 import io.easybreezy.hr.application.location.queryobject.IsLatestByUserIdQO
+import io.easybreezy.hr.model.location.Location.Companion.MIN_VACATIONS_DAYS
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import io.easybreezy.infrastructure.query.QueryExecutor
@@ -20,7 +21,7 @@ class Validation @Inject constructor(private val queryExecutor: QueryExecutor) {
     fun onCreateLocation(command: CreateLocation): List<Error> {
         return validate(command) {
             validate(CreateLocation::name).isNotNull().isNotBlank()
-            validate(CreateLocation::vacationDays).isNotNull().isGreaterThanOrEqualTo(24)
+            validate(CreateLocation::vacationDays).isNotNull().isGreaterThanOrEqualTo(MIN_VACATIONS_DAYS)
         }
     }
 

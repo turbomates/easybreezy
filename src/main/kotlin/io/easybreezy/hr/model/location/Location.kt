@@ -15,8 +15,11 @@ class Location private constructor(id: EntityID<LocationId>) : UUIDEntity(id) {
     private var vacationDays by Locations.vacationDays
 
     companion object : PrivateEntityClass<LocationId, Location>(object : Repository() {}) {
+        const val MIN_VACATIONS_DAYS = 24
 
         fun create(name: String, vacationDays: Int): Location {
+            require(vacationDays >= MIN_VACATIONS_DAYS) { "The minimum vacation days number is $MIN_VACATIONS_DAYS" }
+
             return Location.new {
                 this.name = name
                 this.vacationDays = vacationDays

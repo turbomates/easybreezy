@@ -33,9 +33,7 @@ class Salary private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     fun correct(correctedBy: UUID, corrected: Int) {
-        if (correctedBy != hrManager) {
-            throw Exception("Only creator could fix salary amount")
-        }
+        require(correctedBy == hrManager) { "Only creator could fix salary amount" }
         amount = corrected
     }
 

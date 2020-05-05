@@ -33,13 +33,13 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private val contacts by Contact referrersOn Contacts.user
 
     fun hire() {
-        require(status == Status.PENDING) { throw Exception("User have been already hired") }
+        require(status == Status.PENDING) { "User have been already hired" }
         status = Status.WAIT_CONFIRM
         this.addEvent(Hired(this.id.value))
     }
 
     fun archive(reason: String?) {
-        require(status == Status.PENDING) { throw Exception("Users with status Pending only can be approved") }
+        require(status == Status.PENDING) { "Users with status Pending only can be approved" }
         status = Status.ARCHIVED
         comment = reason
     }

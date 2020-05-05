@@ -96,7 +96,7 @@ class RemainingTime(
     private val hours: Int
 ) {
     operator fun plus(other: RemainingTime): RemainingTime {
-        if (userId != other.userId) throw IllegalArgumentException("Different users")
+        require(userId == other.userId) { "Different users" }
         var days = days + other.days
         var hours = hours + other.hours
         if (hours > WORKING_HOURS_PER_DAY) {

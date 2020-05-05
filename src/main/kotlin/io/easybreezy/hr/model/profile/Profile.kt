@@ -18,7 +18,7 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private val messengers by Messenger.referrersOn(Messengers.profile, true)
 
     fun addMessenger(type: String, username: String) {
-        if (hasMessenger(type)) throw Exception("Messenger with $type already exist")
+        require(!hasMessenger(type)) { "Messenger with $type already exist" }
         Messenger.create(this, Messengers.Type.valueOf(type.toUpperCase()), username)
         this.addEvent(MessengerAdded(id.value, type))
     }
@@ -33,7 +33,7 @@ class Profile private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     fun renameMessengerUsername(type: String, username: String) {
-        if (!hasMessenger(type)) throw Exception("Messenger with $type doesn't exist")
+        require(hasMessenger(type)) { "Messenger with $type doesn't exist" }
         val messenger =
             messengers.first { it.type == Messengers.Type.valueOf(type.toUpperCase()) && it.profile == this }
         messenger.changeUsername(username)

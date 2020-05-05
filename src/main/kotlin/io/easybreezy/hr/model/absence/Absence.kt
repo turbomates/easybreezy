@@ -32,7 +32,7 @@ class Absence private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     fun edit(startedAt: LocalDate, endedAt: LocalDate, reason: Reason) {
-        require(!isApproved) { throw Exception("Approved absence can not be edited") }
+        require(!isApproved) { "Approved absence can not be edited" }
         this.startedAt = startedAt
         this.endedAt = endedAt
         this.reason = reason

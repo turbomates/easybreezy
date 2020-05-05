@@ -138,7 +138,6 @@ class LocationControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-
                 with(handleRequest(HttpMethod.Get, "/api/hr/user-locations/$userLocationId")) {
                     Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
