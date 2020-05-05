@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
-import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.infrastructure.query.QueryBus
 import io.easybreezy.project.application.issue.queryobject.HasIssuesInCategoryQO
 import io.easybreezy.project.application.issue.queryobject.HasIssuesInStatusQO
 import io.easybreezy.project.model.Repository
@@ -18,7 +18,7 @@ import java.util.UUID
 class Validation @Inject constructor(
     private val transactionManager: TransactionManager,
     private val repository: Repository,
-    private val queryExecutor: QueryExecutor
+    private val queryBus: QueryBus
 ) {
     fun validateCommand(command: New): List<Error> {
 
@@ -104,7 +104,7 @@ class Validation @Inject constructor(
     }
 
     suspend fun validateCommand(command: RemoveCategory): List<Error> {
-        if (queryExecutor.execute(HasIssuesInCategoryQO(command.categoryId))) {
+        if (queryBus(HasIssuesInCategoryQO(command.categoryId))) {
             return listOf(Error(HasIssues.name))
         }
         return listOf()
@@ -145,7 +145,7 @@ class Validation @Inject constructor(
     }
 
     suspend fun validateCommand(command: RemoveStatus): List<Error> {
-        if (queryExecutor.execute(HasIssuesInStatusQO(command.statusId))) {
+        if (queryBus(HasIssuesInStatusQO(command.statusId))) {
             return listOf(Error(HasIssuesInStatus.name))
         }
         return listOf()
