@@ -1,6 +1,9 @@
 package io.easybreezy.integration.inner
 
-import io.easybreezy.integration.inner.message.*
+import io.easybreezy.integration.inner.message.CI
+import io.easybreezy.integration.inner.message.Comment
+import io.easybreezy.integration.inner.message.Issue
+import io.easybreezy.integration.inner.message.VSC
 
 class MessageHandler {
     fun handle(vsc: VSC) {

@@ -33,7 +33,7 @@ easybreezy.rabbit.api=http://localhost:15672
 ./gradlew createDefaultAdmin
 ```
 
-#### Reformat code
+#### Format code
 ```bash
 ./gradlew ktlintFormat
 ```
