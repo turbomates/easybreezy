@@ -41,15 +41,14 @@ data class OpenAPI(var host: String) {
 
 data class Description(
     val name: String,
-    val type: String,
-    val child: List<Description> = emptyList(),
+    val type: Type,
     val example: JsonObject? = null
 )
 
 sealed class Type {
     object String : Type()
     class Array(type: Type) : Type()
-    class Object(properties: List<Description>) : Type()
+    class Object(val properties: List<Description>) : Type()
     object Boolean : Type()
     object Number : Type()
 }
