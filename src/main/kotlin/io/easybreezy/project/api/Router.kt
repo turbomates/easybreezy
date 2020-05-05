@@ -142,7 +142,7 @@ class Router @Inject constructor(
 
         route("/{slug}") {
 
-            authorize(setOf(Activity.PROJECTS_SHOW)) {
+            authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
                 post<Response.Either<Response.Ok, Response.Errors>, NewIssue, SlugParam>("/issues/add") { new, params ->
                     new.project = params.slug
                     new.author = resolvePrincipal<UserPrincipal>()
