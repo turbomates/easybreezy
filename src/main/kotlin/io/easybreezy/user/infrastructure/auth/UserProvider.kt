@@ -26,7 +26,7 @@ class UserProvider @Inject constructor(
                     .singleOrNull()
             resultRow?.let {
                 val user = repository.wrapRow(it)
-                if (user.password().isValid(credential.password)) {
+                if (user.password.isValid(credential.password)) {
                     UserPrincipal(
                         UUID.fromString(resultRow[Users.id].toString()),
                         resultRow[Users.activities].map { activityName -> Activity.valueOf(activityName) }.toSet()

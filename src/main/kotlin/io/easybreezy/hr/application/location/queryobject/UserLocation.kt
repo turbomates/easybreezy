@@ -13,7 +13,6 @@ import io.easybreezy.user.model.NameTable
 import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
@@ -33,8 +32,9 @@ class UserLocationsQO(private val userId: UUID) : QueryObject<UserLocations> {
     override suspend fun getData(): UserLocations {
         val result = UserLocationsTable
             .innerJoin(Locations)
-            .join(Users, JoinType.INNER, additionalConstraint = { Users.id eq userId })
+            .innerJoin(Users)
             .selectAll()
+            .andWhere { UserLocationsTable.userId eq userId }
             .map { it.toUserLocation() }
 
         return UserLocations(result)

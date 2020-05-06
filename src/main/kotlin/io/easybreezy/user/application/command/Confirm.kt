@@ -1,4 +1,4 @@
-package io.easybreezy.user.application
+package io.easybreezy.user.application.command
 
 import kotlinx.serialization.Serializable
 
