@@ -1,13 +1,7 @@
 package io.easybreezy.user.application.command
 
-import io.easybreezy.user.model.Contacts
+import io.easybreezy.user.model.User
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateContacts(val contacts: List<Contact>)
-
-@Serializable
-data class Contact(
-    val type: Contacts.Type,
-    val value: String
-)
+data class UpdateContacts(val contacts: List<User.Contact>)

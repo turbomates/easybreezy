@@ -11,6 +11,7 @@ import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.builtins.set
 import org.jetbrains.exposed.dao.EntityClass
@@ -20,6 +21,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
+import io.easybreezy.user.model.Contact as ContactModel
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var email by Users.email
@@ -31,7 +33,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var createdAt by Users.createdAt
     private var name by Users.name
     private var comment by Users.comment
-    private val contacts by Contact referrersOn Contacts.user
+    private val contacts by ContactModel referrersOn Contacts.user
 
     fun confirm(password: Password, firstName: String, lastName: String) {
         this.password = password
@@ -63,10 +65,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         this.activities = activities
     }
 
-    fun replaceContacts(replaced: List<Pair<Contacts.Type, String>>) {
+    fun replaceContacts(replaced: List<Contact>) {
         contacts.forEach { it.delete() }
         replaced.map {
-            Contact.add(this, it.first, it.second)
+            ContactModel.add(this, it.type, it.value)
         }
     }
 
@@ -122,6 +124,12 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             return User(entityId)
         }
     }
+
+    @Serializable
+    data class Contact(
+        val type: Contacts.Type,
+        val value: String
+    )
 }
 
 enum class Status {

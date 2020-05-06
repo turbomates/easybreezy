@@ -60,8 +60,7 @@ class Handler @Inject constructor(private val repository: Repository, private va
 
     suspend fun handleUpdateContacts(command: UpdateContacts, userId: UUID) {
         transaction {
-            val contacts = command.contacts.map { Pair(it.type, it.value) }
-            repository.getOne(userId).replaceContacts(contacts)
+            repository.getOne(userId).replaceContacts(command.contacts)
         }
     }
 

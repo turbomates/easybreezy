@@ -2,11 +2,11 @@ package io.easybreezy.user.api.controller.application
 
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.testDatabase
-import io.easybreezy.user.application.command.Contact
 import io.easybreezy.user.application.command.UpdateContacts
 import io.easybreezy.user.application.command.Validation
 import io.easybreezy.user.infrastructure.UserRepository
 import io.easybreezy.user.model.Contacts
+import io.easybreezy.user.model.User
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -19,14 +19,14 @@ class ValidationTest {
     @Test fun `correct contacts data should pass validation`() {
         val command = UpdateContacts(
             listOf(
-                Contact(Contacts.Type.SKYPE, "skype-n"),
-                Contact(Contacts.Type.TELEGRAM, "telegram-n"),
-                Contact(Contacts.Type.SLACK, "slack-n"),
-                Contact(
+                User.Contact(Contacts.Type.SKYPE, "skype-n"),
+                User.Contact(Contacts.Type.TELEGRAM, "telegram-n"),
+                User.Contact(Contacts.Type.SLACK, "slack-n"),
+                User.Contact(
                     Contacts.Type.EMAIL,
                     "email@example.com"
                 ),
-                Contact(Contacts.Type.PHONE, "12-2343-24")
+                User.Contact(Contacts.Type.PHONE, "12-2343-24")
             )
         )
 
@@ -36,7 +36,7 @@ class ValidationTest {
     @Test fun `invalid email address should not be accepted as contact`() {
         val command = UpdateContacts(
             listOf(
-                Contact(
+                User.Contact(
                     Contacts.Type.EMAIL,
                     "email-invalid"
                 )
