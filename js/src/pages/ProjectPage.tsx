@@ -104,9 +104,7 @@ export const ProjectPage: React.FC = () => {
         {isOpenProjectDescriptionForm && (
           <ProjectDescriptionForm
             edit={editProjectDescription}
-            closeProjectDescriptionForm={() =>
-              setIsOpenProjectDescriptionForm(false)
-            }
+            close={() => setIsOpenProjectDescriptionForm(false)}
             errors={errors}
             project={project}
             loading={loading}
@@ -125,7 +123,7 @@ export const ProjectPage: React.FC = () => {
         {!!project && isOpenProjectEditSlugForm && (
           <ProjectSlugForm
             edit={editProjectSlug}
-            closeProjectSlugForm={() => setIsOpenProjectEditSlugForm(false)}
+            close={() => setIsOpenProjectEditSlugForm(false)}
             errors={errors}
             project={project}
             loading={loading}

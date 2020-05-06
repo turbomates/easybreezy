@@ -11,6 +11,8 @@ interface Props {
   closeInputRole: () => void;
 }
 
+const minLengthRoleName = 2;
+
 export const ProjectRoleFormEditRoleName: React.FC<Props> = ({
   field,
   editInputRole,
@@ -19,24 +21,25 @@ export const ProjectRoleFormEditRoleName: React.FC<Props> = ({
 }) => {
   const inputRef = useRef<Input>(null);
 
+  function edit() {
+    if (inputRef.current?.state.value.length >= minLengthRoleName) {
+      editInputRole(fieldIndex, inputRef.current!.state.value);
+    }
+  }
+
   return (
     <td>
       <div className="role-form__input-wrapper">
-        <Input
-          defaultValue={field.name}
-          onPressEnter={() =>
-            editInputRole(fieldIndex, inputRef.current!.state.value)
-          }
-          ref={inputRef}
-          className="role-form__input"
-        />
+        <div>
+          <Input
+            defaultValue={field.name}
+            onPressEnter={edit}
+            ref={inputRef}
+            className="role-form__input"
+          />
+        </div>
         <div className="role-form__controls-btn">
-          <Button
-            onClick={() =>
-              editInputRole(fieldIndex, inputRef.current!.state.value)
-            }
-            type="primary"
-          >
+          <Button onClick={edit} type="primary">
             <CheckCircleOutlined />
           </Button>
           <Button onClick={closeInputRole} type="danger">

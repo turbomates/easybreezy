@@ -33,7 +33,7 @@ interface Form {
   [key: string]: FormField;
 }
 
-const minLengthRoleName = 3;
+const minLengthRoleName = 2;
 
 export const ProjectRoleForm: React.FC<Props> = ({
   create,
