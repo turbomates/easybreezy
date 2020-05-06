@@ -23,7 +23,8 @@ import java.util.UUID
 
 class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var email by Users.email
-    private var password by Users.password
+    var password by Users.password
+        private set
     private var activities by Users.activities
     private var status by Users.status
     private var token by Users.token
@@ -31,18 +32,6 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var name by Users.name
     private var comment by Users.comment
     private val contacts by Contact referrersOn Contacts.user
-
-    fun hire() {
-        require(status == Status.PENDING) { "User have been already hired" }
-        status = Status.WAIT_CONFIRM
-        this.addEvent(Hired(this.id.value))
-    }
-
-    fun archive(reason: String?) {
-        require(status == Status.PENDING) { "Users with status Pending only can be approved" }
-        status = Status.ARCHIVED
-        comment = reason
-    }
 
     fun confirm(password: Password, firstName: String, lastName: String) {
         this.password = password
@@ -53,23 +42,36 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         this.addEvent(Confirmed(this.id.value, firstName, lastName))
     }
 
-    fun email(): String {
-        return this.email.address
+    fun hire() {
+        require(status == Status.PENDING) { "User have been already hired" }
+        status = Status.WAIT_CONFIRM
+        this.addEvent(Hired(this.id.value))
+    }
+
+    fun fire() {
+        require(status == Status.ACTIVE) { "Only active user can be fired" }
+        status = Status.FIRED
+    }
+
+    fun archive(reason: String?) {
+        require(status == Status.PENDING) { "Users with status Pending only can be approved" }
+        status = Status.ARCHIVED
+        comment = reason
     }
 
     fun replaceActivities(activities: Set<String>) {
         this.activities = activities
     }
 
-    fun replaceContacts(replaced: List<io.easybreezy.user.application.Contact>) {
+    fun replaceContacts(replaced: List<io.easybreezy.user.application.command.Contact>) {
         contacts.forEach { it.delete() }
         replaced.map {
             Contact.add(this, it.type, it.value)
         }
     }
 
-    fun password(): Password {
-        return password
+    fun email(): String {
+        return this.email.address
     }
 
     private fun resetToken() {
@@ -123,7 +125,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 }
 
 enum class Status {
-    PENDING, ARCHIVED, WAIT_CONFIRM, ACTIVE
+    PENDING, ARCHIVED, WAIT_CONFIRM, ACTIVE, FIRED
 }
 
 object Users : UUIDTable() {

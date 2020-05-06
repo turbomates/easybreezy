@@ -1,4 +1,4 @@
-package io.easybreezy.user.application
+package io.easybreezy.user.application.command
 
 import io.easybreezy.user.model.Contacts
 import kotlinx.serialization.Serializable
