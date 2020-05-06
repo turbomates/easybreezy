@@ -4,6 +4,7 @@ import DatePicker from "components/antd/DatePicker";
 import { AbsenceForm as AbsenceFormModel, Absence } from "HumanResourceModels";
 import { FormErrorMap } from "MyTypes";
 import { serializeForm, deserializeForm } from "./absence.helper";
+import { useFormServerErrors } from "hooks/useFormServerErrors";
 
 const { RangePicker } = DatePicker;
 
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export const AbsenceForm: React.FC<Props> = (props) => {
-  const { onSubmit, mode } = props;
+  const { onSubmit, mode, errors } = props;
   const [form] = Form.useForm();
 
   const initialValues = props.initialValues
@@ -23,14 +24,24 @@ export const AbsenceForm: React.FC<Props> = (props) => {
     : {};
   const handleFinish = (values: any) => onSubmit(serializeForm(values));
 
+  useFormServerErrors(form, errors, ["range", "reason", "comment"]);
+
   return (
     <Form form={form} onFinish={handleFinish} initialValues={initialValues}>
-      <Form.Item name="range">
+      <Form.Item
+        name="range"
+        rules={[
+          { required: true, message: "Please input start and end dates!" },
+        ]}
+      >
         <RangePicker />
       </Form.Item>
 
-      <Form.Item name="reason">
-        <Select placeholder="Enter Reason">
+      <Form.Item
+        name="reason"
+        rules={[{ required: true, message: "Please input reason!" }]}
+      >
+        <Select placeholder="Select Reason">
           <Select.Option value="VACATION">Vacation</Select.Option>
           <Select.Option value="DAYON">Day on</Select.Option>
           <Select.Option value="SICK">Sick</Select.Option>

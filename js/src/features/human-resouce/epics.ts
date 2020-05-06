@@ -21,16 +21,17 @@ import {
   applyEmployeeSalaryAsync,
   assignLocationAsync,
   fetchEmployeeLocationsAsync,
-  removeEmployeeLocationAsync,
   editEmployeeLocationAsync,
   fetchAbsencesAsync,
-  fetchMyAbsencesAsync,
   approveAbsenceAsync,
   createAbsenceAsync,
-  refetchMyAbsencesAsync,
   removeAbsenceAsync,
   updateAbsenceAsync,
   closeAbsenceUpdateModal,
+  closeCreateNoteModal,
+  closeApplySalaryModal,
+  closeAddPositionModal,
+  fetchEmployeeAbsencesAsync,
 } from "./actions";
 
 export const fetchAbsencesEpic: RootEpic = (action$, state$, { api }) =>
@@ -48,29 +49,44 @@ export const fetchAbsencesEpic: RootEpic = (action$, state$, { api }) =>
     ),
   );
 
-export const fetchMyAbsencesEpic: RootEpic = (action$, state$, { api }) =>
+export const fetchEmployeeAbsencesEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
-    filter(isActionOf(fetchMyAbsencesAsync.request)),
-    switchMap(() =>
-      from(api.humanResource.fetchMyAbsences()).pipe(
+    filter(isActionOf(fetchEmployeeAbsencesAsync.request)),
+    switchMap((action) =>
+      from(api.humanResource.fetchEmployeeAbsences(action.payload)).pipe(
         map((result) =>
           result.success
-            ? fetchMyAbsencesAsync.success(result.data)
-            : fetchMyAbsencesAsync.failure(result.reason),
+            ? fetchEmployeeAbsencesAsync.success(result.data)
+            : fetchEmployeeAbsencesAsync.failure(result.reason),
         ),
       ),
     ),
   );
 
-export const refetchMyAbsencesEpic: RootEpic = (action$, state$, { api }) =>
+export const refetchEmployeeAbsencesEpic: RootEpic = (
+  action$,
+  state$,
+  { api },
+) =>
   action$.pipe(
-    filter(isActionOf(refetchMyAbsencesAsync.request)),
+    filter(
+      isActionOf([
+        approveAbsenceAsync.success,
+        createAbsenceAsync.success,
+        removeAbsenceAsync.success,
+        updateAbsenceAsync.success,
+      ]),
+    ),
     switchMap(() =>
-      from(api.humanResource.fetchMyAbsences()).pipe(
+      from(
+        api.humanResource.fetchEmployeeAbsences(
+          state$.value.humanResource.details.employee?.userId!,
+        ),
+      ).pipe(
         map((result) =>
           result.success
-            ? refetchMyAbsencesAsync.success(result.data)
-            : refetchMyAbsencesAsync.failure(result.reason),
+            ? fetchEmployeeAbsencesAsync.success(result.data)
+            : fetchEmployeeAbsencesAsync.failure(result.reason),
         ),
       ),
     ),
@@ -111,7 +127,7 @@ export const updateAbsenceEpic: RootEpic = (action$, state$, { api }) =>
       from(
         api.humanResource.updateAbsence({
           form: action.payload,
-          absenceId: state$.value.humanResource.absences.my.absenceToUpdateId!,
+          absenceId: state$.value.humanResource.absences.one.absenceToUpdateId!,
         }),
       ).pipe(
         mergeMap((result) =>
@@ -135,19 +151,6 @@ export const removeAbsenceEpic: RootEpic = (action$, state$, { api }) =>
         ),
       ),
     ),
-  );
-
-export const refetchMyAbsenceEpic: RootEpic = (action$, state$, { api }) =>
-  action$.pipe(
-    filter(
-      isActionOf([
-        approveAbsenceAsync.success,
-        createAbsenceAsync.success,
-        removeAbsenceAsync.success,
-        updateAbsenceAsync.success,
-      ]),
-    ),
-    switchMap(() => of(refetchMyAbsencesAsync.request())),
   );
 
 export const fetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
@@ -238,15 +241,13 @@ export const specifySkillsEpic: RootEpic = (action$, state$, { api }) =>
 export const addEmployeeNoteEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
     filter(isActionOf(addEmployeeNoteAsync.request)),
-    debounceTime(500),
     switchMap((action) =>
       from(api.humanResource.addNote(action.payload)).pipe(
-        map((result) =>
+        mergeMap((result) =>
           result.success
-            ? addEmployeeNoteAsync.success()
-            : addEmployeeNoteAsync.failure(result.reason),
+            ? of(addEmployeeNoteAsync.success(), closeCreateNoteModal())
+            : of(addEmployeeNoteAsync.failure(result.errors)),
         ),
-        catchError((message) => of(addEmployeeNoteAsync.failure(message))),
       ),
     ),
   );
@@ -256,13 +257,10 @@ export const applyEmployeePositionEpic: RootEpic = (action$, state$, { api }) =>
     filter(isActionOf(applyEmployeePositionAsync.request)),
     switchMap((action) =>
       from(api.humanResource.applyPosition(action.payload)).pipe(
-        map((result) =>
+        mergeMap((result) =>
           result.success
-            ? applyEmployeePositionAsync.success()
-            : applyEmployeePositionAsync.failure(result.reason),
-        ),
-        catchError((message) =>
-          of(applyEmployeePositionAsync.failure(message)),
+            ? of(applyEmployeePositionAsync.success(), closeAddPositionModal())
+            : of(applyEmployeePositionAsync.failure(result.errors)),
         ),
       ),
     ),
@@ -273,12 +271,11 @@ export const applyEmployeeSalaryEpic: RootEpic = (action$, state$, { api }) =>
     filter(isActionOf(applyEmployeeSalaryAsync.request)),
     switchMap((action) =>
       from(api.humanResource.applySalary(action.payload)).pipe(
-        map((result) =>
+        mergeMap((result) =>
           result.success
-            ? applyEmployeeSalaryAsync.success()
-            : applyEmployeeSalaryAsync.failure(result.reason),
+            ? of(applyEmployeeSalaryAsync.success(), closeApplySalaryModal())
+            : of(applyEmployeeSalaryAsync.failure(result.errors)),
         ),
-        catchError((message) => of(applyEmployeeSalaryAsync.failure(message))),
       ),
     ),
   );
@@ -308,19 +305,19 @@ export const refetchEmployeeEpic: RootEpic = (action$, state$, { api }) =>
     ),
   );
 
-export const removeEmployeeLocationEpic: RootEpic = (action$, _, { api }) =>
-  action$.pipe(
-    filter(isActionOf(removeEmployeeLocationAsync.request)),
-    switchMap((action) =>
-      from(api.location.removeUserLocation(action.payload)).pipe(
-        map((result) =>
-          result.success
-            ? removeEmployeeLocationAsync.success()
-            : removeEmployeeLocationAsync.failure(result.reason),
-        ),
-      ),
-    ),
-  );
+// export const removeEmployeeLocationEpic: RootEpic = (action$, _, { api }) =>
+//   action$.pipe(
+//     filter(isActionOf(removeEmployeeLocationAsync.request)),
+//     switchMap((action) =>
+//       from(api.location.removeUserLocation(action.payload)).pipe(
+//         map((result) =>
+//           result.success
+//             ? removeEmployeeLocationAsync.success()
+//             : removeEmployeeLocationAsync.failure(result.reason),
+//         ),
+//       ),
+//     ),
+//   );
 
 export const assignLocationEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
@@ -369,19 +366,28 @@ export const fetchEmployeeLocationsEpic: RootEpic = (action$, _, { api }) =>
     ),
   );
 
-export const refetchEmployeeLocationsEpic: RootEpic = (action$, state$) =>
+export const refetchEmployeeLocationsEpic: RootEpic = (
+  action$,
+  state$,
+  { api },
+) =>
   action$.pipe(
     filter(
       isActionOf([
         assignLocationAsync.success,
-        removeEmployeeLocationAsync.success,
         editEmployeeLocationAsync.success,
       ]),
     ),
     switchMap(() =>
-      of(
-        fetchEmployeeLocationsAsync.request(
+      from(
+        api.location.fetchUserLocations(
           state$.value.humanResource.details.employee?.userId!,
+        ),
+      ).pipe(
+        map((result) =>
+          result.success
+            ? fetchEmployeeLocationsAsync.success(result.data)
+            : fetchEmployeeLocationsAsync.failure(result.reason),
         ),
       ),
     ),

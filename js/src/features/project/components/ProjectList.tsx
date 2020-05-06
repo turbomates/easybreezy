@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Button, Card, List } from "antd";
+import { Card, List } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { parse, stringify } from "query-string";
 import { useHistory, useLocation } from "react-router";
 import { NavLink } from "react-router-dom";
@@ -7,6 +8,7 @@ import { NavLink } from "react-router-dom";
 import { Paging } from "components/Paging";
 import { Paging as IPaging } from "MyTypes";
 import { ProjectList as IProjectList, ProjectsRequest } from "ProjectModels";
+
 import "../project.scss";
 
 interface Props {
@@ -40,39 +42,28 @@ export const ProjectList: React.FC<Props> = ({
   if (projects === null) return null;
 
   return (
-    <>
-      <Button
-        onClick={openCreateForm}
-        type="primary"
-        className="project__create-btn"
-      >
-        Create project
-      </Button>
-
-      <Card title="Projects">
-        <List
-          dataSource={projects.data}
-          renderItem={(project) => (
-            <List.Item>
-              <List.Item.Meta
-                title={
-                  <NavLink to={`/projects/${project.slug}`}>
-                    {project.name}
-                  </NavLink>
-                }
-                description={project.description}
-              />
-            </List.Item>
-          )}
-        />
-      </Card>
-
+    <Card title="Projects" extra={<PlusOutlined onClick={openCreateForm} />}>
+      <List
+        dataSource={projects.data}
+        renderItem={(project) => (
+          <List.Item>
+            <List.Item.Meta
+              title={
+                <NavLink to={`/projects/${project.slug}`}>
+                  {project.name}
+                </NavLink>
+              }
+              description={project.description}
+            />
+          </List.Item>
+        )}
+      />
       <Paging
         haveMore={projects.hasMore}
         page={projects.currentPage}
         perPage={projects.pageSize}
         onChange={onChange}
       />
-    </>
+    </Card>
   );
 };

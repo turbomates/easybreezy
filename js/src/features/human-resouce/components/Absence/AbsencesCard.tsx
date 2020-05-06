@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect } from "react";
-import { Card, Divider, Modal, List } from "antd";
+import { Card, Modal, List } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { AbsenceForm } from "./AbsenceForm";
 import { AbsenceForm as AbsenceFormModel } from "HumanResourceModels";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  myAbsences,
+  oneAbsences,
   employeeDetails,
   isUpdateAbsenceModalVisible,
   updateAbsenceFormInitialValues,
@@ -12,9 +13,9 @@ import {
 import {
   createAbsenceAsync,
   approveAbsenceAsync,
-  fetchMyAbsencesAsync,
-  openAbsenceCreateForm,
-  closeAbsenceCreateForm,
+  fetchEmployeeAbsencesAsync,
+  openAbsenceCreateModal,
+  closeAbsenceCreateModal,
   removeAbsenceAsync,
   openAbsenceUpdateModal,
   closeAbsenceUpdateModal,
@@ -24,11 +25,12 @@ import { AbsenceListItem } from "./AbcenceListItem";
 
 interface Props {
   canEdit: boolean;
+  employeeId: string;
 }
 
-export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
+export const AbsencesCard: React.FC<Props> = ({ canEdit, employeeId }) => {
   const { employee } = useSelector(employeeDetails);
-  const absences = useSelector(myAbsences);
+  const absences = useSelector(oneAbsences);
   const isUpdateVisible = useSelector(isUpdateAbsenceModalVisible);
   const initialValues = useSelector(updateAbsenceFormInitialValues);
   const dispatch = useDispatch();
@@ -63,11 +65,13 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
     [dispatch],
   );
 
-  const toggle = useCallback(() => {
-    absences.createFormVisible
-      ? dispatch(closeAbsenceCreateForm())
-      : dispatch(openAbsenceCreateForm());
-  }, [dispatch, absences.createFormVisible]);
+  const openCreateModal = useCallback(() => {
+    dispatch(openAbsenceCreateModal());
+  }, [dispatch]);
+
+  const closeCreateModal = useCallback(() => {
+    dispatch(closeAbsenceCreateModal());
+  }, [dispatch]);
 
   const openUpdateModal = useCallback(
     (absenceId: string) => {
@@ -81,8 +85,8 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchMyAbsencesAsync.request());
-  }, [dispatch]);
+    dispatch(fetchEmployeeAbsencesAsync.request(employeeId));
+  }, [dispatch, employeeId]);
 
   return (
     <>
@@ -90,6 +94,7 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
         title="Absences"
         className="human-resource-details__card"
         loading={absences.loading}
+        extra={canEdit ? <PlusOutlined onClick={openCreateModal} /> : null}
       >
         <List
           dataSource={absences.items}
@@ -103,33 +108,29 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit }) => {
             />
           )}
         />
-        {canEdit && (
-          <Divider>
-            <span onClick={toggle}>Create new</span>
-          </Divider>
-        )}
-        {canEdit && absences.createFormVisible && (
-          <AbsenceForm
-            onSubmit={create}
-            errors={absences.errors}
-            mode="CREATE"
-          />
-        )}
       </Card>
       <Modal
         title="Update absence"
         visible={isUpdateVisible}
         onCancel={closeUpdateModal}
         footer={null}
+        destroyOnClose={true}
       >
-        {isUpdateVisible && (
-          <AbsenceForm
-            onSubmit={update}
-            errors={absences.errors}
-            mode="UPDATE"
-            initialValues={initialValues}
-          />
-        )}
+        <AbsenceForm
+          onSubmit={update}
+          errors={absences.errors}
+          mode="UPDATE"
+          initialValues={initialValues}
+        />
+      </Modal>
+      <Modal
+        title="Create absence"
+        visible={absences.isCreateModalVisible}
+        onCancel={closeCreateModal}
+        footer={null}
+        destroyOnClose={true}
+      >
+        <AbsenceForm onSubmit={create} errors={absences.errors} mode="CREATE" />
       </Modal>
     </>
   );

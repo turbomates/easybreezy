@@ -44,24 +44,21 @@ export const AbsenceListItem: React.FC<Props> = ({
     <Tooltip title="Dismiss">
       <CloseCircleOutlined onClick={handleRemove} />
     </Tooltip>,
-    <Tooltip title="Edit">
-      <EditOutlined onClick={handleOpenUpdate} />
-    </Tooltip>,
   ];
 
   if (!absence.isApproved) {
     actions.push(
       <Tooltip title="Approve">
-        <CheckCircleOutlined
-          onClick={handleApprove}
-          disabled={!absence.isApproved}
-        />
+        <CheckCircleOutlined onClick={handleApprove} />
+      </Tooltip>,
+      <Tooltip title="Edit">
+        <EditOutlined onClick={handleOpenUpdate} />
       </Tooltip>,
     );
   }
 
   return (
-    <List.Item actions={actions}>
+    <List.Item actions={canEdit ? actions : []}>
       <List.Item.Meta title={title} description={description} />
       <AbsenceStatus isApproved={absence.isApproved} />
     </List.Item>

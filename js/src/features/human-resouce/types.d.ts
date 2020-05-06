@@ -42,6 +42,12 @@ declare module "HumanResourceModels" {
     };
   };
 
+  export type AbsencesResponse = {
+    data: {
+      absences: AbsencesMap;
+    };
+  };
+
   export type AbsenceReason = "VACATION" | "DAYON" | "SICK" | "PERSONAL";
 
   export type AbsenceForm = {
