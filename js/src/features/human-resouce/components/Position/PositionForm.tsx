@@ -5,7 +5,7 @@ import { useFormServerErrors } from "hooks/useFormServerErrors";
 
 interface Props {
   errors: FormErrorMap;
-  applyPosition: (text: string) => any;
+  applyPosition: (text: string) => void;
 }
 
 export const PositionForm: React.FC<Props> = ({ errors, applyPosition }) => {
@@ -21,7 +21,7 @@ export const PositionForm: React.FC<Props> = ({ errors, applyPosition }) => {
         name="position"
         rules={[{ required: true, message: "Please input position dates!" }]}
       >
-        <Input />
+        <Input placeholder="Enter position" />
       </Form.Item>
       <Form.Item>
         <Button htmlType="submit" loading={false} type="primary">

@@ -30,6 +30,8 @@ export const AbsenceForm: React.FC<Props> = (props) => {
     <Form form={form} onFinish={handleFinish} initialValues={initialValues}>
       <Form.Item
         name="range"
+        label="Range"
+        labelCol={{ span: 4 }}
         rules={[
           { required: true, message: "Please input start and end dates!" },
         ]}
@@ -39,6 +41,8 @@ export const AbsenceForm: React.FC<Props> = (props) => {
 
       <Form.Item
         name="reason"
+        label="Reason"
+        labelCol={{ span: 4 }}
         rules={[{ required: true, message: "Please input reason!" }]}
       >
         <Select placeholder="Select Reason">
@@ -49,7 +53,7 @@ export const AbsenceForm: React.FC<Props> = (props) => {
         </Select>
       </Form.Item>
 
-      <Form.Item name="comment">
+      <Form.Item name="comment" label="Comment" labelCol={{ span: 4 }}>
         <Input.TextArea placeholder="Enter Comment" />
       </Form.Item>
 

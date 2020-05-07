@@ -132,7 +132,7 @@ export const updateAbsenceEpic: RootEpic = (action$, state$, { api }) =>
       ).pipe(
         mergeMap((result) =>
           result.success
-            ? of(updateAbsenceAsync.success(), closeAbsenceUpdateModal())
+            ? [updateAbsenceAsync.success(), closeAbsenceUpdateModal()]
             : of(updateAbsenceAsync.failure(result.errors)),
         ),
       ),
@@ -245,7 +245,7 @@ export const addEmployeeNoteEpic: RootEpic = (action$, state$, { api }) =>
       from(api.humanResource.addNote(action.payload)).pipe(
         mergeMap((result) =>
           result.success
-            ? of(addEmployeeNoteAsync.success(), closeCreateNoteModal())
+            ? [addEmployeeNoteAsync.success(), closeCreateNoteModal()]
             : of(addEmployeeNoteAsync.failure(result.errors)),
         ),
       ),
@@ -259,7 +259,7 @@ export const applyEmployeePositionEpic: RootEpic = (action$, state$, { api }) =>
       from(api.humanResource.applyPosition(action.payload)).pipe(
         mergeMap((result) =>
           result.success
-            ? of(applyEmployeePositionAsync.success(), closeAddPositionModal())
+            ? [applyEmployeePositionAsync.success(), closeAddPositionModal()]
             : of(applyEmployeePositionAsync.failure(result.errors)),
         ),
       ),
@@ -273,7 +273,7 @@ export const applyEmployeeSalaryEpic: RootEpic = (action$, state$, { api }) =>
       from(api.humanResource.applySalary(action.payload)).pipe(
         mergeMap((result) =>
           result.success
-            ? of(applyEmployeeSalaryAsync.success(), closeApplySalaryModal())
+            ? [applyEmployeeSalaryAsync.success(), closeApplySalaryModal()]
             : of(applyEmployeeSalaryAsync.failure(result.errors)),
         ),
       ),

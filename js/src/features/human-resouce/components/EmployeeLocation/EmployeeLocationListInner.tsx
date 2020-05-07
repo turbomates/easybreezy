@@ -4,7 +4,7 @@ import { EmployeeLocation } from "LocationModels";
 
 interface Props {
   item: EmployeeLocation;
-  edit: (val: EmployeeLocation) => void;
+  edit: (value: EmployeeLocation) => void;
 }
 
 export const EmployeeLocationListInner: React.FC<Props> = ({ item, edit }) => {

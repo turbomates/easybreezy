@@ -12,6 +12,8 @@ import { Salaries } from "./Salaries";
 import { SalaryForm } from "./SalaryForm";
 import { ApplySalaryForm } from "HumanResourceModels";
 
+import "./SalaryCard.scss";
+
 interface Props {
   canEdit: boolean;
   details: Details;

@@ -1,11 +1,10 @@
 import React from "react";
-import { Form, Button } from "antd";
-import TextArea from "antd/lib/input/TextArea";
+import { Form, Button, Input } from "antd";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 
 interface Props {
-  addNote: (text: string) => any;
+  addNote: (text: string) => void;
   errors: FormErrorMap;
 }
 
@@ -30,7 +29,7 @@ export const NoteForm: React.FC<Props> = ({ addNote, errors }) => {
           },
         ]}
       >
-        <TextArea rows={4} placeholder="Enter note text" />
+        <Input.TextArea rows={4} placeholder="Enter note text" />
       </Form.Item>
       <Form.Item>
         <Button htmlType="submit" loading={false} type="primary">

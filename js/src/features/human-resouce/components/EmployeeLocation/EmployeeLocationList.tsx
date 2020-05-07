@@ -6,7 +6,7 @@ import { isCurrentInterval } from "./helper";
 
 interface Props {
   employeeLocations: EmployeeLocation[];
-  openEmployeeLocationEditForm: (val: EmployeeLocation) => void;
+  openEmployeeLocationEditForm: (value: EmployeeLocation) => void;
 }
 
 export const EmployeeLocationList: React.FC<Props> = ({
