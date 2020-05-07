@@ -1,5 +1,6 @@
 package io.easybreezy.hr.model.hr
 
+import io.easybreezy.infrastructure.event.employee.Fired
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
@@ -39,6 +40,7 @@ class Employee private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
         fired = true
         currentPosition()?.terminate(firedAt)
         currentSalary()?.terminate(firedAt)
+        this.addEvent(Fired(id.value))
     }
 
     fun note(hrManager: UUID, text: String) {

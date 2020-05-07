@@ -1,4 +1,4 @@
-package io.easybreezy.user.application
+package io.easybreezy.user.application.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
@@ -60,9 +60,9 @@ class Validation @Inject constructor(
         return validate(command) {
             validate(UpdateContacts::contacts)
                 .validateForEach { contact ->
-                    validate(Contact::value).isNotBlank()
+                    validate(User.Contact::value).isNotBlank()
                     if (contact.type == Contacts.Type.EMAIL) {
-                        validate(Contact::value).isEmail()
+                        validate(User.Contact::value).isEmail()
                     }
                 }
         }

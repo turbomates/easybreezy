@@ -14,7 +14,7 @@ export const ProjectRoleFormTableWrapper: React.FC<Props> = ({
         <tr>
           <th />
           {permissions.map((permission, index) => (
-            <th key={index}>{permission}</th>
+            <th key={index}>{permission.replace("_", " ")}</th>
           ))}
         </tr>
       </thead>

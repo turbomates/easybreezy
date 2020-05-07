@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Button, Input, Checkbox } from "antd";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Checkbox } from "antd";
+import omitBy from "lodash/fp/omitBy";
 
 import {
   Project,
@@ -32,7 +33,7 @@ interface Form {
   [key: string]: FormField;
 }
 
-const minLengthRoleName = 3;
+const minLengthRoleName = 2;
 
 export const ProjectRoleForm: React.FC<Props> = ({
   create,
@@ -56,8 +57,6 @@ export const ProjectRoleForm: React.FC<Props> = ({
   const [indexOfEditableInput, setIndexOfEditableInput] = useState(-1);
   const [indexOfEditableField, setIndexOfEditableField] = useState(-1);
   const [form, setForm] = useState<Form>(initialForm);
-
-  const inputRef = useRef<Input>(null);
 
   function removeRole(index: number) {
     remove({
@@ -90,7 +89,8 @@ export const ProjectRoleForm: React.FC<Props> = ({
 
   function isDisabled(index: number) {
     return (
-      form[index].name.length < minLengthRoleName || indexOfEditableInput !== -1
+      form[index].name.length < minLengthRoleName ||
+      index === indexOfEditableInput
     );
   }
 
@@ -101,26 +101,11 @@ export const ProjectRoleForm: React.FC<Props> = ({
     return true;
   }
 
-  function editInputRole(index: number) {
+  function editInputRole(index: number, value: string) {
     const field = form[index];
-    const value = inputRef.current!.state.value;
 
     setIndexOfEditableField(index);
     setIndexOfEditableInput(-1);
-
-    setForm({
-      ...form,
-      [index]: {
-        ...field,
-        name: value,
-      },
-    });
-  }
-
-  function createRole(index: number, value: string) {
-    const field = form[index];
-
-    if (!!field.id) return;
 
     setForm({
       ...form,
@@ -143,6 +128,24 @@ export const ProjectRoleForm: React.FC<Props> = ({
     });
   }
 
+  function removeFormField(index: number) {
+    const fields = omitBy((field, key) => parseFloat(key) === index, form);
+
+    setForm(fields);
+  }
+
+  function isAddBtnDisabled() {
+    return Object.values(form).some((field) => !field.id);
+  }
+
+  function closeInputRole(index: number) {
+    if (form[index].id) {
+      return setIndexOfEditableInput(-1);
+    }
+
+    removeFormField(index);
+  }
+
   useEffect(() => {
     setForm(initialForm);
     setIndexOfEditableInput(-1);
@@ -157,10 +160,10 @@ export const ProjectRoleForm: React.FC<Props> = ({
         slug: project.slug,
       };
 
-      if (!field.id && field.permissions.length > 0) {
-        create(params);
-      } else if (field.id) {
+      if (field.id) {
         edit(params);
+      } else {
+        create(params);
       }
 
       setIndexOfEditableInput(-1);
@@ -183,19 +186,16 @@ export const ProjectRoleForm: React.FC<Props> = ({
             <tr key={fieldIndex}>
               {isOpenInput(fieldIndex) ? (
                 <ProjectRoleFormEditRoleName
-                  createRole={createRole}
                   editInputRole={editInputRole}
                   field={field}
                   fieldIndex={fieldIndex}
-                  inputRef={inputRef}
-                  setIndexOfEditableInput={setIndexOfEditableInput}
+                  closeInputRole={() => closeInputRole(fieldIndex)}
                 />
               ) : (
                 <ProjectRoleFormViewRoleName
                   name={field.name}
-                  removeRole={removeRole}
-                  fieldIndex={fieldIndex}
-                  setIndexOfEditableInput={setIndexOfEditableInput}
+                  removeRole={() => removeRole(fieldIndex)}
+                  openInputRole={() => setIndexOfEditableInput(fieldIndex)}
                 />
               )}
               {rolePermissions.map((permission, index) => (
@@ -214,7 +214,11 @@ export const ProjectRoleForm: React.FC<Props> = ({
       <tfoot>
         <tr>
           <td>
-            <Button onClick={addFormField} type="primary">
+            <Button
+              onClick={addFormField}
+              type="primary"
+              disabled={isAddBtnDisabled()}
+            >
               Add role
             </Button>
           </td>

@@ -94,7 +94,9 @@ export const ProjectPage: React.FC = () => {
       <Card title="Description">
         {!isOpenProjectDescriptionForm && (
           <ProjectDescription
-            openProjectDescriptionForm={setIsOpenProjectDescriptionForm}
+            openProjectDescriptionForm={() =>
+              setIsOpenProjectDescriptionForm(true)
+            }
             description={project?.description}
           />
         )}
@@ -102,7 +104,7 @@ export const ProjectPage: React.FC = () => {
         {isOpenProjectDescriptionForm && (
           <ProjectDescriptionForm
             edit={editProjectDescription}
-            close={setIsOpenProjectDescriptionForm}
+            close={() => setIsOpenProjectDescriptionForm(false)}
             errors={errors}
             project={project}
             loading={loading}
@@ -113,7 +115,7 @@ export const ProjectPage: React.FC = () => {
       <Card title="Slug">
         {!isOpenProjectEditSlugForm && (
           <ProjectSlug
-            openProjectSlugForm={setIsOpenProjectEditSlugForm}
+            openProjectSlugForm={() => setIsOpenProjectEditSlugForm(true)}
             slug={project?.slug}
           />
         )}
@@ -121,7 +123,7 @@ export const ProjectPage: React.FC = () => {
         {!!project && isOpenProjectEditSlugForm && (
           <ProjectSlugForm
             edit={editProjectSlug}
-            close={setIsOpenProjectEditSlugForm}
+            close={() => setIsOpenProjectEditSlugForm(false)}
             errors={errors}
             project={project}
             loading={loading}
