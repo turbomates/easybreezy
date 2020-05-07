@@ -1,3 +1,4 @@
+
 # Hr/Absence
 
 Api for Absences and Working Hours
@@ -8,11 +9,12 @@ Api for Absences and Working Hours
 
   * [Show](#1-show)
   * [All](#2-all)
-  * [Absences Me](#3-absences-me)
-  * [Approve](#4-approve)
-  * [Remove](#5-remove)
-  * [Update](#6-update)
-  * [Create](#7-create)
+  * [Absences user](#3-absences-user)
+  * [Absences Me](#4-absences-me)
+  * [Approve](#5-approve)
+  * [Remove](#6-remove)
+  * [Update](#7-update)
+  * [Create](#8-create)
 
 
 --------
@@ -47,6 +49,7 @@ URL: localhost:3000/api/hr/absences/36833a4f-37ab-4bbd-9586-d1c627558101
 
 
 Status: Success | Code: 200
+
 
 
 
@@ -93,7 +96,6 @@ URL: localhost:3000/api/hr/absences
 Status: Success | Code: 200
 
 
-
 ```js
 {
     "data": {
@@ -116,7 +118,44 @@ Status: Success | Code: 200
 
 
 
-### 3. Absences Me
+### 3. Absences user
+
+
+
+***Endpoint:***
+
+```bash
+Method: GET
+Type: RAW
+URL: localhost:3000/api/hr/user/2e2ba3b5-1be5-4c77-b877-43d4cc6959aa/absences
+```
+
+
+***Headers:***
+
+| Key | Value | Description |
+| --- | ------|-------------|
+| Content-Type | application/json |  |
+
+
+
+***Responses:***
+
+
+Status: Success | Code: 200
+
+
+```js
+{
+    "data": {
+        "absences": []
+    }
+}
+```
+
+
+
+### 4. Absences Me
 
 
 
@@ -142,8 +181,6 @@ URL: localhost:3000/api/hr/absences/me
 
 Status: Success | Code: 200
 
-
-
 ```js
 {
     "data": {
@@ -154,7 +191,7 @@ Status: Success | Code: 200
 
 
 
-### 4. Approve
+### 5. Approve
 
 
 
@@ -180,8 +217,6 @@ URL: localhost:3000/api/hr/absences/36833a4f-37ab-4bbd-9586-d1c627558101/approve
 
 Status: Success | Code: 200
 
-
-
 ```js
 {
     "status": "ok"
@@ -190,7 +225,7 @@ Status: Success | Code: 200
 
 
 
-### 5. Remove
+### 6. Remove
 
 
 
@@ -217,7 +252,6 @@ URL: localhost:3000/api/hr/absences/4025cfa9-162e-4f69-bc44-c2d39c3d9af1
 Status: Success | Code: 200
 
 
-
 ```js
 {
     "status": "ok"
@@ -226,7 +260,7 @@ Status: Success | Code: 200
 
 
 
-### 6. Update
+### 7. Update
 
 
 Possible reasons:
@@ -241,7 +275,7 @@ PERSONAL (other cases, need to think paid or not)
 ```bash
 Method: POST
 Type: RAW
-URL: localhost:3000/api/hr/absences/4025cfa9-162e-4f69-bc44-c2d39c3d9af1
+URL: localhost:3000/api/hr/absences/a67dbf72-0d41-4cb6-beca-d8c2479568f4
 ```
 
 
@@ -255,10 +289,10 @@ URL: localhost:3000/api/hr/absences/4025cfa9-162e-4f69-bc44-c2d39c3d9af1
 
 ***Body:***
 
-```js
+```js        
 {
-	"startedAt": "2019-04-12",
-	"endedAt": "2020-04-12",
+	"startedAt": "2019-07-12",
+	"endedAt": "2020-07-12",
 	"reason": "DAYON",
 	"comment": "can be nullable"
 }
@@ -271,8 +305,6 @@ URL: localhost:3000/api/hr/absences/4025cfa9-162e-4f69-bc44-c2d39c3d9af1
 
 Status: Success | Code: 200
 
-
-
 ```js
 {
     "status": "ok"
@@ -281,7 +313,7 @@ Status: Success | Code: 200
 
 
 
-### 7. Create
+### 8. Create
 
 
 
@@ -304,12 +336,12 @@ URL: localhost:3000/api/hr/absences
 
 ***Body:***
 
-```js
+```js        
 {
-	"startedAt": "2020-03-19",
-	"endedAt": "2020-03-25",
+	"startedAt": "2020-05-19",
+	"endedAt": "2020-05-25",
 	"reason": "VACATION",
-	"userId": "8f631c73-a516-4576-b19b-4929b665e9dc",
+	"userId": "98e397c1-589f-424e-a641-e433aa33d00d",
 	"comment": "can be nullable"
 }
 ```
@@ -322,7 +354,6 @@ URL: localhost:3000/api/hr/absences
 Status: Create | Code: 200
 
 
-
 ```js
 {
     "status": "ok"
@@ -333,4 +364,4 @@ Status: Create | Code: 200
 
 ---
 [Back to top](#hrabsence)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-15 12:35:17 by [docgen](https://github.com/thedevsaddam/docgen)
+> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-05-07 12:12:49 by [docgen](https://github.com/thedevsaddam/docgen)

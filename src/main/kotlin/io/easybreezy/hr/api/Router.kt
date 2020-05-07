@@ -133,7 +133,18 @@ class Router @Inject constructor(
                 )
             }
             get<Response.Data<UserAbsences>>("/me") {
-                controller<AbsenceController>(this).myAbsences(resolvePrincipal<UserPrincipal>())
+                controller<AbsenceController>(this).userAbsences(resolvePrincipal<UserPrincipal>())
+            }
+        }
+
+        route("/user") {
+            authorize(setOf(Activity.ABSENCES_LIST, Activity.ABSENCES_MANAGE), {
+                val principal = principal<UserPrincipal>()
+                principal?.id == locations.resolve<UserId>(this).userId
+            }) {
+                get<Response.Data<UserAbsences>, UserId>("/{userId}/absences") { params ->
+                    controller<AbsenceController>(this).userAbsences(params.userId)
+                }
             }
         }
     }
