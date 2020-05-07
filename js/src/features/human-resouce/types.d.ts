@@ -42,6 +42,8 @@ declare module "HumanResourceModels" {
     };
   };
 
+  export type EmployeeAbsencesResponse = MyAbsencesResponse;
+
   export type AbsencesResponse = {
     data: {
       absences: AbsencesMap;

@@ -17,6 +17,7 @@ import {
   CreateAbsenceData,
   UpdateAbsenceData,
   AbsencesResponse,
+  EmployeeAbsencesResponse,
 } from "HumanResourceModels";
 import { ProfileResponse, Profile } from "AccountModules";
 import { FormFailure } from "MyTypes";
@@ -137,10 +138,10 @@ export const fetchMyAbsences = () =>
 
 export const fetchEmployeeAbsences = (userId: string) =>
   api
-    .get<AbsencesResponse>("hr/absences")
+    .get<EmployeeAbsencesResponse>(`hr/user/${userId}/absences`)
     .then<Success<Absence[]>>((resp) => ({
       success: true,
-      data: resp.data.data.absences[userId] || [],
+      data: resp.data.data.absences || [],
     }))
     .catch<Failure>(() => ({ success: false, reason: "Error" }));
 
