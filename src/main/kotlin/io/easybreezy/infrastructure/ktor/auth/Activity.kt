@@ -28,7 +28,7 @@ enum class Activity {
     VACATIONS_SHOW,
 
     PROJECTS_MANAGE,
-    PROJECTS_SHOW,
+    PROJECTS_SHOW
 }
 
 object Activities : Constraint {

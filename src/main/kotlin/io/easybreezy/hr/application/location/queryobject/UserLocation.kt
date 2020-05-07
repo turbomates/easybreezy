@@ -13,7 +13,6 @@ import io.easybreezy.user.model.NameTable
 import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
@@ -33,8 +32,9 @@ class UserLocationsQO(private val userId: UUID) : QueryObject<UserLocations> {
     override suspend fun getData(): UserLocations {
         val result = UserLocationsTable
             .innerJoin(Locations)
-            .join(Users, JoinType.INNER, additionalConstraint = { Users.id eq userId })
+            .innerJoin(Users)
             .selectAll()
+            .andWhere { UserLocationsTable.userId eq userId }
             .map { it.toUserLocation() }
 
         return UserLocations(result)
@@ -50,6 +50,22 @@ class UsersLocationsQO(private val dateRange: DateRange) : QueryObject<UsersLoca
             .andWhere { UserLocationsTable.startedAt greater dateRange.from }
             .andWhere { coalesce(UserLocationsTable.endedAt, UserLocationsTable.startedAt) less dateRange.to }
             .toUserLocations()
+}
+
+class IsLatestByUserIdQO(private val userId: UUID, private val startedAt: LocalDate) : QueryObject<Boolean> {
+    override suspend fun getData() =
+        UserLocationsTable
+            .select { UserLocationsTable.userId eq userId and (UserLocationsTable.startedAt greaterEq startedAt) }
+            .count() == 0L
+}
+
+class IsLatestByIdQO(private val userLocationId: UUID, private val startedAt: LocalDate) : QueryObject<Boolean> {
+    override suspend fun getData() =
+        UserLocationsTable
+            .innerJoin(Users)
+            .select { (UserLocationsTable.startedAt greaterEq startedAt) }
+            .andWhere { UserLocationsTable.id eq userLocationId }
+            .count() == 0L
 }
 
 class IsUserLocationOwner(val id: UUID, val userId: UUID) : QueryObject<Boolean> {

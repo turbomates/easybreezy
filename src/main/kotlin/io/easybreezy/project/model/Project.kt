@@ -1,8 +1,11 @@
 package io.easybreezy.project.model
 
+import io.easybreezy.infrastructure.event.project.project.StatusAdded
+import io.easybreezy.infrastructure.event.project.project.CategoryRemoved
+import io.easybreezy.infrastructure.event.project.project.StatusRemoved
+import io.easybreezy.infrastructure.event.project.project.CategoryChanged
 import io.easybreezy.infrastructure.event.project.project.Activated
 import io.easybreezy.infrastructure.event.project.project.CategoryAdded
-import io.easybreezy.infrastructure.event.project.project.CategoryChanged
 import io.easybreezy.infrastructure.event.project.project.Closed
 import io.easybreezy.infrastructure.event.project.project.Created
 import io.easybreezy.infrastructure.event.project.project.DescriptionWritten
@@ -10,11 +13,13 @@ import io.easybreezy.infrastructure.event.project.project.RoleAdded
 import io.easybreezy.infrastructure.event.project.project.RoleChanged
 import io.easybreezy.infrastructure.event.project.project.RoleRemoved
 import io.easybreezy.infrastructure.event.project.project.SlugChanged
+import io.easybreezy.infrastructure.event.project.project.StatusChanged
 import io.easybreezy.infrastructure.event.project.project.Suspended
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Category
+import io.easybreezy.project.model.issue.Statuses
 import io.easybreezy.project.model.team.Role
 import io.easybreezy.project.model.team.Roles
 import org.jetbrains.exposed.dao.EntityClass
@@ -25,6 +30,7 @@ import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.text.Normalizer
 import java.time.LocalDateTime
 import java.util.UUID
+import io.easybreezy.project.model.issue.Status as IssueStatus
 
 class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var name by Projects.name
@@ -35,6 +41,7 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     private var updatedAt by Projects.updatedAt
     private val roles by Role referrersOn Roles.project
     private val categories by Category referrersOn Categories.project
+    private val issueStatuses by IssueStatus referrersOn Statuses.project
 
     fun writeDescription(description: String) {
         this.description = description
@@ -98,12 +105,31 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         val category = categories.first { it.id.value == categoryId }
         category.delete()
         this.updatedAt = LocalDateTime.now()
-        addEvent(RoleRemoved(id.value, category.id.value, category.name, this.updatedAt))
+        addEvent(CategoryRemoved(id.value, category.id.value, category.name, this.updatedAt))
+    }
+
+    fun addIssueStatus(name: String) {
+        val newIssueStatus = IssueStatus.new(this, name)
+        this.updatedAt = LocalDateTime.now()
+        addEvent(StatusAdded(id.value, newIssueStatus.id.value, newIssueStatus.name, this.updatedAt))
+    }
+
+    fun changeIssueStatus(issueStatusId: UUID, newName: String) {
+        val issueStatus = issueStatuses.first { it.id.value == issueStatusId }
+        issueStatus.rename(newName)
+        this.updatedAt = LocalDateTime.now()
+        addEvent(StatusChanged(id.value, issueStatus.id.value, issueStatus.name, this.updatedAt))
     }
 
     fun changeSlug(new: String) {
         this.slug = new
         addEvent(SlugChanged(id.value, this.slug))
+    }
+    fun removeIssueStatus(issueStatusId: UUID) {
+        val issueStatus = issueStatuses.first { it.id.value == issueStatusId }
+        issueStatus.delete()
+        this.updatedAt = LocalDateTime.now()
+        addEvent(StatusRemoved(id.value, issueStatus.id.value, issueStatus.name, this.updatedAt))
     }
 
     enum class Status {

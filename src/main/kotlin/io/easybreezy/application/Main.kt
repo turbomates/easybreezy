@@ -17,7 +17,6 @@ import io.easybreezy.infrastructure.event.EventsDatabaseAccess
 import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
-import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
@@ -28,7 +27,12 @@ import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.*
+import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DataConversion
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.DoubleReceive
+import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
@@ -116,10 +120,6 @@ suspend fun main() {
         install(StatusPages) {
             status(HttpStatusCode.Unauthorized) {
                 call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
-            }
-            exception<LogicException> {
-                call.respond(HttpStatusCode.UnprocessableEntity, Error(it.message ?: "Unprocessable Entity"))
-                throw it
             }
             exception<NoSuchElementException> {
                 call.respond(HttpStatusCode.NotFound, Error("Page not found"))

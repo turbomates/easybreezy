@@ -15,7 +15,7 @@ class Email private constructor() : Embeddable() {
         }
 
         fun create(address: String): Email {
-            if (!isValid(address)) throw Exception("Email $address is wrong")
+            require(isValid(address)) { "Email $address is wrong" }
 
             val email = Email()
             email.address = address

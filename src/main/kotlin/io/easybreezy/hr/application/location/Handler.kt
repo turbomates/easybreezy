@@ -38,11 +38,6 @@ class Handler @Inject constructor(
         userLocation.edit(command.startedAt, location)
     }
 
-    suspend fun closeUserLocation(locationId: UUID) = transaction {
-        val userLocation = userLocationRepository.getOne(locationId)
-        userLocation.close()
-    }
-
     suspend fun handleRemoveLocation(id: UUID) {
         transaction {
             locationRepository.remove(id)

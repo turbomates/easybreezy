@@ -11,7 +11,9 @@ easybreezy.rabbit.uri=amqp://login:password@localhost:5672
 easybreezy.rabbit.api=http://localhost:15672
 ```
 
-## Migrations
+#### [Setup Ide Code style](https://github.com/pinterest/ktlint#option-3)
+
+## Useful commands
 
 #### Generate migration
 
@@ -25,17 +27,25 @@ easybreezy.rabbit.api=http://localhost:15672
 ./gradlew migrationsMigrate
 ```
 
-### Create Default Admin
+#### Create Default Admin
 
 ```bash
 ./gradlew createDefaultAdmin
 ```
 
-### Reformat code
+#### Format code
 ```bash
 ./gradlew ktlintFormat
 ```
-### Build Doc from Postman
+#### Build Doc from Postman
 ```
 docgen build -i input-postman-collection.json -o ~/Downloads/index.md -m
+```
+
+
+## Conventions
+### Exceptions
+```
+Use require() to check condition and throw exception
+Use your custom exceptions if you need to throw it more than once
 ```

@@ -10,7 +10,6 @@
   * [User locations](#1-user-locations)
   * [Show user all user locations](#2-show-user-all-user-locations)
   * [User location show](#3-user-location-show)
-  * [User location close](#4-user-location-close)
   * [User location edit](#5-user-location-edit)
   * [User location assign](#6-user-location-assign)
   * [Locations](#7-locations)
@@ -212,52 +211,6 @@ Status: Success | Code: 200
         "firstName": "Ivan",
         "lastName": "Novikov"
     }
-}
-```
-
-
-
-### 4. User location close
-
-
-Role: Admin
-
-
-***Endpoint:***
-
-```bash
-Method: POST
-Type: RAW
-URL: localhost:3000/api/hr/user-locations/54e667d1-02bd-4395-92d9-1b0f9c0041c3/close
-```
-
-
-***Headers:***
-
-| Key | Value | Description |
-| --- | ------|-------------|
-| Content-Type | application/json |  |
-
-
-
-***Responses:***
-
-
-Status: Success | Code: 200
-
-```js
-{
-    "status": "ok"
-}
-```
-
-
-
-Status: Already Closed | Code: 422
-
-```js
-{
-    "message": "User location have been already closed"
 }
 ```
 

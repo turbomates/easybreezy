@@ -26,16 +26,12 @@ class Note private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     fun correct(correctedBy: UUID, correctedText: String) {
-        if (correctedBy !== hrManager) {
-            throw Exception("Only creator could correct note")
-        }
+        require(correctedBy == hrManager) { "Only creator could correct note" }
         text = correctedText
     }
 
     fun archive(archivedBy: UUID) {
-        if (archivedBy !== hrManager) {
-            throw Exception("Only creator could archive note")
-        }
+        require(archivedBy == hrManager) { "Only creator could archive note" }
         archived = true
     }
 

@@ -5,6 +5,7 @@ import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.issue.Statuses
 import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Roles
 import io.easybreezy.project.model.team.Teams
@@ -50,6 +51,16 @@ internal fun Database.createProjectRole(projectId: EntityID<UUID>, role: String)
             it[name] = role
             it[permissions] = listOf()
         } get Roles.id
+        id.value
+    }
+}
+
+internal fun Database.createProjectStatus(projectId: EntityID<UUID>, status: String): UUID {
+    return transaction(this) {
+        val id = Statuses.insert {
+            it[project] = projectId
+            it[name] = status
+        } get Statuses.id
         id.value
     }
 }
