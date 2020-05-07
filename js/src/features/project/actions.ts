@@ -13,6 +13,7 @@ import {
   ProjectsRequest,
   RolePermissions,
   EditProjectSlugRequest,
+  CreateProjectTeamRequest,
 } from "ProjectModels";
 
 //PROJECT
@@ -87,3 +88,18 @@ export const editProjectSlugAsync = createAsyncAction(
   "EDIT_PROJECT_SLUG_SUCCESS",
   "EDIT_PROJECT_SLUG_FAILURE",
 )<EditProjectSlugRequest, undefined, FormError[]>();
+
+//TEAM
+export const createProjectTeamAsync = createAsyncAction(
+  "CREATE_PROJECT_PROJECT_REQUEST",
+  "CREATE_PROJECT_PROJECT_SUCCESS",
+  "CREATE_PROJECT_PROJECT_FAILURE",
+)<CreateProjectTeamRequest, undefined, FormError[]>();
+
+export const openProjectTeamCreateFormAction = createAction(
+  "OPEN_PROJECT_TEAM_CREATE_FORM",
+)();
+
+export const closeProjectTeamCreateFormAction = createAction(
+  "CLOSE_PROJECT_TEAM_CREATE_FORM",
+)();

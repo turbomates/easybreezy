@@ -1,11 +1,23 @@
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { Card, Col, Row } from "antd";
+import { Card, Col, Modal, Row } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
-import { fetchProjectAsync } from "../features/project/actions";
-import { getProject } from "../features/project/selectors";
+import {
+  closeProjectTeamCreateFormAction,
+  createProjectTeamAsync,
+  fetchProjectAsync,
+  openProjectTeamCreateFormAction,
+} from "../features/project/actions";
+import {
+  getErrors,
+  getIsOpenProjectTeamCreateForm,
+  getProject,
+} from "../features/project/selectors";
 import { ProjectTeamsList } from "../features/project/components/ProjectTeamsList";
+import { ProjectTeamsCreateForm } from "../features/project/components/ProjectTeamsCreateForm";
+import { CreateProjectTeamRequest } from "ProjectModels";
 
 export const ProjectTeamsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,7 +30,26 @@ export const ProjectTeamsPage: React.FC = () => {
     [dispatch],
   );
 
+  const createTeam = useCallback(
+    (form: CreateProjectTeamRequest) => {
+      dispatch(createProjectTeamAsync.request(form));
+    },
+    [dispatch],
+  );
+
+  const openProjectTeamCreateForm = useCallback(() => {
+    dispatch(openProjectTeamCreateFormAction());
+  }, [dispatch]);
+
+  const closeProjectTeamCreateForm = useCallback(() => {
+    dispatch(closeProjectTeamCreateFormAction());
+  }, [dispatch]);
+
   const project = useSelector(getProject);
+  const errors = useSelector(getErrors);
+  const isOpenProjectTeamCreateForm = useSelector(
+    getIsOpenProjectTeamCreateForm,
+  );
 
   useEffect(() => {
     fetchProject(slug);
@@ -29,10 +60,26 @@ export const ProjectTeamsPage: React.FC = () => {
   return (
     <Row gutter={10} className="content">
       <Col lg={12} md={24} xs={24}>
-        <Card title="Teams">
+        <Card
+          title="Teams"
+          extra={<PlusOutlined onClick={openProjectTeamCreateForm} />}
+        >
           <ProjectTeamsList teams={project.teams} slug={project.slug} />
         </Card>
       </Col>
+
+      <Modal
+        title="Create team"
+        visible={isOpenProjectTeamCreateForm}
+        onCancel={closeProjectTeamCreateForm}
+        footer={null}
+      >
+        <ProjectTeamsCreateForm
+          projectId={project.id}
+          errors={errors}
+          create={createTeam}
+        />
+      </Modal>
     </Row>
   );
 };

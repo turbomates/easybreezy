@@ -6,6 +6,7 @@ import * as location from "./location-api";
 import * as realHr from "./human-resource-api";
 import * as project from "./project-api";
 import * as humanResource from "./human-resource-api";
+import * as team from "./team-api";
 
 export default {
   logger,
@@ -17,6 +18,7 @@ export default {
     humanResource,
     location,
     realHr,
-    project
+    project,
+    team,
   },
 };
