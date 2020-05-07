@@ -12,7 +12,7 @@ export const Salaries: React.FC<Props> = ({ salaries }) => (
     renderItem={(salary) => (
       <List.Item key={salary.id}>
         <List.Item.Meta
-          title={salary.amount}
+          title={salary.amount.toString()}
           description={`since ${salary.since} till ${salary.till ?? "now"}`}
         />
         {salary.comment}

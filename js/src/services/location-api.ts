@@ -37,13 +37,12 @@ export const remove = (locationId: string) =>
       reason: resp?.response?.data?.error || "Error",
     }));
 
-// TODO refactor when back is ready
 export const fetchUserLocations = (userId: string) =>
   api
-    .get<EmployeeLocationsResponse>("/hr/user-locations")
+    .get<EmployeeLocationsResponse>(`hr/user/${userId}/locations`)
     .then<Success<EmployeeLocation[]>>(({ data }) => ({
       success: true,
-      data: data.data.usersLocations[userId] || [],
+      data: data.data.userLocations || [],
     }))
     .catch<Failure>((resp) => ({
       success: false,
