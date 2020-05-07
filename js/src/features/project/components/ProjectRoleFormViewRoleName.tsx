@@ -1,18 +1,16 @@
-import { Button } from "antd";
 import React from "react";
+import { Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 interface Props {
   name: string;
-  fieldIndex: number;
-  removeRole: (fieldIndex: number) => void;
-  setIndexOfEditableInput: (number: number) => void;
+  removeRole: () => void;
+  openInputRole: () => void;
 }
 
 export const ProjectRoleFormViewRoleName: React.FC<Props> = ({
   name,
-  fieldIndex,
-  setIndexOfEditableInput,
+  openInputRole,
   removeRole,
 }) => {
   return (
@@ -21,7 +19,7 @@ export const ProjectRoleFormViewRoleName: React.FC<Props> = ({
         <div className="role-form__description">{name}</div>
         <div className="role-form__controls-btn">
           <Button
-            onClick={() => setIndexOfEditableInput(fieldIndex)}
+            onClick={openInputRole}
             type="primary"
             className="role-form__controls-btn"
           >
@@ -29,7 +27,7 @@ export const ProjectRoleFormViewRoleName: React.FC<Props> = ({
           </Button>
 
           <Button
-            onClick={() => removeRole(fieldIndex)}
+            onClick={removeRole}
             type="danger"
             className="role-form__controls-btn"
           >

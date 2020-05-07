@@ -1,4 +1,4 @@
-package io.easybreezy.user.application
+package io.easybreezy.user.application.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
@@ -33,6 +33,13 @@ class Handler @Inject constructor(private val repository: Repository, private va
         transaction {
             val user = repository.getOne(userId)
             user.hire()
+        }
+    }
+
+    suspend fun handleFire(userId: UUID) {
+        transaction {
+            val user = repository.getOne(userId)
+            user.fire()
         }
     }
 
