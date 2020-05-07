@@ -13,6 +13,7 @@ import { LoginPage } from "./pages/Login";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { ProjectPage } from "./pages/ProjectPage";
 import { ProjectRolePage } from "./pages/ProjectRolePage";
+import { ProjectTeamsPage } from "./pages/ProjectTeamsPage"
 
 import { isAuthorized } from "./features/auth/selectors";
 import { canRender } from "./features/app/selectors";
@@ -33,6 +34,11 @@ export const Routes: React.FC = () => {
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
         <Route path="/locations" component={LocationsPage} />
+        <Route path="/projects/:slug/teams" >
+          <Project>
+            <ProjectTeamsPage/>
+          </Project>
+        </Route>
         <Route path="/projects/:slug/role" >
             <Project>
                 <ProjectRolePage/>

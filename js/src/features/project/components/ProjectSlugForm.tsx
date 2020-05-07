@@ -8,7 +8,7 @@ import { FormErrorMap } from "MyTypes";
 interface Props {
   project: Project;
   edit: (form: EditProjectSlugRequest) => void;
-  close: (close: boolean) => void;
+  close: () => void;
   errors: FormErrorMap;
   loading: boolean;
 }
@@ -73,7 +73,7 @@ export const ProjectSlugForm: React.FC<Props> = ({
             </Button>
           </Col>
           <Col>
-            <Button type="danger" onClick={() => close(false)} loading={loading}>
+            <Button type="danger" onClick={close} loading={loading}>
               Cancel
             </Button>
           </Col>
