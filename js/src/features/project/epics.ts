@@ -14,6 +14,8 @@ import {
   createProjectRoleAsync,
   fetchProjectRoleAsync,
   editProjectSlugAsync,
+  createProjectTeamAsync,
+  closeProjectTeamCreateFormAction,
 } from "./actions";
 import { push } from "connected-react-router";
 
@@ -184,6 +186,27 @@ export const editProjectSlug: RootEpic = (action$, state$, { api }) =>
             : [editProjectSlugAsync.failure(result.errors)],
         ),
         catchError((message) => of(editProjectSlugAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const createProjectTeam: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(createProjectTeamAsync.request)),
+    switchMap((action) =>
+      from(api.team.createTeam(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                createProjectTeamAsync.success(),
+                closeProjectTeamCreateFormAction(),
+                fetchProjectAsync.request(
+                  state$.value.project.project.project!.slug,
+                ),
+              ]
+            : [createProjectTeamAsync.failure(result.errors)],
+        ),
+        catchError((message) => of(createProjectTeamAsync.failure(message))),
       ),
     ),
   );

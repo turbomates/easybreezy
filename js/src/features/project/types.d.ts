@@ -80,4 +80,9 @@ declare module "ProjectModels" {
     newSlug: string;
     slug: string;
   }
+
+  export interface CreateProjectTeamRequest {
+    name: string;
+    project: string;
+  }
 }
