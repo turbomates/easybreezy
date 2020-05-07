@@ -1,21 +1,20 @@
 import React from "react";
 import { List } from "antd";
 
-import { Project } from "ProjectModels";
+import { Team } from "ProjectModels";
 import { ProjectTeamsListItem } from "./ProjectTeamsListItem";
 
 interface Props {
-  project: Project;
+  teams: Team[];
+  slug: string;
 }
 
-export const ProjectTeamsList: React.FC<Props> = ({ project }) => {
+export const ProjectTeamsList: React.FC<Props> = ({ teams, slug }) => {
   return (
     <List
       itemLayout="horizontal"
-      dataSource={project.teams}
-      renderItem={(item) => (
-        <ProjectTeamsListItem team={item} slug={project.slug} />
-      )}
+      dataSource={teams}
+      renderItem={(item) => <ProjectTeamsListItem team={item} slug={slug} />}
     />
   );
 };

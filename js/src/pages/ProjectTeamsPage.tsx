@@ -30,7 +30,7 @@ export const ProjectTeamsPage: React.FC = () => {
     <Row gutter={10} className="content">
       <Col lg={12} md={24} xs={24}>
         <Card title="Teams">
-          <ProjectTeamsList project={project} />
+          <ProjectTeamsList teams={project.teams} slug={project.slug} />
         </Card>
       </Col>
     </Row>
