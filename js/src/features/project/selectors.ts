@@ -1,9 +1,9 @@
 import { RootState } from "MyTypes";
 
 export const getProjects = (state: RootState) =>
-  state.project.projects.projects;
+  state.project.projects.list;
 
-export const getProject = (state: RootState) => state.project.project.project;
+export const getProject = (state: RootState) => state.project.project.data;
 
 export const getIsOpenProjectCreateForm = (state: RootState) =>
   state.project.projects.isOpenCreateForm;
@@ -15,5 +15,8 @@ export const getErrors = (state: RootState) => state.project.project.errors;
 export const getRolePermissions = (state: RootState) =>
   state.project.project.rolePermissions;
 
-export const getIsOpenProjectTeamCreateForm = (state: RootState) =>
-  state.project.project.isOpenProjectTeamCreateForm
+export const getIsOpenCreateTeamForm = (state: RootState) =>
+  state.project.project.isOpenCreateTeamForm;
+
+export const getProjectTeam = (state: RootState) =>
+  state.project.team.data;

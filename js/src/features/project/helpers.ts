@@ -1,6 +1,7 @@
 import {
   ProjectStatusTypeRequest,
   ProjectStatusTypeResponse,
+  Role,
 } from "ProjectModels";
 
 export function switchProjectStatus(
@@ -19,7 +20,9 @@ export function switchProjectStatus(
 }
 
 export function convertToSlug(name: string) {
-  return name
-    .toLocaleLowerCase()
-    .replace(/[^\w]+/g, "-")
+  return name.toLocaleLowerCase().replace(/[^\w]+/g, "-");
+}
+
+export function getMemberRoleName(roles: Role[], memberRoleId: string) {
+  return roles.find((role) => role.id === memberRoleId)?.name;
 }

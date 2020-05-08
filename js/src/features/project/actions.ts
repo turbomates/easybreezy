@@ -13,8 +13,8 @@ import {
   ProjectsRequest,
   RolePermissions,
   EditProjectSlugRequest,
-  CreateProjectTeamRequest,
-} from "ProjectModels";
+  CreateProjectTeamRequest, ProjectTeam,
+} from "ProjectModels"
 
 //PROJECT
 export const fetchProjectAsync = createAsyncAction(
@@ -103,3 +103,9 @@ export const openProjectTeamCreateFormAction = createAction(
 export const closeProjectTeamCreateFormAction = createAction(
   "CLOSE_PROJECT_TEAM_CREATE_FORM",
 )();
+
+export const fetchProjectTeamAsync = createAsyncAction(
+  "FETCH_TEAM_REQUEST",
+  "FETCH_TEAM_SUCCESS",
+  "FETCH_TEAM_FAILED",
+)<string, ProjectTeam, any>();

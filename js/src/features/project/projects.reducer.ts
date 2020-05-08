@@ -11,14 +11,14 @@ import { normalizeErrors } from "utils/error";
 import { ProjectList } from "ProjectModels";
 
 export interface State {
-  projects: Paging<ProjectList> | null;
+  list: Paging<ProjectList> | null;
   isOpenCreateForm: boolean;
   loading: boolean;
   errors: FormErrorMap;
 }
 
 const initialSate: State = {
-  projects: null,
+  list: null,
   isOpenCreateForm: false,
   loading: false,
   errors: {},
@@ -58,7 +58,7 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(fetchProjectsAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    projects: action.payload,
+    list: action.payload,
   }))
   .handleAction(fetchProjectsAsync.failure, (state, action) => ({
     ...state,

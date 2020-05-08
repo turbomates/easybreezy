@@ -15,19 +15,19 @@ import { normalizeErrors } from "utils/error";
 import { Project, RolePermissions } from "ProjectModels";
 
 export interface State {
-  project: Project | null;
+  data: Project | null;
   loading: boolean;
   errors: FormErrorMap;
   rolePermissions: RolePermissions;
-  isOpenProjectTeamCreateForm: boolean;
+  isOpenCreateTeamForm: boolean;
 }
 
 const initialSate: State = {
-  project: null,
+  data: null,
   loading: false,
   errors: {},
   rolePermissions: [],
-  isOpenProjectTeamCreateForm: false,
+  isOpenCreateTeamForm: false,
 };
 
 export const reducer = createReducer<State>(initialSate)
@@ -114,7 +114,7 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(fetchProjectAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    project: action.payload,
+    data: action.payload,
   }))
   .handleAction(fetchProjectAsync.failure, (state, action) => ({
     ...state,
@@ -126,9 +126,9 @@ export const reducer = createReducer<State>(initialSate)
   }))
   .handleAction(openProjectTeamCreateFormAction, (state, action) => ({
     ...state,
-    isOpenProjectTeamCreateForm: true,
+    isOpenCreateTeamForm: true,
   }))
   .handleAction(closeProjectTeamCreateFormAction, (state, action) => ({
     ...state,
-    isOpenProjectTeamCreateForm: false,
+    isOpenCreateTeamForm: false,
   }));
