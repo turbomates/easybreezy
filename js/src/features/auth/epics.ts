@@ -4,7 +4,12 @@ import { from, of } from "rxjs";
 import { filter, switchMap, map, catchError, tap } from "rxjs/operators";
 import { isActionOf } from "typesafe-actions";
 
-import { checkAuth, signInAsync, signOutAsync } from "./actions";
+import {
+  checkAuth,
+  signInAsync,
+  signOutAsync,
+  fetchRulesAsync,
+} from "./actions";
 
 export const checkAuthEpic: RootEpic = (action$, state$, { jwt }) =>
   action$.pipe(
@@ -20,9 +25,9 @@ export const checkAuthEpic: RootEpic = (action$, state$, { jwt }) =>
 export const signInEpic: RootEpic = (action$, state$, { api, jwt }) =>
   action$.pipe(
     filter(isActionOf(signInAsync.request)),
-    switchMap(action =>
+    switchMap((action) =>
       from(api.auth.signIn(action.payload)).pipe(
-        map(result => {
+        map((result) => {
           if (result.success) {
             const token = result.data;
             jwt.set(token);
@@ -32,7 +37,7 @@ export const signInEpic: RootEpic = (action$, state$, { api, jwt }) =>
           }
         }),
 
-        catchError(message => of(signInAsync.failure(message))),
+        catchError((message) => of(signInAsync.failure(message))),
       ),
     ),
   );
@@ -46,4 +51,18 @@ export const signOutEpic: RootEpic = (action$, state$, { jwt }) =>
     map(() => {
       return signOutAsync.success();
     }),
+  );
+
+export const loadRules: RootEpic = (action$, _, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchRulesAsync.request)),
+    switchMap(() =>
+      from(api.auth.fetchRoles()).pipe(
+        map((result) =>
+          result.success
+            ? fetchRulesAsync.success(result.data)
+            : fetchRulesAsync.failure(result.reason),
+        ),
+      ),
+    ),
   );

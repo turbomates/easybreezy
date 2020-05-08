@@ -1,4 +1,4 @@
 import { RootState } from "MyTypes";
 
 export const canRender = (state: RootState) =>
-  state.auth.status !== "initial" && state.auth.status !== "checking";
+  state.auth.info.status !== "initial" && state.auth.info.status !== "checking";

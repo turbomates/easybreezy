@@ -1,4 +1,4 @@
-import { SignInData, User } from "AuthModels";
+import { SignInData, User, RulesMap } from "AuthModels";
 import { Failure, Success } from "MyTypes";
 import { api } from "./api";
 
@@ -21,3 +21,15 @@ export const signIn = (credentials: SignInData) =>
     }));
 
 export const signOut = () => api.get("/logout").then((resp) => resp.data);
+
+export const fetchRoles = () =>
+  api
+    .get("authorization/rules")
+    .then<Success<RulesMap>>((resp) => ({
+      success: true,
+      data: resp.data.data,
+    }))
+    .catch<Failure>((resp) => ({
+      success: false,
+      reason: resp?.response?.data?.error || "Error",
+    }));
