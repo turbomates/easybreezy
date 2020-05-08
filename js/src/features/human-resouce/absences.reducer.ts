@@ -2,17 +2,17 @@ import { createReducer } from "typesafe-actions";
 import { AbsencesMap, Absence } from "HumanResourceModels";
 import {
   fetchAbsencesAsync,
-  refetchMyAbsencesAsync,
-  fetchMyAbsencesAsync,
+  fetchEmployeeAbsencesAsync,
   createAbsenceAsync,
-  openAbsenceCreateForm,
-  closeAbsenceCreateForm,
+  openAbsenceCreateModal,
+  closeAbsenceCreateModal,
   openAbsenceUpdateModal,
   closeAbsenceUpdateModal,
+  updateAbsenceAsync,
 } from "./actions";
 import { combineReducers } from "redux";
 import { FormErrorMap } from "MyTypes";
-import { normalizeErrors } from "utils/error";
+import { normalizeErrors, fillErrors } from "utils/error";
 
 export type AllState = AbsencesMap;
 
@@ -23,61 +23,68 @@ export const all = createReducer<AllState>(allInitialState).handleAction(
   (state, action) => action.payload || {},
 );
 
-type MyState = {
+type OneState = {
   loading: boolean;
   items: Absence[];
-  createFormVisible: boolean;
+  isCreateModalVisible: boolean;
   absenceToUpdateId: string | null;
   errors: FormErrorMap;
 };
 
-const myInitialState = {
+const oneInitialState = {
   loading: false,
   items: [],
-  createFormVisible: false,
+  isCreateModalVisible: false,
   absenceToUpdateId: null,
   errors: {},
 };
 
-export const my = createReducer<MyState>(myInitialState)
-  .handleAction(fetchMyAbsencesAsync.request, (state, action) => ({
+export const one = createReducer<OneState>(oneInitialState)
+  .handleAction(fetchEmployeeAbsencesAsync.request, (state, action) => ({
     ...state,
     loading: true,
   }))
-  .handleAction(fetchMyAbsencesAsync.success, (state, action) => ({
+  .handleAction(fetchEmployeeAbsencesAsync.success, (state, action) => ({
     ...state,
     items: action.payload || [],
     loading: false,
   }))
-  .handleAction(fetchMyAbsencesAsync.failure, (state, action) => ({
+  .handleAction(fetchEmployeeAbsencesAsync.failure, (state, action) => ({
     ...state,
     items: [],
     loading: false,
   }))
-  .handleAction(refetchMyAbsencesAsync.success, (state, action) => ({
-    ...state,
-    items: action.payload,
-  }))
-  .handleAction(refetchMyAbsencesAsync.failure, (state, action) => ({
-    ...state,
-    items: [],
-  }))
   .handleAction(createAbsenceAsync.success, (state, action) => ({
     ...state,
     errors: {},
-    createFormVisible: false,
+    isCreateModalVisible: false,
   }))
   .handleAction(createAbsenceAsync.failure, (state, action) => ({
     ...state,
-    errors: normalizeErrors(action.payload),
+    errors: action.payload.length
+      ? normalizeErrors(action.payload) // TODO move start and end to range
+      : fillErrors(
+          ["range", "reason", "comment"],
+          "Something went wrong. Please check the field",
+        ),
   }))
-  .handleAction(openAbsenceCreateForm, (state, action) => ({
+  .handleAction(updateAbsenceAsync.failure, (state, action) => ({
     ...state,
-    createFormVisible: true,
+    errors: action.payload.length
+      ? normalizeErrors(action.payload) // TODO move start and end to range
+      : fillErrors(
+          ["range", "reason", "comment"],
+          "Something went wrong. Please check the field",
+        ),
   }))
-  .handleAction(closeAbsenceCreateForm, (state, action) => ({
+  .handleAction(openAbsenceCreateModal, (state, action) => ({
     ...state,
-    createFormVisible: false,
+    isCreateModalVisible: true,
+  }))
+  .handleAction(closeAbsenceCreateModal, (state, action) => ({
+    ...state,
+    errors: {},
+    isCreateModalVisible: false,
   }))
   .handleAction(openAbsenceUpdateModal, (state, action) => ({
     ...state,
@@ -85,10 +92,11 @@ export const my = createReducer<MyState>(myInitialState)
   }))
   .handleAction(closeAbsenceUpdateModal, (state, action) => ({
     ...state,
+    errors: {},
     absenceToUpdateId: null,
   }));
 
 export const reducer = combineReducers({
   all,
-  my,
+  one,
 });

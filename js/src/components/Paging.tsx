@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Select } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-import "./Paging.css";
+import "./Paging.scss";
 
 const { Option } = Select;
 
@@ -22,7 +22,7 @@ export const Paging = (props: Props) => (
       value={props.perPage}
       onChange={(value: number) => props.onChange({ page: 1, perPage: value })}
     >
-      {DEFAULT_PAGE_SIZE_OPTIONS.map(option => (
+      {DEFAULT_PAGE_SIZE_OPTIONS.map((option) => (
         <Option key={option} value={option}>
           {option} / page
         </Option>

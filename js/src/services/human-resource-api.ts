@@ -16,6 +16,8 @@ import {
   MyAbsencesResponse,
   CreateAbsenceData,
   UpdateAbsenceData,
+  AbsencesResponse,
+  EmployeeAbsencesResponse,
 } from "HumanResourceModels";
 import { ProfileResponse, Profile } from "AccountModules";
 import { FormFailure } from "MyTypes";
@@ -84,7 +86,10 @@ export const addNote = ({ userId, text }: AddNoteRequestParams) =>
       success: true,
       data: null,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
 
 export const applyPosition = ({
   userId,
@@ -96,7 +101,10 @@ export const applyPosition = ({
       success: true,
       data: null,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
 
 export const applySalary = ({ userId, ...body }: ApplySalaryRequestParams) =>
   api
@@ -105,11 +113,14 @@ export const applySalary = ({ userId, ...body }: ApplySalaryRequestParams) =>
       success: true,
       data: null,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
 
 export const fetchAbsences = () =>
   api
-    .get("hr/absences")
+    .get<AbsencesResponse>("hr/absences")
     .then<Success<AbsencesMap>>((resp) => ({
       success: true,
       data: resp.data.data.absences,
@@ -122,6 +133,15 @@ export const fetchMyAbsences = () =>
     .then<Success<Absence[]>>((resp) => ({
       success: true,
       data: resp.data.data.absences,
+    }))
+    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+
+export const fetchEmployeeAbsences = (userId: string) =>
+  api
+    .get<EmployeeAbsencesResponse>(`hr/user/${userId}/absences`)
+    .then<Success<Absence[]>>((resp) => ({
+      success: true,
+      data: resp.data.data.absences || [],
     }))
     .catch<Failure>(() => ({ success: false, reason: "Error" }));
 

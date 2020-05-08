@@ -32,11 +32,11 @@ export const fetchMyAbsencesAsync = createAsyncAction(
   "FETCH_MY_ABSENCES_FAILURE",
 )<undefined, Absence[], string>();
 
-export const refetchMyAbsencesAsync = createAsyncAction(
-  "REFETCH_MY_ABSENCES_REQUEST",
-  "REFETCH_MY_ABSENCES_SUCCESS",
-  "REFETCH_MY_ABSENCES_FAILURE",
-)<undefined, Absence[], string>();
+export const fetchEmployeeAbsencesAsync = createAsyncAction(
+  "FETCH_EMPLOYEE_ABSENCES_REQUEST",
+  "FETCH_EMPLOYEE_ABSENCES_SUCCESS",
+  "FETCH_EMPLOYEE_ABSENCES_FAILURE",
+)<string, Absence[], string>();
 
 export const createAbsenceAsync = createAsyncAction(
   "CREATE_ABSENCE_REQUEST",
@@ -96,19 +96,19 @@ export const addEmployeeNoteAsync = createAsyncAction(
   "ADD_EMPLOYEE_NOTE_REQUEST",
   "ADD_EMPLOYEE_NOTE_SUCCESS",
   "ADD_EMPLOYEE_NOTE_FAILURE",
-)<AddNoteRequestParams, undefined, string>();
+)<AddNoteRequestParams, undefined, FormError[]>();
 
 export const applyEmployeePositionAsync = createAsyncAction(
   "APPLY_EMPLOYEE_POSITION_REQUEST",
   "APPLY_EMPLOYEE_POSITION_SUCCESS",
   "APPLY_EMPLOYEE_POSITION_FAILURE",
-)<ApplyPositionRequestParams, undefined, string>();
+)<ApplyPositionRequestParams, undefined, FormError[]>();
 
 export const applyEmployeeSalaryAsync = createAsyncAction(
   "APPLY_EMPLOYEE_SALARY_REQUEST",
   "APPLY_EMPLOYEE_SALARY_SUCCESS",
   "APPLY_EMPLOYEE_SALARY_FAILURE",
-)<ApplySalaryRequestParams, undefined, string>();
+)<ApplySalaryRequestParams, undefined, FormError[]>();
 
 export const assignLocationAsync = createAsyncAction(
   "ASSIGN_LOCATION_REQUEST",
@@ -128,11 +128,11 @@ export const editEmployeeLocationAsync = createAsyncAction(
   "EDIT_EMPLOYEE_LOCATION_FAILURE",
 )<EditEmployeeLocationData, undefined, FormError[]>();
 
-export const removeEmployeeLocationAsync = createAsyncAction(
-  "REMOVE_EMPLOYEE_LOCATION_REQUEST",
-  "REMOVE_EMPLOYEE_LOCATION_SUCCESS",
-  "REMOVE_EMPLOYEE_LOCATION_FAILURE",
-)<string, undefined, string>();
+// export const removeEmployeeLocationAsync = createAsyncAction(
+//   "REMOVE_EMPLOYEE_LOCATION_REQUEST",
+//   "REMOVE_EMPLOYEE_LOCATION_SUCCESS",
+//   "REMOVE_EMPLOYEE_LOCATION_FAILURE",
+// )<string, undefined, string>();
 
 export const openLocationAssignForm = createAction(
   "OPEN_LOCATIONS_ASSIGN_FORM",
@@ -158,8 +158,22 @@ export const closeAbsenceUpdateModal = createAction(
   "CLOSE_ABSENCE_UPDATE_MODAL",
 )();
 
-export const openAbsenceCreateForm = createAction("OPEN_ABSENCE_CREATE_FORM")();
-
-export const closeAbsenceCreateForm = createAction(
-  "CLOSE_ABSENCE_CREATE_FORM",
+export const openAbsenceCreateModal = createAction(
+  "OPEN_ABSENCE_CREATE_MODAL",
 )();
+
+export const closeAbsenceCreateModal = createAction(
+  "CLOSE_ABSENCE_CREATE_MODAL",
+)();
+
+export const openCreateNoteModal = createAction("OPEN_CREATE_NOTE_MODAL")();
+
+export const closeCreateNoteModal = createAction("CLOSE_CREATE_NOTE_MODAL")();
+
+export const openApplySalaryModal = createAction("OPEN_APPLY_SALARY_MODAL")();
+
+export const closeApplySalaryModal = createAction("CLOSE_APPLY_SALARY_MODAL")();
+
+export const openAddPositionModal = createAction("OPEN_ADD_POSITION_MODAL")();
+
+export const closeAddPositionModal = createAction("CLOSE_ADD_POSITION_MODAL")();
