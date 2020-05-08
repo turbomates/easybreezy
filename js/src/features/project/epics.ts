@@ -202,7 +202,7 @@ export const createProjectTeam: RootEpic = (action$, state$, { api }) =>
                 createProjectTeamAsync.success(),
                 closeProjectTeamCreateFormAction(),
                 fetchProjectAsync.request(
-                  state$.value.project.project.project!.slug,
+                  state$.value.project.project.data!.slug,
                 ),
               ]
             : [createProjectTeamAsync.failure(result.errors)],
