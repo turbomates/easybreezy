@@ -12,7 +12,7 @@ import {
 } from "../features/project/actions";
 import {
   getErrors,
-  getIsOpenProjectTeamCreateForm,
+  getIsOpenCreateTeamForm,
   getProject,
 } from "../features/project/selectors";
 import { ProjectTeamsList } from "../features/project/components/ProjectTeamsList";
@@ -47,8 +47,8 @@ export const ProjectTeamsPage: React.FC = () => {
 
   const project = useSelector(getProject);
   const errors = useSelector(getErrors);
-  const isOpenProjectTeamCreateForm = useSelector(
-    getIsOpenProjectTeamCreateForm,
+  const isOpenTeamCreateForm = useSelector(
+    getIsOpenCreateTeamForm,
   );
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export const ProjectTeamsPage: React.FC = () => {
 
       <Modal
         title="Create team"
-        visible={isOpenProjectTeamCreateForm}
+        visible={isOpenTeamCreateForm}
         onCancel={closeProjectTeamCreateForm}
         footer={null}
       >

@@ -3,6 +3,7 @@ import { List, Tooltip, Select } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 
 import { ProjectTeamMember, Role } from "ProjectModels";
+import { getMemberRoleName } from "../../helpers";
 
 interface Props {
   name: string;
@@ -23,14 +24,13 @@ export const TeamMembersListItem: React.FC<Props> = ({
     </Tooltip>,
   ];
 
-  function getRole() {
-    return roles.find((role) => role.id === member.role)?.name;
-  }
-
   return (
     <List.Item actions={actions}>
       <List.Item.Meta title={name} />
-      <Select defaultValue={getRole()} style={{ width: 120 }}>
+      <Select
+        defaultValue={getMemberRoleName(roles, member.role)}
+        style={{ width: 120 }}
+      >
         {roles.map((role) => (
           <Option value={role.id} key={role.id}>
             {role.name}

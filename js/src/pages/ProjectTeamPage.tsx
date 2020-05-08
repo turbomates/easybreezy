@@ -34,8 +34,11 @@ export const ProjectTeamPage: React.FC = () => {
 
   useEffect(() => {
     fetchProjectTeam(id);
+  }, [id, fetchProjectTeam]);
+
+  useEffect(() => {
     fetchProject(slug);
-  }, [id, slug, fetchProjectTeam, fetchProject]);
+  }, [slug, fetchProject]);
 
   if (!project || project.slug !== slug) return null;
 

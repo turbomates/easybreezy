@@ -6,13 +6,13 @@ import { fetchProjectTeamAsync } from "./actions";
 import { normalizeErrors } from "../../utils/error";
 
 export interface State {
-  team: ProjectTeam | null;
+  data: ProjectTeam | null;
   loading: boolean;
   errors: FormErrorMap;
 }
 
 const initialState: State = {
-  team: null,
+  data: null,
   loading: false,
   errors: {},
 };
@@ -24,7 +24,7 @@ export const reducer = createReducer<State>(initialState)
   }))
   .handleAction(fetchProjectTeamAsync.success, (state, action) => ({
     ...state,
-    team: action.payload,
+    data: action.payload,
     loading: false,
   }))
   .handleAction(fetchProjectTeamAsync.failure, (state, action) => ({
