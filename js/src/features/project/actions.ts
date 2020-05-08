@@ -13,7 +13,9 @@ import {
   ProjectsRequest,
   RolePermissions,
   EditProjectSlugRequest,
-  CreateProjectTeamRequest, ProjectTeam,
+  CreateProjectTeamRequest,
+  ProjectTeam,
+  EditProjectTeamMemberRoleRequest,
 } from "ProjectModels"
 
 //PROJECT
@@ -105,7 +107,13 @@ export const closeProjectTeamCreateFormAction = createAction(
 )();
 
 export const fetchProjectTeamAsync = createAsyncAction(
-  "FETCH_TEAM_REQUEST",
-  "FETCH_TEAM_SUCCESS",
-  "FETCH_TEAM_FAILED",
-)<string, ProjectTeam, any>();
+  "FETCH_PROJECT_TEAM_REQUEST",
+  "FETCH_PROJECT_TEAM_SUCCESS",
+  "FETCH_PROJECT_TEAM_FAILED",
+)<string, ProjectTeam, FormError[]>();
+
+export const editProjectTeamMemberRoleAsync = createAsyncAction(
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_REQUEST",
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_SUCCESS",
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_FAILED"
+)<EditProjectTeamMemberRoleRequest, undefined, FormError[]>()

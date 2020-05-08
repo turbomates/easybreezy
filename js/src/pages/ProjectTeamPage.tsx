@@ -6,10 +6,12 @@ import { useParams } from "react-router";
 
 import { TeamMembersList } from "../features/project/components/Team/TeamMembersList";
 import {
+  editProjectTeamMemberRoleAsync,
   fetchProjectAsync,
   fetchProjectTeamAsync,
 } from "../features/project/actions";
 import { getProject, getProjectTeam } from "../features/project/selectors";
+import { EditProjectTeamMemberRoleRequest } from "ProjectModels";
 
 export const ProjectTeamPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -25,6 +27,13 @@ export const ProjectTeamPage: React.FC = () => {
   const fetchProject = useCallback(
     (slug: string) => {
       dispatch(fetchProjectAsync.request(slug));
+    },
+    [dispatch],
+  );
+
+  const editMemberRole = useCallback(
+    (value: EditProjectTeamMemberRoleRequest) => {
+      dispatch(editProjectTeamMemberRoleAsync.request(value));
     },
     [dispatch],
   );
@@ -48,7 +57,12 @@ export const ProjectTeamPage: React.FC = () => {
     <Row gutter={10} className="content">
       <Col lg={12} md={24} xs={24}>
         <Card title="Team" extra={<PlusOutlined />}>
-          <TeamMembersList members={team.members} roles={project.roles} />
+          <TeamMembersList
+            members={team.members}
+            roles={project.roles}
+            edit={editMemberRole}
+            teamId={team.id}
+          />
         </Card>
       </Col>
     </Row>

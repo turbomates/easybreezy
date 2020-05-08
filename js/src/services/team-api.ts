@@ -1,6 +1,10 @@
 import { api } from "./api";
 import { FormFailure, Success } from "MyTypes";
-import { CreateProjectTeamRequest, ProjectTeam } from "ProjectModels";
+import {
+  CreateProjectTeamRequest,
+  EditProjectTeamMemberRoleRequest,
+  ProjectTeam,
+} from "ProjectModels";
 
 export const createTeam = (body: CreateProjectTeamRequest) =>
   api
@@ -18,6 +22,19 @@ export const fetchTeam = (id: string) =>
       success: true,
       data: resp.data,
     }))
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
+
+export const editMemberRole = ({
+  memberId,
+  newRoleId,
+  teamId,
+}: EditProjectTeamMemberRoleRequest) =>
+  api
+    .post(`/teams/${teamId}/members/${memberId}/change-role`, { newRoleId })
+    .then<Success<null>>(() => ({ success: true, data: null }))
     .catch<FormFailure>((resp) => ({
       success: false,
       errors: resp?.response?.data?.errors || [],

@@ -100,4 +100,10 @@ declare module "ProjectModels" {
     email: string;
     role: string;
   }
+
+  export interface EditProjectTeamMemberRoleRequest {
+    newRoleId: string;
+    teamId: string;
+    memberId: string;
+  }
 }
