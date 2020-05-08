@@ -16,4 +16,7 @@ export const getRolePermissions = (state: RootState) =>
   state.project.project.rolePermissions;
 
 export const getIsOpenProjectTeamCreateForm = (state: RootState) =>
-  state.project.project.isOpenProjectTeamCreateForm
+  state.project.project.isOpenProjectTeamCreateForm;
+
+export const getProjectTeam = (state: RootState) =>
+  state.project.team.team;

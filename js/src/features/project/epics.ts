@@ -16,6 +16,7 @@ import {
   editProjectSlugAsync,
   createProjectTeamAsync,
   closeProjectTeamCreateFormAction,
+  fetchProjectTeamAsync,
 } from "./actions";
 import { push } from "connected-react-router";
 
@@ -207,6 +208,21 @@ export const createProjectTeam: RootEpic = (action$, state$, { api }) =>
             : [createProjectTeamAsync.failure(result.errors)],
         ),
         catchError((message) => of(createProjectTeamAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const fetchProjectTeam: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchProjectTeamAsync.request)),
+    switchMap((action) =>
+      from(api.team.fetchTeam(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? fetchProjectTeamAsync.success(result.data.data)
+            : fetchProjectTeamAsync.failure(result.errors),
+        ),
+        catchError((message) => of(fetchProjectTeamAsync.failure(message))),
       ),
     ),
   );

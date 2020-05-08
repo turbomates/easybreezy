@@ -85,4 +85,19 @@ declare module "ProjectModels" {
     name: string;
     project: string;
   }
+
+  export interface ProjectTeam {
+    id: string;
+    name: string;
+    status: ProjectTeamStatus;
+    members?: ProjectTeamMember[];
+  }
+
+  export type ProjectTeamStatus = "Active" | "Close";
+
+  export interface ProjectTeamMember {
+    user: string;
+    email: string;
+    role: string;
+  }
 }
