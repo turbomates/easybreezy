@@ -2,19 +2,25 @@ import { createReducer } from "typesafe-actions";
 
 import { ProjectTeam } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
-import { fetchProjectTeamAsync } from "./actions";
+import {
+  closeProjectTeamAddMemberFormAction,
+  fetchProjectTeamAsync,
+  openProjectTeamAddMemberFormAction,
+} from "./actions";
 import { normalizeErrors } from "../../utils/error";
 
 export interface State {
   data: ProjectTeam | null;
   loading: boolean;
   errors: FormErrorMap;
+  isOpenAddMemberForm: boolean;
 }
 
 const initialState: State = {
   data: null,
   loading: false,
   errors: {},
+  isOpenAddMemberForm: false,
 };
 
 export const reducer = createReducer<State>(initialState)
@@ -31,4 +37,12 @@ export const reducer = createReducer<State>(initialState)
     ...state,
     loading: false,
     errors: normalizeErrors(action.payload),
+  }))
+  .handleAction(openProjectTeamAddMemberFormAction, (state, action) => ({
+    ...state,
+    isOpenAddMemberForm: true,
+  }))
+  .handleAction(closeProjectTeamAddMemberFormAction, (state, action) => ({
+    ...state,
+    isOpenAddMemberForm: false,
   }));

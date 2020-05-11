@@ -20,3 +20,11 @@ export const getIsOpenCreateTeamForm = (state: RootState) =>
 
 export const getProjectTeam = (state: RootState) =>
   state.project.team.data;
+
+export const getIsOpenTeamAddMemberForm = (state: RootState) =>
+  state.project.team.isOpenAddMemberForm
+
+export const getTeamErrors = (state: RootState) => state.project.team.errors;
+
+export const getEmployees = (state: RootState) => state.humanResource.employees.items;
+

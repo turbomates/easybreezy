@@ -16,7 +16,11 @@ import {
   CreateProjectTeamRequest,
   ProjectTeam,
   EditProjectTeamMemberRoleRequest,
-} from "ProjectModels"
+  RemoveProjectTeamMemberRequest,
+  AddProjectTeamMemberRequest,
+  ChangeProjectTeamStatusRequest,
+} from "ProjectModels";
+import { EmployeeShort } from "HumanResourceModels";
 
 //PROJECT
 export const fetchProjectAsync = createAsyncAction(
@@ -115,5 +119,37 @@ export const fetchProjectTeamAsync = createAsyncAction(
 export const editProjectTeamMemberRoleAsync = createAsyncAction(
   "EDIT_PROJECT_TEAM_MEMBER_ROLE_REQUEST",
   "EDIT_PROJECT_TEAM_MEMBER_ROLE_SUCCESS",
-  "EDIT_PROJECT_TEAM_MEMBER_ROLE_FAILED"
-)<EditProjectTeamMemberRoleRequest, undefined, FormError[]>()
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_FAILED",
+)<EditProjectTeamMemberRoleRequest, undefined, FormError[]>();
+
+export const removeProjectTeamMemberAsync = createAsyncAction(
+  "REMOVE_PROJECT_TEAM_MEMBER_REQUEST",
+  "REMOVE_PROJECT_TEAM_MEMBER_SUCCESS",
+  "REMOVE_PROJECT_TEAM_MEMBER_FAILED",
+)<RemoveProjectTeamMemberRequest, undefined, FormError[]>();
+
+export const addProjectTeamMemberAsync = createAsyncAction(
+  "ADD_PROJECT_TEAM_MEMBER_REQUEST",
+  "ADD_PROJECT_TEAM_MEMBER_SUCCESS",
+  "ADD_PROJECT_TEAM_MEMBER_FAILED",
+)<AddProjectTeamMemberRequest, undefined, FormError[]>();
+
+export const openProjectTeamAddMemberFormAction = createAction(
+  "OPEN_PROJECT_TEAM_ADD_MEMBER_FORM",
+)();
+
+export const closeProjectTeamAddMemberFormAction = createAction(
+  "CLOSE_PROJECT_TEAM_ADD_MEMBER_FORM",
+)();
+
+export const changeProjectTeamStatusAsync = createAsyncAction(
+  "CHANGE_PROJECT_TEAM_STATUS_REQUEST",
+  "CHANGE_PROJECT_TEAM_STATUS_SUCCESS",
+  "CHANGE_PROJECT_TEAM_STATUS_FAILED",
+)<ChangeProjectTeamStatusRequest, undefined, FormError[]>();
+
+export const fetchEmployeesAsync = createAsyncAction(
+  "FETCH_EMPLOYEES_REQUEST",
+  "FETCH_EMPLOYEES_SUCCESS",
+  "FETCH_EMPLOYEES_FAILURE",
+)<undefined, Paging<EmployeeShort>, string>();

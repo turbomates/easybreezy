@@ -89,16 +89,16 @@ declare module "ProjectModels" {
   export interface ProjectTeam {
     id: string;
     name: string;
-    status: ProjectTeamStatus;
+    status: ProjectTeamStatusResponse;
     members?: ProjectTeamMember[];
   }
-
-  export type ProjectTeamStatus = "Active" | "Close";
 
   export interface ProjectTeamMember {
     user: string;
     email: string;
     role: string;
+    last: string;
+    first: string;
   }
 
   export interface EditProjectTeamMemberRoleRequest {
@@ -106,4 +106,23 @@ declare module "ProjectModels" {
     teamId: string;
     memberId: string;
   }
+
+  export interface RemoveProjectTeamMemberRequest {
+    teamId: string;
+    memberId: string;
+  }
+
+  export interface AddProjectTeamMemberRequest {
+    role: string;
+    user: string;
+    teamId: string;
+  }
+
+  export interface ChangeProjectTeamStatusRequest {
+    teamId: string;
+    status: ProjectTeamStatusRequest;
+  }
+
+  export type ProjectTeamStatusResponse = "Active" | "Closed";
+  export type ProjectTeamStatusRequest = "activate" | "close";
 }
