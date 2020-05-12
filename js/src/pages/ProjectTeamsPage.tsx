@@ -69,10 +69,11 @@ export const ProjectTeamsPage: React.FC = () => {
       </Col>
 
       <Modal
-        title="Create team"
+        title="New team"
         visible={isOpenTeamCreateForm}
         onCancel={closeProjectTeamCreateForm}
         footer={null}
+        destroyOnClose={true}
       >
         <ProjectTeamsCreateForm
           projectId={project.id}

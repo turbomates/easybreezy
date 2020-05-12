@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect } from "react";
-import { Card, Col, Modal, Row } from "antd";
+import { Card, Col, List, Modal, Row } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import { TeamMembersList } from "../features/project/components/Team/TeamMembersList";
 import {
   addProjectTeamMemberAsync,
   changeProjectTeamStatusAsync,
   closeProjectTeamAddMemberFormAction,
   editProjectTeamMemberRoleAsync,
-  fetchEmployeesAsync,
   fetchProjectAsync,
   fetchProjectTeamAsync,
   openProjectTeamAddMemberFormAction,
@@ -21,7 +19,6 @@ import {
   getIsOpenTeamAddMemberForm,
   getProject,
   getProjectTeam,
-  getTeamErrors,
 } from "../features/project/selectors";
 import {
   AddProjectTeamMemberRequest,
@@ -30,7 +27,9 @@ import {
   RemoveProjectTeamMemberRequest,
 } from "ProjectModels";
 import { TeamAddMemberForm } from "../features/project/components/Team/TeamAddMemberForm";
-import { TeamChangeStatusForm } from "../features/project/components/Team/TeamChangeStatusForm";
+import { TeamMembersListItem } from "../features/project/components/Team/TeamMembersListItem";
+import { fetchEmployeesAsync } from "../features/human-resouce/actions";
+import { TeamChangeStatus } from "../features/project/components/Team/TeamChangeStatus";
 
 export const ProjectTeamPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -80,8 +79,8 @@ export const ProjectTeamPage: React.FC = () => {
   );
 
   const changeStatus = useCallback(
-    (form: ChangeProjectTeamStatusRequest) => {
-      dispatch(changeProjectTeamStatusAsync.request(form));
+    (value: ChangeProjectTeamStatusRequest) => {
+      dispatch(changeProjectTeamStatusAsync.request(value));
     },
     [dispatch],
   );
@@ -93,7 +92,6 @@ export const ProjectTeamPage: React.FC = () => {
   const team = useSelector(getProjectTeam);
   const project = useSelector(getProject);
   const isOpenTeamAddMemberForm = useSelector(getIsOpenTeamAddMemberForm);
-  const errors = useSelector(getTeamErrors);
   const employees = useSelector(getEmployees);
 
   useEffect(() => {
@@ -114,31 +112,50 @@ export const ProjectTeamPage: React.FC = () => {
 
   return (
     <Row gutter={10} className="content">
-      <Col lg={12} md={24} xs={24}>
-        <Card title="Team" extra={<PlusOutlined onClick={openAddMemberForm} />}>
-          <TeamMembersList
-            members={team.members}
-            roles={project.roles}
-            edit={editMemberRole}
-            teamId={team.id}
-            remove={removeMember}
+      <Col xl={14} lg={24} md={24} xs={24}>
+        <Card
+          title={team.name}
+          extra={<PlusOutlined onClick={openAddMemberForm} />}
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={team.members}
+            renderItem={(item) => (
+              <TeamMembersListItem
+                roles={project.roles}
+                member={item}
+                edit={editMemberRole}
+                teamId={team.id}
+                remove={removeMember}
+              />
+            )}
           />
         </Card>
-      </Col>
 
-      <Col lg={12} md={24} xs={24}>
-        <Card title="Status">
-          <TeamChangeStatusForm
-            status={team.status}
-            teamId={team.id}
-            change={changeStatus}
-            errors={errors}
-          />
+        <Card>
+          {team.status === "Active" ? (
+            <TeamChangeStatus
+              description="Access to tasks is closed. Can be restored when needed."
+              type="danger"
+              btnText="Deactivate team"
+              onChange={() =>
+                changeStatus({ teamId: team.id, status: "close" })
+              }
+            />
+          ) : (
+            <TeamChangeStatus
+              description="Open access to development."
+              type="primary"
+              btnText="Activate team"
+              onChange={() =>
+                changeStatus({ teamId: team.id, status: "activate" })
+              }
+            />
+          )}
         </Card>
       </Col>
-
       <Modal
-        title="Add member"
+        title="New team member"
         visible={isOpenTeamAddMemberForm}
         onCancel={closeAddMemberForm}
         footer={null}

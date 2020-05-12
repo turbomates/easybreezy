@@ -1,7 +1,6 @@
 import { RootState } from "MyTypes";
 
-export const getProjects = (state: RootState) =>
-  state.project.projects.list;
+export const getProjects = (state: RootState) => state.project.projects.list;
 
 export const getProject = (state: RootState) => state.project.project.data;
 
@@ -18,13 +17,15 @@ export const getRolePermissions = (state: RootState) =>
 export const getIsOpenCreateTeamForm = (state: RootState) =>
   state.project.project.isOpenCreateTeamForm;
 
-export const getProjectTeam = (state: RootState) =>
-  state.project.team.data;
+export const getProjectTeam = (state: RootState) => state.project.team.data;
 
 export const getIsOpenTeamAddMemberForm = (state: RootState) =>
-  state.project.team.isOpenAddMemberForm
+  state.project.team.isOpenAddMemberForm;
 
 export const getTeamErrors = (state: RootState) => state.project.team.errors;
 
-export const getEmployees = (state: RootState) => state.humanResource.employees.items;
-
+export const getEmployees = (state: RootState) =>
+  state.humanResource.employees.items.map((emp) => ({
+    value: emp.userId,
+    label: `${emp.firstName} ${emp.lastName}`,
+  }));

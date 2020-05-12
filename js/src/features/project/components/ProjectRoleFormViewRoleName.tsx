@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-interface Props {
+type Props = {
   name: string;
   removeRole: () => void;
   openInputRole: () => void;

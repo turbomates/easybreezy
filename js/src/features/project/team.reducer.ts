@@ -9,7 +9,7 @@ import {
 } from "./actions";
 import { normalizeErrors } from "../../utils/error";
 
-export interface State {
+export type State = {
   data: ProjectTeam | null;
   loading: boolean;
   errors: FormErrorMap;

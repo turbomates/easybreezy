@@ -10,7 +10,7 @@ import { FormErrorMap, Paging } from "MyTypes";
 import { normalizeErrors } from "utils/error";
 import { ProjectList } from "ProjectModels";
 
-export interface State {
+export type State = {
   list: Paging<ProjectList> | null;
   isOpenCreateForm: boolean;
   loading: boolean;

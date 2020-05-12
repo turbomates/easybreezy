@@ -1,17 +1,24 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Form, Select } from "antd";
 
 import { AddProjectTeamMemberRequest, Role } from "ProjectModels";
-import { EmployeeShort } from "HumanResourceModels";
+import { Choice } from "MyTypes";
 
-interface Props {
+const { Option } = Select;
+
+type Props = {
   teamId: string;
   roles: Role[];
   add: (form: AddProjectTeamMemberRequest) => void;
-  employees: EmployeeShort[];
+  employees: Choice[];
 }
 
-const { Option } = Select;
+const formItemLayout = {
+  labelCol: { span: 4 },
+};
+const formTailLayout = {
+  wrapperCol: { span: 8, offset: 4 },
+};
 
 export const TeamAddMemberForm: React.FC<Props> = ({
   teamId,
@@ -20,18 +27,7 @@ export const TeamAddMemberForm: React.FC<Props> = ({
   employees,
 }) => {
   const [form] = Form.useForm();
-  const [searchResult, setSearchResult] = useState<
-    { label: string; value: string }[]
-  >([]);
-
-  const users = useMemo(
-    () =>
-      employees.map((emp) => ({
-        value: emp.userId,
-        label: `${emp.firstName} ${emp.lastName}`,
-      })),
-    [employees],
-  );
+  const [searchResult, setSearchResult] = useState<Choice[]>([]);
 
   const onFinish = useCallback(
     (values) =>
@@ -43,10 +39,6 @@ export const TeamAddMemberForm: React.FC<Props> = ({
     [add, teamId],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   const onSearch = (searchText: string) => {
     const name = searchText.trim();
 
@@ -55,28 +47,24 @@ export const TeamAddMemberForm: React.FC<Props> = ({
       return;
     }
 
-    const result = users.filter((employee) => employee.label.includes(name));
-
-    setSearchResult(result);
+    setSearchResult(
+      employees.filter((employee) => employee.label.includes(name)),
+    );
   };
 
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 8 }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-    >
+    <Form form={form} {...formItemLayout} onFinish={onFinish}>
       <Form.Item
         label="User"
         name="user"
-        rules={[{ required: true, message: "Please input user!" }]}
+        rules={[{ required: true, message: "Please input user" }]}
       >
         <Select
-          onSearch={onSearch}
           showSearch
-          showArrow={false}
+          onSearch={onSearch}
           filterOption={false}
+          notFoundContent={null}
+          showArrow={false}
         >
           {searchResult.map(({ label, value }) => (
             <Option value={value} key={value}>
@@ -89,7 +77,7 @@ export const TeamAddMemberForm: React.FC<Props> = ({
       <Form.Item
         label="Role"
         name="role"
-        rules={[{ required: true, message: "Please input role!" }]}
+        rules={[{ required: true, message: "Please input role" }]}
       >
         <Select>
           {roles.map((role) => (
@@ -100,7 +88,7 @@ export const TeamAddMemberForm: React.FC<Props> = ({
         </Select>
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item {...formTailLayout}>
         <Button type="primary" htmlType="submit">
           Add
         </Button>

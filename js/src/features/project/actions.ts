@@ -20,7 +20,6 @@ import {
   AddProjectTeamMemberRequest,
   ChangeProjectTeamStatusRequest,
 } from "ProjectModels";
-import { EmployeeShort } from "HumanResourceModels";
 
 //PROJECT
 export const fetchProjectAsync = createAsyncAction(
@@ -147,9 +146,3 @@ export const changeProjectTeamStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_TEAM_STATUS_SUCCESS",
   "CHANGE_PROJECT_TEAM_STATUS_FAILED",
 )<ChangeProjectTeamStatusRequest, undefined, FormError[]>();
-
-export const fetchEmployeesAsync = createAsyncAction(
-  "FETCH_EMPLOYEES_REQUEST",
-  "FETCH_EMPLOYEES_SUCCESS",
-  "FETCH_EMPLOYEES_FAILURE",
-)<undefined, Paging<EmployeeShort>, string>();

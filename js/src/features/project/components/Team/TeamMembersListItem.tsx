@@ -10,15 +10,15 @@ import {
 } from "ProjectModels";
 import { getMemberRoleName } from "../../helpers";
 
-interface Props {
+const { Option } = Select;
+
+type Props = {
   roles: Role[];
   member: ProjectTeamMember;
   edit: (value: EditProjectTeamMemberRoleRequest) => void;
   remove: (value: RemoveProjectTeamMemberRequest) => void;
   teamId: string;
-}
-
-const { Option } = Select;
+};
 
 export const TeamMembersListItem: React.FC<Props> = ({
   roles,
@@ -28,7 +28,7 @@ export const TeamMembersListItem: React.FC<Props> = ({
   remove,
 }) => {
   const actions = [
-    <Tooltip title="Dismiss">
+    <Tooltip title="Remove">
       <CloseCircleOutlined
         onClick={() => remove({ memberId: member.user, teamId })}
       />
@@ -43,7 +43,7 @@ export const TeamMembersListItem: React.FC<Props> = ({
       />
       <Select
         defaultValue={getMemberRoleName(roles, member.role)}
-        style={{ width: 120 }}
+        style={{ width: 200 }}
         onChange={(newRoleId) => {
           edit({
             newRoleId,

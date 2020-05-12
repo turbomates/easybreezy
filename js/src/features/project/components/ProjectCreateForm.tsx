@@ -6,7 +6,7 @@ import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { CreateProjectRequest } from "ProjectModels";
 import { convertToSlug } from "../helpers";
 
-interface Props {
+type Props = {
   create: (form: CreateProjectRequest) => void;
   errors: FormErrorMap;
   loading: boolean;

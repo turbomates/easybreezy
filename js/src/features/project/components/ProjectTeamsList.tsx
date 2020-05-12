@@ -4,7 +4,7 @@ import { List } from "antd";
 import { Team } from "ProjectModels";
 import { ProjectTeamsListItem } from "./ProjectTeamsListItem";
 
-interface Props {
+type Props = {
   teams: Team[];
   slug: string;
 }

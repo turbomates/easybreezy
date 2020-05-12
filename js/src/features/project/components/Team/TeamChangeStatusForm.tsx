@@ -1,42 +1,31 @@
 import React, { useCallback, useMemo } from "react";
 import { Form, Select } from "antd";
 
-import { ChangeProjectTeamStatusRequest } from "ProjectModels";
+import { ProjectTeamStatusRequest } from "ProjectModels";
 import { useFormServerErrors } from "../../../../hooks/useFormServerErrors";
 import { switchProjectTeamStatus } from "../../helpers";
 import { FormErrorMap } from "MyTypes";
 
-interface Props {
-  status: string;
-  teamId: string;
-  change: (form: ChangeProjectTeamStatusRequest) => void;
-  errors: FormErrorMap;
-}
-
 const { Option } = Select;
 
+type Props = {
+  status: string;
+  onChange: (status: ProjectTeamStatusRequest) => void;
+  errors: FormErrorMap;
+};
+
 export const TeamChangeStatusForm: React.FC<Props> = ({
-  teamId,
   status,
-  change,
+  onChange,
   errors,
 }) => {
   const initialValues = useMemo(() => ({ status }), [status]);
   const [form] = Form.useForm();
 
   const onFinish = useCallback(
-    (values: any) => {
-      change({
-        status: switchProjectTeamStatus(values),
-        teamId,
-      });
-    },
-    [change, teamId],
+    (values: any) => onChange(switchProjectTeamStatus(values)),
+    [onChange],
   );
-
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
 
   useFormServerErrors(form, errors, ["status"]);
 
@@ -45,15 +34,14 @@ export const TeamChangeStatusForm: React.FC<Props> = ({
       form={form}
       labelCol={{ span: 2 }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       initialValues={initialValues}
     >
-      <Form.Item name="status">
+      <Form.Item name="status" className="status-form__select">
         <Select onChange={onFinish}>
-          <Option value="Active">
+          <Option value="Active" className="status-form__option">
             <span>Activate</span>
           </Option>
-          <Option value="Closed">
+          <Option value="Closed" className="status-form__option">
             <span>Close</span>
           </Option>
         </Select>

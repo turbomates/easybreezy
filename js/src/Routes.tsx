@@ -36,7 +36,7 @@ export const Routes: React.FC = () => {
         <Route path="/users/:id" component={UserDetailsPage} />
         <Route path="/locations" component={LocationsPage} />
         <Route path="/projects" component={ProjectsPage} exact />
-        <Route path="/projects/:slug?">
+        <Route path="/projects/:slug">
           <Project>
             <Switch>
               <Route

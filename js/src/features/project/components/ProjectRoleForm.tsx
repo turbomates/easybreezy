@@ -15,7 +15,7 @@ import { ProjectRoleFormViewRoleName } from "./ProjectRoleFormViewRoleName";
 
 import "./ProjectRoleForm.scss";
 
-interface Props {
+type Props = {
   project: Project;
   create: (form: CreateProjectRoleRequest) => void;
   edit: (form: EditProjectRoleRequest) => void;
@@ -23,13 +23,13 @@ interface Props {
   rolePermissions: RolePermissions;
 }
 
-export interface FormField {
+export type FormField = {
   id: string;
   name: string;
   permissions: string[];
 }
 
-interface Form {
+type Form = {
   [key: string]: FormField;
 }
 

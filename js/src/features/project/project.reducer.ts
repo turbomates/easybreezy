@@ -14,7 +14,7 @@ import { FormErrorMap } from "MyTypes";
 import { normalizeErrors } from "utils/error";
 import { Project, RolePermissions } from "ProjectModels";
 
-export interface State {
+export type State = {
   data: Project | null;
   loading: boolean;
   errors: FormErrorMap;

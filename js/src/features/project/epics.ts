@@ -274,10 +274,13 @@ export const changeProjectTeamStatus: RootEpic = (action$, state$, { api }) =>
     filter(isActionOf(changeProjectTeamStatusAsync.request)),
     switchMap((action) =>
       from(api.team.changeStatus(action.payload)).pipe(
-        map((result) =>
+        mergeMap((result) =>
           result.success
-            ? changeProjectTeamStatusAsync.success()
-            : changeProjectTeamStatusAsync.failure(result.errors),
+            ? [
+                changeProjectTeamStatusAsync.success(),
+                fetchProjectTeamAsync.request(action.payload.teamId),
+              ]
+            : [changeProjectTeamStatusAsync.failure(result.errors)],
         ),
         catchError((message) =>
           of(changeProjectTeamStatusAsync.failure(message)),

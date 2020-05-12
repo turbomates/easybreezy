@@ -5,7 +5,7 @@ import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { EditProjectSlugRequest, Project } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
 
-interface Props {
+type Props = {
   project: Project;
   edit: (form: EditProjectSlugRequest) => void;
   close: () => void;

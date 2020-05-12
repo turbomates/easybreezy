@@ -11,7 +11,7 @@ import { ProjectList as IProjectList, ProjectsRequest } from "ProjectModels";
 
 import "../project.scss";
 
-interface Props {
+type Props = {
   projects: IPaging<IProjectList> | null;
   fetchProjects: (params: ProjectsRequest) => void;
   openCreateForm: () => void;

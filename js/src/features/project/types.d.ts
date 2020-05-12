@@ -2,19 +2,19 @@ declare module "ProjectModels" {
   export type ProjectStatusTypeResponse = "Active" | "Closed" | "Suspended";
   export type ProjectStatusTypeRequest = "activate" | "close" | "suspend";
 
-  export interface ProjectResponse {
+  export type ProjectResponse = {
     data: Project;
-  }
+  };
 
-  export interface ProjectList {
+  export type ProjectList = {
     id: string;
     slug: string;
     name: string;
     status: ProjectStatusTypeResponse;
     description: string;
-  }
+  };
 
-  export interface Project {
+  export type Project = {
     id: string;
     slug: string;
     name: string;
@@ -22,106 +22,106 @@ declare module "ProjectModels" {
     description: string;
     roles: Role[];
     teams: Team[];
-  }
+  };
 
-  interface Role {
+  type Role = {
     id: string;
     name: string;
     permissions: RolePermissions;
-  }
+  };
 
-  interface Team {
+  type Team = {
     id: string;
     name: string;
-  }
+  };
 
-  export interface EditProjectStatusRequest {
+  export type EditProjectStatusRequest = {
     statusType: ProjectStatusTypeRequest;
     slug: string;
-  }
+  };
 
-  export interface CreateProjectRoleRequest {
+  export type CreateProjectRoleRequest = {
     slug: string;
     roles: {
       name: string;
       permissions: string[];
     };
-  }
+  };
 
-  export interface EditProjectRoleRequest {
+  export type EditProjectRoleRequest = {
     slug: string;
     roles: Role;
-  }
+  };
 
-  export interface RemoveProjectRoleRequest {
+  export type RemoveProjectRoleRequest = {
     slug: string;
     roleId: string;
-  }
+  };
 
-  export interface CreateProjectRequest {
+  export type CreateProjectRequest = {
     name: string;
     description: string;
     slug: string;
-  }
+  };
 
-  export interface EditProjectDescriptionRequest {
+  export type EditProjectDescriptionRequest = {
     slug: string;
     description: string;
-  }
+  };
 
-  export interface ProjectsRequest {
+  export type ProjectsRequest = {
     pageSize?: number;
     currentPage?: number;
-  }
+  };
 
   export type RolePermissions = string[];
 
-  export interface EditProjectSlugRequest {
+  export type EditProjectSlugRequest = {
     newSlug: string;
     slug: string;
-  }
+  };
 
-  export interface CreateProjectTeamRequest {
+  export type CreateProjectTeamRequest = {
     name: string;
     project: string;
-  }
+  };
 
-  export interface ProjectTeam {
+  export type ProjectTeam = {
     id: string;
     name: string;
     status: ProjectTeamStatusResponse;
-    members?: ProjectTeamMember[];
-  }
+    members: ProjectTeamMember[];
+  };
 
-  export interface ProjectTeamMember {
+  export type ProjectTeamMember = {
     user: string;
     email: string;
     role: string;
     last: string;
     first: string;
-  }
+  };
 
-  export interface EditProjectTeamMemberRoleRequest {
+  export type EditProjectTeamMemberRoleRequest = {
     newRoleId: string;
     teamId: string;
     memberId: string;
-  }
+  };
 
-  export interface RemoveProjectTeamMemberRequest {
+  export type RemoveProjectTeamMemberRequest = {
     teamId: string;
     memberId: string;
-  }
+  };
 
-  export interface AddProjectTeamMemberRequest {
+  export type AddProjectTeamMemberRequest = {
     role: string;
     user: string;
     teamId: string;
-  }
+  };
 
-  export interface ChangeProjectTeamStatusRequest {
+  export type ChangeProjectTeamStatusRequest = {
     teamId: string;
     status: ProjectTeamStatusRequest;
-  }
+  };
 
   export type ProjectTeamStatusResponse = "Active" | "Closed";
   export type ProjectTeamStatusRequest = "activate" | "close";

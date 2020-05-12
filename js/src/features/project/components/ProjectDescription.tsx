@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "antd";
 
-interface Props {
+type Props = {
   description?: string;
   openProjectDescriptionForm: () => void;
 }
