@@ -30,6 +30,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var activities by Users.activities
     private var status by Users.status
     private var token by Users.token
+    private var username by Users.username
     private var createdAt by Users.createdAt
     private var name by Users.name
     private var comment by Users.comment
@@ -39,6 +40,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         this.password = password
         this.status = Status.ACTIVE
         this.name = Name.create(firstName, lastName)
+        this.username = this.name.generateUsername()
         resetToken()
 
         this.addEvent(Confirmed(this.id.value, firstName, lastName))
@@ -95,6 +97,7 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             return User.new {
                 this.email = email
                 this.name = name
+                this.username = name.generateUsername()
                 this.activities = activities
                 this.status = Status.PENDING
             }
@@ -116,6 +119,10 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 name.last = lastName
                 return name
             }
+        }
+
+        fun generateUsername(): String {
+            return (first + "_" + last).toLowerCase()
         }
     }
 
@@ -149,6 +156,7 @@ object Users : UUIDTable() {
     val name = embedded<User.Name>(NameTable)
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val comment = text("comment").nullable()
+    val username = varchar("username", 25).nullable()
 }
 
 object NameTable : EmbeddableTable() {

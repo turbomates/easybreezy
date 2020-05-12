@@ -18,7 +18,7 @@ class Priority private constructor() : Embeddable() {
         fun neutral(): Priority {
             val priority = Priority()
             priority.value = 0
-
+            priority.color = Color.WHITE
             return priority
         }
 
@@ -43,16 +43,26 @@ class Priority private constructor() : Embeddable() {
             return priority
         }
 
-        fun highest(lastHighest: Int): Priority {
+        fun highest(lastHighest: Int?): Priority {
             val priority = Priority()
-            priority.value = lastHighest + 1
+            if (lastHighest == null) {
+                priority.value = 1
+            } else {
+                priority.value = lastHighest + 1
+            }
+
             priority.color = Color.RED
             return priority
         }
 
-        fun lowest(lastLowest: Int): Priority {
+        fun lowest(lastLowest: Int?): Priority {
             val priority = Priority()
-            priority.value = lastLowest - 1
+            if (lastLowest == null) {
+                priority.value = -1
+            } else {
+                priority.value = lastLowest - 1
+            }
+
             priority.color = Color.YELLOW
             return priority
         }
@@ -61,7 +71,8 @@ class Priority private constructor() : Embeddable() {
     enum class Color(val rgb: String) {
         RED("#FF0000"),
         GREEN("#00FF00"),
-        YELLOW("#FFFF00");
+        YELLOW("#FFFF00"),
+        WHITE("#FFFFFF");
 
         companion object {
             fun byRGB(rgb: String): Color {

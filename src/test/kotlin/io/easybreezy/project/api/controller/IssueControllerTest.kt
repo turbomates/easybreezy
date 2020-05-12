@@ -26,7 +26,7 @@ class IssueControllerTest {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
-                            "content" to "Important issue"
+                            "content" to "Important issue. About important stuff"
                         }
                             .toString())
                 }) {
@@ -37,7 +37,7 @@ class IssueControllerTest {
                     val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Important")!!)
-                    Assertions.assertTrue(response.content?.contains("#00FF00")!!)
+                    Assertions.assertTrue(response.content?.contains("#FFFFFF")!!)
                 }
             }
         }
