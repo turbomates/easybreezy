@@ -47,12 +47,13 @@ import io.ktor.util.DataConversionException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.serializersModuleOf
 import org.jetbrains.exposed.sql.Database
+import java.time.format.DateTimeFormatter
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
 
-fun Application.testApplication(userId: UUID, database: Database) {
+fun Application.testApplication(userId: UUID = UUID.randomUUID(), database: Database = testDatabase) {
     val dataSource = TestDataSource
     val eventSubscribers = EventSubscribers()
     val activities = Activity.values().toSet()
@@ -179,3 +180,6 @@ fun Application.testApplication(userId: UUID, database: Database) {
 inline fun <R> withSwagger(receiver: TestApplicationCall, block: TestApplicationCall.() -> R): R {
     return with(receiver, { block() })
 }
+
+val testDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+val testDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")

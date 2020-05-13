@@ -17,16 +17,13 @@ import kotlinx.serialization.json.json
 import kotlinx.serialization.json.jsonArray
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class UserControllerTest {
 
     @Test
     fun `user invite`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
                 withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
                     Assertions.assertEquals(response.status(), HttpStatusCode.OK)
                 }
@@ -50,10 +47,8 @@ class UserControllerTest {
 
     @Test
     fun `user invite twice`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
                 with(handleRequest(HttpMethod.Post, "/api/users/invite") {
                     addHeader("Content-Type", "application/json")
                     setBody(
@@ -88,10 +83,8 @@ class UserControllerTest {
 
     @Test
     fun `user create`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users") {
                     addHeader("Content-Type", "application/json")
@@ -120,11 +113,9 @@ class UserControllerTest {
 
     @Test
     fun `invite pending user`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val userId = database.createMember(status = Status.PENDING)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val userId = testDatabase.createMember(status = Status.PENDING)
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/hire")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -140,11 +131,9 @@ class UserControllerTest {
 
     @Test
     fun `archive pending user`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val userId = database.createMember(status = Status.PENDING)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val userId = testDatabase.createMember(status = Status.PENDING)
                 val reason = "Some reason to archive"
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/archive") {
@@ -169,11 +158,9 @@ class UserControllerTest {
 
     @Test
     fun `update user activities`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val userId = database.createMember()
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val userId = testDatabase.createMember()
 
                 withSwagger(handleRequest(HttpMethod.Post, "/api/users/$userId/activities") {
                     addHeader("Content-Type", "application/json")

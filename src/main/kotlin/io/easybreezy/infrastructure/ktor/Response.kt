@@ -2,10 +2,10 @@ package io.easybreezy.infrastructure.ktor
 
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.ContinuousListSerializer
-import io.easybreezy.infrastructure.serialization.serializerForSending
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.ApplicationSendPipeline
 import io.ktor.routing.Route
+import io.easybreezy.infrastructure.serialization.resolveSerializer
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
@@ -92,7 +92,7 @@ object ResponseSerializer : KSerializer<Response> {
                 JsonObject(
                     mapOf(
                         "data" to output.json.toJson(
-                            serializerForSending(value.data) as KSerializer<Any>,
+                            resolveSerializer(value.data) as KSerializer<Any>,
                             value.data
                         )
                     )
@@ -126,7 +126,7 @@ object ErrorSerializer : KSerializer<Error> {
         val error: MutableMap<String, JsonElement> = mutableMapOf("message" to JsonPrimitive(value.message))
         if (value.property != null && !value.property.isBlank()) error["property"] = JsonPrimitive(value.property)
         if (value.value != null)
-            error["value"] = output.json.toJson(serializerForSending(value.value) as KSerializer<Any>, value.value)
+            error["value"] = output.json.toJson(resolveSerializer(value.value) as KSerializer<Any>, value.value)
 
         val tree = JsonObject(error)
         output.encodeJson(tree)
