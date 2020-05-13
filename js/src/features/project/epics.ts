@@ -21,7 +21,7 @@ import {
   removeProjectTeamMemberAsync,
   changeProjectTeamStatusAsync,
   addProjectTeamMemberAsync,
-  closeProjectTeamAddMemberFormAction,
+  closeProjectTeamNewMemberFormAction,
 } from "./actions";
 import { push } from "connected-react-router";
 
@@ -299,7 +299,7 @@ export const addProjectTeamMember: RootEpic = (action$, state$, { api }) =>
             ? [
                 addProjectTeamMemberAsync.success(),
                 fetchProjectTeamAsync.request(action.payload.teamId),
-                closeProjectTeamAddMemberFormAction(),
+                closeProjectTeamNewMemberFormAction(),
               ]
             : [addProjectTeamMemberAsync.failure(result.errors)],
         ),

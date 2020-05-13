@@ -7,14 +7,14 @@ import {
   EditProjectRoleRequest,
   RemoveProjectRoleRequest,
   CreateProjectRoleRequest,
-  ProjectsRequest,
+  ProjectsListQuery,
   RolePermissions,
   EditProjectSlugRequest,
 } from "ProjectModels";
 import { Failure, FormFailure, Paging, Success } from "MyTypes";
 import { api } from "./api";
 
-export const fetchProjects = (params: ProjectsRequest) => {
+export const fetchProjects = (params: ProjectsListQuery) => {
   return api
     .get<Paging<ProjectList>>(`/projects`, { params })
     .then<Success<Paging<ProjectList>>>((resp) => ({

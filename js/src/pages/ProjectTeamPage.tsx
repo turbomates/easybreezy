@@ -7,29 +7,30 @@ import { useParams } from "react-router";
 import {
   addProjectTeamMemberAsync,
   changeProjectTeamStatusAsync,
-  closeProjectTeamAddMemberFormAction,
+  closeProjectTeamNewMemberFormAction,
   editProjectTeamMemberRoleAsync,
   fetchProjectAsync,
   fetchProjectTeamAsync,
-  openProjectTeamAddMemberFormAction,
+  openProjectTeamNewMemberFormAction,
   removeProjectTeamMemberAsync,
 } from "../features/project/actions";
 import {
-  getEmployees,
-  getIsOpenTeamAddMemberForm,
-  getProject,
-  getProjectTeam,
+  selectEmployeesSelectOptions,
+  selectIsOpenTeamAddMemberForm,
+  selectProject,
+  selectProjectTeam,
 } from "../features/project/selectors";
 import {
-  AddProjectTeamMemberRequest,
+  NewProjectTeamMemberRequest,
   ChangeProjectTeamStatusRequest,
   EditProjectTeamMemberRoleRequest,
   RemoveProjectTeamMemberRequest,
 } from "ProjectModels";
-import { TeamAddMemberForm } from "../features/project/components/Team/TeamAddMemberForm";
+import { TeamNewMemberForm } from "../features/project/components/Team/TeamNewMemberForm";
 import { TeamMembersListItem } from "../features/project/components/Team/TeamMembersListItem";
 import { fetchEmployeesAsync } from "../features/human-resouce/actions";
 import { TeamChangeStatus } from "../features/project/components/Team/TeamChangeStatus";
+import { Preloader } from "../features/app/components/Preloader";
 
 export const ProjectTeamPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -63,16 +64,16 @@ export const ProjectTeamPage: React.FC = () => {
     [dispatch],
   );
 
-  const openAddMemberForm = useCallback(() => {
-    dispatch(openProjectTeamAddMemberFormAction());
+  const openNewMemberForm = useCallback(() => {
+    dispatch(openProjectTeamNewMemberFormAction());
   }, [dispatch]);
 
-  const closeAddMemberForm = useCallback(() => {
-    dispatch(closeProjectTeamAddMemberFormAction());
+  const closeNewMemberForm = useCallback(() => {
+    dispatch(closeProjectTeamNewMemberFormAction());
   }, [dispatch]);
 
   const addMember = useCallback(
-    (form: AddProjectTeamMemberRequest) => {
+    (form: NewProjectTeamMemberRequest) => {
       dispatch(addProjectTeamMemberAsync.request(form));
     },
     [dispatch],
@@ -89,10 +90,10 @@ export const ProjectTeamPage: React.FC = () => {
     dispatch(fetchEmployeesAsync.request());
   }, [dispatch]);
 
-  const team = useSelector(getProjectTeam);
-  const project = useSelector(getProject);
-  const isOpenTeamAddMemberForm = useSelector(getIsOpenTeamAddMemberForm);
-  const employees = useSelector(getEmployees);
+  const team = useSelector(selectProjectTeam);
+  const project = useSelector(selectProject);
+  const isOpenTeamNewMemberForm = useSelector(selectIsOpenTeamAddMemberForm);
+  const employeesSelectOptions = useSelector(selectEmployeesSelectOptions);
 
   useEffect(() => {
     fetchProjectTeam(id);
@@ -106,16 +107,16 @@ export const ProjectTeamPage: React.FC = () => {
     fetchEmployees();
   }, [fetchEmployees]);
 
-  if (!project || project.slug !== slug) return null;
+  if (!project || project.slug !== slug) return <Preloader />;
 
-  if (!team || team.id !== id) return null;
+  if (!team || team.id !== id) return <Preloader />;
 
   return (
     <Row gutter={10} className="content">
       <Col xl={14} lg={24} md={24} xs={24}>
         <Card
           title={team.name}
-          extra={<PlusOutlined onClick={openAddMemberForm} />}
+          extra={<PlusOutlined onClick={openNewMemberForm} />}
         >
           <List
             itemLayout="horizontal"
@@ -135,19 +136,19 @@ export const ProjectTeamPage: React.FC = () => {
         <Card>
           {team.status === "Active" ? (
             <TeamChangeStatus
-              description="Access to tasks is closed. Can be restored when needed."
+              description="Access to tasks will be closed. It can be restored if necessary."
               type="danger"
-              btnText="Deactivate team"
-              onChange={() =>
+              buttonText="Deactivate team"
+              onButtonClick={() =>
                 changeStatus({ teamId: team.id, status: "close" })
               }
             />
           ) : (
             <TeamChangeStatus
-              description="Open access to development."
+              description="Access to development will be open."
               type="primary"
-              btnText="Activate team"
-              onChange={() =>
+              buttonText="Activate team"
+              onButtonClick={() =>
                 changeStatus({ teamId: team.id, status: "activate" })
               }
             />
@@ -156,16 +157,16 @@ export const ProjectTeamPage: React.FC = () => {
       </Col>
       <Modal
         title="New team member"
-        visible={isOpenTeamAddMemberForm}
-        onCancel={closeAddMemberForm}
+        visible={isOpenTeamNewMemberForm}
+        onCancel={closeNewMemberForm}
         footer={null}
         destroyOnClose={true}
       >
-        <TeamAddMemberForm
+        <TeamNewMemberForm
           teamId={team.id}
           roles={project.roles}
           add={addMember}
-          employees={employees}
+          employeesSelectOptions={employeesSelectOptions}
         />
       </Modal>
     </Row>

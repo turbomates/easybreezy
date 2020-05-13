@@ -1,7 +1,7 @@
 import { api } from "./api";
 import { FormFailure, Success } from "MyTypes";
 import {
-  AddProjectTeamMemberRequest,
+  NewProjectTeamMemberRequest,
   ChangeProjectTeamStatusRequest,
   CreateProjectTeamRequest,
   EditProjectTeamMemberRoleRequest,
@@ -59,7 +59,7 @@ export const addMember = ({
   role,
   user,
   teamId,
-}: AddProjectTeamMemberRequest) =>
+}: NewProjectTeamMemberRequest) =>
   api
     .post(`/teams/${teamId}/members/add`, {
       role,

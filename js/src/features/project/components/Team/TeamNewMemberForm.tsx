@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Button, Form, Select } from "antd";
 
-import { AddProjectTeamMemberRequest, Role } from "ProjectModels";
+import { NewProjectTeamMemberRequest, Role } from "ProjectModels";
 import { Choice } from "MyTypes";
 
 const { Option } = Select;
@@ -9,8 +9,8 @@ const { Option } = Select;
 type Props = {
   teamId: string;
   roles: Role[];
-  add: (form: AddProjectTeamMemberRequest) => void;
-  employees: Choice[];
+  add: (form: NewProjectTeamMemberRequest) => void;
+  employeesSelectOptions: Choice[];
 }
 
 const formItemLayout = {
@@ -20,14 +20,13 @@ const formTailLayout = {
   wrapperCol: { span: 8, offset: 4 },
 };
 
-export const TeamAddMemberForm: React.FC<Props> = ({
+export const TeamNewMemberForm: React.FC<Props> = ({
   teamId,
   roles,
   add,
-  employees,
+  employeesSelectOptions,
 }) => {
   const [form] = Form.useForm();
-  const [searchResult, setSearchResult] = useState<Choice[]>([]);
 
   const onFinish = useCallback(
     (values) =>
@@ -39,19 +38,6 @@ export const TeamAddMemberForm: React.FC<Props> = ({
     [add, teamId],
   );
 
-  const onSearch = (searchText: string) => {
-    const name = searchText.trim();
-
-    if (!name.length) {
-      setSearchResult([]);
-      return;
-    }
-
-    setSearchResult(
-      employees.filter((employee) => employee.label.includes(name)),
-    );
-  };
-
   return (
     <Form form={form} {...formItemLayout} onFinish={onFinish}>
       <Form.Item
@@ -61,12 +47,12 @@ export const TeamAddMemberForm: React.FC<Props> = ({
       >
         <Select
           showSearch
-          onSearch={onSearch}
-          filterOption={false}
+          filterOption={(input, option) => option?.children.includes(input)}
+          optionFilterProp="children"
           notFoundContent={null}
           showArrow={false}
         >
-          {searchResult.map(({ label, value }) => (
+          {employeesSelectOptions.map(({ label, value }) => (
             <Option value={value} key={value}>
               {label}
             </Option>

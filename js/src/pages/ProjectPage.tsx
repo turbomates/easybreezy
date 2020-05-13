@@ -15,9 +15,9 @@ import {
   fetchProjectAsync,
 } from "../features/project/actions";
 import {
-  getErrors,
-  getProject,
-  getIsLoading,
+  selectErrors,
+  selectProject,
+  selectIsLoading,
 } from "../features/project/selectors";
 import { ProjectDescriptionForm } from "../features/project/components/ProjectDescriptionForm";
 import { ProjectStatusForm } from "../features/project/components/ProjectStatusForm";
@@ -66,9 +66,9 @@ export const ProjectPage: React.FC = () => {
     [dispatch],
   );
 
-  const errors = useSelector(getErrors);
-  const loading = useSelector(getIsLoading);
-  const project = useSelector(getProject);
+  const errors = useSelector(selectErrors);
+  const loading = useSelector(selectIsLoading);
+  const project = useSelector(selectProject);
 
   useEffect(() => {
     fetchProject(slug);
@@ -94,7 +94,7 @@ export const ProjectPage: React.FC = () => {
       <Card title="Description">
         {!isOpenProjectDescriptionForm && (
           <ProjectDescription
-            openProjectDescriptionForm={() =>
+            onButtonClick={() =>
               setIsOpenProjectDescriptionForm(true)
             }
             description={project?.description}
@@ -116,7 +116,7 @@ export const ProjectPage: React.FC = () => {
         {!isOpenProjectEditSlugForm && (
           <ProjectSlug
             openProjectSlugForm={() => setIsOpenProjectEditSlugForm(true)}
-            slug={project?.slug}
+            slug={project.slug}
           />
         )}
 

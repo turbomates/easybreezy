@@ -11,9 +11,9 @@ import {
   openProjectTeamCreateFormAction,
 } from "../features/project/actions";
 import {
-  getErrors,
-  getIsOpenCreateTeamForm,
-  getProject,
+  selectErrors,
+  selectIsOpenCreateTeamForm,
+  selectProject,
 } from "../features/project/selectors";
 import { ProjectTeamsList } from "../features/project/components/ProjectTeamsList";
 import { ProjectTeamsCreateForm } from "../features/project/components/ProjectTeamsCreateForm";
@@ -45,10 +45,10 @@ export const ProjectTeamsPage: React.FC = () => {
     dispatch(closeProjectTeamCreateFormAction());
   }, [dispatch]);
 
-  const project = useSelector(getProject);
-  const errors = useSelector(getErrors);
+  const project = useSelector(selectProject);
+  const errors = useSelector(selectErrors);
   const isOpenTeamCreateForm = useSelector(
-    getIsOpenCreateTeamForm,
+    selectIsOpenCreateTeamForm,
   );
 
   useEffect(() => {

@@ -1,11 +1,4 @@
 declare module "ProjectModels" {
-  export type ProjectStatusTypeResponse = "Active" | "Closed" | "Suspended";
-  export type ProjectStatusTypeRequest = "activate" | "close" | "suspend";
-
-  export type ProjectResponse = {
-    data: Project;
-  };
-
   export type ProjectList = {
     id: string;
     slug: string;
@@ -33,6 +26,32 @@ declare module "ProjectModels" {
   type Team = {
     id: string;
     name: string;
+  };
+
+  export type RolePermissions = string[];
+
+  export type ProjectTeam = {
+    id: string;
+    name: string;
+    status: ProjectTeamStatusResponse;
+    members: ProjectTeamMember[];
+  };
+
+  export type ProjectTeamMember = {
+    user: string;
+    email: string;
+    role: string;
+    last: string;
+    first: string;
+  };
+
+  ///////////////////////////////////////////////////////////
+
+  export type ProjectStatusTypeResponse = "Active" | "Closed" | "Suspended";
+  export type ProjectStatusTypeRequest = "activate" | "close" | "suspend";
+
+  export type ProjectResponse = {
+    data: Project;
   };
 
   export type EditProjectStatusRequest = {
@@ -69,12 +88,10 @@ declare module "ProjectModels" {
     description: string;
   };
 
-  export type ProjectsRequest = {
+  export type ProjectsListQuery = {
     pageSize?: number;
     currentPage?: number;
   };
-
-  export type RolePermissions = string[];
 
   export type EditProjectSlugRequest = {
     newSlug: string;
@@ -84,21 +101,6 @@ declare module "ProjectModels" {
   export type CreateProjectTeamRequest = {
     name: string;
     project: string;
-  };
-
-  export type ProjectTeam = {
-    id: string;
-    name: string;
-    status: ProjectTeamStatusResponse;
-    members: ProjectTeamMember[];
-  };
-
-  export type ProjectTeamMember = {
-    user: string;
-    email: string;
-    role: string;
-    last: string;
-    first: string;
   };
 
   export type EditProjectTeamMemberRoleRequest = {
@@ -112,7 +114,7 @@ declare module "ProjectModels" {
     memberId: string;
   };
 
-  export type AddProjectTeamMemberRequest = {
+  export type NewProjectTeamMemberRequest = {
     role: string;
     user: string;
     teamId: string;
