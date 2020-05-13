@@ -70,12 +70,13 @@ dependencies {
     implementation(Deps.kotlin_serialization)
     implementation(Deps.kotlin_serialization_runtime)
     implementation(Deps.ical4j)
-
+    implementation(Deps.swagger_webjar)
+    implementation(Deps.ktor_webjar)
     runtimeOnly(Deps.logback_classic)
 
     testImplementation(Deps.ktor_server_test_host)
     testImplementation(Deps.junit_juiter_api)
-    testImplementation("com.h2database:h2:1.4.200")
+    testImplementation(Deps.h2database)
     testRuntimeOnly(Deps.junit_jupiter_engine)
 
     dependencies.add("migrationsImplementation", Deps.flywaydb_flyway_core)

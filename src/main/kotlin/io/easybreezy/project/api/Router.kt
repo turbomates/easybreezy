@@ -9,10 +9,10 @@ import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.infrastructure.ktor.auth.containsAny
-import io.easybreezy.infrastructure.ktor.get
-import io.easybreezy.infrastructure.ktor.post
-import io.easybreezy.infrastructure.ktor.postParams
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.integration.openapi.ktor.get
+import io.easybreezy.integration.openapi.ktor.post
+import io.easybreezy.integration.openapi.ktor.postParams
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.member.queryobject.IsTeamMember

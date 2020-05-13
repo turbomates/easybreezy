@@ -18,9 +18,12 @@ object Versions {
     const val kotlin_serialization = "1.3.72"
     const val kotlin_serialization_runtime = "0.20.0"
     const val ical4j = "3.0.14"
+    const val swagger_webjar = "3.25.2"
+    const val h2database = "1.4.200"
 }
 
 object Deps {
+    const val h2database = "com.h2database:h2:${Versions.h2database}"
     const val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
     const val ktor_serialization = "io.ktor:ktor-serialization:${Versions.ktor}"
     const val ktor_locations = "io.ktor:ktor-locations:${Versions.ktor}"
@@ -59,6 +62,8 @@ object Deps {
         "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlin_serialization_runtime}"
     const val exposed_time = "org.jetbrains.exposed:exposed-java-time:${Versions.exposed}"
     const val ical4j = "org.mnode.ical4j:ical4j:${Versions.ical4j}"
+    const val swagger_webjar = "org.webjars:swagger-ui:${Versions.swagger_webjar}"
+    const val ktor_webjar = "io.ktor:ktor-webjars:${Versions.ktor}"
 }
 
 object Plugins {

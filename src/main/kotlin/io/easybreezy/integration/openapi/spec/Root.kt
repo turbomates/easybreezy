@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 data class Root(
     val openapi: String,
     val info: InfoObject,
-    val path: MutableMap<String, PathItemObject> = mutableMapOf(),
-    val servers: ServerObject? = null,
+    val paths: MutableMap<String, PathItemObject> = mutableMapOf(),
+    var servers: List<ServerObject>? = null,
     val components: Components? = null,
     val security: List<SecuritySchemaObject>? = null,
     val tags: List<TagObject>? = null,

@@ -9,9 +9,9 @@ import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.containsAny
 import io.easybreezy.infrastructure.ktor.auth.jsonForm
-import io.easybreezy.infrastructure.ktor.get
-import io.easybreezy.infrastructure.ktor.post
 import io.easybreezy.infrastructure.structure.Either
+import io.easybreezy.integration.openapi.ktor.get
+import io.easybreezy.integration.openapi.ktor.post
 import io.easybreezy.user.infrastructure.auth.UserProvider
 import io.easybreezy.user.infrastructure.security.JWT
 import io.ktor.application.call
@@ -90,9 +90,11 @@ class Auth @Inject constructor(private val userProvider: UserProvider) : Interce
             }
         }
 
-        route.get<Response.Ok>("/api/logout") {
-            call.sessions.clear<Session>()
-            Response.Ok
+        route.route("/api/logout") {
+            get<Response.Ok>() {
+                call.sessions.clear<Session>()
+                Response.Ok
+            }
         }
     }
 }

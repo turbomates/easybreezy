@@ -18,19 +18,24 @@ data class Components(
 
 @Serializable
 data class SchemaObject(
-    val nullable: Boolean,
-    val discriminator: DiscriminatorObject,
-    val readOnly: Boolean,
-    val writeOnly: Boolean,
+    val nullable: Boolean? = null,
+    val discriminator: DiscriminatorObject? = null,
+    val readOnly: Boolean? = null,
+    val writeOnly: Boolean? = null,
+    val `$ref`: String? = null,
 //    val xml: XMLObject,
-    val externalDocs: ExternalDocumentationObject,
-    @ContextualSerialization val example: Any,
-    val deprecated: Boolean
+    val externalDocs: ExternalDocumentationObject? = null,
+    @ContextualSerialization val example: Any? = null,
+    val type: String? = null,
+    val properties: Map<String, SchemaObject>? = null,
+    val additionalProperties: SchemaObject? = null,
+    val items: SchemaObject? = null,
+    val deprecated: Boolean? = null
 )
 
 @Serializable
 data class ResponseObject(
-    val description: String,
+    val description: String? = null,
     val headers: Map<String, HeaderObject>? = null,
     val content: Map<String, MediaTypeObject>? = null,
     val links: Map<String, LinkObject>? = null
@@ -39,16 +44,17 @@ data class ResponseObject(
 @Serializable
 data class ParameterObject(
     val name: String,
-    val `in`: String,
-    val description: String,
-    val required: Boolean,
-    val deprecated: Boolean,
-    val allowEmptyValue: Boolean,
-    val style: String?,
-    val explode: Boolean,
-    val allowReserved: Boolean,
-    @ContextualSerialization val example: Any?,
-    val examples: Map<String, ExampleObject>
+    val `in`: String? = null,
+    val description: String? = null,
+    val required: Boolean? = null,
+    val deprecated: Boolean? = null,
+    val allowEmptyValue: Boolean? = null,
+    val style: String? = null,
+    val explode: Boolean? = null,
+    val allowReserved: Boolean? = null,
+    val schema: SchemaObject,
+    @ContextualSerialization val example: Any? = null,
+    val examples: Map<String, ExampleObject>? = null
 )
 
 @Serializable
@@ -60,17 +66,21 @@ data class ExampleObject(
 )
 
 @Serializable
-data class RequestBodyObject(val description: String, val content: Map<String, MediaTypeObject>, val required: Boolean)
+data class RequestBodyObject(
+    val description: String? = null,
+    val content: Map<String, MediaTypeObject>,
+    val required: Boolean? = null
+)
 
 @Serializable
 data class DiscriminatorObject(val propertyName: String, val mapping: Map<String, String>)
 
 @Serializable
 data class MediaTypeObject(
-    val schema: SchemaObject,
-    @ContextualSerialization val example: Any?,
-    val examples: Map<String, ExampleObject>,
-    val encoding: Map<String, EncodingObject>
+    val schema: SchemaObject? = null,
+    @ContextualSerialization val example: Any? = null,
+    val examples: Map<String, ExampleObject>? = null,
+    val encoding: Map<String, EncodingObject>? = null
 )
 
 typealias HeaderObject = ParameterObject
