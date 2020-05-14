@@ -136,7 +136,7 @@ suspend fun main() {
                     configuration = DefaultJsonConfiguration.copy(
                         prettyPrint = true,
                         useArrayPolymorphism = true,
-                        encodeDefaults = false
+                        encodeDefaults = true
                     ),
                     context = serializersModuleOf(
                         mapOf(LocalDateTime::class to LocalDateTimeSerializer, LocalDate::class to LocalDateSerializer)
