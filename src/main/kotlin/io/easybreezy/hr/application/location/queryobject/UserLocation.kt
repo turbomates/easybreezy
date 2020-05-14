@@ -29,7 +29,7 @@ class UserLocationsQO(private val dateRange: DateRange) : QueryObject<UserLocati
             .toUserLocations()
 }
 
-class IsUserLocationOwner(val id: UUID, val userId: UUID): QueryObject<Boolean> {
+class IsUserLocationOwner(val id: UUID, val userId: UUID) : QueryObject<Boolean> {
     override suspend fun getData(): Boolean {
         return UserLocationsTable.select {
             UserLocationsTable.id eq id and (UserLocationsTable.userId eq userId)

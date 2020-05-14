@@ -10,7 +10,7 @@ import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.typeOf
 
-class DescriptionBuilder(private val type: OpenApiKType)  {
+class DescriptionBuilder(private val type: OpenApiKType) {
     fun buildResponseMap(): Map<Int, Type> {
         return when {
             type.jvmErasure.isSubclassOf(Response.Ok::class) -> mapOf(
@@ -77,12 +77,7 @@ class DescriptionBuilder(private val type: OpenApiKType)  {
                     result[200] = projectionType.objectType(projectionType.jvmErasure.simpleName!!)
                 }
             }
-
         }
         return result
     }
 }
-
-
-
-

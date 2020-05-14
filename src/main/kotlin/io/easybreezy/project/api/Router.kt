@@ -209,4 +209,3 @@ class Router @Inject constructor(
         return memberActivities.containsAny(activities)
     }
 }
-

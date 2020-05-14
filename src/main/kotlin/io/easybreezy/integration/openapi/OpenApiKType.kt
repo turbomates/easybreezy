@@ -21,14 +21,14 @@ class OpenApiKType(val type: KType) {
     }
 
     fun type(): Type {
-        return buildType(type);
+        return buildType(type)
     }
 
     fun objectType(name: String): Type.Object {
         if (type.isCollection() || type.isPrimitive()) {
             throw InvalidTypeForOpenApiType(type.javaType.typeName, Type.Object::class.simpleName!!)
         }
-        return buildType(name, type) as Type.Object;
+        return buildType(name, type) as Type.Object
     }
 
     private fun buildType(name: String, type: KType): Type {
@@ -86,7 +86,6 @@ class OpenApiKType(val type: KType) {
                 }
                 buildType(projectionType.jvmErasure.simpleName!!, projectionType)
             }
-
         }
     }
 

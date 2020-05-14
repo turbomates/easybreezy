@@ -33,10 +33,10 @@ class SessionSerializer : KtorSessionSerializer<Session> {
 }
 
 fun Set<Activity>.containsAny(activities: Set<Activity>): Boolean {
-    for (activity in this){
-       if(activities.contains(activity) ){
-           return true
-       }
+    for (activity in this) {
+        if (activities.contains(activity)) {
+            return true
+        }
     }
-    return false;
+    return false
 }

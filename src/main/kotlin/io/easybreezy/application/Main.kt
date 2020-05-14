@@ -90,8 +90,7 @@ suspend fun main() {
         install(DoubleReceive) {
             receiveEntireContent = true
         }
-        install(CORS)
-        {
+        install(CORS) {
             method(HttpMethod.Options)
             header(HttpHeaders.XForwardedProto)
             anyHost()

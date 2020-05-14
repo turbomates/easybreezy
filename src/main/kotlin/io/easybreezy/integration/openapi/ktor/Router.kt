@@ -261,4 +261,3 @@ val Route.openApi: OpenApi
     get() {
         return this.application.feature(OpenApi)
     }
-
