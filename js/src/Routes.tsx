@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 
 import { Main } from "layouts/Main";
-import { Project } from "./layouts/Project"
+import { Project } from "./layouts/Project";
 import { HomePage } from "./pages/Home";
 import { HumanResourcesPage } from "./pages/HumanResources";
 import { UserDetailsPage } from "./pages/UserDetails";
@@ -13,8 +13,8 @@ import { LoginPage } from "./pages/Login";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { ProjectPage } from "./pages/ProjectPage";
 import { ProjectRolePage } from "./pages/ProjectRolePage";
-import { ProjectTeamsPage } from "./pages/ProjectTeamsPage"
-import { ProjectTeamPage } from "./pages/ProjectTeamPage"
+import { ProjectTeamsPage } from "./pages/ProjectTeamsPage";
+import { ProjectTeamPage } from "./pages/ProjectTeamPage";
 
 import { isAuthorized } from "./features/auth/selectors";
 import { canRender } from "./features/app/selectors";
@@ -35,27 +35,23 @@ export const Routes: React.FC = () => {
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
         <Route path="/locations" component={LocationsPage} />
-        <Route path="/projects/:slug/teams/:id" >
-          <Project>
-            <ProjectTeamPage/>
-          </Project>
-        </Route>
-        <Route path="/projects/:slug/teams" >
-          <Project>
-            <ProjectTeamsPage/>
-          </Project>
-        </Route>
-        <Route path="/projects/:slug/role" >
-            <Project>
-                <ProjectRolePage/>
-            </Project>
-        </Route>
+        <Route path="/projects" component={ProjectsPage} exact />
         <Route path="/projects/:slug">
           <Project>
-            <ProjectPage/>
+            <Switch>
+              <Route
+                path="/projects/:slug/teams/:id"
+                component={ProjectTeamPage}
+              />
+              <Route
+                path="/projects/:slug/teams"
+                component={ProjectTeamsPage}
+              />
+              <Route path="/projects/:slug/role" component={ProjectRolePage} />
+              <Route path="/projects/:slug" component={ProjectPage} />
+            </Switch>
           </Project>
         </Route>
-        <Route path="/projects" component={ProjectsPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </Main>

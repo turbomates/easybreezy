@@ -1,16 +1,20 @@
 import React from "react";
 import { Menu } from "antd";
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom";
 
-interface Props {
+type Props = {
   slug: string;
-}
+};
 
 export const ProjectHeaderMenu: React.FC<Props> = ({ slug }) => {
   const location = useLocation();
 
   return (
-    <Menu mode="horizontal" selectedKeys={[location.pathname]} className="project-menu">
+    <Menu
+      mode="horizontal"
+      selectedKeys={[location.pathname]}
+      className="project-menu"
+    >
       <Menu.Item key={`/projects/${slug}`}>
         <Link to={`/projects/${slug}`}>
           <span>Project</span>
@@ -21,7 +25,9 @@ export const ProjectHeaderMenu: React.FC<Props> = ({ slug }) => {
           <span>Role</span>
         </Link>
       </Menu.Item>
-      <Menu.Item key={`/projects/${slug}/teams`}>
+      <Menu.Item
+        key={location.pathname.includes("teams") ? location.pathname : ""}
+      >
         <Link to={`/projects/${slug}/teams`}>
           <span>Teams</span>
         </Link>

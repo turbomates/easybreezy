@@ -17,8 +17,8 @@ import {
   removeProjectRoleAsync,
 } from "../features/project/actions";
 import {
-  getProject,
-  getRolePermissions,
+  selectProject,
+  selectRolePermissions,
 } from "../features/project/selectors";
 
 export const ProjectRolePage: React.FC = () => {
@@ -57,8 +57,8 @@ export const ProjectRolePage: React.FC = () => {
     dispatch(fetchProjectRoleAsync.request());
   }, [dispatch]);
 
-  const project = useSelector(getProject);
-  const rolePermissions = useSelector(getRolePermissions);
+  const project = useSelector(selectProject);
+  const rolePermissions = useSelector(selectRolePermissions);
 
   useEffect(() => {
     fetchProject(slug);

@@ -1,15 +1,36 @@
 import React, { useCallback, useEffect } from "react";
-import { Card, Col, Row } from "antd";
+import { Card, Col, List, Modal, Row } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import { TeamMembersList } from "../features/project/components/Team/TeamMembersList";
 import {
+  addProjectTeamMemberAsync,
+  changeProjectTeamStatusAsync,
+  closeProjectTeamNewMemberFormAction,
+  editProjectTeamMemberRoleAsync,
   fetchProjectAsync,
   fetchProjectTeamAsync,
+  openProjectTeamNewMemberFormAction,
+  removeProjectTeamMemberAsync,
 } from "../features/project/actions";
-import { getProject, getProjectTeam } from "../features/project/selectors";
+import {
+  selectEmployeesSelectOptions,
+  selectIsOpenTeamAddMemberForm,
+  selectProject,
+  selectProjectTeam,
+} from "../features/project/selectors";
+import {
+  NewProjectTeamMemberRequest,
+  ChangeProjectTeamStatusRequest,
+  EditProjectTeamMemberRoleRequest,
+  RemoveProjectTeamMemberRequest,
+} from "ProjectModels";
+import { TeamNewMemberForm } from "../features/project/components/Team/TeamNewMemberForm";
+import { TeamMembersListItem } from "../features/project/components/Team/TeamMembersListItem";
+import { fetchEmployeesAsync } from "../features/human-resouce/actions";
+import { TeamChangeStatus } from "../features/project/components/Team/TeamChangeStatus";
+import { Preloader } from "../features/app/components/Preloader";
 
 export const ProjectTeamPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -29,8 +50,50 @@ export const ProjectTeamPage: React.FC = () => {
     [dispatch],
   );
 
-  const team = useSelector(getProjectTeam);
-  const project = useSelector(getProject);
+  const editMemberRole = useCallback(
+    (value: EditProjectTeamMemberRoleRequest) => {
+      dispatch(editProjectTeamMemberRoleAsync.request(value));
+    },
+    [dispatch],
+  );
+
+  const removeMember = useCallback(
+    (value: RemoveProjectTeamMemberRequest) => {
+      dispatch(removeProjectTeamMemberAsync.request(value));
+    },
+    [dispatch],
+  );
+
+  const openNewMemberForm = useCallback(() => {
+    dispatch(openProjectTeamNewMemberFormAction());
+  }, [dispatch]);
+
+  const closeNewMemberForm = useCallback(() => {
+    dispatch(closeProjectTeamNewMemberFormAction());
+  }, [dispatch]);
+
+  const addMember = useCallback(
+    (form: NewProjectTeamMemberRequest) => {
+      dispatch(addProjectTeamMemberAsync.request(form));
+    },
+    [dispatch],
+  );
+
+  const changeStatus = useCallback(
+    (value: ChangeProjectTeamStatusRequest) => {
+      dispatch(changeProjectTeamStatusAsync.request(value));
+    },
+    [dispatch],
+  );
+
+  const fetchEmployees = useCallback(() => {
+    dispatch(fetchEmployeesAsync.request());
+  }, [dispatch]);
+
+  const team = useSelector(selectProjectTeam);
+  const project = useSelector(selectProject);
+  const isOpenTeamNewMemberForm = useSelector(selectIsOpenTeamAddMemberForm);
+  const employeesSelectOptions = useSelector(selectEmployeesSelectOptions);
 
   useEffect(() => {
     fetchProjectTeam(id);
@@ -40,17 +103,72 @@ export const ProjectTeamPage: React.FC = () => {
     fetchProject(slug);
   }, [slug, fetchProject]);
 
-  if (!project || project.slug !== slug) return null;
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
 
-  if (!team || team.id !== id) return null;
+  if (!project || project.slug !== slug) return <Preloader />;
+
+  if (!team || team.id !== id) return <Preloader />;
 
   return (
     <Row gutter={10} className="content">
-      <Col lg={12} md={24} xs={24}>
-        <Card title="Team" extra={<PlusOutlined />}>
-          <TeamMembersList members={team.members} roles={project.roles} />
+      <Col xl={14} lg={24} md={24} xs={24}>
+        <Card
+          title={team.name}
+          extra={<PlusOutlined onClick={openNewMemberForm} />}
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={team.members}
+            renderItem={(item) => (
+              <TeamMembersListItem
+                roles={project.roles}
+                member={item}
+                edit={editMemberRole}
+                teamId={team.id}
+                remove={removeMember}
+              />
+            )}
+          />
+        </Card>
+
+        <Card>
+          {team.status === "Active" ? (
+            <TeamChangeStatus
+              description="Access to tasks will be closed. It can be restored if necessary."
+              type="danger"
+              buttonText="Deactivate team"
+              onButtonClick={() =>
+                changeStatus({ teamId: team.id, status: "close" })
+              }
+            />
+          ) : (
+            <TeamChangeStatus
+              description="Access to development will be open."
+              type="primary"
+              buttonText="Activate team"
+              onButtonClick={() =>
+                changeStatus({ teamId: team.id, status: "activate" })
+              }
+            />
+          )}
         </Card>
       </Col>
+      <Modal
+        title="New team member"
+        visible={isOpenTeamNewMemberForm}
+        onCancel={closeNewMemberForm}
+        footer={null}
+        destroyOnClose={true}
+      >
+        <TeamNewMemberForm
+          teamId={team.id}
+          roles={project.roles}
+          add={addMember}
+          employeesSelectOptions={employeesSelectOptions}
+        />
+      </Modal>
     </Row>
   );
 };

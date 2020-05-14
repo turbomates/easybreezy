@@ -17,6 +17,11 @@ import {
   createProjectTeamAsync,
   closeProjectTeamCreateFormAction,
   fetchProjectTeamAsync,
+  editProjectTeamMemberRoleAsync,
+  removeProjectTeamMemberAsync,
+  changeProjectTeamStatusAsync,
+  addProjectTeamMemberAsync,
+  closeProjectTeamNewMemberFormAction,
 } from "./actions";
 import { push } from "connected-react-router";
 
@@ -223,6 +228,82 @@ export const fetchProjectTeam: RootEpic = (action$, state$, { api }) =>
             : fetchProjectTeamAsync.failure(result.errors),
         ),
         catchError((message) => of(fetchProjectTeamAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const editProjectTeamMemberRole: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(editProjectTeamMemberRoleAsync.request)),
+    switchMap((action) =>
+      from(api.team.editMemberRole(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? editProjectTeamMemberRoleAsync.success()
+            : editProjectTeamMemberRoleAsync.failure(result.errors),
+        ),
+        catchError((message) =>
+          of(editProjectTeamMemberRoleAsync.failure(message)),
+        ),
+      ),
+    ),
+  );
+
+export const removeProjectTeamMember: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(removeProjectTeamMemberAsync.request)),
+    switchMap((action) =>
+      from(api.team.removeMember(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                removeProjectTeamMemberAsync.success(),
+                fetchProjectTeamAsync.request(action.payload.teamId),
+              ]
+            : [removeProjectTeamMemberAsync.failure(result.errors)],
+        ),
+        catchError((message) =>
+          of(removeProjectTeamMemberAsync.failure(message)),
+        ),
+      ),
+    ),
+  );
+
+export const changeProjectTeamStatus: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(changeProjectTeamStatusAsync.request)),
+    switchMap((action) =>
+      from(api.team.changeStatus(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                changeProjectTeamStatusAsync.success(),
+                fetchProjectTeamAsync.request(action.payload.teamId),
+              ]
+            : [changeProjectTeamStatusAsync.failure(result.errors)],
+        ),
+        catchError((message) =>
+          of(changeProjectTeamStatusAsync.failure(message)),
+        ),
+      ),
+    ),
+  );
+
+export const addProjectTeamMember: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(addProjectTeamMemberAsync.request)),
+    switchMap((action) =>
+      from(api.team.addMember(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                addProjectTeamMemberAsync.success(),
+                fetchProjectTeamAsync.request(action.payload.teamId),
+                closeProjectTeamNewMemberFormAction(),
+              ]
+            : [addProjectTeamMemberAsync.failure(result.errors)],
+        ),
+        catchError((message) => of(addProjectTeamMemberAsync.failure(message))),
       ),
     ),
   );

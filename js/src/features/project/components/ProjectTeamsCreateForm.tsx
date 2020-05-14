@@ -5,7 +5,7 @@ import { useFormServerErrors } from "../../../hooks/useFormServerErrors";
 import { CreateProjectTeamRequest } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
 
-interface Props {
+type Props = {
   projectId: string;
   errors: FormErrorMap;
   create: (form: CreateProjectTeamRequest) => void;
@@ -30,23 +30,16 @@ export const ProjectTeamsCreateForm: React.FC<Props> = ({
     [create, projectId],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 8 }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-    >
+    <Form form={form} labelCol={{ span: 8 }} onFinish={onFinish}>
       <Form.Item
-        label="Name"
         name="name"
-        rules={[{ required: true, message: "Please input name!" }]}
+        rules={[
+          { required: true, message: "Please input name" },
+          { min: 2, message: "Name should be at least 2 characters long" },
+        ]}
       >
-        <Input name="name" />
+        <Input name="name" placeholder="Name" />
       </Form.Item>
 
       <Form.Item>

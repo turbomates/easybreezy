@@ -4,7 +4,7 @@ import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
 import { FormField } from "./ProjectRoleForm";
 
-interface Props {
+type Props = {
   field: FormField;
   fieldIndex: number;
   editInputRole: (fieldIndex: number, value: string) => void;

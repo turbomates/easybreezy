@@ -10,7 +10,7 @@ import "./ProjectStatusForm.scss";
 
 const { Option } = Select;
 
-interface Props {
+type Props = {
   change: (form: EditProjectStatusRequest) => void;
   project: Project;
   errors: FormErrorMap;

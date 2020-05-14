@@ -1,22 +1,31 @@
 import { RootState } from "MyTypes";
 
-export const getProjects = (state: RootState) =>
-  state.project.projects.list;
+export const selectProjects = (state: RootState) => state.project.projects.list;
 
-export const getProject = (state: RootState) => state.project.project.data;
+export const selectProject = (state: RootState) => state.project.project.data;
 
-export const getIsOpenProjectCreateForm = (state: RootState) =>
+export const selectIsOpenProjectCreateForm = (state: RootState) =>
   state.project.projects.isOpenCreateForm;
 
-export const getIsLoading = (state: RootState) => state.project.project.loading;
+export const selectIsLoading = (state: RootState) => state.project.project.loading;
 
-export const getErrors = (state: RootState) => state.project.project.errors;
+export const selectErrors = (state: RootState) => state.project.project.errors;
 
-export const getRolePermissions = (state: RootState) =>
+export const selectRolePermissions = (state: RootState) =>
   state.project.project.rolePermissions;
 
-export const getIsOpenCreateTeamForm = (state: RootState) =>
+export const selectIsOpenCreateTeamForm = (state: RootState) =>
   state.project.project.isOpenCreateTeamForm;
 
-export const getProjectTeam = (state: RootState) =>
-  state.project.team.data;
+export const selectProjectTeam = (state: RootState) => state.project.team.data;
+
+export const selectIsOpenTeamAddMemberForm = (state: RootState) =>
+  state.project.team.isOpenNewMemberForm;
+
+export const selectTeamErrors = (state: RootState) => state.project.team.errors;
+
+export const selectEmployeesSelectOptions = (state: RootState) =>
+  state.humanResource.employees.items.map((emp) => ({
+    value: emp.userId,
+    label: `${emp.firstName} ${emp.lastName}`,
+  }));

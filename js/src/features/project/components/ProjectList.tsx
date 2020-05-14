@@ -7,13 +7,13 @@ import { NavLink } from "react-router-dom";
 
 import { Paging } from "components/Paging";
 import { Paging as IPaging } from "MyTypes";
-import { ProjectList as IProjectList, ProjectsRequest } from "ProjectModels";
+import { ProjectList as IProjectList, ProjectsListQuery } from "ProjectModels";
 
 import "../project.scss";
 
-interface Props {
+type Props = {
   projects: IPaging<IProjectList> | null;
-  fetchProjects: (params: ProjectsRequest) => void;
+  fetchProjects: (params: ProjectsListQuery) => void;
   openCreateForm: () => void;
 }
 
@@ -26,7 +26,7 @@ export const ProjectList: React.FC<Props> = ({
   const location = useLocation();
 
   useEffect(() => {
-    const params = parse(location.search) as ProjectsRequest;
+    const params = parse(location.search) as ProjectsListQuery;
     fetchProjects(params);
   }, [location, fetchProjects]);
 

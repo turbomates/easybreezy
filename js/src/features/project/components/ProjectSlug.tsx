@@ -1,8 +1,8 @@
 import React from "react";
 import { Button } from "antd";
 
-interface Props {
-  slug?: string;
+type Props = {
+  slug: string;
   openProjectSlugForm: () => void;
 }
 
