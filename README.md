@@ -1,4 +1,8 @@
 # EasyBreezy
+# ApiDoc
+{domain}/webjars/swagger-ui/index.html?url=/api/openapi.json
+
+# Configuration
 
 Create ```local.properties``` in the resources of src/main and put there the following settings
 
@@ -36,10 +40,6 @@ easybreezy.rabbit.api=http://localhost:15672
 #### Format code
 ```bash
 ./gradlew ktlintFormat
-```
-#### Build Doc from Postman
-```
-docgen build -i input-postman-collection.json -o ~/Downloads/index.md -m
 ```
 
 
