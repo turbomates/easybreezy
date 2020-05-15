@@ -8,9 +8,9 @@ import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.infrastructure.ktor.auth.Auth
 import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
-import io.easybreezy.infrastructure.ktor.get
-import io.easybreezy.infrastructure.ktor.post
-import io.easybreezy.infrastructure.ktor.postParams
+import io.easybreezy.integration.openapi.ktor.get
+import io.easybreezy.integration.openapi.ktor.post
+import io.easybreezy.integration.openapi.ktor.postParams
 import io.easybreezy.user.api.controller.UserController
 import io.easybreezy.user.application.command.Archive
 import io.easybreezy.user.application.command.Confirm

@@ -17,16 +17,20 @@ import io.easybreezy.infrastructure.event.EventsDatabaseAccess
 import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
+import io.easybreezy.infrastructure.ktor.RouteResponseInterceptor
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
+import io.easybreezy.infrastructure.ktor.openapi.DescriptionBuilder
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
+import io.easybreezy.integration.openapi.ktor.OpenApi
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
 import io.easybreezy.user.api.interceptor.Auth
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DataConversion
@@ -34,6 +38,8 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.DoubleReceive
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.response.respond
@@ -46,6 +52,7 @@ import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import io.ktor.sessions.directorySessionStorage
 import io.ktor.util.DataConversionException
+import io.ktor.webjars.Webjars
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.serializersModuleOf
 import org.jetbrains.exposed.sql.Database
@@ -81,6 +88,13 @@ suspend fun main() {
         install(Locations)
         install(DoubleReceive) {
             receiveEntireContent = true
+        }
+        install(CORS) {
+            method(HttpMethod.Options)
+            header(HttpHeaders.XForwardedProto)
+            anyHost()
+            allowCredentials = true
+            allowNonSimpleContentTypes = true
         }
         install(CallLogging) {
             level = Level.DEBUG
@@ -144,15 +158,21 @@ suspend fun main() {
                 )
             )
         }
-
+        install(OpenApi) {
+            responseBuilder = { type -> DescriptionBuilder(type).buildResponseMap() }
+            typeBuilder = { type -> DescriptionBuilder(type).buildType() }
+            path = "/api/openapi.json"
+        }
+        install(Webjars) {
+        }
         val ktorInjector = injector.createChildInjector(object : AbstractModule() {
             override fun configure() {
                 bind(Application::class.java).toInstance(application)
             }
         })
-
         routing {
             injector.getInstance(Auth::class.java).intercept(this)
+            injector.getInstance(RouteResponseInterceptor::class.java).intercept(this)
         }
 
         ktorInjector.createChildInjector(UserModule())

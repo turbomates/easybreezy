@@ -3,6 +3,9 @@ package io.easybreezy.infrastructure.ktor
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.ContinuousListSerializer
 import io.easybreezy.infrastructure.serialization.serializerForSending
+import io.ktor.http.HttpStatusCode
+import io.ktor.response.ApplicationSendPipeline
+import io.ktor.routing.Route
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
@@ -32,6 +35,44 @@ sealed class Response {
 
     class Either<TL : Response, TR : Response>(val data: io.easybreezy.infrastructure.structure.Either<TL, TR>) :
         Response()
+}
+
+class EmptyParams()
+
+class RouteResponseInterceptor : Interceptor() {
+    override fun intercept(route: Route) {
+        route.sendPipeline.intercept(ApplicationSendPipeline.Transform) {
+            if (it is Response) {
+                context.response.status(it.status())
+                proceedWith(SerializableResponse(it))
+            }
+        }
+    }
+}
+
+@Serializable(with = SerializableResponse.Companion::class)
+data class SerializableResponse(val response: Response) {
+    companion object : KSerializer<SerializableResponse> {
+        override val descriptor: SerialDescriptor = SerialDescriptor("SerializableResponseDescriptor")
+
+        override fun deserialize(decoder: Decoder): SerializableResponse {
+            throw NotImplementedError()
+        }
+
+        override fun serialize(encoder: Encoder, obj: SerializableResponse) {
+            val output = encoder as? JsonOutput ?: throw SerializationException("This class can be saved only by Json")
+            output.encodeJson(output.json.toJson(Response.serializer(), obj.response))
+        }
+    }
+}
+
+fun Response.status(): HttpStatusCode {
+    return when (this) {
+        is Response.Error -> HttpStatusCode.UnprocessableEntity
+        is Response.Errors -> HttpStatusCode.UnprocessableEntity
+        is Response.Either<*, *> -> this.data.fold({ it.status() }, { it.status() }) as HttpStatusCode
+        else -> HttpStatusCode.OK
+    }
 }
 
 object ResponseSerializer : KSerializer<Response> {

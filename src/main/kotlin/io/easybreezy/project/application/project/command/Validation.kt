@@ -125,6 +125,7 @@ class Validation @Inject constructor(
             true
         }
     }
+
     fun validateCommand(command: NewStatus): List<Error> {
 
         return validate(command) {
