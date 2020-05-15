@@ -61,7 +61,7 @@ class AbsenceController @Inject constructor(
         return Response.Data(queryExecutor.execute(AbsenceQO(id)))
     }
 
-    suspend fun myAbsences(userId: UUID): Response.Data<UserAbsences> {
+    suspend fun userAbsences(userId: UUID): Response.Data<UserAbsences> {
         return Response.Data(
             queryExecutor.execute(UserAbsencesQO(userId))
         )

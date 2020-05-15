@@ -115,7 +115,7 @@ class CalendarControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 // holidays must be deleted as cascade
-                with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays/$calendarId")) {
                     Assertions.assertFalse(response.content?.contains("New year")!!)
                     Assertions.assertFalse(response.content?.contains(holidayId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -145,10 +145,11 @@ class CalendarControllerTest {
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays/$calendarId")) {
                     Assertions.assertTrue(response.content?.contains("2020-07-19")!!)
                     Assertions.assertTrue(response.content?.contains(name)!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -167,7 +168,7 @@ class CalendarControllerTest {
                 val calendarId = database.createCalendar(locationId)
                 database.createHoliday(calendarId)
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays/$calendarId")) {
                     Assertions.assertTrue(response.content?.contains("New year")!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }

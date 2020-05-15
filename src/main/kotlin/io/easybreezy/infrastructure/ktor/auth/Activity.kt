@@ -28,12 +28,12 @@ enum class Activity {
     VACATIONS_SHOW,
 
     PROJECTS_MANAGE,
-    PROJECTS_SHOW,
+    PROJECTS_SHOW
 }
 
 object Activities : Constraint {
     override val name: String
-        get() = "Not enough permissions"
+        get() = "Invalid activity"
 }
 
 fun <E> Validator<E>.Property<Iterable<String>?>.isActivities() {

@@ -27,13 +27,45 @@ declare module "HumanResourceModels" {
     startedAt: string;
     endedAt: string;
     comment: string;
-    reason: string;
+    reason: AbsenceReason;
     userId: string;
     isApproved: boolean;
   };
 
   export type AbsencesMap = {
     [userId: string]: Absence[];
+  };
+
+  export type MyAbsencesResponse = {
+    data: {
+      absences: Absence[];
+    };
+  };
+
+  export type EmployeeAbsencesResponse = MyAbsencesResponse;
+
+  export type AbsencesResponse = {
+    data: {
+      absences: AbsencesMap;
+    };
+  };
+
+  export type AbsenceReason = "VACATION" | "DAYON" | "SICK" | "PERSONAL";
+
+  export type AbsenceForm = {
+    startedAt: string;
+    endedAt: string;
+    reason: AbsenceReason;
+    comment: string;
+  };
+
+  export type CreateAbsenceData = AbsenceForm & {
+    userId: string;
+  };
+
+  export type UpdateAbsenceData = {
+    absenceId: string;
+    form: AbsenceForm;
   };
 
   export type EmployeeNote = {

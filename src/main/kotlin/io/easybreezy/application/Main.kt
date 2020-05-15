@@ -17,7 +17,6 @@ import io.easybreezy.infrastructure.event.EventsDatabaseAccess
 import io.easybreezy.infrastructure.event.SubscriberWorker
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Error
-import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.infrastructure.ktor.RouteResponseInterceptor
 import io.easybreezy.infrastructure.ktor.auth.Session
 import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
@@ -94,9 +93,6 @@ suspend fun main() {
             method(HttpMethod.Options)
             header(HttpHeaders.XForwardedProto)
             anyHost()
-            // host("my-host:80")
-            // host("my-host", subDomains = listOf("www"))
-            // host("my-host", schemes = listOf("http", "https"))
             allowCredentials = true
             allowNonSimpleContentTypes = true
         }
@@ -139,10 +135,6 @@ suspend fun main() {
             status(HttpStatusCode.Unauthorized) {
                 call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
             }
-            exception<LogicException> {
-                call.respond(HttpStatusCode.UnprocessableEntity, Error(it.message ?: "Unprocessable Entity"))
-                throw it
-            }
             exception<NoSuchElementException> {
                 call.respond(HttpStatusCode.NotFound, Error("Page not found"))
             }
@@ -158,13 +150,10 @@ suspend fun main() {
                     configuration = DefaultJsonConfiguration.copy(
                         prettyPrint = true,
                         useArrayPolymorphism = true,
-                        encodeDefaults = false
+                        encodeDefaults = true
                     ),
                     context = serializersModuleOf(
-                        mapOf(
-                            LocalDateTime::class to LocalDateTimeSerializer,
-                            LocalDate::class to LocalDateSerializer
-                        )
+                        mapOf(LocalDateTime::class to LocalDateTimeSerializer, LocalDate::class to LocalDateSerializer)
                     )
                 )
             )

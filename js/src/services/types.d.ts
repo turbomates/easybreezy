@@ -20,4 +20,9 @@ declare module "MyTypes" {
   export type FormErrorMap = {
     [key: string]: FormError;
   };
+
+  export type Choice = {
+    value: string;
+    label: string;
+  }
 }

@@ -10,7 +10,15 @@ import {
   RemoveProjectRoleRequest,
   CreateProjectRoleRequest,
   Project,
-  ProjectsRequest,
+  ProjectsListQuery,
+  RolePermissions,
+  EditProjectSlugRequest,
+  CreateProjectTeamRequest,
+  ProjectTeam,
+  EditProjectTeamMemberRoleRequest,
+  RemoveProjectTeamMemberRequest,
+  NewProjectTeamMemberRequest,
+  ChangeProjectTeamStatusRequest,
 } from "ProjectModels";
 
 //PROJECT
@@ -25,7 +33,7 @@ export const fetchProjectsAsync = createAsyncAction(
   "FETCH_PROJECTS_REQUEST",
   "FETCH_PROJECTS_SUCCESS",
   "FETCH_PROJECTS_FAILURE",
-)<ProjectsRequest, Paging<ProjectList>, string>();
+)<ProjectsListQuery, Paging<ProjectList>, string>();
 
 //CREATE PROJECT
 export const openProjectCreateForm = createAction("OPEN_PROJECT_CREATE_FORM")();
@@ -59,6 +67,12 @@ export const removeProjectRoleAsync = createAsyncAction(
   "REMOVE_PROJECT_ROLE_FAILURE",
 )<RemoveProjectRoleRequest, undefined, FormError[]>();
 
+export const fetchProjectRoleAsync = createAsyncAction(
+  "FETCH_PROJECT_ROLE_PERMISSIONS_REQUEST",
+  "FETCH_PROJECT_ROLE_PERMISSIONS_SUCCESS",
+  "FETCH_PROJECT_ROLE_PERMISSIONS_FAILURE",
+)<undefined, RolePermissions, FormError[]>();
+
 // STATUS
 export const changeProjectStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_STATUS_REQUEST",
@@ -73,12 +87,62 @@ export const editProjectDescriptionAsync = createAsyncAction(
   "EDIT_PROJECT_DESCRIPTION_FAILURE",
 )<EditProjectDescriptionRequest, undefined, FormError[]>();
 
-export const openProjectDescriptionFormAction = createAction(
-  "OPEN_PROJECT_DESCRIPTION_FORM",
+// SLUG
+export const editProjectSlugAsync = createAsyncAction(
+  "EDIT_PROJECT_SLUG_REQUEST",
+  "EDIT_PROJECT_SLUG_SUCCESS",
+  "EDIT_PROJECT_SLUG_FAILURE",
+)<EditProjectSlugRequest, undefined, FormError[]>();
+
+//TEAM
+export const createProjectTeamAsync = createAsyncAction(
+  "CREATE_PROJECT_PROJECT_REQUEST",
+  "CREATE_PROJECT_PROJECT_SUCCESS",
+  "CREATE_PROJECT_PROJECT_FAILURE",
+)<CreateProjectTeamRequest, undefined, FormError[]>();
+
+export const openProjectTeamCreateFormAction = createAction(
+  "OPEN_PROJECT_TEAM_CREATE_FORM",
 )();
 
-export const closeProjectDescriptionFormAction = createAction(
-  "CLOSE_PROJECT_DESCRIPTION_FORM",
+export const closeProjectTeamCreateFormAction = createAction(
+  "CLOSE_PROJECT_TEAM_CREATE_FORM",
 )();
 
-export const clearStateAction = createAction("CLEAR_STATE_ACTION")();
+export const fetchProjectTeamAsync = createAsyncAction(
+  "FETCH_PROJECT_TEAM_REQUEST",
+  "FETCH_PROJECT_TEAM_SUCCESS",
+  "FETCH_PROJECT_TEAM_FAILED",
+)<string, ProjectTeam, FormError[]>();
+
+export const editProjectTeamMemberRoleAsync = createAsyncAction(
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_REQUEST",
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_SUCCESS",
+  "EDIT_PROJECT_TEAM_MEMBER_ROLE_FAILED",
+)<EditProjectTeamMemberRoleRequest, undefined, FormError[]>();
+
+export const removeProjectTeamMemberAsync = createAsyncAction(
+  "REMOVE_PROJECT_TEAM_MEMBER_REQUEST",
+  "REMOVE_PROJECT_TEAM_MEMBER_SUCCESS",
+  "REMOVE_PROJECT_TEAM_MEMBER_FAILED",
+)<RemoveProjectTeamMemberRequest, undefined, FormError[]>();
+
+export const addProjectTeamMemberAsync = createAsyncAction(
+  "ADD_PROJECT_TEAM_MEMBER_REQUEST",
+  "ADD_PROJECT_TEAM_MEMBER_SUCCESS",
+  "ADD_PROJECT_TEAM_MEMBER_FAILED",
+)<NewProjectTeamMemberRequest, undefined, FormError[]>();
+
+export const openProjectTeamNewMemberFormAction = createAction(
+  "OPEN_PROJECT_TEAM_NEW_MEMBER_FORM",
+)();
+
+export const closeProjectTeamNewMemberFormAction = createAction(
+  "CLOSE_PROJECT_TEAM_NEW_MEMBER_FORM",
+)();
+
+export const changeProjectTeamStatusAsync = createAsyncAction(
+  "CHANGE_PROJECT_TEAM_STATUS_REQUEST",
+  "CHANGE_PROJECT_TEAM_STATUS_SUCCESS",
+  "CHANGE_PROJECT_TEAM_STATUS_FAILED",
+)<ChangeProjectTeamStatusRequest, undefined, FormError[]>();

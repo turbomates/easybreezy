@@ -7,6 +7,7 @@ import io.easybreezy.hr.model.absence.Reason
 import io.easybreezy.hr.model.absence.WorkingHours
 import io.easybreezy.hr.model.calendar.Calendars
 import io.easybreezy.hr.model.calendar.Holidays
+import io.easybreezy.hr.model.location.Location.Companion.MIN_VACATIONS_DAYS
 import io.easybreezy.hr.model.location.Locations
 import io.easybreezy.hr.model.location.UserLocations
 import io.easybreezy.user.model.Users
@@ -55,7 +56,7 @@ internal fun Database.createLocation(): UUID {
     return transaction(this) {
         val id = Locations.insert {
             it[name] = "Best Location For a Job"
-            it[vacationDays] = 25
+            it[vacationDays] = MIN_VACATIONS_DAYS + 1
         } get Locations.id
         id.value
     }
@@ -65,7 +66,7 @@ internal fun Database.createUserLocation(
     userId: UUID,
     locationId: UUID,
     extraVacations: Int = 0,
-    startedAt: LocalDate = LocalDate.now(),
+    startedAt: LocalDate = LocalDate.now().minusDays(5),
     endedAt: LocalDate? = LocalDate.now().plusDays(20)
 ): UUID {
     return transaction(this) {

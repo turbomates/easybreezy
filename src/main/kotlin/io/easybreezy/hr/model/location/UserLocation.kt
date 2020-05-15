@@ -1,7 +1,6 @@
 package io.easybreezy.hr.model.location
 
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.infrastructure.ktor.LogicException
 import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -17,6 +16,7 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     private var endedAt by UserLocations.endedAt
     private var location by Location referencedOn UserLocations.location
     private var userId by UserLocations.userId
+
     /** If employee already have had vacation days before starting location*/
     private var extraVacationDays by UserLocations.extraVacationDays
 
@@ -26,6 +26,7 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
             location: Location,
             userId: UUID
         ): UserLocation {
+            if (startedAt > LocalDate.now().plusDays(1)) throw InvalidStart(startedAt)
             return UserLocation.new {
                 this.startedAt = startedAt
                 this.location = location
@@ -35,6 +36,7 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     fun edit(startedAt: LocalDate, location: Location) {
+        if (startedAt > LocalDate.now().plusDays(1)) throw InvalidStart(startedAt)
         this.startedAt = startedAt
         this.location = location
     }
@@ -44,7 +46,7 @@ class UserLocation private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     }
 
     fun close() {
-        if (endedAt != null) throw LogicException("User location have been already closed")
+        require(endedAt == null) { "User location have been already closed" }
         endedAt = LocalDate.now()
     }
 

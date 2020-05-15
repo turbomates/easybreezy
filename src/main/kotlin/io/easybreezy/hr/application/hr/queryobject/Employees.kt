@@ -10,12 +10,17 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import io.easybreezy.user.model.NameTable
 import io.easybreezy.user.model.Users
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.selectAll
 import java.util.UUID
 
 class EmployeesQO(private val paging: PagingParameters) : QueryObject<ContinuousList<Employee>> {
     override suspend fun getData() =
-        Employees.innerJoin(Users, { id }, { Users.id })
+        Employees
+            .join(Users, JoinType.INNER, additionalConstraint = { Users.id eq Employees.id })
             .join(UserLocations, JoinType.LEFT, additionalConstraint = { UserLocations.userId eq Employees.id and UserLocations.endedAt.isNull() })
             .selectAll()
             .andWhere { Employees.fired eq false }

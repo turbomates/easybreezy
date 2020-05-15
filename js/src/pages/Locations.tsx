@@ -10,8 +10,9 @@ import { location } from "features/location/selectors";
 import { LocationsList } from "features/location/components/LocationsList";
 import { LocationForm } from "features/location/components/LocationForm";
 import { LocationForm as LocationFormModel } from "LocationModels";
+import { withRule } from "../features/auth/components/withRule";
 
-export const LocationsPage: React.FC = () => {
+export const LocationsPage: React.FC = withRule("GET:/api/hr/locations")(() => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -45,4 +46,4 @@ export const LocationsPage: React.FC = () => {
       </Row>
     </>
   );
-};
+});

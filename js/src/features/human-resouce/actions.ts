@@ -8,6 +8,9 @@ import {
   ApplyPositionRequestParams,
   ApplySalaryRequestParams,
   AbsencesMap,
+  Absence,
+  CreateAbsenceData,
+  AbsenceForm,
 } from "HumanResourceModels";
 import { createAsyncAction, createAction } from "typesafe-actions";
 import { Paging, FormError } from "MyTypes";
@@ -22,6 +25,42 @@ export const fetchAbsencesAsync = createAsyncAction(
   "FETCH_ABSENCES_SUCCESS",
   "FETCH_ABSENCES_FAILURE",
 )<undefined, AbsencesMap, string>();
+
+export const fetchMyAbsencesAsync = createAsyncAction(
+  "FETCH_MY_ABSENCES_REQUEST",
+  "FETCH_MY_ABSENCES_SUCCESS",
+  "FETCH_MY_ABSENCES_FAILURE",
+)<undefined, Absence[], string>();
+
+export const fetchEmployeeAbsencesAsync = createAsyncAction(
+  "FETCH_EMPLOYEE_ABSENCES_REQUEST",
+  "FETCH_EMPLOYEE_ABSENCES_SUCCESS",
+  "FETCH_EMPLOYEE_ABSENCES_FAILURE",
+)<string, Absence[], string>();
+
+export const createAbsenceAsync = createAsyncAction(
+  "CREATE_ABSENCE_REQUEST",
+  "CREATE_ABSENCE_SUCCESS",
+  "CREATE_ABSENCE_FAILURE",
+)<CreateAbsenceData, undefined, FormError[]>();
+
+export const updateAbsenceAsync = createAsyncAction(
+  "UPDATE_ABSENCE_REQUEST",
+  "UPDATE_ABSENCE_SUCCESS",
+  "UPDATE_ABSENCE_FAILURE",
+)<AbsenceForm, undefined, FormError[]>();
+
+export const removeAbsenceAsync = createAsyncAction(
+  "REMOVE_ABSENCE_REQUEST",
+  "REMOVE_ABSENCE_SUCCESS",
+  "REMOVE_ABSENCE_FAILURE",
+)<string, undefined, string>();
+
+export const approveAbsenceAsync = createAsyncAction(
+  "APPROVE_ABSENCE_REQUEST",
+  "APPROVE_ABSENCE_SUCCESS",
+  "APPROVE_ABSENCE_FAILURE",
+)<string, undefined, string>();
 
 export const fetchEmployeeAsync = createAsyncAction(
   "FETCH_USER_DETAILS_REQUEST",
@@ -57,19 +96,19 @@ export const addEmployeeNoteAsync = createAsyncAction(
   "ADD_EMPLOYEE_NOTE_REQUEST",
   "ADD_EMPLOYEE_NOTE_SUCCESS",
   "ADD_EMPLOYEE_NOTE_FAILURE",
-)<AddNoteRequestParams, undefined, string>();
+)<AddNoteRequestParams, undefined, FormError[]>();
 
 export const applyEmployeePositionAsync = createAsyncAction(
   "APPLY_EMPLOYEE_POSITION_REQUEST",
   "APPLY_EMPLOYEE_POSITION_SUCCESS",
   "APPLY_EMPLOYEE_POSITION_FAILURE",
-)<ApplyPositionRequestParams, undefined, string>();
+)<ApplyPositionRequestParams, undefined, FormError[]>();
 
 export const applyEmployeeSalaryAsync = createAsyncAction(
   "APPLY_EMPLOYEE_SALARY_REQUEST",
   "APPLY_EMPLOYEE_SALARY_SUCCESS",
   "APPLY_EMPLOYEE_SALARY_FAILURE",
-)<ApplySalaryRequestParams, undefined, string>();
+)<ApplySalaryRequestParams, undefined, FormError[]>();
 
 export const assignLocationAsync = createAsyncAction(
   "ASSIGN_LOCATION_REQUEST",
@@ -89,11 +128,11 @@ export const editEmployeeLocationAsync = createAsyncAction(
   "EDIT_EMPLOYEE_LOCATION_FAILURE",
 )<EditEmployeeLocationData, undefined, FormError[]>();
 
-export const removeEmployeeLocationAsync = createAsyncAction(
-  "REMOVE_EMPLOYEE_LOCATION_REQUEST",
-  "REMOVE_EMPLOYEE_LOCATION_SUCCESS",
-  "REMOVE_EMPLOYEE_LOCATION_FAILURE",
-)<string, undefined, string>();
+// export const removeEmployeeLocationAsync = createAsyncAction(
+//   "REMOVE_EMPLOYEE_LOCATION_REQUEST",
+//   "REMOVE_EMPLOYEE_LOCATION_SUCCESS",
+//   "REMOVE_EMPLOYEE_LOCATION_FAILURE",
+// )<string, undefined, string>();
 
 export const openLocationAssignForm = createAction(
   "OPEN_LOCATIONS_ASSIGN_FORM",
@@ -110,3 +149,31 @@ export const openEmployeeLocationEditForm = createAction(
 export const closeEmployeeLocationEditForm = createAction(
   "CLOSE_EMPLOYEE_LOCATION_EDIT_FORM",
 )();
+
+export const openAbsenceUpdateModal = createAction("OPEN_ABSENCE_UPDATE_MODAL")<
+  string
+>();
+
+export const closeAbsenceUpdateModal = createAction(
+  "CLOSE_ABSENCE_UPDATE_MODAL",
+)();
+
+export const openAbsenceCreateModal = createAction(
+  "OPEN_ABSENCE_CREATE_MODAL",
+)();
+
+export const closeAbsenceCreateModal = createAction(
+  "CLOSE_ABSENCE_CREATE_MODAL",
+)();
+
+export const openCreateNoteModal = createAction("OPEN_CREATE_NOTE_MODAL")();
+
+export const closeCreateNoteModal = createAction("CLOSE_CREATE_NOTE_MODAL")();
+
+export const openApplySalaryModal = createAction("OPEN_APPLY_SALARY_MODAL")();
+
+export const closeApplySalaryModal = createAction("CLOSE_APPLY_SALARY_MODAL")();
+
+export const openAddPositionModal = createAction("OPEN_ADD_POSITION_MODAL")();
+
+export const closeAddPositionModal = createAction("CLOSE_ADD_POSITION_MODAL")();

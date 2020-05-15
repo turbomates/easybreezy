@@ -1,17 +1,29 @@
 .role-form {
   &__controls-btn {
     margin: 0 5px 0 5px;
+    display: flex;
+    justify-content: space-evenly;
+    width: 115px;
+
+    button {
+      width: 50px;
+    }
   }
 
   &__description {
     display: flex;
     align-items: center;
+    width: 200px;
   }
 
   &__input-wrapper {
     display: flex;
     justify-content: space-between;
     min-width: 290px;
+  }
+
+  &__input.ant-input {
+    width: 200px;
   }
 
   th {

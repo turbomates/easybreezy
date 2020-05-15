@@ -23,6 +23,9 @@
   * [List of projects](#14-list-of-projects)
   * [List of my projects](#15-list-of-my-projects)
   * [List of permissions](#16-list-of-permissions)
+  * [Remove status from project](#17-remove-status-from-project)
+  * [Change status to project](#18-change-status-to-project)
+  * [Add status to project](#19-add-status-to-project)
 
 --------
 
@@ -466,6 +469,75 @@ URL: localhost:3000/api/projects/permissions
     ]
 }
 ```
+
+
+### 17. Remove status from project
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/statuses/{status-id}/remove
+```
+
+
+
+***Body:***
+
+```js        
+{}
+```
+
+
+
+### 18. Change status to project
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/statuses/{status-id}/change
+```
+
+
+
+***Body:***
+
+```js        
+{
+  "name": "Closeed"
+}
+```
+
+
+
+### 19. Add status to project
+
+
+
+***Endpoint:***
+
+```bash
+Method: POST
+Type: RAW
+URL: localhost:3000/api/projects/{project-slug}/statuses/add
+```
+
+
+***Body:***
+
+```js        
+{
+  "name": "Open"
+}
+```
+
 ---
 [Back to top](#projects)
 > Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2020-04-06 16:45:49 by [docgen](https://github.com/thedevsaddam/docgen)

@@ -13,18 +13,23 @@ import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.integration.openapi.ktor.get
 import io.easybreezy.integration.openapi.ktor.post
 import io.easybreezy.integration.openapi.ktor.postParams
+import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
+import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
 import io.easybreezy.project.application.member.queryobject.MemberActivities
 import io.easybreezy.project.application.project.command.ChangeCategory
 import io.easybreezy.project.application.project.command.ChangeRole
 import io.easybreezy.project.application.project.command.ChangeSlug
+import io.easybreezy.project.application.project.command.ChangeStatus
 import io.easybreezy.project.application.project.command.New
 import io.easybreezy.project.application.project.command.NewCategory
 import io.easybreezy.project.application.project.command.NewRole
+import io.easybreezy.project.application.project.command.NewStatus
 import io.easybreezy.project.application.project.command.RemoveCategory
 import io.easybreezy.project.application.project.command.RemoveRole
+import io.easybreezy.project.application.project.command.RemoveStatus
 import io.easybreezy.project.application.project.command.WriteDescription
 import io.easybreezy.project.application.project.queryobject.Project
 import io.easybreezy.project.application.team.command.ActivateTeam
@@ -45,6 +50,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import kotlinx.serialization.Serializable
 import java.util.UUID
+import io.easybreezy.project.application.issue.command.New as NewIssue
 
 class Router @Inject constructor(
     application: Application,
@@ -135,7 +141,17 @@ class Router @Inject constructor(
         }
 
         route("/{slug}") {
+
             authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
+                post<Response.Either<Response.Ok, Response.Errors>, NewIssue, SlugParam>("/issues/add") { new, params ->
+                    new.project = params.slug
+                    new.author = resolvePrincipal<UserPrincipal>()
+                    controller<IssueController>(this).create(new)
+                }
+                get<Response.Listing<Issue>, SlugParam>("/issues") { params ->
+                    controller<IssueController>(this).list(params.slug)
+                }
+
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
                 }
@@ -191,6 +207,21 @@ class Router @Inject constructor(
                     command.categoryId = params.categoryId
                     command.project = params.slug
                     controller<ProjectController>(this).removeCategory(command)
+                }
+                data class ProjectStatus(val slug: String, val statusId: UUID)
+                post<Response.Either<Response.Ok, Response.Errors>, NewStatus, SlugParam>("/statuses/add") { command, params ->
+                    command.project = params.slug
+                    controller<ProjectController>(this).addStatus(command)
+                }
+                post<Response.Either<Response.Ok, Response.Errors>, ChangeStatus, ProjectStatus>("/statuses/{statusId}/change") { command, params ->
+                    command.project = params.slug
+                    command.statusId = params.statusId
+                    controller<ProjectController>(this).changeStatus(command)
+                }
+                post<Response.Either<Response.Ok, Response.Errors>, RemoveStatus, ProjectStatus>("/statuses/{statusId}/remove") { command, params ->
+                    command.statusId = params.statusId
+                    command.project = params.slug
+                    controller<ProjectController>(this).removeStatus(command)
                 }
             }
         }

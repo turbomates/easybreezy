@@ -38,6 +38,7 @@ import io.easybreezy.hr.application.location.queryobject.IsUserLocationOwner
 import io.easybreezy.hr.application.location.queryobject.Locations
 import io.easybreezy.hr.application.location.queryobject.UserLocation
 import io.easybreezy.hr.application.location.queryobject.UserLocations
+import io.easybreezy.hr.application.location.queryobject.UsersLocations
 import io.easybreezy.infrastructure.ktor.GenericPipeline
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.ktor.Router
@@ -132,7 +133,18 @@ class Router @Inject constructor(
                 )
             }
             get<Response.Data<UserAbsences>>("/me") {
-                controller<AbsenceController>(this).myAbsences(resolvePrincipal<UserPrincipal>())
+                controller<AbsenceController>(this).userAbsences(resolvePrincipal<UserPrincipal>())
+            }
+        }
+
+        route("/user") {
+            authorize(setOf(Activity.ABSENCES_LIST, Activity.ABSENCES_MANAGE), {
+                val principal = principal<UserPrincipal>()
+                principal?.id == locations.resolve<UserId>(this).userId
+            }) {
+                get<Response.Data<UserAbsences>, UserId>("/{userId}/absences") { params ->
+                    controller<AbsenceController>(this).userAbsences(params.userId)
+                }
             }
         }
     }
@@ -152,47 +164,51 @@ class Router @Inject constructor(
                     controller<LocationController>(this).locations()
                 }
             }
+        }
 
-            route("/user") {
-                authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
-                    val principal = principal<UserPrincipal>()
-                    principal!!.id == receive<AssignLocation>().userId
-                }) {
-                    post<Response.Either<Response.Ok, Response.Errors>, AssignLocation>("") { command ->
-                        controller<LocationController>(this).assignLocation(
-                            command
-                        )
-                    }
+        route("/user-locations") {
+            authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
+                val principal = principal<UserPrincipal>()
+                principal!!.id == receive<AssignLocation>().userId
+            }) {
+                post<Response.Either<Response.Ok, Response.Errors>, AssignLocation>("") { command ->
+                    controller<LocationController>(this).assignLocation(
+                        command
+                    )
                 }
+            }
 
-                authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
-                    val principal = principal<UserPrincipal>()
-                    val userLocationId = locations.resolve<ID>(this).id
-                    queryExecutor.execute(IsUserLocationOwner(userLocationId, principal!!.id))
-                }) {
-                    post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") { command, params ->
-                        controller<LocationController>(this).editUserLocation(
-                            params.id,
-                            command
-                        )
-                    }
+            authorize(setOf(Activity.USER_LOCATIONS_MANAGE), {
+                val principal = principal<UserPrincipal>()
+                val userLocationId = locations.resolve<ID>(this).id
+                queryExecutor.execute(IsUserLocationOwner(userLocationId, principal!!.id))
+            }) {
+                post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") { command, params ->
+                    controller<LocationController>(this).editUserLocation(
+                        params.id,
+                        command
+                    )
                 }
+            }
 
-                authorize(setOf(Activity.USER_LOCATIONS_MANAGE)) {
-                    postParams<Response.Ok, ID>("/{id}/close") { params ->
-                        controller<LocationController>(this).closeUserLocation(
-                            params.id
-                        )
-                    }
+            authorize(setOf(Activity.USER_LOCATIONS_LIST)) {
+                get<Response.Data<UsersLocations>>("") {
+                    controller<LocationController>(this).usersLocations()
                 }
-                authorize(setOf(Activity.USER_LOCATIONS_LIST)) {
-                    get<Response.Data<UserLocations>>("") {
-                        controller<LocationController>(this).userLocations()
-                    }
-                }
+            }
 
-                get<Response.Data<UserLocation>, ID>("/{id}") { params ->
-                    controller<LocationController>(this).showUserLocation(params.id)
+            get<Response.Data<UserLocation>, ID>("/{id}") { params ->
+                controller<LocationController>(this).showUserLocation(params.id)
+            }
+        }
+
+        route("/user") {
+            authorize(setOf(Activity.USER_LOCATIONS_LIST), {
+                val principal = principal<UserPrincipal>()
+                principal?.id == locations.resolve<UserId>(this).userId
+            }) {
+                get<Response.Data<UserLocations>, UserId>("/{userId}/locations") { params ->
+                    controller<LocationController>(this).userLocations(params.userId)
                 }
             }
         }
@@ -296,8 +312,8 @@ class Router @Inject constructor(
                 }
             }
 
-            get<Response.Data<Holidays>>("") {
-                controller<CalendarController>(this).holidays()
+            get<Response.Data<Holidays>, ID>("/{id}") { params ->
+                controller<CalendarController>(this).holidays(params.id)
             }
         }
     }

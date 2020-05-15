@@ -12,4 +12,8 @@ declare module "AuthModels" {
     email: string;
     password: string;
   };
+
+  export type RulesMap = {
+    [rule: string]: string[];
+  };
 }

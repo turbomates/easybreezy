@@ -1,16 +1,20 @@
 package io.easybreezy.hr.application.calendar.queryobject
 
+import io.easybreezy.hr.model.calendar.Calendars
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDate
+import java.util.UUID
 import io.easybreezy.hr.model.calendar.Holidays as HolidaysTable
 
-class HolidaysQO() : QueryObject<Holidays> {
+class HolidaysQO(private val calendarId: UUID) : QueryObject<Holidays> {
     override suspend fun getData(): Holidays {
         val result = HolidaysTable
+            .join(Calendars, JoinType.INNER, additionalConstraint = { Calendars.id eq calendarId })
             .selectAll()
             .map { it.toHoliday() }
 
@@ -27,7 +31,8 @@ private fun ResultRow.toHoliday() = Holiday(
 @Serializable
 data class Holiday(
     val name: String,
-    @Serializable(with = LocalDateSerializer::class) val day: LocalDate,
+    @Serializable(with = LocalDateSerializer::class)
+    val day: LocalDate,
     val isWorkingDay: Boolean
 )
 

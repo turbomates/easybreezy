@@ -37,13 +37,12 @@ export const remove = (locationId: string) =>
       reason: resp?.response?.data?.error || "Error",
     }));
 
-// TODO refactor when back is ready
 export const fetchUserLocations = (userId: string) =>
   api
-    .get<EmployeeLocationsResponse>("/hr/locations/user")
+    .get<EmployeeLocationsResponse>(`hr/user/${userId}/locations`)
     .then<Success<EmployeeLocation[]>>(({ data }) => ({
       success: true,
-      data: data.data.userLocations[userId] || [],
+      data: data.data.userLocations || [],
     }))
     .catch<Failure>((resp) => ({
       success: false,
@@ -52,7 +51,7 @@ export const fetchUserLocations = (userId: string) =>
 
 export const assignUserLocations = (data: AssignLocationData) =>
   api
-    .post("/hr/locations/user", data)
+    .post("/hr/user-locations", data)
     .then<Success<null>>(() => ({ success: true, data: null }))
     .catch<FormFailure>((resp) => ({
       success: false,
@@ -70,7 +69,7 @@ export const removeUserLocation = (userLocationId: string) =>
 
 export const editUserLocation = (data: EditEmployeeLocationData) =>
   api
-    .post(`/hr/locations/user/${data.employeeLocationId}`, data.form)
+    .post(`/hr/user-locations/${data.employeeLocationId}`, data.form)
     .then<Success<null>>(() => ({ success: true, data: null }))
     .catch<FormFailure>((resp) => ({
       success: false,

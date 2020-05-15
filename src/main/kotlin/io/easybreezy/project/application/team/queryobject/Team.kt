@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
-import java.util.*
+import java.util.UUID
 
 class TeamQO(private val teamId: UUID) : QueryObject<Team> {
     override suspend fun getData() =

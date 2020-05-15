@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router";
+import { useParams } from "react-router";
 import { Card } from "antd";
 
 import { ProjectRoleForm } from "../features/project/components/ProjectRoleForm";
@@ -10,22 +10,19 @@ import {
   RemoveProjectRoleRequest,
 } from "ProjectModels";
 import {
-  clearStateAction,
   createProjectRoleAsync,
   editProjectRoleAsync,
   fetchProjectAsync,
+  fetchProjectRoleAsync,
   removeProjectRoleAsync,
 } from "../features/project/actions";
 import {
-  getErrors,
-  getProject,
-  getIsLoading,
+  selectProject,
+  selectRolePermissions,
 } from "../features/project/selectors";
-import { useClearState } from "../hooks/useClearState";
 
 export const ProjectRolePage: React.FC = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
   const { slug } = useParams<{ slug: string }>();
 
   const fetchProject = useCallback(
@@ -56,27 +53,28 @@ export const ProjectRolePage: React.FC = () => {
     [dispatch],
   );
 
-  const errors = useSelector(getErrors);
-  const loading = useSelector(getIsLoading);
-  const project = useSelector(getProject);
+  const fetchRolePermissions = useCallback(() => {
+    dispatch(fetchProjectRoleAsync.request());
+  }, [dispatch]);
+
+  const project = useSelector(selectProject);
+  const rolePermissions = useSelector(selectRolePermissions);
 
   useEffect(() => {
     fetchProject(slug);
-  }, [location, slug, fetchProject]);
+    fetchRolePermissions();
+  }, [slug, fetchProject, fetchRolePermissions]);
 
-  useClearState(clearStateAction);
-
-  if (!project) return null;
+  if (!project || slug !== project.slug) return null;
 
   return (
     <Card title="Role">
       <ProjectRoleForm
         project={project}
-        errors={errors}
-        loading={loading}
         edit={editProjectRole}
         create={createProjectRole}
         remove={removeProjectRole}
+        rolePermissions={rolePermissions}
       />
     </Card>
   );

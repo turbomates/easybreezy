@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class LocationControllerTest {
+    val df: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     @Test
     fun `location create`() {
@@ -91,12 +92,12 @@ class LocationControllerTest {
                 val locationId = database.createLocation()
                 val userId = database.createMember()
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/locations/user") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/user-locations") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
                             "userId" to userId.toString()
-                            "startedAt" to "2020-07-19"
+                            "startedAt" to LocalDate.now().format(df)
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -104,31 +105,8 @@ class LocationControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/user-locations?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
-                    Assertions.assertTrue(response.content?.contains("2020-07-19")!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `close user location`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
-                val userLocationId = database.createUserLocation(userId, locationId, endedAt = null)
-
-                with(handleRequest(HttpMethod.Post, "/api/hr/locations/user/$userLocationId/close") {}) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-
-                val df: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user/$userLocationId")) {
                     Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -146,21 +124,21 @@ class LocationControllerTest {
                 val userId = database.createMember()
                 val userLocationId = database.createUserLocation(userId, locationId, endedAt = null)
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/locations/user") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/user-locations") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
                             "userId" to userId.toString()
-                            "startedAt" to "2020-07-19"
+                            "startedAt" to LocalDate.now().format(df)
                             "locationId" to locationId.toString()
                         }.toString()
                     )
                 }) {
+                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                val df: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user/$userLocationId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/user-locations/$userLocationId")) {
                     Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
@@ -178,11 +156,11 @@ class LocationControllerTest {
                 val userId = database.createMember()
                 val userLocationId = database.createUserLocation(userId, locationId)
 
-                with(handleRequest(HttpMethod.Post, "/api/hr/locations/user/$userLocationId") {
+                with(handleRequest(HttpMethod.Post, "/api/hr/user-locations/$userLocationId") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
-                            "startedAt" to "2020-03-19"
+                            "startedAt" to LocalDate.now().format(df)
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -190,8 +168,8 @@ class LocationControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
-                    Assertions.assertTrue(response.content?.contains("2020-03-19")!!)
+                with(handleRequest(HttpMethod.Get, "/api/hr/user-locations?from=2010-04-04&to=2030-04-04")) {
+                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -208,7 +186,7 @@ class LocationControllerTest {
                 val userId = database.createMember()
                 val userLocationId = database.createUserLocation(userId, locationId)
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user/$userLocationId")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/user-locations/$userLocationId")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
                     Assertions.assertTrue(response.content?.contains(userId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -218,7 +196,7 @@ class LocationControllerTest {
     }
 
     @Test
-    fun `user locations listing`() {
+    fun `users locations listing`() {
         val memberId = UUID.randomUUID()
         val database = testDatabase
         withTestApplication({ testApplication(memberId, database) }) {
@@ -227,7 +205,26 @@ class LocationControllerTest {
                 val userId = database.createMember()
                 database.createUserLocation(userId, locationId)
 
-                with(handleRequest(HttpMethod.Get, "/api/hr/locations/user?from=2010-04-04&to=2030-04-04")) {
+                with(handleRequest(HttpMethod.Get, "/api/hr/user-locations?from=2010-04-04&to=2030-04-04")) {
+                    Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
+                    Assertions.assertTrue(response.content?.contains(userId.toString())!!)
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `test user locations`() {
+        val memberId = UUID.randomUUID()
+        val database = testDatabase
+        withTestApplication({ testApplication(memberId, database) }) {
+            rollbackTransaction(database) {
+                val locationId = database.createLocation()
+                val userId = database.createMember()
+                database.createUserLocation(userId, locationId)
+
+                with(handleRequest(HttpMethod.Get, "/api/hr/user/$userId/locations")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
                     Assertions.assertTrue(response.content?.contains(userId.toString())!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())

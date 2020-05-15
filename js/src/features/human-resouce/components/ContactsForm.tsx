@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Row, Col, Select } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import {
   EmployeeContact,
   ContactsForm as ContactsFormModel,
@@ -92,11 +92,14 @@ export const ContactsForm: React.FC<Props> = ({
               </Row>
             ))}
             {canEdit && (
-              <Form.Item>
-                <Button type="dashed" onClick={() => add()}>
-                  <PlusOutlined /> Add new contact
-                </Button>
-              </Form.Item>
+              <Row justify="end">
+                <Col>
+                  <PlusCircleOutlined
+                    onClick={add}
+                    className="dynamic-add-button"
+                  />
+                </Col>
+              </Row>
             )}
           </div>
         )}

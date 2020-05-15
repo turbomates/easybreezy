@@ -6,26 +6,28 @@ import {
   createProjectRoleAsync,
   editProjectRoleAsync,
   removeProjectRoleAsync,
-  openProjectDescriptionFormAction,
-  clearStateAction,
-  closeProjectDescriptionFormAction,
+  fetchProjectRoleAsync,
+  openProjectTeamCreateFormAction,
+  closeProjectTeamCreateFormAction,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
 import { normalizeErrors } from "utils/error";
-import { Project } from "ProjectModels";
+import { Project, RolePermissions } from "ProjectModels";
 
-export interface State {
-  project: Project | null;
+export type State = {
+  data: Project | null;
   loading: boolean;
   errors: FormErrorMap;
-  isOpenDescriptionForm: boolean;
+  rolePermissions: RolePermissions;
+  isOpenCreateTeamForm: boolean;
 }
 
 const initialSate: State = {
-  project: null,
-  isOpenDescriptionForm: false,
+  data: null,
   loading: false,
   errors: {},
+  rolePermissions: [],
+  isOpenCreateTeamForm: false,
 };
 
 export const reducer = createReducer<State>(initialSate)
@@ -104,14 +106,6 @@ export const reducer = createReducer<State>(initialSate)
     formErrors: normalizeErrors(action.payload),
     loading: false,
   }))
-  .handleAction(openProjectDescriptionFormAction, (state, action) => ({
-    ...state,
-    isOpenDescriptionForm: true,
-  }))
-  .handleAction(closeProjectDescriptionFormAction, (state, action) => ({
-    ...state,
-    isOpenDescriptionForm: false,
-  }))
   //PROJECT
   .handleAction(fetchProjectAsync.request, (state, action) => ({
     ...state,
@@ -120,10 +114,21 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(fetchProjectAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    project: action.payload,
+    data: action.payload,
   }))
   .handleAction(fetchProjectAsync.failure, (state, action) => ({
     ...state,
     loading: false,
   }))
-  .handleAction(clearStateAction, (state, action) => (state = initialSate));
+  .handleAction(fetchProjectRoleAsync.success, (state, action) => ({
+    ...state,
+    rolePermissions: action.payload,
+  }))
+  .handleAction(openProjectTeamCreateFormAction, (state, action) => ({
+    ...state,
+    isOpenCreateTeamForm: true,
+  }))
+  .handleAction(closeProjectTeamCreateFormAction, (state, action) => ({
+    ...state,
+    isOpenCreateTeamForm: false,
+  }));

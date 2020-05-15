@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal } from "antd";
 
-import { CreateProjectRequest, ProjectsRequest } from "ProjectModels";
+import { CreateProjectRequest, ProjectsListQuery } from "ProjectModels";
 import {
   closeProjectCreateForm,
   createProjectAsync,
@@ -10,10 +10,10 @@ import {
   openProjectCreateForm,
 } from "../features/project/actions";
 import {
-  getIsOpenProjectCreateForm,
-  getIsLoading,
-  getErrors,
-  getProjects,
+  selectIsOpenProjectCreateForm,
+  selectIsLoading,
+  selectErrors,
+  selectProjects,
 } from "../features/project/selectors";
 import { ProjectList } from "../features/project/components/ProjectList";
 import { CreateProjectForm } from "../features/project/components/ProjectCreateForm";
@@ -22,7 +22,7 @@ export const ProjectsPage: React.FC = () => {
   const dispatch = useDispatch();
 
   const fetchProjects = useCallback(
-    (params: ProjectsRequest) => {
+    (params: ProjectsListQuery) => {
       dispatch(fetchProjectsAsync.request(params));
     },
     [dispatch],
@@ -44,10 +44,10 @@ export const ProjectsPage: React.FC = () => {
     [dispatch],
   );
 
-  const errors = useSelector(getErrors);
-  const loading = useSelector(getIsLoading);
-  const isOpenCreateForm = useSelector(getIsOpenProjectCreateForm);
-  const projects = useSelector(getProjects);
+  const errors = useSelector(selectErrors);
+  const loading = useSelector(selectIsLoading);
+  const isOpenCreateForm = useSelector(selectIsOpenProjectCreateForm);
+  const projects = useSelector(selectProjects);
 
   return (
     <div style={{ padding: 8 }}>

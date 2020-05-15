@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import java.util.*
+import java.util.UUID
 
 class Category private constructor(id: EntityID<UUID>) : UUIDEntity(id) {
     var name by Categories.name

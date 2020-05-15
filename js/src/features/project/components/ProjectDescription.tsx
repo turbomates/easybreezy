@@ -1,19 +1,19 @@
 import React from "react";
 import { Button } from "antd";
 
-interface Props {
+type Props = {
   description?: string;
-  openProjectDescriptionForm: () => void;
+  onButtonClick: () => void;
 }
 
 export const ProjectDescription: React.FC<Props> = ({
   description,
-  openProjectDescriptionForm,
+  onButtonClick,
 }) => {
   return (
     <div>
       <p>{description}</p>
-      <Button type="primary" onClick={openProjectDescriptionForm}>
+      <Button type="primary" onClick={onButtonClick}>
         Edit
       </Button>
     </div>

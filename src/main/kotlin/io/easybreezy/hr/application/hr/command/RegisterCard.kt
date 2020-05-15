@@ -1,5 +1,5 @@
 package io.easybreezy.hr.application.hr.command
 
-import java.util.*
+import java.util.UUID
 
 data class RegisterCard(val user: UUID)
