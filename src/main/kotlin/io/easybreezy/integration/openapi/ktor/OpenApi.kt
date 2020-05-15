@@ -4,17 +4,23 @@ import io.easybreezy.integration.openapi.OpenAPI
 import io.easybreezy.integration.openapi.OpenApiKType
 import io.easybreezy.integration.openapi.Type
 import io.easybreezy.integration.openapi.openApiKType
+import io.easybreezy.integration.openapi.spec.Root
 import io.ktor.application.ApplicationCall
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.ApplicationFeature
 import io.ktor.application.call
 import io.ktor.application.featureOrNull
 import io.ktor.features.CORS
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.path
-import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.serializer
 import kotlin.reflect.KType
 
 class OpenApi(configuration: Configuration) {
@@ -49,7 +55,16 @@ class OpenApi(configuration: Configuration) {
 
     suspend fun intercept(context: PipelineContext<Unit, ApplicationCall>) {
         if (context.call.request.path() == path) {
-            context.call.respond(openApi.root)
+            val response = Json(
+                JsonConfiguration.Default.copy(
+                    encodeDefaults = false
+                )
+            ).stringify(
+                Root::class.serializer(), openApi.root
+            )
+            context.call.response.status(HttpStatusCode.OK)
+
+            context.call.respondText(response, contentType = ContentType.Application.Json)
             context.finish()
         }
     }
