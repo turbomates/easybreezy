@@ -2,14 +2,17 @@ package io.easybreezy.project.application.project.queryobject
 
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.issue.Issues
+import io.easybreezy.project.model.issue.PriorityTable
 import io.easybreezy.project.model.issue.Statuses
 import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Teams
 import io.easybreezy.user.model.Users
 import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.lowerCase
+import org.jetbrains.exposed.sql.select
 import java.util.UUID
 
 class IssueStatusOnCreateQO(private val project: UUID) : QueryObject<UUID?> {
@@ -49,14 +52,20 @@ class MembersQO(private val project: UUID, private val usernames: List<String>) 
     }
 }
 
-class LastLowestPriorityQO(private val project: UUID) : QueryObject<Int?> {
-    override suspend fun getData(): Int? {
-        return 0 // @todo select min priority where project
+class LastLowestPriorityQO(private val project: UUID) : QueryObject<Int> {
+    override suspend fun getData(): Int {
+        //todo add only active tasks for query filtering
+        val row = Issues.slice(Issues.priority[PriorityTable.value]).select { Issues.project eq project }.limit(1)
+            .orderBy(Issues.priority[PriorityTable.value], SortOrder.DESC).singleOrNull()
+        return row?.let { it[Issues.priority[PriorityTable.value]] } ?: 0
     }
 }
 
-class LastHighestPriorityQO(private val project: UUID) : QueryObject<Int?> {
-    override suspend fun getData(): Int? {
-        return 0 // @todo select max priority where project
+class LastHighestPriorityQO(private val project: UUID) : QueryObject<Int> {
+    override suspend fun getData(): Int {
+        //todo add only active tasks for query filtering
+        val row = Issues.slice(Issues.priority[PriorityTable.value]).select { Issues.project eq project }.limit(1)
+            .orderBy(Issues.priority[PriorityTable.value], SortOrder.ASC).singleOrNull()
+        return row?.let { it[Issues.priority[PriorityTable.value]] } ?: 0
     }
 }
