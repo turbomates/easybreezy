@@ -1,14 +1,10 @@
 package io.easybreezy.project.application.issue.command
 
-import io.easybreezy.project.application.issue.command.parser.IssueParserException
 import io.easybreezy.project.application.issue.command.parser.Parser
-import io.ktor.client.tests.utils.assertFailsWith
-import io.ktor.util.InternalAPI
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class ParserTest {
-
     private val parser = Parser()
 
     @Test fun `title new line`() {
@@ -40,13 +36,28 @@ class ParserTest {
         """.trimIndent(), data.description)
     }
 
-    @InternalAPI
     @Test fun `no title separator`() {
         val description = """
             Roles to Activities We upgrade (and obvious rename)
         """.trimIndent()
 
-        assertFailsWith<IssueParserException> { parser.parse(description) }
+        val data = parser.parse(description)
+
+        Assertions.assertEquals("Roles to A", data.title)
+        Assertions.assertEquals("""
+            ctivities We upgrade (and obvious rename)
+        """.trimIndent(), data.description)
+    }
+
+    @Test fun `no title separator less 10 chars`() {
+        val description = """
+            Roles
+        """.trimIndent()
+
+        val data = parser.parse(description)
+
+        Assertions.assertEquals("Roles", data.title)
+        Assertions.assertEquals("", data.description)
     }
 
     @Test fun `extract category`() {

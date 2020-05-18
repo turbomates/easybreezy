@@ -1,32 +1,43 @@
 package io.easybreezy.project.application.issue.command.parser
 
 import com.google.inject.Inject
+import kotlin.math.max
 
 class Parser @Inject constructor() {
 
     companion object {
         const val PERSON_IDENTIFIER = "(?<=@).+?(?=\\s)"
         const val CATEGORY_IDENTIFIER = "(?<=<).+?(?=>)"
-        const val TITLE_DESC_IDENTIFIER = "(.+[\\n.!?])((.|\\n)*)"
+        const val TITLE_IDENTIFIER = "(.+[\\n.!?])((.|\\n)*)"
+        const val TITLE_NO_IDENTIFIER_LENGTH = 10
         const val PRIORITY_IDENTIFIER = "(?<=\\s)\\w+?(?= priority)"
     }
 
     fun parse(text: String): Parsed {
-        val titleRegex = TITLE_DESC_IDENTIFIER.toRegex()
-
-        val titleMatch = titleRegex.find(text) ?: throw IssueParserException(
-            "Could not find a title!"
-        )
-        val (title, description) = titleMatch.destructured
+        val (title, description) = extractTitle(text)
 
         val persons = extractPersons(description)
         return Parsed(
             title.trim(),
-            description,
+            description.trim(),
             extractPriority(description),
             extractCategory(description),
             persons.firstOrNull(),
             persons.drop(1).distinct().toList()
+        )
+    }
+
+    private fun extractTitle(text: String): Pair<String, String> {
+        val titleRegex = TITLE_IDENTIFIER.toRegex()
+        val titleMatch = titleRegex.find(text)
+        if (titleMatch != null) {
+            val (title, description) = titleMatch.destructured
+            return Pair(title, description)
+        }
+
+        return Pair(
+            text.take(TITLE_NO_IDENTIFIER_LENGTH),
+            text.takeLast(max(0, text.count() - TITLE_NO_IDENTIFIER_LENGTH))
         )
     }
 
@@ -55,5 +66,3 @@ data class Parsed(
     val assignee: String? = null,
     val watchers: List<String>? = null
 )
-
-class IssueParserException(override val message: String) : Exception(message)
