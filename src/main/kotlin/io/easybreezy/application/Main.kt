@@ -100,6 +100,7 @@ suspend fun main() {
             header(HttpHeaders.IfModifiedSince)
             header(HttpHeaders.CacheControl)
             header(HttpHeaders.ContentType)
+            header(HttpHeaders.Authorization)
             anyHost()
             allowCredentials = true
             allowNonSimpleContentTypes = true
