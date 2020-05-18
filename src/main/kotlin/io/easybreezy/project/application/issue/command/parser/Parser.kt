@@ -3,14 +3,16 @@ package io.easybreezy.project.application.issue.command.parser
 import com.google.inject.Inject
 import kotlin.math.max
 
-class Parser @Inject constructor() {
+class Parser @Inject constructor(
+    translator: Translator
+) {
+    private val translations: List<Translations> = translator.load()
 
     companion object {
         const val PERSON_IDENTIFIER = "(?<=@).+?(?=\\s)"
         const val CATEGORY_IDENTIFIER = "(?<=<).+?(?=>)"
         const val TITLE_IDENTIFIER = "(.+[\\n.!?])((.|\\n)*)"
         const val TITLE_NO_IDENTIFIER_LENGTH = 10
-        const val PRIORITY_IDENTIFIER = "(?<=\\s)\\w+?(?= priority)"
     }
 
     fun parse(text: String): Parsed {
@@ -53,8 +55,17 @@ class Parser @Inject constructor() {
     }
 
     private fun extractPriority(description: String): String? {
-        return PRIORITY_IDENTIFIER.toRegex()
-            .find(description)?.value
+        translations.forEach {
+            it.priority.forEach { (t, values) ->
+                values.split(",").map { priority ->
+                    if (description.contains(priority.trim())) {
+                        return t
+                    }
+                }
+            }
+        }
+
+        return null
     }
 }
 

@@ -1,11 +1,12 @@
 package io.easybreezy.project.application.issue.command
 
 import io.easybreezy.project.application.issue.command.parser.Parser
+import io.easybreezy.project.application.issue.command.parser.Translator
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class ParserTest {
-    private val parser = Parser()
+    private val parser = Parser(Translator())
 
     @Test fun `title new line`() {
         val description = """
@@ -83,6 +84,15 @@ class ParserTest {
         val description = """
             Roles to Activities 
             We upgrade (and obvious rename) high priority
+        """.trimIndent()
+        val data = parser.parse(description)
+        Assertions.assertEquals("high", data.priority)
+    }
+
+    @Test fun `extract priority in russian`() {
+        val description = """
+            Конвертировать роли в активности
+            Необходима конвертация ролей, высокий приоритет
         """.trimIndent()
         val data = parser.parse(description)
         Assertions.assertEquals("high", data.priority)
