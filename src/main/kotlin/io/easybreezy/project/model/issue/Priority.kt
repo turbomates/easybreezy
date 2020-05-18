@@ -43,26 +43,16 @@ class Priority private constructor() : Embeddable() {
             return priority
         }
 
-        fun highest(lastHighest: Int?): Priority {
+        fun highest(lastHighest: Int): Priority {
             val priority = Priority()
-            if (lastHighest == null) {
-                priority.value = 1
-            } else {
-                priority.value = lastHighest + 1
-            }
-
+            priority.value = lastHighest + 1
             priority.color = Color.RED
             return priority
         }
 
-        fun lowest(lastLowest: Int?): Priority {
+        fun lowest(lastLowest: Int): Priority {
             val priority = Priority()
-            if (lastLowest == null) {
-                priority.value = -1
-            } else {
-                priority.value = lastLowest - 1
-            }
-
+            priority.value = lastLowest - 1
             priority.color = Color.YELLOW
             return priority
         }

@@ -54,7 +54,6 @@ class MembersQO(private val project: UUID, private val usernames: List<String>) 
 
 class LastLowestPriorityQO(private val project: UUID) : QueryObject<Int> {
     override suspend fun getData(): Int {
-        // todo add only active tasks for query filtering
         val row = Issues.slice(Issues.priority[PriorityTable.value]).select { Issues.project eq project }.limit(1)
             .orderBy(Issues.priority[PriorityTable.value], SortOrder.DESC).singleOrNull()
         return row?.let { it[Issues.priority[PriorityTable.value]] } ?: 0
@@ -63,7 +62,6 @@ class LastLowestPriorityQO(private val project: UUID) : QueryObject<Int> {
 
 class LastHighestPriorityQO(private val project: UUID) : QueryObject<Int> {
     override suspend fun getData(): Int {
-        // todo add only active tasks for query filtering
         val row = Issues.slice(Issues.priority[PriorityTable.value]).select { Issues.project eq project }.limit(1)
             .orderBy(Issues.priority[PriorityTable.value], SortOrder.ASC).singleOrNull()
         return row?.let { it[Issues.priority[PriorityTable.value]] } ?: 0
