@@ -1,7 +1,10 @@
 package io.easybreezy.project.application.issue.command.parser
 
 import com.google.inject.Inject
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
 class Parser @Inject constructor(
@@ -15,6 +18,7 @@ class Parser @Inject constructor(
         const val LABEL_IDENTIFIER = "(?<=\\*)\\b.+?\\b(?=\\*)"
         const val TITLE_IDENTIFIER = "(.+[\\n.!?])((.|\\n)*)"
         const val TITLE_NO_IDENTIFIER_LENGTH = 10
+        const val DATE_IDENTIFIER = "[0-9]{2}/[0-9]{2}/[0-9]{4}(\\s[0-9]{2}:[0-9]{2})?"
     }
 
     fun parse(text: String): Parsed {
@@ -78,7 +82,23 @@ class Parser @Inject constructor(
     }
 
     private fun extractDates(description: String): Pair<LocalDateTime?, LocalDateTime?> {
-        return Pair(LocalDateTime.now(), LocalDateTime.now())
+         val dates = DATE_IDENTIFIER.toRegex()
+            .findAll(description).toList()
+            .map { dateStr ->
+                val datetime = dateStr.value.split(" ")
+                LocalDate
+                    .parse(datetime.first(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    .atTime(
+                        LocalTime.parse(datetime.getOrNull(1) ?: "00:00", DateTimeFormatter.ofPattern("HH:mm"))
+                    )
+            }
+             .sortedDescending()
+
+        return when (dates.count()) {
+            0 -> Pair(null, null)
+            1 -> Pair(null, dates.first())
+            else -> Pair(dates.last(), dates.first())
+        }
     }
 }
 

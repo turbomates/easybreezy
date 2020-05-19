@@ -4,6 +4,8 @@ import io.easybreezy.project.application.issue.command.parser.Parser
 import io.easybreezy.project.application.issue.command.parser.Translator
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ParserTest {
     private val parser = Parser(Translator())
@@ -105,5 +107,32 @@ class ParserTest {
         """.trimIndent()
         val data = parser.parse(description)
         Assertions.assertEquals(listOf("urgent", "backend", "bug"), data.labels)
+    }
+
+
+    @Test fun `extract dates`() {
+        val description = """
+            Roles to Activities 
+            We upgrade (and obvious rename) due date 12/05/2020
+        """.trimIndent()
+        val data = parser.parse(description)
+        Assertions.assertEquals(
+            LocalDateTime.of(2020,5,12,0,0),
+            data.due)
+    }
+
+    @Test fun `extract date time`() {
+        val description = """
+            Roles to Activities 
+            We upgrade (and obvious rename) start on 01/01/2020 due date 12/05/2020 15:00
+        """.trimIndent()
+        val data = parser.parse(description)
+        Assertions.assertEquals(
+            LocalDateTime.of(2020,5,12,15,0),
+            data.due)
+
+        Assertions.assertEquals(
+            LocalDateTime.of(2020,1,1,0,0),
+            data.start)
     }
 }
