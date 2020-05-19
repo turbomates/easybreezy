@@ -11,12 +11,12 @@ import {
   openProjectTeamCreateFormAction,
 } from "../features/project/actions";
 import {
-  selectErrors,
   selectIsOpenCreateTeamForm,
+  selectNewTeamFormErrors,
   selectProject,
 } from "../features/project/selectors";
-import { ProjectTeamsList } from "../features/project/components/ProjectTeamsList";
-import { ProjectTeamsCreateForm } from "../features/project/components/ProjectTeamsCreateForm";
+import { TeamList } from "../features/project/components/Team/TeamList";
+import { TeamCreateForm } from "../features/project/components/Team/TeamCreateForm";
 import { CreateProjectTeamRequest } from "ProjectModels";
 
 export const ProjectTeamsPage: React.FC = () => {
@@ -46,10 +46,8 @@ export const ProjectTeamsPage: React.FC = () => {
   }, [dispatch]);
 
   const project = useSelector(selectProject);
-  const errors = useSelector(selectErrors);
-  const isOpenTeamCreateForm = useSelector(
-    selectIsOpenCreateTeamForm,
-  );
+  const newTeamFormErrors = useSelector(selectNewTeamFormErrors);
+  const isOpenTeamCreateForm = useSelector(selectIsOpenCreateTeamForm);
 
   useEffect(() => {
     fetchProject(slug);
@@ -64,7 +62,7 @@ export const ProjectTeamsPage: React.FC = () => {
           title="Teams"
           extra={<PlusOutlined onClick={openProjectTeamCreateForm} />}
         >
-          <ProjectTeamsList teams={project.teams} slug={project.slug} />
+          <TeamList teams={project.teams} slug={project.slug} />
         </Card>
       </Col>
 
@@ -75,9 +73,9 @@ export const ProjectTeamsPage: React.FC = () => {
         footer={null}
         destroyOnClose={true}
       >
-        <ProjectTeamsCreateForm
+        <TeamCreateForm
           projectId={project.id}
-          errors={errors}
+          errors={newTeamFormErrors}
           create={createTeam}
         />
       </Modal>

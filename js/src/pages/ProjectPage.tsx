@@ -15,15 +15,16 @@ import {
   fetchProjectAsync,
 } from "../features/project/actions";
 import {
-  selectErrors,
   selectProject,
-  selectIsLoading,
+  selectProjectSlugFormErrors,
+  selectProjectDescriptionFormErrors,
+  selectIsLoadingProject,
 } from "../features/project/selectors";
-import { ProjectDescriptionForm } from "../features/project/components/ProjectDescriptionForm";
-import { ProjectStatusForm } from "../features/project/components/ProjectStatusForm";
-import { ProjectDescription } from "../features/project/components/ProjectDescription";
-import { ProjectSlug } from "../features/project/components/ProjectSlug";
-import { ProjectSlugForm } from "../features/project/components/ProjectSlugForm";
+import { ProjectDescriptionForm } from "../features/project/components/Project/ProjectDescriptionForm";
+import { ProjectStatusForm } from "../features/project/components/Project/ProjectStatusForm";
+import { ProjectDescription } from "../features/project/components/Project/ProjectDescription";
+import { ProjectSlug } from "../features/project/components/Project/ProjectSlug";
+import { ProjectSlugForm } from "../features/project/components/Project/ProjectSlugForm";
 
 export const ProjectPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -66,9 +67,10 @@ export const ProjectPage: React.FC = () => {
     [dispatch],
   );
 
-  const errors = useSelector(selectErrors);
-  const loading = useSelector(selectIsLoading);
+  const loading = useSelector(selectIsLoadingProject);
   const project = useSelector(selectProject);
+  const descriptionFormErrors = useSelector(selectProjectDescriptionFormErrors);
+  const slugFormErrors = useSelector(selectProjectSlugFormErrors);
 
   useEffect(() => {
     fetchProject(slug);
@@ -85,7 +87,6 @@ export const ProjectPage: React.FC = () => {
           <ProjectStatusForm
             change={changeProjectStatus}
             project={project}
-            errors={errors}
             loading={loading}
           />
         )}
@@ -94,9 +95,7 @@ export const ProjectPage: React.FC = () => {
       <Card title="Description">
         {!isOpenProjectDescriptionForm && (
           <ProjectDescription
-            onButtonClick={() =>
-              setIsOpenProjectDescriptionForm(true)
-            }
+            onButtonClick={() => setIsOpenProjectDescriptionForm(true)}
             description={project?.description}
           />
         )}
@@ -105,7 +104,7 @@ export const ProjectPage: React.FC = () => {
           <ProjectDescriptionForm
             edit={editProjectDescription}
             close={() => setIsOpenProjectDescriptionForm(false)}
-            errors={errors}
+            errors={descriptionFormErrors}
             project={project}
             loading={loading}
           />
@@ -124,7 +123,7 @@ export const ProjectPage: React.FC = () => {
           <ProjectSlugForm
             edit={editProjectSlug}
             close={() => setIsOpenProjectEditSlugForm(false)}
-            errors={errors}
+            errors={slugFormErrors}
             project={project}
             loading={loading}
           />

@@ -1,10 +1,8 @@
 import React, { useCallback, useMemo } from "react";
 import { Form, Select } from "antd";
 
-import { useFormServerErrors } from "hooks/useFormServerErrors";
-import { FormErrorMap } from "MyTypes";
 import { Project, EditProjectStatusRequest } from "ProjectModels";
-import { switchProjectStatus } from "../helpers";
+import { switchProjectStatus } from "../../helpers";
 
 import "./ProjectStatusForm.scss";
 
@@ -13,12 +11,10 @@ const { Option } = Select;
 type Props = {
   change: (form: EditProjectStatusRequest) => void;
   project: Project;
-  errors: FormErrorMap;
   loading: boolean;
-}
+};
 
 export const ProjectStatusForm: React.FC<Props> = ({
-  errors,
   change,
   project,
   loading,
@@ -28,8 +24,6 @@ export const ProjectStatusForm: React.FC<Props> = ({
   const initialValues = useMemo(() => ({ status: project.status }), [
     project.status,
   ]);
-
-  useFormServerErrors(form, errors, ["status"]);
 
   const onFinish = useCallback(
     (values: any) => {
@@ -41,16 +35,11 @@ export const ProjectStatusForm: React.FC<Props> = ({
     [project.slug, change],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   return (
     <Form
       form={form}
       labelCol={{ span: 2 }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       initialValues={initialValues}
     >
       <Form.Item name="status" className="status-form__select">

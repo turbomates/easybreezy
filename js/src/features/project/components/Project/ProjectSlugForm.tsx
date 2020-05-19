@@ -2,18 +2,18 @@ import React, { useCallback, useMemo } from "react";
 import { Button, Col, Form, Input, Row } from "antd";
 
 import { useFormServerErrors } from "hooks/useFormServerErrors";
-import { EditProjectDescriptionRequest, Project } from "ProjectModels";
+import { EditProjectSlugRequest, Project } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
 
 type Props = {
   project: Project;
-  edit: (form: EditProjectDescriptionRequest) => void;
+  edit: (form: EditProjectSlugRequest) => void;
   close: () => void;
   errors: FormErrorMap;
   loading: boolean;
-}
+};
 
-export const ProjectDescriptionForm: React.FC<Props> = ({
+export const ProjectSlugForm: React.FC<Props> = ({
   project,
   errors,
   edit,
@@ -24,44 +24,38 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
 
   const initialValues = useMemo(
     () => ({
-      description: project.description,
+      slug: project.slug,
     }),
-    [project.description],
+    [project.slug],
   );
 
-  useFormServerErrors(form, errors, ["description"]);
+  useFormServerErrors(form, errors, ["slug"]);
 
   const onFinish = useCallback(
     (values: any) => {
       edit({
         slug: project.slug,
-        description: values.description,
+        newSlug: values.slug,
       });
     },
     [project.slug, edit],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   return (
-    <Form
-      form={form}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      initialValues={initialValues}
-    >
+    <Form form={form} onFinish={onFinish} initialValues={initialValues}>
       <Form.Item
-        name="description"
+        name="slug"
         rules={[
+          { required: true, message: "Please input slug" },
           {
-            required: true,
-            message: "Please input description!",
+            pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
+            message: "Please input valid slug",
           },
+          { min: 2, message: "Name should be at least 2 characters long" },
+          { max: 25, message: "Name must be no more than 25 characters" },
         ]}
       >
-        <Input.TextArea autoSize />
+        <Input />
       </Form.Item>
 
       <Form.Item>

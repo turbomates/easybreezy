@@ -9,11 +9,11 @@ import {
   CreateProjectRoleRequest,
   RolePermissions,
 } from "ProjectModels";
-import { ProjectRoleFormTableWrapper } from "./ProjectRoleFormTableWrapper";
-import { ProjectRoleFormEditRoleName } from "./ProjectRoleFormEditRoleName";
-import { ProjectRoleFormViewRoleName } from "./ProjectRoleFormViewRoleName";
+import { RoleFormTableWrapper } from "./RoleFormTableWrapper";
+import { RoleFormEditRoleName } from "./RoleFormEditRoleName";
+import { RoleFormViewRoleName } from "./RoleFormViewRoleName";
 
-import "./ProjectRoleForm.scss";
+import "./RoleForm.scss";
 
 type Props = {
   project: Project;
@@ -35,7 +35,7 @@ type Form = {
 
 const minLengthRoleName = 2;
 
-export const ProjectRoleForm: React.FC<Props> = ({
+export const RoleForm: React.FC<Props> = ({
   create,
   edit,
   remove,
@@ -179,20 +179,20 @@ export const ProjectRoleForm: React.FC<Props> = ({
   ]);
 
   return (
-    <ProjectRoleFormTableWrapper permissions={rolePermissions}>
+    <RoleFormTableWrapper permissions={rolePermissions}>
       <tbody>
         {Object.values(form).map((field, fieldIndex) => {
           return (
             <tr key={fieldIndex}>
               {isOpenInput(fieldIndex) ? (
-                <ProjectRoleFormEditRoleName
+                <RoleFormEditRoleName
                   editInputRole={editInputRole}
                   field={field}
                   fieldIndex={fieldIndex}
                   closeInputRole={() => closeInputRole(fieldIndex)}
                 />
               ) : (
-                <ProjectRoleFormViewRoleName
+                <RoleFormViewRoleName
                   name={field.name}
                   removeRole={() => removeRole(fieldIndex)}
                   openInputRole={() => setIndexOfEditableInput(fieldIndex)}
@@ -224,6 +224,6 @@ export const ProjectRoleForm: React.FC<Props> = ({
           </td>
         </tr>
       </tfoot>
-    </ProjectRoleFormTableWrapper>
+    </RoleFormTableWrapper>
   );
 };

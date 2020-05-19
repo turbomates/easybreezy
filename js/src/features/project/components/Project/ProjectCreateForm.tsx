@@ -4,13 +4,13 @@ import { Button, Form, Input } from "antd";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { CreateProjectRequest } from "ProjectModels";
-import { convertToSlug } from "../helpers";
+import { convertToSlug } from "../../helpers";
 
 type Props = {
   create: (form: CreateProjectRequest) => void;
   errors: FormErrorMap;
   loading: boolean;
-}
+};
 
 export const CreateProjectForm: React.FC<Props> = ({
   errors,
@@ -32,10 +32,6 @@ export const CreateProjectForm: React.FC<Props> = ({
     [create],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   function changeSlug(value: string) {
     if (!form.isFieldTouched("slug")) {
       form.setFields([
@@ -49,16 +45,16 @@ export const CreateProjectForm: React.FC<Props> = ({
   }
 
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 8 }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-    >
+    <Form form={form} labelCol={{ span: 8 }} onFinish={onFinish}>
       <Form.Item
         label="Name"
         name="name"
-        rules={[{ required: true, message: "Please input Name!" }]}
+        rules={[
+          { required: true, message: "Please input name" },
+          { min: 2, message: "Name should be at least 2 characters long" },
+          { max: 255, message: "Name must be no more than 255 characters" },
+          { whitespace: true, message: "Please input name" },
+        ]}
       >
         <Input onChange={(event) => changeSlug(event.target.value)} />
       </Form.Item>
@@ -66,7 +62,10 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Description"
         name="description"
-        rules={[{ required: true, message: "Please input Description!" }]}
+        rules={[
+          { required: true, message: "Please input description" },
+          { whitespace: true, message: "Please input description" },
+        ]}
       >
         <Input />
       </Form.Item>
@@ -75,8 +74,11 @@ export const CreateProjectForm: React.FC<Props> = ({
         label="Slug"
         name="slug"
         rules={[
-          { required: true, message: "Please input Slug!" },
-          { pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/, message: "Please input valid Slug!" },
+          { required: true, message: "Please input slug" },
+          {
+            pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
+            message: "Please input valid slug",
+          },
         ]}
       >
         <Input />

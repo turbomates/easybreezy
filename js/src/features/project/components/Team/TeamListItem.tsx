@@ -9,7 +9,7 @@ type Props = {
   slug: string;
 }
 
-export const ProjectTeamsListItem: React.FC<Props> = ({ team, slug }) => (
+export const TeamListItem: React.FC<Props> = ({ team, slug }) => (
   <List.Item>
     <List.Item.Meta
       title={

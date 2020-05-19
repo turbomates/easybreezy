@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Button, Form, Select } from "antd";
 
 import { NewProjectTeamMemberRequest, Role } from "ProjectModels";
-import { Choice } from "MyTypes";
+import { Choice, FormErrorMap } from "MyTypes"
 
 const { Option } = Select;
 
@@ -11,6 +11,7 @@ type Props = {
   roles: Role[];
   add: (form: NewProjectTeamMemberRequest) => void;
   employeesSelectOptions: Choice[];
+  errors: FormErrorMap | {};
 }
 
 const formItemLayout = {
@@ -25,6 +26,7 @@ export const TeamNewMemberForm: React.FC<Props> = ({
   roles,
   add,
   employeesSelectOptions,
+  errors,
 }) => {
   const [form] = Form.useForm();
 

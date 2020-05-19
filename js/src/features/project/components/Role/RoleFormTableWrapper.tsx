@@ -4,7 +4,7 @@ type Props = {
   permissions: string[];
 }
 
-export const ProjectRoleFormTableWrapper: React.FC<Props> = ({
+export const RoleFormTableWrapper: React.FC<Props> = ({
   permissions,
   children,
 }) => {

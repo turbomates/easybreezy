@@ -2,18 +2,18 @@ import React, { useCallback, useMemo } from "react";
 import { Button, Col, Form, Input, Row } from "antd";
 
 import { useFormServerErrors } from "hooks/useFormServerErrors";
-import { EditProjectSlugRequest, Project } from "ProjectModels";
+import { EditProjectDescriptionRequest, Project } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
 
 type Props = {
   project: Project;
-  edit: (form: EditProjectSlugRequest) => void;
+  edit: (form: EditProjectDescriptionRequest) => void;
   close: () => void;
   errors: FormErrorMap;
   loading: boolean;
-}
+};
 
-export const ProjectSlugForm: React.FC<Props> = ({
+export const ProjectDescriptionForm: React.FC<Props> = ({
   project,
   errors,
   edit,
@@ -24,45 +24,33 @@ export const ProjectSlugForm: React.FC<Props> = ({
 
   const initialValues = useMemo(
     () => ({
-      slug: project.slug,
+      description: project.description,
     }),
-    [project.slug],
+    [project.description],
   );
 
-  useFormServerErrors(form, errors, ["slug"]);
+  useFormServerErrors(form, errors, ["description"]);
 
   const onFinish = useCallback(
     (values: any) => {
       edit({
         slug: project.slug,
-        newSlug: values.slug,
+        description: values.description,
       });
     },
     [project.slug, edit],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   return (
-    <Form
-      form={form}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      initialValues={initialValues}
-    >
+    <Form form={form} onFinish={onFinish} initialValues={initialValues}>
       <Form.Item
-        name="slug"
+        name="description"
         rules={[
-          { required: true, message: "Please input Slug!" },
-          {
-            pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
-            message: "Please input valid Slug!",
-          },
+          { required: true, message: "Please input description" },
+          { whitespace: true, message: "Please input description" },
         ]}
       >
-        <Input />
+        <Input.TextArea autoSize />
       </Form.Item>
 
       <Form.Item>

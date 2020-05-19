@@ -8,7 +8,7 @@ type Props = {
   openInputRole: () => void;
 }
 
-export const ProjectRoleFormViewRoleName: React.FC<Props> = ({
+export const RoleFormViewRoleName: React.FC<Props> = ({
   name,
   openInputRole,
   removeRole,

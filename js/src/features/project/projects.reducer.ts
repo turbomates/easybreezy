@@ -14,14 +14,14 @@ export type State = {
   list: Paging<ProjectList> | null;
   isOpenCreateForm: boolean;
   loading: boolean;
-  errors: FormErrorMap;
+  createFormErrors: FormErrorMap;
 }
 
 const initialSate: State = {
   list: null,
   isOpenCreateForm: false,
   loading: false,
-  errors: {},
+  createFormErrors: {}
 };
 
 export const reducer = createReducer<State>(initialSate)
@@ -43,11 +43,11 @@ export const reducer = createReducer<State>(initialSate)
     ...state,
     isOpenCreateForm: false,
     loading: false,
-    formErrors: {},
+    createFormErrors: {},
   }))
   .handleAction(createProjectAsync.failure, (state, action) => ({
     ...state,
-    formErrors: normalizeErrors(action.payload),
+    createFormErrors: normalizeErrors(action.payload),
     loading: false,
   }))
   //PROJECTS
