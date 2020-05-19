@@ -26,7 +26,9 @@ class IssueControllerTest {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
-                            "content" to "Important issue. About important stuff"
+                            "content" to """Important issue.
+|                               About important stuff.
+|                               Also it labeled as *bug* and *frontend*""".trimMargin()
                         }
                             .toString())
                 }) {
@@ -38,6 +40,17 @@ class IssueControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Important")!!)
                     Assertions.assertTrue(response.content?.contains("#FFFFFF")!!)
+
+                    val issueId = response.content?.let {
+                        """(?<="id": ").+?(?=")""".toRegex().find(it)?.value
+                    }
+
+                    with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues/$issueId")) {
+                        val p = response.content
+                        Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                        Assertions.assertTrue(response.content?.contains("bug")!!)
+                        Assertions.assertTrue(response.content?.contains("frontend")!!)
+                    }
                 }
             }
         }

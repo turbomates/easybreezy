@@ -17,6 +17,7 @@ import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.issue.queryobject.Issue
+import io.easybreezy.project.application.issue.queryobject.IssueDetails
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
 import io.easybreezy.project.application.member.queryobject.MemberActivities
 import io.easybreezy.project.application.project.command.ChangeCategory
@@ -148,6 +149,12 @@ class Router @Inject constructor(
                     new.author = resolvePrincipal<UserPrincipal>()
                     controller<IssueController>(this).create(new)
                 }
+
+                data class ProjectIssue(val slug: String, val issueId: UUID)
+                get<Response.Data<IssueDetails>, ProjectIssue>("/issues/{issueId}") { params ->
+                    controller<IssueController>(this).show(params.issueId)
+                }
+
                 get<Response.Listing<Issue>, SlugParam>("/issues") { params ->
                     controller<IssueController>(this).list(params.slug)
                 }

@@ -97,4 +97,13 @@ class ParserTest {
         val data = parser.parse(description)
         Assertions.assertEquals("high", data.priority)
     }
+
+    @Test fun `extract labels`() {
+        val description = """
+            Roles to Activities 
+            We upgrade (and obvious rename) high priority *urgent* *backend* some text *bug* mor words * and else **
+        """.trimIndent()
+        val data = parser.parse(description)
+        Assertions.assertEquals(listOf("urgent", "backend", "bug"), data.labels)
+    }
 }

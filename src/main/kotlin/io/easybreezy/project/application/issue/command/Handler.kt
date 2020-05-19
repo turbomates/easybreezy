@@ -7,6 +7,7 @@ import io.easybreezy.project.application.issue.command.parser.StatusWorkflow
 import io.easybreezy.project.application.issue.command.parser.CategoryConverter
 import io.easybreezy.project.application.issue.command.parser.MembersConverter
 import io.easybreezy.project.application.issue.command.parser.PriorityConverter
+import io.easybreezy.project.application.issue.command.parser.LabelConverter
 import io.easybreezy.project.model.Repository as ProjectRepository
 import io.easybreezy.project.model.issue.Issue
 
@@ -17,6 +18,7 @@ class Handler @Inject constructor(
     private val categoryConverter: CategoryConverter,
     private val membersConverter: MembersConverter,
     private val priorityConverter: PriorityConverter,
+    private val labelConverter: LabelConverter,
     private val projectRepository: ProjectRepository
 ) {
 
@@ -28,8 +30,8 @@ class Handler @Inject constructor(
             membersConverter.convert(project, parsed.watchers)?.let { watchers.intersect(it) }
         }
 
-        transaction {
-            Issue.create(
+        val issue = transaction {
+        Issue.create(
                 command.author,
                 project,
                 parsed.title,
@@ -38,8 +40,16 @@ class Handler @Inject constructor(
                 parsed.assignee?.let { membersConverter.convert(project, listOf(it))?.firstOrNull() },
                 parsed.category?.let { categoryConverter.convert(project, it) },
                 statusWorkflow.onCreate(project),
-                watchers
+                watchers,
+                parsed.start,
+                parsed.due
             )
+        }
+
+        transaction {
+            parsed.labels?.let {
+                issue.assignLabels(labelConverter.convert(it))
+            }
         }
     }
 
