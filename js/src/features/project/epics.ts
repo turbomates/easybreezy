@@ -174,7 +174,7 @@ export const fetchProjectRolePermissionsEpic: RootEpic = (
             ? fetchProjectRoleAsync.success(result.data)
             : fetchProjectRoleAsync.failure(result.reason),
         ),
-        catchError(() => of(fetchProjectRoleAsync.failure(message))),
+        catchError((message) => of(fetchProjectRoleAsync.failure(message))),
       ),
     ),
   );
