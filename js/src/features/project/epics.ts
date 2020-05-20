@@ -24,8 +24,7 @@ import {
   addProjectTeamMemberAsync,
   closeProjectTeamNewMemberFormAction,
 } from "./actions";
-import { notificationError } from "../notification/actions";
-import { SOMETHING_WENT_WRONG } from "../../constants";
+import { showNotification } from "../notification/actions";
 
 export const fetchProjectsEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
@@ -86,9 +85,9 @@ export const changeProjectStatus: RootEpic = (action$, state$, { api }) =>
                 changeProjectStatusAsync.success(),
                 fetchProjectAsync.request(action.payload.slug),
               ]
-            : [notificationError(SOMETHING_WENT_WRONG)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError(() => of(notificationError(SOMETHING_WENT_WRONG))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -154,9 +153,9 @@ export const removeProjectRole: RootEpic = (action$, state$, { api }) =>
                 removeProjectRoleAsync.success(),
                 fetchProjectAsync.request(action.payload.slug),
               ]
-            : [notificationError(SOMETHING_WENT_WRONG)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError(() => of(notificationError(SOMETHING_WENT_WRONG))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -175,7 +174,7 @@ export const fetchProjectRolePermissionsEpic: RootEpic = (
             ? fetchProjectRoleAsync.success(result.data)
             : fetchProjectRoleAsync.failure(result.reason),
         ),
-        catchError((message) => of(fetchProjectRoleAsync.failure(message))),
+        catchError(() => of(fetchProjectRoleAsync.failure(message))),
       ),
     ),
   );
@@ -242,9 +241,9 @@ export const editProjectTeamMemberRole: RootEpic = (action$, state$, { api }) =>
         map((result) =>
           result.success
             ? editProjectTeamMemberRoleAsync.success()
-            : notificationError(SOMETHING_WENT_WRONG),
+            : showNotification({ type: "error" }),
         ),
-        catchError(() => of(notificationError(SOMETHING_WENT_WRONG))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -260,9 +259,9 @@ export const removeProjectTeamMember: RootEpic = (action$, state$, { api }) =>
                 removeProjectTeamMemberAsync.success(),
                 fetchProjectTeamAsync.request(action.payload.teamId),
               ]
-            : [notificationError(SOMETHING_WENT_WRONG)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError(() => of(notificationError(SOMETHING_WENT_WRONG))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -278,9 +277,9 @@ export const changeProjectTeamStatus: RootEpic = (action$, state$, { api }) =>
                 changeProjectTeamStatusAsync.success(),
                 fetchProjectTeamAsync.request(action.payload.teamId),
               ]
-            : [notificationError(SOMETHING_WENT_WRONG)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError(() => of(notificationError(SOMETHING_WENT_WRONG))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );

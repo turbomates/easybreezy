@@ -21,7 +21,10 @@ export const fetchProjects = (params: ProjectsListQuery) => {
       success: true,
       data: resp.data,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "Something went wrong" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const fetchProject = (slug: string) => {
@@ -31,7 +34,10 @@ export const fetchProject = (slug: string) => {
       success: true,
       data: resp.data,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "something_wrong" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const createProject = (body: CreateProjectRequest) => {
@@ -78,7 +84,10 @@ export const removeRole = ({ slug, roleId }: RemoveProjectRoleRequest) => {
   return api
     .post(`/projects/${slug}/roles/${roleId}/remove`, {})
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<Failure>(() => ({ success: false, reason: "something_wrong" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const editDescription = ({
@@ -98,7 +107,10 @@ export const editStatus = ({ slug, statusType }: EditProjectStatusRequest) => {
   return api
     .post(`/projects/${slug}/${statusType}`, {})
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<Failure>(() => ({ success: false, reason: "something_wrong" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const fetchRolePermissions = () => {
@@ -108,7 +120,10 @@ export const fetchRolePermissions = () => {
       success: true,
       data: resp.data.data,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "something_wrong" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const editSlug = ({ slug, newSlug }: EditProjectSlugRequest) => {

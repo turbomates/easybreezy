@@ -8,7 +8,7 @@ import {
   fetchProjectTeamAsync,
   openProjectTeamNewMemberFormAction,
 } from "./actions";
-import { normalizeErrors } from "../../utils/error";
+import { normalizeErrors } from "../../utils/errors";
 
 export type State = {
   data: ProjectTeam | null;

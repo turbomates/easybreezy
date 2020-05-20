@@ -4,6 +4,12 @@ import { Button, Col, Form, Input, Row } from "antd";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { EditProjectSlugRequest, Project } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
+import {
+  getMaxError,
+  getMinError,
+  getRequiredErrors,
+  getUrlError,
+} from "../../../../utils/errors";
 
 type Props = {
   project: Project;
@@ -46,13 +52,10 @@ export const ProjectSlugForm: React.FC<Props> = ({
       <Form.Item
         name="slug"
         rules={[
-          { required: true, message: "Please input slug" },
-          {
-            pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
-            message: "Please input valid slug",
-          },
-          { min: 2, message: "Name should be at least 2 characters long" },
-          { max: 25, message: "Name must be no more than 25 characters" },
+          ...getRequiredErrors(),
+          getMinError(2),
+          getMaxError(25),
+          getUrlError(),
         ]}
       >
         <Input />

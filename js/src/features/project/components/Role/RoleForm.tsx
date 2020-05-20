@@ -9,7 +9,7 @@ import {
   CreateProjectRoleRequest,
   RolePermissions,
 } from "ProjectModels";
-import { RoleFormTableWrapper } from "./RoleFormTableWrapper";
+import { RoleFormTable } from "./RoleFormTable";
 import { RoleFormEditRoleName } from "./RoleFormEditRoleName";
 import { RoleFormViewRoleName } from "./RoleFormViewRoleName";
 
@@ -179,7 +179,7 @@ export const RoleForm: React.FC<Props> = ({
   ]);
 
   return (
-    <RoleFormTableWrapper permissions={rolePermissions}>
+    <RoleFormTable permissions={rolePermissions}>
       <tbody>
         {Object.values(form).map((field, fieldIndex) => {
           return (
@@ -224,6 +224,6 @@ export const RoleForm: React.FC<Props> = ({
           </td>
         </tr>
       </tfoot>
-    </RoleFormTableWrapper>
+    </RoleFormTable>
   );
 };

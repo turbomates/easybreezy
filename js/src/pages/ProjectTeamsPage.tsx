@@ -11,12 +11,12 @@ import {
   openProjectTeamCreateFormAction,
 } from "../features/project/actions";
 import {
-  selectIsOpenCreateTeamForm,
+  selectIsOpenNewTeamForm,
   selectNewTeamFormErrors,
   selectProject,
 } from "../features/project/selectors";
 import { TeamList } from "../features/project/components/Team/TeamList";
-import { TeamCreateForm } from "../features/project/components/Team/TeamCreateForm";
+import { NewTeamForm } from "../features/project/components/Team/NewTeamForm";
 import { CreateProjectTeamRequest } from "ProjectModels";
 
 export const ProjectTeamsPage: React.FC = () => {
@@ -46,8 +46,8 @@ export const ProjectTeamsPage: React.FC = () => {
   }, [dispatch]);
 
   const project = useSelector(selectProject);
-  const newTeamFormErrors = useSelector(selectNewTeamFormErrors);
-  const isOpenTeamCreateForm = useSelector(selectIsOpenCreateTeamForm);
+  const newTeamMemberFormErrors = useSelector(selectNewTeamFormErrors);
+  const isOpenNewTeamForm = useSelector(selectIsOpenNewTeamForm);
 
   useEffect(() => {
     fetchProject(slug);
@@ -68,14 +68,14 @@ export const ProjectTeamsPage: React.FC = () => {
 
       <Modal
         title="New team"
-        visible={isOpenTeamCreateForm}
+        visible={isOpenNewTeamForm}
         onCancel={closeProjectTeamCreateForm}
         footer={null}
         destroyOnClose={true}
       >
-        <TeamCreateForm
+        <NewTeamForm
           projectId={project.id}
-          errors={newTeamFormErrors}
+          errors={newTeamMemberFormErrors}
           create={createTeam}
         />
       </Modal>

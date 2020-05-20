@@ -95,7 +95,7 @@ export const ProjectTeamPage: React.FC = () => {
   const project = useSelector(selectProject);
   const isOpenTeamNewMemberForm = useSelector(selectIsOpenNewTeamMemberForm);
   const employeesSelectOptions = useSelector(selectEmployeesSelectOptions);
-  const teamNewTeamMemberFormErrors = useSelector(
+  const newTeamMemberFormErrors = useSelector(
     selectNewTeamMemberFormErrors,
   );
 
@@ -170,7 +170,7 @@ export const ProjectTeamPage: React.FC = () => {
           teamId={team.id}
           roles={project.roles}
           add={addMember}
-          errors={teamNewTeamMemberFormErrors}
+          errors={newTeamMemberFormErrors}
           employeesSelectOptions={employeesSelectOptions}
         />
       </Modal>

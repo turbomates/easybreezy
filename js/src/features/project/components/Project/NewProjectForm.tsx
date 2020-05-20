@@ -5,6 +5,12 @@ import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { CreateProjectRequest } from "ProjectModels";
 import { convertToSlug } from "../../helpers";
+import {
+  getMaxError,
+  getMinError,
+  getRequiredErrors,
+  getUrlError,
+} from "../../../../utils/errors";
 
 type Props = {
   create: (form: CreateProjectRequest) => void;
@@ -12,7 +18,7 @@ type Props = {
   loading: boolean;
 };
 
-export const CreateProjectForm: React.FC<Props> = ({
+export const NewProjectForm: React.FC<Props> = ({
   errors,
   create,
   loading,
@@ -49,12 +55,7 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Name"
         name="name"
-        rules={[
-          { required: true, message: "Please input name" },
-          { min: 2, message: "Name should be at least 2 characters long" },
-          { max: 255, message: "Name must be no more than 255 characters" },
-          { whitespace: true, message: "Please input name" },
-        ]}
+        rules={[...getRequiredErrors(), getMinError(2), getMaxError(255)]}
       >
         <Input onChange={(event) => changeSlug(event.target.value)} />
       </Form.Item>
@@ -62,10 +63,7 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Description"
         name="description"
-        rules={[
-          { required: true, message: "Please input description" },
-          { whitespace: true, message: "Please input description" },
-        ]}
+        rules={[...getRequiredErrors()]}
       >
         <Input />
       </Form.Item>
@@ -73,13 +71,7 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Slug"
         name="slug"
-        rules={[
-          { required: true, message: "Please input slug" },
-          {
-            pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
-            message: "Please input valid slug",
-          },
-        ]}
+        rules={[...getRequiredErrors(), getUrlError()]}
       >
         <Input />
       </Form.Item>

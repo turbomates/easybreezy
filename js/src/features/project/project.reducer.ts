@@ -13,14 +13,14 @@ import {
   createProjectTeamAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
-import { normalizeErrors } from "utils/error";
+import { normalizeErrors } from "utils/errors";
 import { Project, RolePermissions } from "ProjectModels";
 
 export type State = {
   data: Project | null;
   loading: boolean;
   rolePermissions: RolePermissions;
-  isOpenCreateTeamForm: boolean;
+  isOpenNewTeamForm: boolean;
   descriptionFormErrors: FormErrorMap;
   slugFormErrors: FormErrorMap;
   newTeamFormErrors: FormErrorMap;
@@ -30,7 +30,7 @@ const initialSate: State = {
   data: null,
   loading: false,
   rolePermissions: [],
-  isOpenCreateTeamForm: false,
+  isOpenNewTeamForm: false,
   descriptionFormErrors: {},
   slugFormErrors: {},
   newTeamFormErrors: {},
@@ -124,11 +124,11 @@ export const reducer = createReducer<State>(initialSate)
   }))
   .handleAction(openProjectTeamCreateFormAction, (state, action) => ({
     ...state,
-    isOpenCreateTeamForm: true,
+    isOpenNewTeamForm: true,
   }))
   .handleAction(closeProjectTeamCreateFormAction, (state, action) => ({
     ...state,
-    isOpenCreateTeamForm: false,
+    isOpenNewTeamForm: false,
   }))
   // SLUG
   .handleAction(editProjectSlugAsync.request, (state, action) => ({

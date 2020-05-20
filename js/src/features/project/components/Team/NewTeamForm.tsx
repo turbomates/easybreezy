@@ -11,7 +11,7 @@ type Props = {
   create: (form: CreateProjectTeamRequest) => void;
 }
 
-export const TeamCreateForm: React.FC<Props> = ({
+export const NewTeamForm: React.FC<Props> = ({
   projectId,
   errors,
   create,

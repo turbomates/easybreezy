@@ -12,11 +12,11 @@ import {
 import {
   selectIsOpenProjectCreateForm,
   selectProjects,
-  selectCreateProjectFormErrors,
+  selectNewProjectFormErrors,
   selectIsLoadingProjects,
 } from "../features/project/selectors";
 import { ProjectList } from "../features/project/components/Project/ProjectList";
-import { CreateProjectForm } from "../features/project/components/Project/ProjectCreateForm";
+import { NewProjectForm } from "../features/project/components/Project/NewProjectForm";
 
 export const ProjectsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ export const ProjectsPage: React.FC = () => {
     [dispatch],
   );
 
-  const createFormErrors = useSelector(selectCreateProjectFormErrors);
+  const newFormErrors = useSelector(selectNewProjectFormErrors);
   const loading = useSelector(selectIsLoadingProjects);
   const isOpenCreateForm = useSelector(selectIsOpenProjectCreateForm);
   const projects = useSelector(selectProjects);
@@ -65,9 +65,9 @@ export const ProjectsPage: React.FC = () => {
           footer={null}
           destroyOnClose={true}
         >
-          <CreateProjectForm
+          <NewProjectForm
             create={createProject}
-            errors={createFormErrors}
+            errors={newFormErrors}
             loading={loading}
           />
         </Modal>

@@ -3,11 +3,11 @@ import { RootState } from "MyTypes";
 // PROJECTS
 export const selectProjects = (state: RootState) => state.project.projects.list;
 
-export const selectCreateProjectFormErrors = (state: RootState) =>
-  state.project.projects.createFormErrors;
+export const selectNewProjectFormErrors = (state: RootState) =>
+  state.project.projects.newFormErrors;
 
 export const selectIsOpenProjectCreateForm = (state: RootState) =>
-  state.project.projects.isOpenCreateForm;
+  state.project.projects.isOpenNewForm;
 
 export const selectIsLoadingProjects = (state: RootState) =>
   state.project.projects.loading;
@@ -29,8 +29,8 @@ export const selectRolePermissions = (state: RootState) =>
   state.project.project.rolePermissions;
 
 // TEAMS
-export const selectIsOpenCreateTeamForm = (state: RootState) =>
-  state.project.project.isOpenCreateTeamForm;
+export const selectIsOpenNewTeamForm = (state: RootState) =>
+  state.project.project.isOpenNewTeamForm;
 
 export const selectNewTeamFormErrors = (state: RootState) =>
   state.project.project.newTeamFormErrors;

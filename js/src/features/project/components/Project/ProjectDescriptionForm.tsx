@@ -4,6 +4,7 @@ import { Button, Col, Form, Input, Row } from "antd";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { EditProjectDescriptionRequest, Project } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
+import { getRequiredErrors } from "../../../../utils/errors";
 
 type Props = {
   project: Project;
@@ -43,13 +44,7 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
 
   return (
     <Form form={form} onFinish={onFinish} initialValues={initialValues}>
-      <Form.Item
-        name="description"
-        rules={[
-          { required: true, message: "Please input description" },
-          { whitespace: true, message: "Please input description" },
-        ]}
-      >
+      <Form.Item name="description" rules={[...getRequiredErrors()]}>
         <Input.TextArea autoSize />
       </Form.Item>
 

@@ -2,7 +2,7 @@ import { createReducer } from "typesafe-actions";
 import { Location } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
 import { fetchLocationsAsync, createLocationAsync } from "./actions";
-import { normalizeErrors } from "utils/error";
+import { normalizeErrors } from "utils/errors";
 
 export type State = {
   items: Location[];
