@@ -90,8 +90,17 @@ suspend fun main() {
             receiveEntireContent = true
         }
         install(CORS) {
-            method(HttpMethod.Options)
+            method(HttpMethod.Put)
+            method(HttpMethod.Delete)
+            method(HttpMethod.Patch)
             header(HttpHeaders.XForwardedProto)
+            header(HttpHeaders.UserAgent)
+            header(HttpHeaders.XRequestId)
+            header(HttpHeaders.XForwardedFor)
+            header(HttpHeaders.IfModifiedSince)
+            header(HttpHeaders.CacheControl)
+            header(HttpHeaders.ContentType)
+            header(HttpHeaders.Authorization)
             anyHost()
             allowCredentials = true
             allowNonSimpleContentTypes = true

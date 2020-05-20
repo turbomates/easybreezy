@@ -53,8 +53,12 @@ class OpenApi(configuration: Configuration) {
         )
     }
 
-    suspend fun intercept(context: PipelineContext<Unit, ApplicationCall>) {
+    suspend fun intercept(
+        context: PipelineContext<Unit, ApplicationCall>,
+        cors: CORS?
+    ) {
         if (context.call.request.path() == path) {
+            cors?.intercept(context)
             val response = Json(
                 JsonConfiguration.Default.copy(
                     encodeDefaults = false
@@ -80,8 +84,7 @@ class OpenApi(configuration: Configuration) {
             val feature = OpenApi(configuration)
             configuration.configure(feature)
             pipeline.intercept(ApplicationCallPipeline.Setup) {
-                cors?.intercept(this)
-                feature.intercept(this)
+                feature.intercept(this, cors)
             }
             return feature
         }
