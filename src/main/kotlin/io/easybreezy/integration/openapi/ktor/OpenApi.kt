@@ -9,8 +9,6 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.ApplicationFeature
 import io.ktor.application.call
-import io.ktor.application.featureOrNull
-import io.ktor.features.CORS
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -54,11 +52,9 @@ class OpenApi(configuration: Configuration) {
     }
 
     suspend fun intercept(
-        context: PipelineContext<Unit, ApplicationCall>,
-        cors: CORS?
+        context: PipelineContext<Unit, ApplicationCall>
     ) {
         if (context.call.request.path() == path) {
-            cors?.intercept(context)
             val response = Json(
                 JsonConfiguration.Default.copy(
                     encodeDefaults = false
@@ -80,11 +76,10 @@ class OpenApi(configuration: Configuration) {
         override val key = AttributeKey<OpenApi>("OpenApi")
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): OpenApi {
             val configuration = Configuration().apply(configure)
-            val cors = pipeline.featureOrNull(CORS)
             val feature = OpenApi(configuration)
             configuration.configure(feature)
-            pipeline.intercept(ApplicationCallPipeline.Setup) {
-                feature.intercept(this, cors)
+            pipeline.intercept(ApplicationCallPipeline.Fallback) {
+                feature.intercept(this)
             }
             return feature
         }
