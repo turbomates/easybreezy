@@ -1,4 +1,4 @@
-package io.easybreezy.project.application.issue.command.parser
+package io.easybreezy.project.application.issue.command.language
 
 import com.google.inject.Inject
 import java.time.LocalDate
@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
 class Parser @Inject constructor(
-    translator: Translator
+    translator: LanguageTranslator
 ) {
     private val translations: List<Translations> = translator.load()
 
@@ -21,11 +21,11 @@ class Parser @Inject constructor(
         const val DATE_IDENTIFIER = "[0-9]{2}/[0-9]{2}/[0-9]{4}(\\s[0-9]{2}:[0-9]{2})?"
     }
 
-    fun parse(text: String): Parsed {
+    fun parse(text: String): ParsedIssue {
         val (title, description) = extractTitle(text)
         val persons = extractPersons(description)
         val dates = extractDates(description)
-        return Parsed(
+        return ParsedIssue(
             title.trim(),
             description.trim(),
             extractPriority(description),
@@ -82,17 +82,17 @@ class Parser @Inject constructor(
     }
 
     private fun extractDates(description: String): Pair<LocalDateTime?, LocalDateTime?> {
-         val dates = DATE_IDENTIFIER.toRegex()
+        val dates = DATE_IDENTIFIER.toRegex()
             .findAll(description).toList()
             .map { dateStr ->
                 val datetime = dateStr.value.split(" ")
                 LocalDate
                     .parse(datetime.first(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                     .atTime(
-                        LocalTime.parse(datetime.getOrNull(1) ?: "00:00", DateTimeFormatter.ofPattern("HH:mm"))
-                    )
-            }
-             .sortedDescending()
+                    LocalTime.parse(datetime.getOrNull(1) ?: "00:00", DateTimeFormatter.ofPattern("HH:mm"))
+                )
+        }
+        .sortedDescending()
 
         return when (dates.count()) {
             0 -> Pair(null, null)
@@ -102,7 +102,7 @@ class Parser @Inject constructor(
     }
 }
 
-data class Parsed(
+data class ParsedIssue(
     val title: String,
     val description: String,
     val priority: String? = null,

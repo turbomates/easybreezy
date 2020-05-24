@@ -1,4 +1,4 @@
-package io.easybreezy.project.application.issue.command.parser
+package io.easybreezy.project.application.issue.command.language
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -6,7 +6,7 @@ import kotlinx.serialization.parse
 import java.io.File
 import java.nio.file.Paths
 
-class Translator {
+class LanguageTranslator {
 
     fun load(): List<Translations> {
         val translations = mutableListOf<Translations>()

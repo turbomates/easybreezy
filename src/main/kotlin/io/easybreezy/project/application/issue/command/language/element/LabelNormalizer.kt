@@ -1,15 +1,15 @@
-package io.easybreezy.project.application.issue.command.parser
+package io.easybreezy.project.application.issue.command.language.element
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.project.infrastructure.LabelRepository
 import io.easybreezy.project.model.issue.Label
 
-class LabelConverter @Inject constructor(
+class LabelNormalizer @Inject constructor(
     private val transaction: TransactionManager,
     private val repository: LabelRepository
 ) {
-    suspend fun convert(names: List<String>): List<Label> {
+    suspend fun normalize(names: List<String>): List<Label> {
 
         return transaction {
             val existed = repository.findByNames(names)

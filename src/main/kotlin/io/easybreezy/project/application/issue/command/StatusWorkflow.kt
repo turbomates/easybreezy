@@ -1,4 +1,4 @@
-package io.easybreezy.project.application.issue.command.parser
+package io.easybreezy.project.application.issue.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.query.QueryExecutor

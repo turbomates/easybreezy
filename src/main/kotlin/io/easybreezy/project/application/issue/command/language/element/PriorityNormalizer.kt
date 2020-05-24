@@ -1,4 +1,4 @@
-package io.easybreezy.project.application.issue.command.parser
+package io.easybreezy.project.application.issue.command.language.element
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.query.QueryExecutor
@@ -7,10 +7,10 @@ import io.easybreezy.project.application.project.queryobject.LastLowestPriorityQ
 import io.easybreezy.project.model.issue.Priority
 import java.util.UUID
 
-class PriorityConverter @Inject constructor(
+class PriorityNormalizer @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) {
-    suspend fun convert(project: UUID, title: String?): Priority {
+    suspend fun normalize(project: UUID, title: String?): Priority {
         return when (title?.toLowerCase()) {
             "high" -> Priority.high()
             "low" -> Priority.low()
