@@ -144,20 +144,6 @@ class Router @Inject constructor(
         route("/{slug}") {
 
             authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
-                post<Response.Either<Response.Ok, Response.Errors>, NewIssue, SlugParam>("/issues/add") { new, params ->
-                    new.project = params.slug
-                    new.author = resolvePrincipal<UserPrincipal>()
-                    controller<IssueController>(this).create(new)
-                }
-
-                data class ProjectIssue(val slug: String, val issueId: UUID)
-                get<Response.Data<IssueDetails>, ProjectIssue>("/issues/{issueId}") { params ->
-                    controller<IssueController>(this).show(params.issueId)
-                }
-
-                get<Response.Listing<Issue>, SlugParam>("/issues") { params ->
-                    controller<IssueController>(this).list(params.slug)
-                }
 
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
@@ -229,6 +215,26 @@ class Router @Inject constructor(
                     command.statusId = params.statusId
                     command.project = params.slug
                     controller<ProjectController>(this).removeStatus(command)
+                }
+            }
+        }
+
+        route("/{slug}/issues") {
+            authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
+
+                get<Response.Listing<Issue>, SlugParam>("") { params ->
+                    controller<IssueController>(this).list(params.slug)
+                }
+
+                post<Response.Either<Response.Ok, Response.Errors>, NewIssue, SlugParam>("/add") { new, params ->
+                    new.project = params.slug
+                    new.author = resolvePrincipal<UserPrincipal>()
+                    controller<IssueController>(this).create(new)
+                }
+
+                data class ProjectIssue(val slug: String, val issueId: UUID)
+                get<Response.Data<IssueDetails>, ProjectIssue>("/{issueId}") { params ->
+                    controller<IssueController>(this).show(params.issueId)
                 }
             }
         }
