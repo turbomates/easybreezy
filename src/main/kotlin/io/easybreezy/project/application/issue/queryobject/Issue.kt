@@ -3,14 +3,15 @@ package io.easybreezy.project.application.issue.queryobject
 import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
+import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
-import io.easybreezy.project.model.issue.Issues
 import kotlinx.serialization.Serializable
 import java.util.UUID
-import io.easybreezy.infrastructure.query.toContinuousList
 import io.easybreezy.project.model.Projects
-import io.easybreezy.project.model.issue.IssueLabel
+import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
+import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.PriorityTable
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
@@ -32,6 +33,7 @@ class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
         Issues
             .leftJoin(IssueLabel)
             .join(Labels, JoinType.LEFT, IssueLabel.label, Labels.id)
+            .join(Categories, JoinType.LEFT, Issues.category, Categories.id)
             .select {
                 Issues.id eq id
             }
@@ -47,8 +49,12 @@ fun Iterable<ResultRow>.toIssueDetails(): List<IssueDetails> {
         val labelId = resultRow.getOrNull(Labels.id)
         val labels = labelId?.let { resultRow.toLabel() }
 
+        val categoryId = resultRow.getOrNull(Categories.id)
+        val category = categoryId?.let { resultRow.toCategory() }
+
         map[details.id] = current.copy(
-            labels = current.labels.plus(listOfNotNull(labels)).distinct()
+            labels = current.labels.plus(listOfNotNull(labels)).distinct(),
+            category = category
         )
         map
     }.values.toList()
@@ -82,8 +88,20 @@ fun ResultRow.toLabel() = Label(
     this[Labels.name]
 )
 
+fun ResultRow.toCategory() = Category(
+    this[Categories.id].value,
+    this[Categories.name]
+)
+
 @Serializable
 data class Label(
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
+    val name: String
+)
+
+@Serializable
+data class Category(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val name: String
@@ -103,5 +121,6 @@ data class IssueDetails(
     val id: UUID,
     val title: String,
     val priority: String?,
-    val labels: List<Label> = listOf()
+    val labels: List<Label> = listOf(),
+    val category: Category? = null
 )

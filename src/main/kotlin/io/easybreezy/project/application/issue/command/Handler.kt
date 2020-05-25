@@ -6,6 +6,7 @@ import io.easybreezy.project.application.issue.command.language.Normalizer
 import io.easybreezy.project.application.issue.command.language.Parser
 import io.easybreezy.project.model.Repository as ProjectRepository
 import io.easybreezy.project.model.issue.Issue
+import io.easybreezy.project.model.issue.Priority
 
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
@@ -29,7 +30,7 @@ class Handler @Inject constructor(
                 project,
                 normalizedIssue.title,
                 normalizedIssue.description,
-                normalizedIssue.priority,
+                normalizedIssue.priority ?: Priority.neutral(),
                 normalizedIssue.assignee,
                 normalizedIssue.category,
                 statusWorkflow.onCreate(project),

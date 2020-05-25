@@ -2,9 +2,10 @@ package io.easybreezy.project.api.controller
 
 import io.easybreezy.createMember
 import io.easybreezy.createMyProject
-import io.easybreezy.rollbackTransaction
-import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
+import io.easybreezy.rollbackTransaction
+import io.easybreezy.createProjectCategory
+import io.easybreezy.testApplication
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
@@ -20,14 +21,15 @@ class IssueControllerTest {
     fun `add issue`() {
         rollbackTransaction(testDatabase) {
             val userId = testDatabase.createMember()
-            testDatabase.createMyProject()
+            val project = testDatabase.createMyProject()
+            testDatabase.createProjectCategory(project, "Nice category")
             withTestApplication({ testApplication(userId, testDatabase) }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/issues/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
                             "content" to """Important issue.
-|                               About important stuff.
+|                               About important stuff. and it is in <nice category>
 |                               Also it labeled as *bug* and *frontend*""".trimMargin()
                         }
                             .toString())
@@ -50,6 +52,7 @@ class IssueControllerTest {
                         Assertions.assertEquals(HttpStatusCode.OK, response.status())
                         Assertions.assertTrue(response.content?.contains("bug")!!)
                         Assertions.assertTrue(response.content?.contains("frontend")!!)
+                        Assertions.assertTrue(response.content?.contains("Nice category")!!)
                     }
                 }
             }
