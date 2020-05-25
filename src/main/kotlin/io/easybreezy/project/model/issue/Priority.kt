@@ -18,7 +18,7 @@ class Priority private constructor() : Embeddable() {
         fun neutral(): Priority {
             val priority = Priority()
             priority.value = 0
-
+            priority.color = Color.WHITE
             return priority
         }
 
@@ -61,7 +61,8 @@ class Priority private constructor() : Embeddable() {
     enum class Color(val rgb: String) {
         RED("#FF0000"),
         GREEN("#00FF00"),
-        YELLOW("#FFFF00");
+        YELLOW("#FFFF00"),
+        WHITE("#FFFFFF");
 
         companion object {
             fun byRGB(rgb: String): Color {

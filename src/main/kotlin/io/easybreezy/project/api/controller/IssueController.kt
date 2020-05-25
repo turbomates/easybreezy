@@ -11,6 +11,7 @@ import io.easybreezy.project.application.issue.command.New
 import io.easybreezy.project.application.issue.command.Update
 import io.easybreezy.project.application.issue.command.Validation
 import io.easybreezy.project.application.issue.queryobject.Issue
+import io.easybreezy.project.application.issue.queryobject.IssueDetails
 import io.easybreezy.project.application.issue.queryobject.IssueQO
 import io.easybreezy.project.application.issue.queryobject.IssuesQO
 import java.util.UUID
@@ -39,7 +40,7 @@ class IssueController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun show(id: UUID): Response.Data<Issue> {
+    suspend fun show(id: UUID): Response.Data<IssueDetails> {
         return Response.Data(
             queryExecutor.execute(IssueQO(id))
         )
@@ -47,7 +48,7 @@ class IssueController @Inject constructor(
 
     suspend fun list(project: String): Response.Listing<Issue> {
         return Response.Listing(
-            queryExecutor.execute(IssuesQO(call.request.pagingParameters()))
+            queryExecutor.execute(IssuesQO(call.request.pagingParameters(), project))
         )
     }
 }
