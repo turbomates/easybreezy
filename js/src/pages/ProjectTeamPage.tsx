@@ -16,7 +16,8 @@ import {
 } from "../features/project/actions";
 import {
   selectEmployeesSelectOptions,
-  selectIsOpenTeamAddMemberForm,
+  selectIsOpenNewTeamMemberForm,
+  selectNewTeamMemberFormErrors,
   selectProject,
   selectProjectTeam,
 } from "../features/project/selectors";
@@ -92,8 +93,11 @@ export const ProjectTeamPage: React.FC = () => {
 
   const team = useSelector(selectProjectTeam);
   const project = useSelector(selectProject);
-  const isOpenTeamNewMemberForm = useSelector(selectIsOpenTeamAddMemberForm);
+  const isOpenTeamNewMemberForm = useSelector(selectIsOpenNewTeamMemberForm);
   const employeesSelectOptions = useSelector(selectEmployeesSelectOptions);
+  const newTeamMemberFormErrors = useSelector(
+    selectNewTeamMemberFormErrors,
+  );
 
   useEffect(() => {
     fetchProjectTeam(id);
@@ -166,6 +170,7 @@ export const ProjectTeamPage: React.FC = () => {
           teamId={team.id}
           roles={project.roles}
           add={addMember}
+          errors={newTeamMemberFormErrors}
           employeesSelectOptions={employeesSelectOptions}
         />
       </Modal>

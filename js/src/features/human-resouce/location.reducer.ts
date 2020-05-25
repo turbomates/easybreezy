@@ -10,7 +10,7 @@ import {
   assignLocationAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
-import { normalizeErrors } from "utils/error";
+import { normalizeErrors } from "utils/errors";
 
 export type State = {
   data: EmployeeLocation[];

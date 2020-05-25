@@ -2,6 +2,7 @@ import { RootEpic } from "MyTypes";
 import { catchError, filter, map, mergeMap, switchMap } from "rxjs/operators";
 import { from, of } from "rxjs";
 import { isActionOf } from "typesafe-actions";
+import { push } from "connected-react-router";
 
 import {
   changeProjectStatusAsync,
@@ -23,7 +24,7 @@ import {
   addProjectTeamMemberAsync,
   closeProjectTeamNewMemberFormAction,
 } from "./actions";
-import { push } from "connected-react-router";
+import { showNotification } from "../notification/actions";
 
 export const fetchProjectsEpic: RootEpic = (action$, state$, { api }) =>
   action$.pipe(
@@ -84,9 +85,9 @@ export const changeProjectStatus: RootEpic = (action$, state$, { api }) =>
                 changeProjectStatusAsync.success(),
                 fetchProjectAsync.request(action.payload.slug),
               ]
-            : [changeProjectStatusAsync.failure(result.errors)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError((message) => of(changeProjectStatusAsync.failure(message))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -152,9 +153,9 @@ export const removeProjectRole: RootEpic = (action$, state$, { api }) =>
                 removeProjectRoleAsync.success(),
                 fetchProjectAsync.request(action.payload.slug),
               ]
-            : [removeProjectRoleAsync.failure(result.errors)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError((message) => of(removeProjectRoleAsync.failure(message))),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -171,7 +172,7 @@ export const fetchProjectRolePermissionsEpic: RootEpic = (
         map((result) =>
           result.success
             ? fetchProjectRoleAsync.success(result.data)
-            : fetchProjectRoleAsync.failure(result.errors),
+            : fetchProjectRoleAsync.failure(result.reason),
         ),
         catchError((message) => of(fetchProjectRoleAsync.failure(message))),
       ),
@@ -240,11 +241,9 @@ export const editProjectTeamMemberRole: RootEpic = (action$, state$, { api }) =>
         map((result) =>
           result.success
             ? editProjectTeamMemberRoleAsync.success()
-            : editProjectTeamMemberRoleAsync.failure(result.errors),
+            : showNotification({ type: "error" }),
         ),
-        catchError((message) =>
-          of(editProjectTeamMemberRoleAsync.failure(message)),
-        ),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -260,11 +259,9 @@ export const removeProjectTeamMember: RootEpic = (action$, state$, { api }) =>
                 removeProjectTeamMemberAsync.success(),
                 fetchProjectTeamAsync.request(action.payload.teamId),
               ]
-            : [removeProjectTeamMemberAsync.failure(result.errors)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError((message) =>
-          of(removeProjectTeamMemberAsync.failure(message)),
-        ),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );
@@ -280,11 +277,9 @@ export const changeProjectTeamStatus: RootEpic = (action$, state$, { api }) =>
                 changeProjectTeamStatusAsync.success(),
                 fetchProjectTeamAsync.request(action.payload.teamId),
               ]
-            : [changeProjectTeamStatusAsync.failure(result.errors)],
+            : [showNotification({ type: "error" })],
         ),
-        catchError((message) =>
-          of(changeProjectTeamStatusAsync.failure(message)),
-        ),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );

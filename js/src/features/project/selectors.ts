@@ -1,28 +1,48 @@
 import { RootState } from "MyTypes";
 
+// PROJECTS
 export const selectProjects = (state: RootState) => state.project.projects.list;
 
-export const selectProject = (state: RootState) => state.project.project.data;
+export const selectNewProjectFormErrors = (state: RootState) =>
+  state.project.projects.newFormErrors;
 
 export const selectIsOpenProjectCreateForm = (state: RootState) =>
-  state.project.projects.isOpenCreateForm;
+  state.project.projects.isOpenNewForm;
 
-export const selectIsLoading = (state: RootState) => state.project.project.loading;
+export const selectIsLoadingProjects = (state: RootState) =>
+  state.project.projects.loading;
 
-export const selectErrors = (state: RootState) => state.project.project.errors;
+// PROJECT
+export const selectProject = (state: RootState) => state.project.project.data;
 
+export const selectIsLoadingProject = (state: RootState) =>
+  state.project.project.loading;
+
+export const selectProjectDescriptionFormErrors = (state: RootState) =>
+  state.project.project.descriptionFormErrors;
+
+export const selectProjectSlugFormErrors = (state: RootState) =>
+  state.project.project.slugFormErrors;
+
+// ROLE
 export const selectRolePermissions = (state: RootState) =>
   state.project.project.rolePermissions;
 
-export const selectIsOpenCreateTeamForm = (state: RootState) =>
-  state.project.project.isOpenCreateTeamForm;
+// TEAMS
+export const selectIsOpenNewTeamForm = (state: RootState) =>
+  state.project.project.isOpenNewTeamForm;
 
+export const selectNewTeamFormErrors = (state: RootState) =>
+  state.project.project.newTeamFormErrors;
+
+// TEAM
 export const selectProjectTeam = (state: RootState) => state.project.team.data;
 
-export const selectIsOpenTeamAddMemberForm = (state: RootState) =>
+export const selectIsOpenNewTeamMemberForm = (state: RootState) =>
   state.project.team.isOpenNewMemberForm;
 
-export const selectTeamErrors = (state: RootState) => state.project.team.errors;
+export const selectNewTeamMemberFormErrors = (state: RootState) =>
+  state.project.team.newMemberFormErrors;
 
 export const selectEmployeesSelectOptions = (state: RootState) =>
   state.humanResource.employees.items.map((emp) => ({

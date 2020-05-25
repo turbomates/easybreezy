@@ -9,7 +9,7 @@ import { Paging } from "components/Paging";
 import { Paging as IPaging } from "MyTypes";
 import { ProjectList as IProjectList, ProjectsListQuery } from "ProjectModels";
 
-import "../project.scss";
+import "../../project.scss";
 
 type Props = {
   projects: IPaging<IProjectList> | null;

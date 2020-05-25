@@ -9,25 +9,31 @@ import {
   fetchProjectRoleAsync,
   openProjectTeamCreateFormAction,
   closeProjectTeamCreateFormAction,
+  editProjectSlugAsync,
+  createProjectTeamAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
-import { normalizeErrors } from "utils/error";
+import { normalizeErrors } from "utils/errors";
 import { Project, RolePermissions } from "ProjectModels";
 
 export type State = {
   data: Project | null;
   loading: boolean;
-  errors: FormErrorMap;
   rolePermissions: RolePermissions;
-  isOpenCreateTeamForm: boolean;
-}
+  isOpenNewTeamForm: boolean;
+  descriptionFormErrors: FormErrorMap;
+  slugFormErrors: FormErrorMap;
+  newTeamFormErrors: FormErrorMap;
+};
 
 const initialSate: State = {
   data: null,
   loading: false,
-  errors: {},
   rolePermissions: [],
-  isOpenCreateTeamForm: false,
+  isOpenNewTeamForm: false,
+  descriptionFormErrors: {},
+  slugFormErrors: {},
+  newTeamFormErrors: {},
 };
 
 export const reducer = createReducer<State>(initialSate)
@@ -39,14 +45,11 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(createProjectRoleAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    formErrors: {},
   }))
   .handleAction(createProjectRoleAsync.failure, (state, action) => ({
     ...state,
-    formErrors: normalizeErrors(action.payload),
     loading: false,
   }))
-
   .handleAction(editProjectRoleAsync.request, (state, action) => ({
     ...state,
     loading: true,
@@ -68,14 +71,11 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(removeProjectRoleAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    formErrors: {},
   }))
   .handleAction(removeProjectRoleAsync.failure, (state, action) => ({
     ...state,
-    formErrors: normalizeErrors(action.payload),
     loading: false,
   }))
-
   // STATUS
   .handleAction(changeProjectStatusAsync.request, (state, action) => ({
     ...state,
@@ -84,11 +84,9 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(changeProjectStatusAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    formErrors: {},
   }))
   .handleAction(changeProjectStatusAsync.failure, (state, action) => ({
     ...state,
-    formErrors: normalizeErrors(action.payload),
     loading: false,
   }))
   // DESCRIPTION
@@ -99,11 +97,11 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(editProjectDescriptionAsync.success, (state, action) => ({
     ...state,
     loading: false,
-    formErrors: {},
+    descriptionFormErrors: {},
   }))
   .handleAction(editProjectDescriptionAsync.failure, (state, action) => ({
     ...state,
-    formErrors: normalizeErrors(action.payload),
+    descriptionFormErrors: normalizeErrors(action.payload),
     loading: false,
   }))
   //PROJECT
@@ -126,9 +124,33 @@ export const reducer = createReducer<State>(initialSate)
   }))
   .handleAction(openProjectTeamCreateFormAction, (state, action) => ({
     ...state,
-    isOpenCreateTeamForm: true,
+    isOpenNewTeamForm: true,
   }))
   .handleAction(closeProjectTeamCreateFormAction, (state, action) => ({
     ...state,
-    isOpenCreateTeamForm: false,
+    isOpenNewTeamForm: false,
+  }))
+  // SLUG
+  .handleAction(editProjectSlugAsync.request, (state, action) => ({
+    ...state,
+    loading: true,
+  }))
+  .handleAction(editProjectSlugAsync.success, (state, action) => ({
+    ...state,
+    loading: false,
+    slugFormErrors: {},
+  }))
+  .handleAction(editProjectSlugAsync.failure, (state, action) => ({
+    ...state,
+    slugFormErrors: normalizeErrors(action.payload),
+    loading: false,
+  }))
+  // TEAM
+  .handleAction(createProjectTeamAsync.success, (state, action) => ({
+    ...state,
+    newTeamFormErrors: {},
+  }))
+  .handleAction(createProjectTeamAsync.failure, (state, action) => ({
+    ...state,
+    newTeamFormErrors: normalizeErrors(action.payload),
   }));
