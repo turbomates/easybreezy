@@ -49,3 +49,7 @@ easybreezy.rabbit.api=http://localhost:15672
 Use require() to check condition and throw exception
 Use your custom exceptions if you need to throw it more than once
 ```
+
+## Issue language
+
+[a relative link](doc/issue_language.md)
