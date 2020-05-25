@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Button, Input } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
-import { FormField } from "./ProjectRoleForm";
+import { FormField } from "./RoleForm";
 
 type Props = {
   field: FormField;
@@ -13,7 +13,7 @@ type Props = {
 
 const minLengthRoleName = 2;
 
-export const ProjectRoleFormEditRoleName: React.FC<Props> = ({
+export const RoleFormEditRoleName: React.FC<Props> = ({
   field,
   editInputRole,
   closeInputRole,

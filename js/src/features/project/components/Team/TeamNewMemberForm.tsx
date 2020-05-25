@@ -2,7 +2,8 @@ import React, { useCallback } from "react";
 import { Button, Form, Select } from "antd";
 
 import { NewProjectTeamMemberRequest, Role } from "ProjectModels";
-import { Choice } from "MyTypes";
+import { Choice, FormErrorMap } from "MyTypes";
+import { getRequiredErrors } from "../../../../utils/errors";
 
 const { Option } = Select;
 
@@ -11,7 +12,8 @@ type Props = {
   roles: Role[];
   add: (form: NewProjectTeamMemberRequest) => void;
   employeesSelectOptions: Choice[];
-}
+  errors: FormErrorMap | {};
+};
 
 const formItemLayout = {
   labelCol: { span: 4 },
@@ -25,6 +27,7 @@ export const TeamNewMemberForm: React.FC<Props> = ({
   roles,
   add,
   employeesSelectOptions,
+  errors,
 }) => {
   const [form] = Form.useForm();
 
@@ -40,11 +43,7 @@ export const TeamNewMemberForm: React.FC<Props> = ({
 
   return (
     <Form form={form} {...formItemLayout} onFinish={onFinish}>
-      <Form.Item
-        label="User"
-        name="user"
-        rules={[{ required: true, message: "Please input user" }]}
-      >
+      <Form.Item label="User" name="user" rules={[...getRequiredErrors()]}>
         <Select
           showSearch
           filterOption={(input, option) => option?.children.includes(input)}
@@ -60,11 +59,7 @@ export const TeamNewMemberForm: React.FC<Props> = ({
         </Select>
       </Form.Item>
 
-      <Form.Item
-        label="Role"
-        name="role"
-        rules={[{ required: true, message: "Please input role" }]}
-      >
+      <Form.Item label="Role" name="role" rules={[...getRequiredErrors()]}>
         <Select>
           {roles.map((role) => (
             <Option value={role.id} key={role.id}>

@@ -11,12 +11,12 @@ import {
   openProjectTeamCreateFormAction,
 } from "../features/project/actions";
 import {
-  selectErrors,
-  selectIsOpenCreateTeamForm,
+  selectIsOpenNewTeamForm,
+  selectNewTeamFormErrors,
   selectProject,
 } from "../features/project/selectors";
-import { ProjectTeamsList } from "../features/project/components/ProjectTeamsList";
-import { ProjectTeamsCreateForm } from "../features/project/components/ProjectTeamsCreateForm";
+import { TeamList } from "../features/project/components/Team/TeamList";
+import { NewTeamForm } from "../features/project/components/Team/NewTeamForm";
 import { CreateProjectTeamRequest } from "ProjectModels";
 
 export const ProjectTeamsPage: React.FC = () => {
@@ -46,10 +46,8 @@ export const ProjectTeamsPage: React.FC = () => {
   }, [dispatch]);
 
   const project = useSelector(selectProject);
-  const errors = useSelector(selectErrors);
-  const isOpenTeamCreateForm = useSelector(
-    selectIsOpenCreateTeamForm,
-  );
+  const newTeamMemberFormErrors = useSelector(selectNewTeamFormErrors);
+  const isOpenNewTeamForm = useSelector(selectIsOpenNewTeamForm);
 
   useEffect(() => {
     fetchProject(slug);
@@ -64,20 +62,20 @@ export const ProjectTeamsPage: React.FC = () => {
           title="Teams"
           extra={<PlusOutlined onClick={openProjectTeamCreateForm} />}
         >
-          <ProjectTeamsList teams={project.teams} slug={project.slug} />
+          <TeamList teams={project.teams} slug={project.slug} />
         </Card>
       </Col>
 
       <Modal
         title="New team"
-        visible={isOpenTeamCreateForm}
+        visible={isOpenNewTeamForm}
         onCancel={closeProjectTeamCreateForm}
         footer={null}
         destroyOnClose={true}
       >
-        <ProjectTeamsCreateForm
+        <NewTeamForm
           projectId={project.id}
-          errors={errors}
+          errors={newTeamMemberFormErrors}
           create={createTeam}
         />
       </Modal>

@@ -65,20 +65,20 @@ export const removeProjectRoleAsync = createAsyncAction(
   "REMOVE_PROJECT_ROLE_REQUEST",
   "REMOVE_PROJECT_ROLE_SUCCESS",
   "REMOVE_PROJECT_ROLE_FAILURE",
-)<RemoveProjectRoleRequest, undefined, FormError[]>();
+)<RemoveProjectRoleRequest, undefined, string>();
 
 export const fetchProjectRoleAsync = createAsyncAction(
   "FETCH_PROJECT_ROLE_PERMISSIONS_REQUEST",
   "FETCH_PROJECT_ROLE_PERMISSIONS_SUCCESS",
   "FETCH_PROJECT_ROLE_PERMISSIONS_FAILURE",
-)<undefined, RolePermissions, FormError[]>();
+)<undefined, RolePermissions, string>();
 
 // STATUS
 export const changeProjectStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_STATUS_REQUEST",
   "CHANGE_PROJECT_STATUS_SUCCESS",
   "CHANGE_PROJECT_STATUS_FAILURE",
-)<EditProjectStatusRequest, undefined, FormError[]>();
+)<EditProjectStatusRequest, undefined, string>();
 
 // DESCRIPTION
 export const editProjectDescriptionAsync = createAsyncAction(
@@ -119,13 +119,13 @@ export const editProjectTeamMemberRoleAsync = createAsyncAction(
   "EDIT_PROJECT_TEAM_MEMBER_ROLE_REQUEST",
   "EDIT_PROJECT_TEAM_MEMBER_ROLE_SUCCESS",
   "EDIT_PROJECT_TEAM_MEMBER_ROLE_FAILED",
-)<EditProjectTeamMemberRoleRequest, undefined, FormError[]>();
+)<EditProjectTeamMemberRoleRequest, undefined, string>();
 
 export const removeProjectTeamMemberAsync = createAsyncAction(
   "REMOVE_PROJECT_TEAM_MEMBER_REQUEST",
   "REMOVE_PROJECT_TEAM_MEMBER_SUCCESS",
   "REMOVE_PROJECT_TEAM_MEMBER_FAILED",
-)<RemoveProjectTeamMemberRequest, undefined, FormError[]>();
+)<RemoveProjectTeamMemberRequest, undefined, string>();
 
 export const addProjectTeamMemberAsync = createAsyncAction(
   "ADD_PROJECT_TEAM_MEMBER_REQUEST",
@@ -145,4 +145,4 @@ export const changeProjectTeamStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_TEAM_STATUS_REQUEST",
   "CHANGE_PROJECT_TEAM_STATUS_SUCCESS",
   "CHANGE_PROJECT_TEAM_STATUS_FAILED",
-)<ChangeProjectTeamStatusRequest, undefined, FormError[]>();
+)<ChangeProjectTeamStatusRequest, undefined, string>();

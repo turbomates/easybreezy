@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Button, Form, Input } from "antd";
 
-import { useFormServerErrors } from "../../../hooks/useFormServerErrors";
+import { useFormServerErrors } from "../../../../hooks/useFormServerErrors";
 import { CreateProjectTeamRequest } from "ProjectModels";
 import { FormErrorMap } from "MyTypes";
 
@@ -11,7 +11,7 @@ type Props = {
   create: (form: CreateProjectTeamRequest) => void;
 }
 
-export const ProjectTeamsCreateForm: React.FC<Props> = ({
+export const NewTeamForm: React.FC<Props> = ({
   projectId,
   errors,
   create,
@@ -37,6 +37,7 @@ export const ProjectTeamsCreateForm: React.FC<Props> = ({
         rules={[
           { required: true, message: "Please input name" },
           { min: 2, message: "Name should be at least 2 characters long" },
+          { max: 25, message: "Name must be no more than 25 characters" },
         ]}
       >
         <Input name="name" placeholder="Name" />

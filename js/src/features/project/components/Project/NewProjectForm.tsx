@@ -4,15 +4,21 @@ import { Button, Form, Input } from "antd";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { CreateProjectRequest } from "ProjectModels";
-import { convertToSlug } from "../helpers";
+import { convertToSlug } from "../../helpers";
+import {
+  getMaxError,
+  getMinError,
+  getRequiredErrors,
+  getUrlError,
+} from "../../../../utils/errors";
 
 type Props = {
   create: (form: CreateProjectRequest) => void;
   errors: FormErrorMap;
   loading: boolean;
-}
+};
 
-export const CreateProjectForm: React.FC<Props> = ({
+export const NewProjectForm: React.FC<Props> = ({
   errors,
   create,
   loading,
@@ -32,10 +38,6 @@ export const CreateProjectForm: React.FC<Props> = ({
     [create],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.log("onFinishFailed:", errorInfo);
-  }, []);
-
   function changeSlug(value: string) {
     if (!form.isFieldTouched("slug")) {
       form.setFields([
@@ -49,16 +51,11 @@ export const CreateProjectForm: React.FC<Props> = ({
   }
 
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 8 }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-    >
+    <Form form={form} labelCol={{ span: 8 }} onFinish={onFinish}>
       <Form.Item
         label="Name"
         name="name"
-        rules={[{ required: true, message: "Please input Name!" }]}
+        rules={[...getRequiredErrors(), getMinError(2), getMaxError(255)]}
       >
         <Input onChange={(event) => changeSlug(event.target.value)} />
       </Form.Item>
@@ -66,7 +63,7 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Description"
         name="description"
-        rules={[{ required: true, message: "Please input Description!" }]}
+        rules={[...getRequiredErrors()]}
       >
         <Input />
       </Form.Item>
@@ -74,10 +71,7 @@ export const CreateProjectForm: React.FC<Props> = ({
       <Form.Item
         label="Slug"
         name="slug"
-        rules={[
-          { required: true, message: "Please input Slug!" },
-          { pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/, message: "Please input valid Slug!" },
-        ]}
+        rules={[...getRequiredErrors(), getUrlError()]}
       >
         <Input />
       </Form.Item>
