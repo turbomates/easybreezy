@@ -3,7 +3,8 @@ package io.easybreezy.hr.api
 import com.google.inject.Inject
 import io.easybreezy.hr.api.controller.AbsenceController
 import io.easybreezy.hr.api.controller.CalendarController
-import io.easybreezy.hr.api.controller.HRController
+import io.easybreezy.hr.api.controller.EmployeeController
+import io.easybreezy.hr.api.controller.EventController
 import io.easybreezy.hr.api.controller.LocationController
 import io.easybreezy.hr.api.controller.VacationController
 import io.easybreezy.hr.application.RemainingTime
@@ -21,6 +22,15 @@ import io.easybreezy.hr.application.calendar.command.ImportCalendar
 import io.easybreezy.hr.application.calendar.command.RemoveHoliday
 import io.easybreezy.hr.application.calendar.queryobject.Calendars
 import io.easybreezy.hr.application.calendar.queryobject.Holidays
+import io.easybreezy.hr.application.event.command.AddParticipants
+import io.easybreezy.hr.application.event.command.ChangeConditions
+import io.easybreezy.hr.application.event.command.ChangeVisitStatus
+import io.easybreezy.hr.application.event.command.Enter
+import io.easybreezy.hr.application.event.command.Open
+import io.easybreezy.hr.application.event.command.UpdateDetails
+import io.easybreezy.hr.application.event.queryobject.CanViewEvent
+import io.easybreezy.hr.application.event.queryobject.Event
+import io.easybreezy.hr.application.event.queryobject.IsEventOwner
 import io.easybreezy.hr.application.hr.command.ApplyPosition
 import io.easybreezy.hr.application.hr.command.ApplySalary
 import io.easybreezy.hr.application.hr.command.Fire
@@ -74,8 +84,9 @@ class Router @Inject constructor(
                 authenticate(*Auth.user) {
                     absencesRouting()
                     locationsRouting()
-                    hrRouting()
+                    employeeRouting()
                     calendarsRouting()
+                    eventsRouting()
                     vacationRouting()
                 }
             }
@@ -102,7 +113,8 @@ class Router @Inject constructor(
                 queryExecutor.execute(IsAbsenceOwner(absenceId, principal!!.id))
             }
             ) {
-                post<Response.Either<Response.Ok, Response.Errors>, UpdateAbsence, ID>("/{id}") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, UpdateAbsence, ID>("/{id}") {
+                        command, params ->
                     controller<AbsenceController>(this).updateAbsence(
                         params.id,
                         command
@@ -183,7 +195,8 @@ class Router @Inject constructor(
                 val userLocationId = locations.resolve<ID>(this).id
                 queryExecutor.execute(IsUserLocationOwner(userLocationId, principal!!.id))
             }) {
-                post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, EditUserLocation, ID>("/{id}") {
+                        command, params ->
                     controller<LocationController>(this).editUserLocation(
                         params.id,
                         command
@@ -214,39 +227,46 @@ class Router @Inject constructor(
         }
     }
 
-    private fun Route.hrRouting() {
+    private fun Route.employeeRouting() {
         route("/employees") {
             authorize(setOf(Activity.EMPLOYEES_LIST)) {
                 get<Response.Listing<Employee>>("") {
-                    controller<HRController>(this).employees()
+                    controller<EmployeeController>(this).employees()
                 }
             }
         }
 
         route("/employee/{userId}") {
             authorize(setOf(Activity.EMPLOYEES_MANAGE)) {
-                post<Response.Either<Response.Ok, Response.Errors>, ApplyPosition, UserId>("/apply-position") { command, params ->
-                    controller<HRController>(this).applyPosition(
+                post<Response.Either<Response.Ok, Response.Errors>, ApplyPosition, UserId>("/apply-position") {
+                        command, params ->
+                    controller<EmployeeController>(this).applyPosition(
                         command,
                         params.userId,
                         resolvePrincipal<UserPrincipal>()
                     )
                 }
-                post<Response.Either<Response.Ok, Response.Errors>, ApplySalary, UserId>("/apply-salary") { command, params ->
-                    controller<HRController>(this).applySalary(
+                post<Response.Either<Response.Ok, Response.Errors>, ApplySalary, UserId>("/apply-salary") {
+                        command, params ->
+                    controller<EmployeeController>(this).applySalary(
                         command,
                         params.userId,
                         resolvePrincipal<UserPrincipal>()
                     )
                 }
                 post<Response.Either<Response.Ok, Response.Errors>, Hire, UserId>("/hire") { command, params ->
-                    controller<HRController>(this).hire(command, params.userId, resolvePrincipal<UserPrincipal>())
+                    controller<EmployeeController>(this).hire(command, params.userId, resolvePrincipal<UserPrincipal>())
                 }
                 post<Response.Either<Response.Ok, Response.Errors>, Fire, UserId>("/fire") { command, params ->
-                    controller<HRController>(this).fire(command, params.userId, resolvePrincipal<UserPrincipal>())
+                    controller<EmployeeController>(this).fire(command, params.userId, resolvePrincipal<UserPrincipal>())
                 }
-                post<Response.Either<Response.Ok, Response.Errors>, WriteNote, UserId>("/write-note") { command, params ->
-                    controller<HRController>(this).writeNote(command, params.userId, resolvePrincipal<UserPrincipal>())
+                post<Response.Either<Response.Ok, Response.Errors>, WriteNote, UserId>("/write-note") {
+                        command, params ->
+                    controller<EmployeeController>(this).writeNote(
+                        command,
+                        params.userId,
+                        resolvePrincipal<UserPrincipal>()
+                    )
                 }
             }
 
@@ -254,19 +274,21 @@ class Router @Inject constructor(
                 val principal = principal<UserPrincipal>()
                 principal!!.id == locations.resolve<UserId>(this).userId
             }) {
-                post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, UserId>("/specify-skills") { command, params ->
-                    controller<HRController>(this).specifySkills(command, params.userId)
+                post<Response.Either<Response.Ok, Response.Errors>, SpecifySkills, UserId>("/specify-skills") {
+                        command, params ->
+                    controller<EmployeeController>(this).specifySkills(command, params.userId)
                 }
                 post<Response.Either<Response.Ok, Response.Errors>, UpdateBio, UserId>("/update-bio") { command, params ->
-                    controller<HRController>(this).updateBio(command, params.userId)
+                    controller<EmployeeController>(this).updateBio(command, params.userId)
                 }
-                post<Response.Either<Response.Ok, Response.Errors>, UpdateBirthday, UserId>("/update-birthday") { command, params ->
-                    controller<HRController>(this).updateBirthday(command, params.userId)
+                post<Response.Either<Response.Ok, Response.Errors>, UpdateBirthday, UserId>("/update-birthday") {
+                        command, params ->
+                    controller<EmployeeController>(this).updateBirthday(command, params.userId)
                 }
             }
 
             get<Response.Data<EmployeeDetails>, UserId>("") { params ->
-                controller<HRController>(this).employee(params.userId)
+                controller<EmployeeController>(this).employee(params.userId)
             }
         }
     }
@@ -314,6 +336,71 @@ class Router @Inject constructor(
 
             get<Response.Data<Holidays>, ID>("/{id}") { params ->
                 controller<CalendarController>(this).holidays(params.id)
+            }
+        }
+    }
+
+    private fun Route.eventsRouting() {
+        route("/events") {
+            authorize(setOf(Activity.EVENTS_MANAGE)) {
+                post<Response.Either<Response.Ok, Response.Errors>, Open>("") { command ->
+                    controller<EventController>(this).openEvent(resolvePrincipal<UserPrincipal>(), command)
+                }
+            }
+
+            route("/{id}") {
+                authorize(setOf(Activity.EVENTS_MANAGE), {
+                    val principal = principal<UserPrincipal>()
+                    val event = locations.resolve<ID>(this).id
+                    queryExecutor.execute(IsEventOwner(event, principal!!.id))
+                }) {
+                    post<Response.Either<Response.Ok, Response.Errors>, UpdateDetails, ID>("") { command, params ->
+                        controller<EventController>(this).updateEventDetails(params.id, command)
+                    }
+                    post<Response.Either<Response.Ok, Response.Errors>, AddParticipants, ID>("/participants") {
+                            command, params ->
+                        controller<EventController>(this).addParticipants(params.id, command)
+                    }
+                    postParams<Response.Ok, ID>("/cancel") { params ->
+                        controller<EventController>(this).cancelEvent(params.id)
+                    }
+                    post<Response.Either<Response.Ok, Response.Errors>, ChangeConditions, ID>("/conditions") {
+                            command, params ->
+                        controller<EventController>(this).updateEventConditions(params.id, command)
+                    }
+                }
+                authorize(setOf(Activity.EVENTS_LIST), {
+                    val id = principal<UserPrincipal>()!!.id
+                    val event = locations.resolve<ID>(this).id
+                    queryExecutor.execute(CanViewEvent(event, id))
+                }) {
+                    get<Response.Data<Event>, ID>("") { params ->
+                        controller<EventController>(this).event(params.id)
+                    }
+                }
+                route("/participants") {
+                    authorize(setOf(Activity.EVENTS_MANAGE), {
+                        val principal = principal<UserPrincipal>()
+                        principal!!.id == receive<Enter>().employeeId
+                    }) {
+                        post<Response.Either<Response.Ok, Response.Errors>, Enter, ID>("/enter") { command, params ->
+                            controller<EventController>(this).enterEvent(params.id, command)
+                        }
+                    }
+                    authorize(setOf(Activity.EVENTS_MANAGE), {
+                        val principal = principal<UserPrincipal>()
+                        principal!!.id == receive<ChangeVisitStatus>().employeeId
+                    }) {
+                        post<Response.Either<Response.Ok, Response.Errors>, ChangeVisitStatus, ID>("/visit-status") { command, params ->
+                            controller<EventController>(this).changeVisitStatus(params.id, command)
+                        }
+                    }
+                }
+            }
+            authorize(setOf(Activity.EVENTS_LIST)) {
+                get<Response.Listing<Event>>("") {
+                    controller<EventController>(this).events(resolvePrincipal<UserPrincipal>())
+                }
             }
         }
     }

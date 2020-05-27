@@ -22,9 +22,12 @@ import io.easybreezy.project.model.issue.Category
 import io.easybreezy.project.model.issue.Statuses
 import io.easybreezy.project.model.team.Role
 import io.easybreezy.project.model.team.Roles
+import org.jetbrains.exposed.dao.EntityChangeType
 import org.jetbrains.exposed.dao.EntityClass
+import org.jetbrains.exposed.dao.EntityHook
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.dao.toEntity
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.text.Normalizer
@@ -50,25 +53,21 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
 
     fun close() {
         this.status = Status.Closed
-        this.updatedAt = LocalDateTime.now()
         addEvent(Closed(id.value, this.updatedAt))
     }
 
     fun suspend() {
         this.status = Status.Suspended
-        this.updatedAt = LocalDateTime.now()
         addEvent(Suspended(id.value, this.updatedAt))
     }
 
     fun activate() {
         this.status = Status.Active
-        this.updatedAt = LocalDateTime.now()
         addEvent(Activated(id.value, this.updatedAt))
     }
 
     fun addRole(name: String, permissions: List<Role.Permission>) {
         val newRole = Role.new(this, name, permissions)
-        this.updatedAt = LocalDateTime.now()
         addEvent(RoleAdded(id.value, newRole.id.value, newRole.name, permissions, this.updatedAt))
     }
 
@@ -76,20 +75,17 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         val role = roles.first { it.id.value == roleId }
         newName?.let { role.rename(it) }
         role.changePermissions(permissions)
-        this.updatedAt = LocalDateTime.now()
         addEvent(RoleChanged(id.value, role.id.value, role.name, permissions, this.updatedAt))
     }
 
     fun removeRole(roleId: UUID) {
         val role = roles.first { it.id.value == roleId }
         role.delete()
-        this.updatedAt = LocalDateTime.now()
         addEvent(RoleRemoved(id.value, role.id.value, role.name, this.updatedAt))
     }
 
     fun addCategory(name: String, parent: UUID?) {
         val newCategory = Category.new(this, name, parent)
-        this.updatedAt = LocalDateTime.now()
         addEvent(CategoryAdded(id.value, newCategory.id.value, newCategory.name, parent, this.updatedAt))
     }
 
@@ -97,27 +93,23 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
         val category = categories.first { it.id.value == categoryId }
         newName?.let { category.rename(it) }
         category.changeParent(newParent)
-        this.updatedAt = LocalDateTime.now()
         addEvent(CategoryChanged(id.value, category.id.value, category.name, newParent, this.updatedAt))
     }
 
     fun removeCategory(categoryId: UUID) {
         val category = categories.first { it.id.value == categoryId }
         category.delete()
-        this.updatedAt = LocalDateTime.now()
         addEvent(CategoryRemoved(id.value, category.id.value, category.name, this.updatedAt))
     }
 
     fun addIssueStatus(name: String) {
         val newIssueStatus = IssueStatus.new(this, name)
-        this.updatedAt = LocalDateTime.now()
         addEvent(StatusAdded(id.value, newIssueStatus.id.value, newIssueStatus.name, this.updatedAt))
     }
 
     fun changeIssueStatus(issueStatusId: UUID, newName: String) {
         val issueStatus = issueStatuses.first { it.id.value == issueStatusId }
         issueStatus.rename(newName)
-        this.updatedAt = LocalDateTime.now()
         addEvent(StatusChanged(id.value, issueStatus.id.value, issueStatus.name, this.updatedAt))
     }
 
@@ -128,7 +120,6 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     fun removeIssueStatus(issueStatusId: UUID) {
         val issueStatus = issueStatuses.first { it.id.value == issueStatusId }
         issueStatus.delete()
-        this.updatedAt = LocalDateTime.now()
         addEvent(StatusRemoved(id.value, issueStatus.id.value, issueStatus.name, this.updatedAt))
     }
 
@@ -168,6 +159,14 @@ class Project private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) 
     }
 
     abstract class Repository : EntityClass<UUID, Project>(Projects, Project::class.java) {
+        init {
+            EntityHook.subscribe { action ->
+                if (action.changeType == EntityChangeType.Updated) {
+                    action.toEntity(this)?.updatedAt = LocalDateTime.now()
+                }
+            }
+        }
+
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Project {
             return Project(entityId)
         }

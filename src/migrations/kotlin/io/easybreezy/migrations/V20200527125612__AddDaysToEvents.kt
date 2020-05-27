@@ -4,16 +4,12 @@ import io.easybreezy.migrations.extensions.execute
 import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.flywaydb.core.api.migration.Context
 
-class V20200512092106__NeutralPriorityColor : BaseJavaMigration() {
+class V20200527125612__AddDaysToEvents : BaseJavaMigration() {
     override fun migrate(context: Context) {
         context.execute(
             """
-                ALTER TYPE priority_color ADD VALUE '#FFFFFF';
-            """.trimIndent()
+            alter table events add column days JSONB NOT NULL DEFAULT '[]'::jsonb;
+        """.trimIndent()
         )
-    }
-
-    override fun canExecuteInTransaction(): Boolean {
-        return false
     }
 }

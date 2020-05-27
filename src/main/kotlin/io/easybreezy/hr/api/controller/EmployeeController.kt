@@ -22,7 +22,7 @@ import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import java.util.UUID
 
-class HRController @Inject constructor(
+class EmployeeController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
     private val queryExecutor: QueryExecutor

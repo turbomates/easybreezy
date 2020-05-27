@@ -24,9 +24,8 @@ class ProjectControllerTest {
 
     @Test
     fun `add project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+        rollbackTransaction {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects") {
                     addHeader("Content-Type", "application/json")
                     setBody(
@@ -48,10 +47,9 @@ class ProjectControllerTest {
 
     @Test
     fun `change project slug`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/change-slug") {
                     addHeader("Content-Type", "application/json")
                     setBody(json { "slug" to "my-project-new" }.toString())
@@ -68,10 +66,9 @@ class ProjectControllerTest {
 
     @Test
     fun `list of projects`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Get, "/api/projects")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -83,10 +80,9 @@ class ProjectControllerTest {
 
     @Test
     fun `suspend project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/suspend") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {}.toString())
@@ -104,10 +100,9 @@ class ProjectControllerTest {
 
     @Test
     fun `close project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/close") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {}.toString())
@@ -125,10 +120,9 @@ class ProjectControllerTest {
 
     @Test
     fun `activate project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/suspend") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {}.toString())
@@ -153,10 +147,9 @@ class ProjectControllerTest {
 
     @Test
     fun `write description to project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/write-description") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {
@@ -176,10 +169,9 @@ class ProjectControllerTest {
 
     @Test
     fun `add role to project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/roles/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {
@@ -204,11 +196,10 @@ class ProjectControllerTest {
 
     @Test
     fun `change role of project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             val project = testDatabase.createMyProject()
             val roleId = testDatabase.createProjectRole(project, "Tester")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/roles/$roleId/change") {
                     addHeader("Content-Type", "application/json")
@@ -233,11 +224,10 @@ class ProjectControllerTest {
 
     @Test
     fun `remove role from project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             val project = testDatabase.createMyProject()
             val roleId = testDatabase.createProjectRole(project, "Tester")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/roles/$roleId/remove") {
                     addHeader("Content-Type", "application/json")
@@ -256,12 +246,12 @@ class ProjectControllerTest {
 
     @Test
     fun `try to remove role from project with members`() {
-        rollbackTransaction(testDatabase) {
+        rollbackTransaction {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
             val roleId = testDatabase.createProjectRole(project, "Tester")
             val team = testDatabase.createProjectTeam(project.value, "Lite")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication(userId) }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/teams/$team/members/add") {
                     addHeader("Content-Type", "application/json")
@@ -292,10 +282,9 @@ class ProjectControllerTest {
 
     @Test
     fun `add category to project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/categories/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {
@@ -316,12 +305,11 @@ class ProjectControllerTest {
 
     @Test
     fun `change category of project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             val project = testDatabase.createMyProject()
             val parent = testDatabase.createProjectCategory(project, "Epic")
             val category = testDatabase.createProjectCategory(project, "Feature")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/categories/$category/change") {
                     addHeader("Content-Type", "application/json")
@@ -346,11 +334,10 @@ class ProjectControllerTest {
 
     @Test
     fun `remove category from project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             val project = testDatabase.createMyProject()
             val category = testDatabase.createProjectCategory(project, "TestCat")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/categories/$category/remove") {
                     addHeader("Content-Type", "application/json")
@@ -368,10 +355,9 @@ class ProjectControllerTest {
     }
 
     @Test fun `add status to project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             testDatabase.createMyProject()
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/statuses/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(json {
@@ -391,11 +377,10 @@ class ProjectControllerTest {
     }
 
     @Test fun `change status of project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             val project = testDatabase.createMyProject()
             val statusId = testDatabase.createProjectStatus(project, "StatusName")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/statuses/$statusId/change") {
                     addHeader("Content-Type", "application/json")
@@ -417,11 +402,10 @@ class ProjectControllerTest {
     }
 
     @Test fun `remove status from project`() {
-        rollbackTransaction(testDatabase) {
-            val userId = testDatabase.createMember()
+        rollbackTransaction {
             val project = testDatabase.createMyProject()
             val statusId = testDatabase.createProjectStatus(project, "StatusName")
-            withTestApplication({ testApplication(userId, testDatabase) }) {
+            withTestApplication({ testApplication() }) {
 
                 with(handleRequest(HttpMethod.Post, "/api/projects/my-project/statuses/$statusId/remove") {
                     addHeader("Content-Type", "application/json")

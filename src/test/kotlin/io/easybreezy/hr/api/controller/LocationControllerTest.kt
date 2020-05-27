@@ -6,6 +6,7 @@ import io.easybreezy.hr.createUserLocation
 import io.easybreezy.rollbackTransaction
 import io.easybreezy.testApplication
 import io.easybreezy.testDatabase
+import io.easybreezy.testDateFormatter
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
@@ -15,18 +16,13 @@ import kotlinx.serialization.json.json
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 class LocationControllerTest {
-    val df: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     @Test
     fun `location create`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
                 with(handleRequest(HttpMethod.Post, "/api/hr/locations") {
                     addHeader("Content-Type", "application/json")
                     setBody(
@@ -49,11 +45,9 @@ class LocationControllerTest {
 
     @Test
     fun `remove location`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
 
                 with(handleRequest(HttpMethod.Delete, "/api/hr/locations/$locationId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -69,11 +63,9 @@ class LocationControllerTest {
 
     @Test
     fun locations() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                database.createLocation()
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                testDatabase.createLocation()
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/locations")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
@@ -85,19 +77,17 @@ class LocationControllerTest {
 
     @Test
     fun `user location assign`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val userId = testDatabase.createMember()
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/user-locations") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
                             "userId" to userId.toString()
-                            "startedAt" to LocalDate.now().format(df)
+                            "startedAt" to LocalDate.now().format(testDateFormatter)
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -107,7 +97,7 @@ class LocationControllerTest {
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user-locations?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
-                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
+                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(testDateFormatter))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -116,30 +106,27 @@ class LocationControllerTest {
 
     @Test
     fun `user assign new location and previous should be closed`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
-                val userLocationId = database.createUserLocation(userId, locationId, endedAt = null)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val userId = testDatabase.createMember()
+                val userLocationId = testDatabase.createUserLocation(userId, locationId, endedAt = null)
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/user-locations") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
                             "userId" to userId.toString()
-                            "startedAt" to LocalDate.now().format(df)
+                            "startedAt" to LocalDate.now().format(testDateFormatter)
                             "locationId" to locationId.toString()
                         }.toString()
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user-locations/$userLocationId")) {
-                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
+                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(testDateFormatter))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -148,19 +135,17 @@ class LocationControllerTest {
 
     @Test
     fun `user location edit`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
-                val userLocationId = database.createUserLocation(userId, locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val userId = testDatabase.createMember()
+                val userLocationId = testDatabase.createUserLocation(userId, locationId)
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/user-locations/$userLocationId") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
-                            "startedAt" to LocalDate.now().format(df)
+                            "startedAt" to LocalDate.now().format(testDateFormatter)
                             "locationId" to locationId.toString()
                         }.toString()
                     )
@@ -169,7 +154,7 @@ class LocationControllerTest {
                 }
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user-locations?from=2010-04-04&to=2030-04-04")) {
-                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(df))!!)
+                    Assertions.assertTrue(response.content?.contains(LocalDate.now().format(testDateFormatter))!!)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
             }
@@ -178,13 +163,11 @@ class LocationControllerTest {
 
     @Test
     fun `user location show`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
-                val userLocationId = database.createUserLocation(userId, locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val userId = testDatabase.createMember()
+                val userLocationId = testDatabase.createUserLocation(userId, locationId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user-locations/$userLocationId")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
@@ -197,13 +180,11 @@ class LocationControllerTest {
 
     @Test
     fun `users locations listing`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
-                database.createUserLocation(userId, locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val userId = testDatabase.createMember()
+                testDatabase.createUserLocation(userId, locationId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user-locations?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
@@ -216,13 +197,11 @@ class LocationControllerTest {
 
     @Test
     fun `test user locations`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val userId = database.createMember()
-                database.createUserLocation(userId, locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val userId = testDatabase.createMember()
+                testDatabase.createUserLocation(userId, locationId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user/$userId/locations")) {
                     Assertions.assertTrue(response.content?.contains("Best Location For a Job")!!)
