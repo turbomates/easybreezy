@@ -21,7 +21,7 @@ import {
   selectIsLoadingProject,
 } from "../features/project/selectors";
 import { ProjectDescriptionForm } from "../features/project/components/Project/ProjectDescriptionForm";
-import { ProjectStatusForm } from "../features/project/components/Project/ProjectStatusForm";
+import { ProjectStatus } from "../features/project/components/Project/ProjectStatus";
 import { ProjectSlugForm } from "../features/project/components/Project/ProjectSlugForm";
 
 import "./Project.scss";
@@ -103,10 +103,9 @@ export const ProjectPage: React.FC = () => {
             </List.Item>
 
             <List.Item className="list-item">
-              <ProjectStatusForm
+              <ProjectStatus
                 change={changeProjectStatus(project.slug)}
                 project={project}
-                loading={loading}
               />
             </List.Item>
           </List>

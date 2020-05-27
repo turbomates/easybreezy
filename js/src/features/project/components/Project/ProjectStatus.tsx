@@ -1,20 +1,16 @@
 import React from "react";
 import { Button } from "antd";
 
-import {
-  Project,
-  ProjectStatusTypeRequest
-} from "ProjectModels"
+import { Project, ProjectStatusTypeRequest } from "ProjectModels";
 
-import "./ProjectStatusForm.scss";
+import "./ProjectStatus.scss";
 
 type Props = {
   change: (statusType: ProjectStatusTypeRequest) => void;
   project: Project;
-  loading: boolean;
 };
 
-export const ProjectStatusForm: React.FC<Props> = ({ change, project }) => {
+export const ProjectStatus: React.FC<Props> = ({ change, project }) => {
   return (
     <div className="status">
       {project.status !== "Active" && (
@@ -23,7 +19,7 @@ export const ProjectStatusForm: React.FC<Props> = ({ change, project }) => {
           <Button
             value="Active"
             onClick={() => change("activate")}
-            className="status__btn active"
+            className="status__btn success"
           >
             Activate
           </Button>
@@ -49,7 +45,7 @@ export const ProjectStatusForm: React.FC<Props> = ({ change, project }) => {
           <Button
             value="Closed"
             onClick={() => change("close")}
-            className="status__btn status__btn-danger danger"
+            className="status__btn warning"
           >
             Close
           </Button>

@@ -42,8 +42,8 @@ export const ProjectHeaderMenu: React.FC<Props> = ({ slug }) => {
               <span>Teams</span>
             </Link>
           </Menu.Item>
-          <Menu.Item key={`/projects/${slug}`}>
-            <Link to={`/projects/${slug}`}>
+          <Menu.Item key={`/projects/${slug}/settings`}>
+            <Link to={`/projects/${slug}/settings`}>
               <span>Settings</span>
             </Link>
           </Menu.Item>
