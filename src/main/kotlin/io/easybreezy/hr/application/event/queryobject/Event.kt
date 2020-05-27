@@ -99,7 +99,8 @@ private fun ResultRow.toEvent(): Event {
         location = this.getOrNull(Locations.id)?.let { this.toLocation() },
         status = this[Events.status],
         createdAt = this[Events.createdAt],
-        updatedAt = this[Events.updatedAt]
+        updatedAt = this[Events.updatedAt],
+        days = this[Events.days]
     )
 }
 
@@ -142,7 +143,8 @@ data class Event(
     val status: Status,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime?,
-    val participants: MutableList<Participant> = mutableListOf()
+    val participants: MutableList<Participant> = mutableListOf(),
+    val days: Set<String>
 ) {
     lateinit var owner: Owner
 }

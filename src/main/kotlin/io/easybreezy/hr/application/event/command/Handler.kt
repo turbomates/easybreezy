@@ -7,6 +7,7 @@ import io.easybreezy.hr.model.event.Conditions
 import io.easybreezy.hr.model.event.Event
 import io.easybreezy.hr.model.event.EventId
 import io.easybreezy.hr.model.event.VisitStatus
+import io.easybreezy.hr.model.event.WeekDays
 import io.easybreezy.infrastructure.exposed.TransactionManager
 
 class Handler @Inject constructor(
@@ -18,12 +19,9 @@ class Handler @Inject constructor(
         val conditions = Conditions.create(command.isPrivate, command.isFreeEntry, command.isRepeatable)
         val event = Event.open(command.name, command.startedAt, command.owner, conditions)
         command.description?.let { event.changeDescription(it) }
-        command.location?.let {
-            event.assignLocation(
-                LocationRepository().getOne(command.location)
-            )
-        }
+        command.location?.let { event.assignLocation(LocationRepository().getOne(it)) }
         command.endedAt?.let { event.specifyEndTime(it) }
+        command.days?.let { days -> event.holdOnDays(days.map { WeekDays.valueOf(it) }.toSet()) }
     }
 
     suspend fun updateEventDetails(command: UpdateDetails) = transaction {
@@ -33,6 +31,7 @@ class Handler @Inject constructor(
         command.location?.let { event.assignLocation(LocationRepository().getOne(command.location)) }
         command.startedAt?.let { event.specifyStartTime(it) }
         command.endedAt?.let { event.specifyEndTime(it) }
+        command.days?.let { days -> event.holdOnDays(days.map { WeekDays.valueOf(it) }.toSet()) }
     }
 
     suspend fun changeEventConditions(command: ChangeConditions) = transaction {

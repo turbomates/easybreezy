@@ -20,7 +20,8 @@ data class Open(
     val participants: List<UUID>? = null,
     val isPrivate: Boolean = false,
     val isFreeEntry: Boolean = false,
-    val isRepeatable: Boolean = false
+    val isRepeatable: Boolean = false,
+    val days: Set<String>? = null
 ) {
     @Transient
     lateinit var owner: Owner

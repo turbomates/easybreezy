@@ -1,5 +1,6 @@
 package io.easybreezy.hr.application.event.command
 
+import io.easybreezy.hr.model.event.WeekDays as WeekDaysEnum
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.ktor.validate
 import org.valiktor.Constraint
@@ -19,6 +20,7 @@ class Validation {
             validate(Open::description).isNotBlank()
             validate(Open::startedAt).isNotNull().isGreaterThanOrEqualTo(LocalDateTime.now())
             validate(Open::endedAt).isGreaterThan(command.startedAt)
+            validate(Open::days).isWeekDays()
         }
     }
 
@@ -31,6 +33,7 @@ class Validation {
             if (command.startedAt != null) {
                 validate(UpdateDetails::endedAt).isGreaterThan(command.startedAt)
             }
+            validate(UpdateDetails::days).isWeekDays()
         }
     }
 
@@ -71,5 +74,18 @@ private object VisitStatus : Constraint {
 private fun <E> Validator<E>.Property<String?>.isVisitStatus() {
     this.validate(VisitStatus) { value ->
         io.easybreezy.hr.model.event.VisitStatus.values().any { it.name == value }
+    }
+}
+
+private object WeekDays : Constraint {
+    override val name: String
+        get() = "Invalid week day"
+}
+
+fun <E> Validator<E>.Property<Iterable<String>?>.isWeekDays() {
+    this.validate(WeekDays) { value ->
+        value == null || value.all { day ->
+            WeekDaysEnum.values().any { it.name == day }
+        }
     }
 }

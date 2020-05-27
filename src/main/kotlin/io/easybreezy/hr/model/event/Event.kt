@@ -11,7 +11,10 @@ import io.easybreezy.infrastructure.event.event.StartChanged
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
+import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.postgresql.PGEnum
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.builtins.set
 import org.jetbrains.exposed.dao.EntityChangeType
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityHook
@@ -30,6 +33,7 @@ class Event private constructor(id: EntityID<EventId>) : AggregateRoot<EventId>(
     private var name by Events.name
     private var startedAt by Events.startedAt
     private var endedAt by Events.endedAt
+    private var days by Events.days
     private val participants by Participant referrersOn Participants.event
     private var status by Events.status
     private var conditions by Events.conditions
@@ -95,6 +99,10 @@ class Event private constructor(id: EntityID<EventId>) : AggregateRoot<EventId>(
         Participant.create(this, employee)
     }
 
+    fun holdOnDays(days: Set<WeekDays>) {
+        this.days = days.map { it.name }.toSet()
+    }
+
     fun specifyStartTime(startedAt: LocalDateTime) {
         if (endedAt != null) require(startedAt < endedAt) { "Event can not start after end" }
         val oldStartedAt = this.startedAt
@@ -156,11 +164,16 @@ enum class Status {
     OPENED, CANCELLED
 }
 
+enum class WeekDays {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+}
+
 object Events : UUIDTable("events") {
     val name = varchar("name", 255)
     val description = text("description").nullable()
     val startedAt = datetime("started_at").uniqueIndex()
     val endedAt = datetime("ended_at").uniqueIndex().nullable()
+    val days = jsonb("days", String.serializer().set).default(setOf())
     val conditions = embedded<Conditions>(ConditionsTable)
     val location = reference("location", Locations).nullable()
     val owner = uuid("owner")

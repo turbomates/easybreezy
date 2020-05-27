@@ -16,7 +16,8 @@ data class UpdateDetails(
     val startedAt: LocalDateTime? = null,
     val description: String? = null,
     val endedAt: LocalDateTime? = null,
-    val location: UUID? = null
+    val location: UUID? = null,
+    val days: Set<String>? = null
 ) {
     @Transient
     lateinit var id: EventId
