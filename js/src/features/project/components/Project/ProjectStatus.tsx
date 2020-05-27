@@ -17,7 +17,6 @@ export const ProjectStatus: React.FC<Props> = ({ change, project }) => {
         <div className="status__item">
           <span>Start work on the project.</span>
           <Button
-            value="Active"
             onClick={() => change("activate")}
             className="status__btn success"
           >
@@ -30,7 +29,6 @@ export const ProjectStatus: React.FC<Props> = ({ change, project }) => {
         <div className="status__item">
           <span> Pause the project. You can return to work later.</span>
           <Button
-            value="Suspended"
             onClick={() => change("suspend")}
             className="status__btn accent"
           >
@@ -43,7 +41,6 @@ export const ProjectStatus: React.FC<Props> = ({ change, project }) => {
         <div className="status__item">
           <span>Finish the project.</span>
           <Button
-            value="Closed"
             onClick={() => change("close")}
             className="status__btn warning"
           >

@@ -1,10 +1,8 @@
 import React from "react";
 import { Menu, PageHeader, Tag, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 
-import { selectProject } from "../selectors";
-import { ProjectStatusTypeResponse } from "ProjectModels";
+import { Project, ProjectStatusTypeResponse } from "ProjectModels";
 import { chooseColor } from "../helpers";
 
 import "../project.scss";
@@ -12,38 +10,37 @@ import "../project.scss";
 const { Paragraph } = Typography;
 
 type Props = {
-  slug: string;
+  project: Project;
 };
 
-export const ProjectHeaderMenu: React.FC<Props> = ({ slug }) => {
+export const ProjectHeaderMenu: React.FC<Props> = ({ project }) => {
   const location = useLocation();
-  const project = useSelector(selectProject);
 
   return (
     <PageHeader
       className="page-header"
-      title={project?.name}
-      tags={<Status status={project?.status} />}
+      title={project.name}
+      tags={<Status status={project.status} />}
       footer={
         <Menu
           mode="horizontal"
           selectedKeys={[location.pathname]}
           className="page-header__menu"
         >
-          <Menu.Item key={`/projects/${slug}/role`}>
-            <Link to={`/projects/${slug}/role`}>
+          <Menu.Item key={`/projects/${project.slug}/role`}>
+            <Link to={`/projects/${project.slug}/role`}>
               <span>Role</span>
             </Link>
           </Menu.Item>
           <Menu.Item
             key={location.pathname.includes("teams") ? location.pathname : ""}
           >
-            <Link to={`/projects/${slug}/teams`}>
+            <Link to={`/projects/${project.slug}/teams`}>
               <span>Teams</span>
             </Link>
           </Menu.Item>
-          <Menu.Item key={`/projects/${slug}/settings`}>
-            <Link to={`/projects/${slug}/settings`}>
+          <Menu.Item key={`/projects/${project.slug}/settings`}>
+            <Link to={`/projects/${project.slug}/settings`}>
               <span>Settings</span>
             </Link>
           </Menu.Item>
@@ -55,18 +52,16 @@ export const ProjectHeaderMenu: React.FC<Props> = ({ slug }) => {
           expandable: true,
         }}
       >
-        {project?.description}
+        {project.description}
       </Paragraph>
     </PageHeader>
   );
 };
 
 type StatusProps = {
-  status?: ProjectStatusTypeResponse;
+  status: ProjectStatusTypeResponse;
 };
 
-const Status: React.FC<StatusProps> = ({ status }) => {
-  if (!status) return null;
-
-  return <Tag color={chooseColor(status)}>{status}</Tag>;
-};
+const Status: React.FC<StatusProps> = ({ status }) => (
+  <Tag color={chooseColor(status)}>{status}</Tag>
+);

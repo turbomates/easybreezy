@@ -1,6 +1,6 @@
 import React from "react";
 import { List } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
+import { CloseCircleTwoTone } from "@ant-design/icons";
 import { Location } from "LocationModels";
 
 interface Props {
@@ -11,6 +11,6 @@ interface Props {
 export const LocationsListItem: React.FC<Props> = ({ item, remove }) => (
   <List.Item>
     {item.name} {item.vacationDays}{" "}
-    <CloseCircleOutlined onClick={() => remove(item.id)} />
+    <CloseCircleTwoTone twoToneColor="#ff7875" onClick={() => remove(item.id)} />
   </List.Item>
 );

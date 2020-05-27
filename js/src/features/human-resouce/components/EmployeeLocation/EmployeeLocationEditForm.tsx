@@ -95,7 +95,7 @@ export const EmployeeLocationEditForm: React.FC<Props> = ({
         </Select>
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 8 }}>
         <Button type="primary" htmlType="submit">
           Edit
         </Button>
