@@ -1,12 +1,46 @@
-.status-form {
-  &__option {
-    &-description {
-      font-size: 12px;
-      color: #586069;
+.status {
+  width: 100%;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  &__btn {
+    width: 120px;
+    color: #fff !important;
+  }
+
+  .danger {
+    background-color: #ff4d4f !important;
+    border-color: #ff4d4f !important;
+
+    &:hover {
+      background-color: #ff7875 !important;
+      border-color: #ff7875 !important;
     }
   }
 
-  &__select {
-    width: 200px;
+  .accent {
+    background-color: #fa8c16 !important;
+    border-color: #fa8c16 !important;
+
+    &:hover {
+      background-color: #d46b08 !important;
+      border-color: #d46b08 !important;
+    }
+  }
+
+  .active {
+    background-color: #52c41a !important;
+    border-color: #52c41a !important;
+
+    &:hover {
+      background-color: #389e0d !important;
+      border-color: #389e0d !important;
+    }
   }
 }

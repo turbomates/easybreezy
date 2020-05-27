@@ -29,15 +29,13 @@ export function getMemberRoleName(roles: Role[], memberRoleId: string) {
   return roles.find((role) => role.id === memberRoleId)?.name;
 }
 
-export function switchProjectTeamStatus(
-  status: ProjectTeamStatusResponse,
-): ProjectTeamStatusRequest {
+export function chooseColor(status: ProjectStatusTypeResponse) {
   switch (status) {
     case "Active":
-      return "activate";
+      return "green";
     case "Closed":
-      return "close";
-    default:
-      return "activate";
+      return "red";
+    case "Suspended":
+      return "orange";
   }
 }

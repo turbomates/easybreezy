@@ -14,7 +14,6 @@ import {
 type Props = {
   project: Project;
   edit: (form: EditProjectSlugRequest) => void;
-  close: () => void;
   errors: FormErrorMap;
   loading: boolean;
 };
@@ -24,7 +23,6 @@ export const ProjectSlugForm: React.FC<Props> = ({
   errors,
   edit,
   loading,
-  close,
 }) => {
   const [form] = Form.useForm();
 
@@ -65,12 +63,7 @@ export const ProjectSlugForm: React.FC<Props> = ({
         <Row gutter={[16, 16]}>
           <Col>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Save
-            </Button>
-          </Col>
-          <Col>
-            <Button type="danger" onClick={close} loading={loading}>
-              Cancel
+              Update
             </Button>
           </Col>
         </Row>

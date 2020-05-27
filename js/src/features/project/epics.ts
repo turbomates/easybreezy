@@ -97,10 +97,13 @@ export const editProjectDescription: RootEpic = (action$, state$, { api }) =>
     filter(isActionOf(editProjectDescriptionAsync.request)),
     switchMap((action) =>
       from(api.project.editDescription(action.payload)).pipe(
-        map((result) =>
+        mergeMap((result) =>
           result.success
-            ? editProjectDescriptionAsync.success()
-            : editProjectDescriptionAsync.failure(result.errors),
+            ? [
+                editProjectDescriptionAsync.success(),
+                fetchProjectAsync.request(action.payload.slug),
+              ]
+            : [editProjectDescriptionAsync.failure(result.errors)],
         ),
         catchError((message) =>
           of(editProjectDescriptionAsync.failure(message)),

@@ -50,7 +50,7 @@ export const ProjectsPage: React.FC = () => {
   const projects = useSelector(selectProjects);
 
   return (
-    <div style={{ padding: 8 }}>
+    <div className="content">
       <ProjectList
         projects={projects}
         fetchProjects={fetchProjects}

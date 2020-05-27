@@ -1,67 +1,60 @@
-import React, { useCallback, useMemo } from "react";
-import { Form, Select } from "antd";
+import React from "react";
+import { Button } from "antd";
 
-import { Project, EditProjectStatusRequest } from "ProjectModels";
-import { switchProjectStatus } from "../../helpers";
+import {
+  Project,
+  ProjectStatusTypeRequest
+} from "ProjectModels"
 
 import "./ProjectStatusForm.scss";
 
-const { Option } = Select;
-
 type Props = {
-  change: (form: EditProjectStatusRequest) => void;
+  change: (statusType: ProjectStatusTypeRequest) => void;
   project: Project;
   loading: boolean;
 };
 
-export const ProjectStatusForm: React.FC<Props> = ({
-  change,
-  project,
-  loading,
-}) => {
-  const [form] = Form.useForm();
-
-  const initialValues = useMemo(() => ({ status: project.status }), [
-    project.status,
-  ]);
-
-  const onFinish = useCallback(
-    (values: any) => {
-      change({
-        slug: project.slug,
-        statusType: switchProjectStatus(values),
-      });
-    },
-    [project.slug, change],
-  );
-
+export const ProjectStatusForm: React.FC<Props> = ({ change, project }) => {
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 2 }}
-      onFinish={onFinish}
-      initialValues={initialValues}
-    >
-      <Form.Item name="status" className="status-form__select">
-        <Select
-          onChange={onFinish}
-          disabled={project.status === "Closed"}
-          loading={loading}
-        >
-          <Option value="Active" className="status-form__option">
-            <span>Activate</span>
-            <div className="status-form__option-description">Description</div>
-          </Option>
-          <Option value="Closed">
-            <span>Close</span>
-            <div className="status-form__option-description">Description</div>
-          </Option>
-          <Option value="Suspended">
-            <span>Suspend</span>
-            <div className="status-form__option-description">Description</div>
-          </Option>
-        </Select>
-      </Form.Item>
-    </Form>
+    <div className="status">
+      {project.status !== "Active" && (
+        <div className="status__item">
+          <span>Start work on the project.</span>
+          <Button
+            value="Active"
+            onClick={() => change("activate")}
+            className="status__btn active"
+          >
+            Activate
+          </Button>
+        </div>
+      )}
+
+      {project.status !== "Suspended" && (
+        <div className="status__item">
+          <span> Pause the project. You can return to work later.</span>
+          <Button
+            value="Suspended"
+            onClick={() => change("suspend")}
+            className="status__btn accent"
+          >
+            Suspend
+          </Button>
+        </div>
+      )}
+
+      {project.status !== "Closed" && (
+        <div className="status__item">
+          <span>Finish the project.</span>
+          <Button
+            value="Closed"
+            onClick={() => change("close")}
+            className="status__btn status__btn-danger danger"
+          >
+            Close
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
