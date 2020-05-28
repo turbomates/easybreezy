@@ -20,7 +20,7 @@ export const ProjectHeaderMenu: React.FC<Props> = ({ project }) => {
     <PageHeader
       className="page-header"
       title={project.name}
-      tags={<Status status={project.status} />}
+      tags={<Tag color={chooseColor(project.status)}>{project.status}</Tag>}
       footer={
         <Menu
           mode="horizontal"
@@ -57,11 +57,3 @@ export const ProjectHeaderMenu: React.FC<Props> = ({ project }) => {
     </PageHeader>
   );
 };
-
-type StatusProps = {
-  status: ProjectStatusTypeResponse;
-};
-
-const Status: React.FC<StatusProps> = ({ status }) => (
-  <Tag color={chooseColor(status)}>{status}</Tag>
-);
