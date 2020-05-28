@@ -21,7 +21,7 @@ import {
   selectIsLoadingProject,
 } from "../features/project/selectors";
 import { ProjectDescriptionForm } from "../features/project/components/Project/ProjectDescriptionForm";
-import { ProjectStatus } from "../features/project/components/Project/ProjectStatus";
+import { ProjectStatusDangerZone } from "../features/project/components/Project/ProjectStatusDangerZone";
 import { ProjectSlugForm } from "../features/project/components/Project/ProjectSlugForm";
 
 import "./Project.scss";
@@ -103,7 +103,7 @@ export const ProjectPage: React.FC = () => {
             </List.Item>
 
             <List.Item className="list-item">
-              <ProjectStatus
+              <ProjectStatusDangerZone
                 change={changeProjectStatus(project.slug)}
                 project={project}
               />

@@ -3,14 +3,14 @@ import { Button } from "antd";
 
 import { Project, ProjectStatusTypeRequest } from "ProjectModels";
 
-import "./ProjectStatus.scss";
+import "./ProjectStatusDangerZone.scss";
 
 type Props = {
   change: (statusType: ProjectStatusTypeRequest) => void;
   project: Project;
 };
 
-export const ProjectStatus: React.FC<Props> = ({ change, project }) => {
+export const ProjectStatusDangerZone: React.FC<Props> = ({ change, project }) => {
   return (
     <div className="status">
       {project.status !== "Active" && (

@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, PageHeader, Tag, Typography } from "antd";
 import { Link, useLocation } from "react-router-dom";
 
-import { Project, ProjectStatusTypeResponse } from "ProjectModels";
+import { Project } from "ProjectModels";
 import { chooseColor } from "../helpers";
 
 import "../project.scss";
