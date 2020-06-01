@@ -147,4 +147,14 @@ declare module "HumanResourceModels" {
     amount: string;
     comment: string;
   };
+
+  export type Vacation = {
+    userId: string,
+    days: number
+    hours: number
+  }
+
+  export type VacationMap = {
+    [userId: string]: Vacation;
+  };
 }
