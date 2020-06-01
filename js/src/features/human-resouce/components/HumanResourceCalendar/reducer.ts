@@ -12,7 +12,7 @@ export type Action =
 
 export const initial: State = {
   date: new Date(),
-  daysCount: 14,
+  daysCount: 21,
   scrollDaysCount: 7,
 };
 
