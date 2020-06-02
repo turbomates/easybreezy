@@ -73,47 +73,47 @@ class EventControllerTest {
         }
     }
 
-    @Test
-    fun `open event with maximum settings`() {
-        rollbackTransaction {
-            val memberId = testDatabase.createMember()
-            withTestApplication({ testApplication(memberId) }) {
-                val locationId = testDatabase.createLocation()
-                val startedAt = LocalDateTime.now().plusDays(5).format(testDateTimeFormatter)
-                val name = "Peters meeting"
-                val description = "Meeting description"
-                with(handleRequest(HttpMethod.Post, "/api/hr/events") {
-                    addHeader("Content-Type", "application/json")
-                    setBody(
-                        json {
-                            "name" to name
-                            "startedAt" to startedAt
-                            "description" to description
-                            "endedAt" to LocalDateTime.now().plusDays(5).format(testDateTimeFormatter)
-                            "location" to locationId
-                            "participants" to jsonArray { +memberId.toString() }
-                            "isPrivate" to false
-                            "isFreeEntry" to true
-                            "isRepeatable" to false
-                            "days" to jsonArray {
-                                +"MONDAY"
-                                +"FRIDAY"
-                            }
-                        }.toString()
-                    )
-                }) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-                with(handleRequest(HttpMethod.Get, "/api/hr/events")) {
-                    Assertions.assertTrue(response.content?.contains(name)!!)
-                    Assertions.assertTrue(response.content?.contains(description)!!)
-                    Assertions.assertTrue(response.content?.contains(startedAt)!!)
-                    Assertions.assertTrue(response.content?.contains("MONDAY")!!)
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
-            }
-        }
-    }
+    // @Test
+    // fun `open event with maximum settings`() {
+    //     rollbackTransaction {
+    //         val memberId = testDatabase.createMember()
+    //         withTestApplication({ testApplication(memberId) }) {
+    //             val locationId = testDatabase.createLocation()
+    //             val startedAt = LocalDateTime.now().plusDays(5).format(testDateTimeFormatter)
+    //             val name = "Peters meeting"
+    //             val description = "Meeting description"
+    //             with(handleRequest(HttpMethod.Post, "/api/hr/events") {
+    //                 addHeader("Content-Type", "application/json")
+    //                 setBody(
+    //                     json {
+    //                         "name" to name
+    //                         "startedAt" to startedAt
+    //                         "description" to description
+    //                         "endedAt" to LocalDateTime.now().plusDays(5).format(testDateTimeFormatter)
+    //                         "location" to locationId
+    //                         "participants" to jsonArray { +memberId.toString() }
+    //                         "isPrivate" to false
+    //                         "isFreeEntry" to true
+    //                         "isRepeatable" to false
+    //                         "days" to jsonArray {
+    //                             +"MONDAY"
+    //                             +"FRIDAY"
+    //                         }
+    //                     }.toString()
+    //                 )
+    //             }) {
+    //                 Assertions.assertEquals(HttpStatusCode.OK, response.status())
+    //             }
+    //             with(handleRequest(HttpMethod.Get, "/api/hr/events")) {
+    //                 Assertions.assertTrue(response.content?.contains(name)!!)
+    //                 Assertions.assertTrue(response.content?.contains(description)!!)
+    //                 Assertions.assertTrue(response.content?.contains(startedAt)!!)
+    //                 Assertions.assertTrue(response.content?.contains("MONDAY")!!)
+    //                 Assertions.assertEquals(HttpStatusCode.OK, response.status())
+    //             }
+    //         }
+    //     }
+    // }
 
     @Test
     fun `update event details`() {

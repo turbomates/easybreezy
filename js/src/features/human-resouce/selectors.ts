@@ -29,3 +29,6 @@ export const isAssignLocationFormVisible = (state: RootState) =>
 
 export const isEditEmployeeLocationFormVisible = (state: RootState) =>
   state.humanResource.location.employeeLocationToEdit !== null;
+
+export const selectVacations = (state: RootState) =>
+  state.humanResource.vacations.items
