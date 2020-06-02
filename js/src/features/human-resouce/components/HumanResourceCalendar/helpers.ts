@@ -63,3 +63,7 @@ export function getAbsencesDays(absences: Absence[], reason: AbsenceReason) {
     return acc;
   }, 1);
 }
+
+export function getCapitalLetter(value: string | null) {
+  return value ? value.charAt(0) : "";
+}

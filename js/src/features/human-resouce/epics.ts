@@ -404,7 +404,6 @@ export const fetchVacationsEpic: RootEpic = (action$, state$, { api }) =>
             ? fetchVacationsAsync.success(result.data)
             : fetchVacationsAsync.failure(result.reason),
         ),
-        catchError((message) => of(fetchVacationsAsync.failure(message))),
       ),
     ),
   );

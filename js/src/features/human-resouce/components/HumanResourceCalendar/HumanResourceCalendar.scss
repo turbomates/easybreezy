@@ -33,7 +33,7 @@
       position: absolute;
       z-index: 1000;
       height: 100%;
-      left: calc(100% - 0.5px);
+      left: calc(100% - 0.6px);
       bottom: calc(100% - 1px);
       box-shadow: 0 0 0 1.6px #f0f2f5;
     }
@@ -96,7 +96,7 @@
     }
 
     &.weekend {
-      background-color: rgba(245, 34, 45, 1);
+      background-color: #ffa7ac;
     }
   }
 

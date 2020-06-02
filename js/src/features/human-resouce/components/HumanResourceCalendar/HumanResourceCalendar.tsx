@@ -13,7 +13,6 @@ import {
 } from "./helpers";
 
 import "./HumanResourceCalendar.scss";
-import { HumanResourceCalendarUserAvatar } from "./HumanResourceCalendarUserAvatar";
 
 type Props = {
   employees: EmployeeShort[];
@@ -89,9 +88,7 @@ export const HumanResourceCalendar: React.FC<Props> = ({
           {employees.map((employee) => (
             <tr key={employee.userId} className="select-row">
               <th className="timetable-user">
-                <HumanResourceCalendarUserAvatar employee={employee}>
-                  <HumanResourceCalendarUser employee={employee} />
-                </HumanResourceCalendarUserAvatar>
+                <HumanResourceCalendarUser employee={employee} />
               </th>
               <td />
               {interval.map((date) => (
@@ -119,3 +116,4 @@ export const HumanResourceCalendar: React.FC<Props> = ({
     </div>
   );
 };
+
