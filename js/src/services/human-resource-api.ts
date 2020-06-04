@@ -18,7 +18,8 @@ import {
   UpdateAbsenceData,
   AbsencesResponse,
   EmployeeAbsencesResponse,
-} from "HumanResourceModels";
+  VacationMap,
+} from "HumanResourceModels"
 import { ProfileResponse, Profile } from "AccountModules";
 import { FormFailure } from "MyTypes";
 
@@ -184,5 +185,14 @@ export const removeAbsence = (absenceId: string) =>
     .then<Success<null>>((resp) => ({
       success: true,
       data: null,
+    }))
+    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+
+export const fetchVacations = () =>
+  api
+    .get(`hr/vacations`)
+    .then<Success<VacationMap>>((resp) => ({
+      success: true,
+      data: resp.data.data.remainingTimes || [],
     }))
     .catch<Failure>(() => ({ success: false, reason: "Error" }));

@@ -11,7 +11,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import org.jetbrains.exposed.sql.Database
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -22,11 +21,10 @@ class VacationControllerTest {
     @Test
     fun `user vacation`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
 
-                createVacationParts(memberId, database)
+                createVacationParts(memberId)
 
                 with(handleRequest(HttpMethod.Get, "api/hr/vacations/$memberId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -40,14 +38,13 @@ class VacationControllerTest {
     @Test
     fun `user vacation with many locations`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                createVacationParts(memberId, database, locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                createVacationParts(memberId, locationId)
 
                 // +13d
-                val userLocationId = database.createUserLocation(
+                val userLocationId = testDatabase.createUserLocation(
                     memberId,
                     locationId,
                     startedAt = LocalDate.now().minusMonths(24).minusDays(5),
@@ -66,10 +63,9 @@ class VacationControllerTest {
     @Test
     fun `users vacation`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                createVacationParts(memberId, database)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                createVacationParts(memberId)
 
                 with(handleRequest(HttpMethod.Get, "api/hr/vacations")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -80,10 +76,10 @@ class VacationControllerTest {
         }
     }
 
-    private fun createVacationParts(memberId: UUID, database: Database, locationId: UUID = database.createLocation()) {
+    private fun createVacationParts(memberId: UUID, locationId: UUID = testDatabase.createLocation()) {
         // user earn 25 vacation days per year (2 per month)
         // +10d + 2*6d = 22d
-        database.createUserLocation(
+        testDatabase.createUserLocation(
             memberId,
             locationId,
             10,
@@ -91,17 +87,17 @@ class VacationControllerTest {
             LocalDate.of(2019, 9, 10)
         )
         // +22d -5h
-        database.createWorkingHour(memberId, LocalDate.of(2019, 3, 6))
+        testDatabase.createWorkingHour(memberId, LocalDate.of(2019, 3, 6))
         // +22d -11h
-        database.createWorkingHour(memberId, LocalDate.of(2019, 3, 7), 6)
+        testDatabase.createWorkingHour(memberId, LocalDate.of(2019, 3, 7), 6)
         // +22d - 5d -11h
-        database.createAbsence(
+        testDatabase.createAbsence(
             memberId,
             LocalDate.of(2019, 3, 4),
             LocalDate.of(2019, 3, 8)
         )
         // +17d - 6d -11h
-        database.createAbsence(
+        testDatabase.createAbsence(
             memberId,
             LocalDate.of(2019, 8, 19),
             LocalDate.of(2019, 8, 26)

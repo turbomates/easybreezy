@@ -19,11 +19,16 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
-internal fun Database.createMember(firstName: String = "John", lastName: String = "Doe", status: Status = Status.ACTIVE): UUID {
+internal fun Database.createMember(
+    firstName: String = "John",
+    lastName: String = "Doe",
+    status: Status = Status.ACTIVE,
+    email: String = "member@gmail.com"
+): UUID {
     return transaction(this) {
         val id = Users.insert {
             it[this.status] = status
-            it[email[EmailTable.email]] = "member@gmail.com"
+            it[this.email[EmailTable.email]] = email
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName
             it[activities] = Activity.values().map { enum -> enum.name }.toSet()

@@ -12,4 +12,8 @@ class V20200512092106__NeutralPriorityColor : BaseJavaMigration() {
             """.trimIndent()
         )
     }
+
+    override fun canExecuteInTransaction(): Boolean {
+        return false
+    }
 }

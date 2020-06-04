@@ -19,7 +19,7 @@ class IssueControllerTest {
 
     @Test
     fun `add issue`() {
-        rollbackTransaction(testDatabase) {
+        rollbackTransaction {
             val userId = testDatabase.createMember()
             val project = testDatabase.createMyProject()
             testDatabase.createProjectCategory(project, "Nice category")

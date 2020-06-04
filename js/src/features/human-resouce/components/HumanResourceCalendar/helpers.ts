@@ -9,7 +9,9 @@ import compose from "lodash/fp/compose";
 import groupBy from "lodash/fp/groupBy";
 import toPairs from "lodash/fp/toPairs";
 import toLower from "lodash/fp/toLower";
-import { Absence } from "HumanResourceModels";
+import differenceInDays from "date-fns/fp/differenceInDays";
+
+import { Absence, AbsenceReason } from "HumanResourceModels";
 
 export function getDateInterval(date: Date, cells: number) {
   const start = addDate({ days: -cells }, date);
@@ -45,4 +47,23 @@ export function generateCellInfo(date: Date, absences: Absence[] = []) {
     return { className: "weekend", title: formatDate("eeee", date) };
   }
   return { className: "", title: "" };
+}
+
+export function getAbsencesDays(absences: Absence[], reason: AbsenceReason) {
+  return absences.reduce((acc, absence) => {
+    if (absence.reason === reason) {
+      acc =
+        acc +
+        differenceInDays(
+          new Date(absence.startedAt),
+          new Date(absence.endedAt),
+        );
+    }
+
+    return acc;
+  }, 1);
+}
+
+export function getCapitalLetter(value: string | null) {
+  return value ? value.charAt(0) : "";
 }

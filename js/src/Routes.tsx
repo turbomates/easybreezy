@@ -4,7 +4,6 @@ import { Route, Switch } from "react-router";
 
 import { Main } from "layouts/Main";
 import { Project } from "./layouts/Project";
-import { HomePage } from "./pages/Home";
 import { HumanResourcesPage } from "./pages/HumanResources";
 import { UserDetailsPage } from "./pages/UserDetails";
 import { LocationsPage } from "./pages/Locations";
@@ -31,7 +30,7 @@ export const Routes: React.FC = () => {
   return (
     <Main>
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route exact path="/" component={HumanResourcesPage} />
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
         <Route path="/locations" component={LocationsPage} />
