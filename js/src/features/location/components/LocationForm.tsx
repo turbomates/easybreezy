@@ -50,7 +50,7 @@ export const LocationForm: React.FC<Props> = ({ create, errors }) => {
         <Input />
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 8 }}>
         <Button type="primary" htmlType="submit" style={{ alignSelf: "right" }}>
           Create location
         </Button>

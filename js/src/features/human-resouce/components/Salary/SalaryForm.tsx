@@ -31,7 +31,7 @@ export const SalaryForm: React.FC<Props> = ({ applySalary, errors }) => {
       <Form.Item name="comment" label="Comment">
         <Input.TextArea placeholder="Enter comment" />
       </Form.Item>
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 4 }}>
         <Button htmlType="submit" loading={false} type="primary">
           Apply Salary
         </Button>

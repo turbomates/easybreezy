@@ -57,7 +57,7 @@ export const AbsenceForm: React.FC<Props> = (props) => {
         <Input.TextArea placeholder="Enter Comment" />
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item wrapperCol={{ offset: 4 }}>
         <Button htmlType="submit" loading={false} type="primary">
           <ButtonTitle mode={mode} />
         </Button>
@@ -69,9 +69,9 @@ export const AbsenceForm: React.FC<Props> = (props) => {
 function ButtonTitle(props: { mode: "CREATE" | "UPDATE" }) {
   switch (props.mode) {
     case "UPDATE":
-      return <span>Update Absence</span>;
+      return <span>Save</span>;
     case "CREATE":
     default:
-      return <span>Create Absence</span>;
+      return <span>Add</span>;
   }
 }

@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { List, Tag, Tooltip } from "antd";
 import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  EditOutlined,
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  EditTwoTone,
 } from "@ant-design/icons";
 import { Absence as AbsenceModel } from "HumanResourceModels";
 import { getAbsenceTitle, getAbsenceDescription } from "./absence.helper";
@@ -42,17 +42,23 @@ export const AbsenceListItem: React.FC<Props> = ({
 
   const actions = [
     <Tooltip title="Dismiss">
-      <CloseCircleOutlined onClick={handleRemove} />
+      <CloseCircleTwoTone
+        onClick={handleRemove}
+        twoToneColor="#ff7875"
+      />
     </Tooltip>,
   ];
 
   if (!absence.isApproved) {
-    actions.push(
+    actions.unshift(
       <Tooltip title="Approve">
-        <CheckCircleOutlined onClick={handleApprove} />
+        <CheckCircleTwoTone
+          onClick={handleApprove}
+          twoToneColor="#52c41a"
+        />
       </Tooltip>,
       <Tooltip title="Edit">
-        <EditOutlined onClick={handleOpenUpdate} />
+        <EditTwoTone onClick={handleOpenUpdate} />
       </Tooltip>,
     );
   }

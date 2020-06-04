@@ -68,14 +68,16 @@ export const ProjectRolePage: React.FC = () => {
   if (!project || slug !== project.slug) return null;
 
   return (
-    <Card title="Role">
-      <RoleForm
-        project={project}
-        edit={editProjectRole}
-        create={createProjectRole}
-        remove={removeProjectRole}
-        rolePermissions={rolePermissions}
-      />
-    </Card>
+    <div className="content">
+      <Card title="Role">
+        <RoleForm
+          project={project}
+          edit={editProjectRole}
+          create={createProjectRole}
+          remove={removeProjectRole}
+          rolePermissions={rolePermissions}
+        />
+      </Card>
+    </div>
   );
 };

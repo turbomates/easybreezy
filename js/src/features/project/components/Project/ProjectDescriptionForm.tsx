@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { Button, Col, Form, Input, Row } from "antd";
+import { Button, Col, Form, Input } from "antd";
 
 import { useFormServerErrors } from "hooks/useFormServerErrors";
 import { EditProjectDescriptionRequest, Project } from "ProjectModels";
@@ -9,7 +9,6 @@ import { getRequiredErrors } from "../../../../utils/errors";
 type Props = {
   project: Project;
   edit: (form: EditProjectDescriptionRequest) => void;
-  close: () => void;
   errors: FormErrorMap;
   loading: boolean;
 };
@@ -19,7 +18,6 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
   errors,
   edit,
   loading,
-  close,
 }) => {
   const [form] = Form.useForm();
 
@@ -43,24 +41,22 @@ export const ProjectDescriptionForm: React.FC<Props> = ({
   );
 
   return (
-    <Form form={form} onFinish={onFinish} initialValues={initialValues}>
+    <Form
+      form={form}
+      onFinish={onFinish}
+      initialValues={initialValues}
+      style={{ width: "100%" }}
+    >
       <Form.Item name="description" rules={[...getRequiredErrors()]}>
         <Input.TextArea autoSize />
       </Form.Item>
 
       <Form.Item>
-        <Row gutter={[16, 16]}>
-          <Col>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              Save
-            </Button>
-          </Col>
-          <Col>
-            <Button type="danger" onClick={close} loading={loading}>
-              Cancel
-            </Button>
-          </Col>
-        </Row>
+        <Col>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Update
+          </Button>
+        </Col>
       </Form.Item>
     </Form>
   );
