@@ -1,50 +1,16 @@
 .timetable {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-
   .timetable-title {
     font-weight: bold;
-
-    &__month {
-      position: relative;
-      z-index: 10000;
-    }
   }
 
   .timetable-date {
-    font-size: 10px;
     font-weight: 200;
     text-align: center;
     position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      z-index: 1000;
-      height: 100%;
-      left: 1px;
-      bottom: calc(100% - 1px);
-      box-shadow: 0 0 0 1.6px #f0f2f5;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      z-index: 1000;
-      height: 100%;
-      left: calc(100% - 0.6px);
-      bottom: calc(100% - 1px);
-      box-shadow: 0 0 0 1.6px #f0f2f5;
-    }
+    height: 30px;
   }
 
   .timetable-user {
-    width: 150px;
-    height: 20px;
-    padding: 0 5px;
-    border: 2px solid grey;
-
     a {
       color: black;
       white-space: nowrap;
@@ -52,10 +18,17 @@
   }
 
   .timetable-cell {
-    width: 25px;
-    height: 25px;
-    border: 2px solid grey;
-    position: relative;
+    min-width: 30px;
+    border: 2px solid #f0f2f5;
+    cursor: pointer;
+    background-color: lightgray;
+
+    &:hover {
+      transform: scale(1.3);
+      z-index: 2;
+      transition: 0.2s;
+      box-shadow:inset 0 0 0 2px white;
+    }
 
     &.holiday {
       background-color: #fadb14;
@@ -70,12 +43,12 @@
     }
 
     &.sick {
-      background-color: rgba(255, 255, 255, 1);
-      color: darkred;
+      background-color: #f5222d;
+      color: white;
       text-align: center;
 
       &.not-approved {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: #ff7875;
       }
     }
 
@@ -102,65 +75,32 @@
 
   .timetable-info {
     min-width: 25px;
-    height: 25px;
-    border: 2px solid grey;
     text-align: center;
+    background-color: lightgray;
+    border: 2px solid #f0f2f5;
   }
 
-  .select-row:hover {
-    position: relative;
-    th::before {
-      content: "";
-      width: 10000px;
-      height: 0;
-      position: absolute;
-      left: 0;
-      z-index: 4;
-      box-shadow: 0 -1px 0 1.5px black;
-    }
+  .today {
+    font-weight: 700;
+  }
 
-    th::after {
-      content: "";
-      width: 10000px;
-      height: 0;
-      position: absolute;
-      left: 0;
-      z-index: 4;
-      box-shadow: 0 1px 0 1.5px black;
+  .last-day-of-month {
+    border-right: 2px solid #595959;
+  }
+
+  .title {
+    padding-left: 10px;
+  }
+
+  tr:nth-of-type(1) {
+    td {
+      border-top: none;
     }
   }
 
-  .timetable-cell {
-    &:hover::before {
-      content: "";
-      height: 10000px;
-      left: 0;
-      position: absolute;
-      top: -5000px;
-      width: 0;
-      z-index: 4;
-      box-shadow: 0 0 0 1.5px black;
-    }
-
-    &:hover::after {
-      content: "";
-      height: 10000px;
-      left: 100%;
-      position: absolute;
-      top: -5000px;
-      width: 0;
-      z-index: 4;
-      box-shadow: 0 0 0 1.5px black;
-    }
-  }
-
-  .avatar {
-    .ant-popover-inner-content {
-      padding: 0;
-    }
-
-    .ant-avatar {
-      border-radius: 0;
+  tr:nth-last-of-type(1) {
+    td {
+      border-bottom: none;
     }
   }
 }

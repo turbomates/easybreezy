@@ -1,5 +1,7 @@
 import React from "react";
 import { Tooltip } from "antd";
+import isLastDayOfMonth from "date-fns/fp/isLastDayOfMonth";
+
 import { Absence } from "HumanResourceModels";
 import { generateCellInfo } from "./helpers";
 
@@ -15,12 +17,22 @@ export const HumanResourceCalendarDay: React.FC<Props> = ({
   const { className, title } = generateCellInfo(date, absences);
 
   if (!className) {
-    return <td className="timetable-cell" />;
+    return (
+      <td
+        className={`timetable-cell ${
+          isLastDayOfMonth(date) ? "last-day-of-month" : ""
+        }`}
+      />
+    );
   }
 
   return (
     <Tooltip title={title}>
-      <td className={`timetable-cell ${className}`}>
+      <td
+        className={`timetable-cell ${className} ${
+          isLastDayOfMonth(date) ? "last-day-of-month" : ""
+        }`}
+      >
         {className.includes("sick") && <span>&#10010;</span>}
       </td>
     </Tooltip>

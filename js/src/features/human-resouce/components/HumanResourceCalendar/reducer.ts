@@ -1,5 +1,7 @@
 import addDate from "date-fns/fp/add";
 
+import { getCountCell } from "./helpers";
+
 export type State = {
   date: Date;
   daysCount: number;
@@ -9,10 +11,11 @@ export type Action =
   | { type: "move"; direction: "back" | "forward" }
   | { type: "setDaysCount"; daysCount: number }
   | { type: "scroll"; daysCount: number }
+  | { type: "today" };
 
 export const initial: State = {
   date: new Date(),
-  daysCount: 21,
+  daysCount: getCountCell(),
   scrollDaysCount: 7,
 };
 
@@ -31,6 +34,11 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         date: addDate({ days: action.daysCount }, state.date),
+      };
+    case "today":
+      return {
+        ...state,
+        date: new Date(),
       };
     default:
       return state;

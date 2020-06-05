@@ -67,3 +67,16 @@ export function getAbsencesDays(absences: Absence[], reason: AbsenceReason) {
 export function getCapitalLetter(value: string | null) {
   return value ? value.charAt(0) : "";
 }
+
+export function getCountCell() {
+  const screenWidth = window.innerWidth;
+  const asideMenuWidth = 200;
+  const tableUserWidth = 200;
+  const tableInfoWidth = 140;
+  const cellWidth = 30;
+
+  return Math.ceil(
+    ((screenWidth - asideMenuWidth - tableInfoWidth - tableUserWidth) * 0.45) /
+      cellWidth,
+  );
+}

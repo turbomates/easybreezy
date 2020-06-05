@@ -1,10 +1,11 @@
 import React, { useReducer, useRef } from "react";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import formatDate from "date-fns/fp/format";
+import isToday from "date-fns/isToday";
 
 import { EmployeeShort, AbsencesMap, VacationMap } from "HumanResourceModels";
 import { HumanResourceCalendarDay } from "./HumanResourceCalendarDay";
 import { HumanResourceCalendarUser } from "./HumanResourceCalendarUser";
+import { HumanResourceCalendarControls } from "./HumanResourceCalendarControls";
 import { initial, reducer } from "./reducer";
 import {
   getAbsencesDays,
@@ -36,6 +37,11 @@ export const HumanResourceCalendar: React.FC<Props> = ({
 
   return (
     <div className="content human-resource-calendar">
+      <HumanResourceCalendarControls
+        moveBack={() => dispatch({ type: "move", direction: "back" })}
+        moveForward={() => dispatch({ type: "move", direction: "forward" })}
+        today={() => dispatch({ type: "today" })}
+      />
       <table
         className="timetable"
         ref={tableRef}
@@ -51,7 +57,6 @@ export const HumanResourceCalendar: React.FC<Props> = ({
             <th className="timetable-title" rowSpan={2}>
               {title}
             </th>
-            <th />
             {months.map(([month, days]) => (
               <th
                 key={month}
@@ -63,34 +68,24 @@ export const HumanResourceCalendar: React.FC<Props> = ({
             ))}
           </tr>
           <tr>
-            <th>
-              <LeftOutlined
-                style={{ userSelect: "none" }}
-                onClick={() => dispatch({ type: "move", direction: "back" })}
-              />
-            </th>
             {interval.map((date) => (
-              <th key={date.getTime()} className="timetable-date">
+              <th
+                key={date.getTime()}
+                className={`timetable-date ${isToday(date) ? "today" : ""} `}
+              >
                 {formatDate(format, date)}
               </th>
             ))}
-            <th>
-              <RightOutlined
-                style={{ userSelect: "none" }}
-                onClick={() => dispatch({ type: "move", direction: "forward" })}
-              />
-            </th>
             <th>Vacation</th>
             <th>Sick</th>
           </tr>
         </thead>
         <tbody>
           {employees.map((employee) => (
-            <tr key={employee.userId} className="select-row">
+            <tr key={employee.userId}>
               <th className="timetable-user">
                 <HumanResourceCalendarUser employee={employee} />
               </th>
-              <td />
               {interval.map((date) => (
                 <HumanResourceCalendarDay
                   key={date.toString()}
@@ -98,7 +93,6 @@ export const HumanResourceCalendar: React.FC<Props> = ({
                   absences={absences[employee.userId]}
                 />
               ))}
-              <td />
               <td className="timetable-info">
                 {absences[employee.userId] &&
                   vacations[employee.userId] &&
@@ -116,4 +110,3 @@ export const HumanResourceCalendar: React.FC<Props> = ({
     </div>
   );
 };
-
