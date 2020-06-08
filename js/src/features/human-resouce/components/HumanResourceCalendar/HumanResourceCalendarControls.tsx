@@ -18,7 +18,7 @@ export const HumanResourceCalendarControls: React.FC<Props> = ({
       <Button type="ghost" onClick={moveBack}>
         <LeftOutlined style={{ userSelect: "none" }} />
       </Button>
-      <Button type="ghost" onClick={today}>
+      <Button type="ghost" onClick={today} className="today-btn">
         Today
       </Button>
       <Button type="ghost" onClick={moveForward}>

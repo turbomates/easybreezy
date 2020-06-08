@@ -64,15 +64,15 @@ export function getAbsencesDays(absences: Absence[], reason: AbsenceReason) {
   }, 1);
 }
 
-export function getCapitalLetter(value: string | null) {
-  return value ? value.charAt(0) : "";
+export function getEmployeeInitials(value: string | null) {
+  return value ? value.charAt(0).toLocaleUpperCase() : "";
 }
 
-export function getCountCell() {
+export function calculateCellCount() {
   const screenWidth = window.innerWidth;
   const asideMenuWidth = 200;
   const tableUserWidth = 200;
-  const tableInfoWidth = 140;
+  const tableInfoWidth = 160;
   const cellWidth = 30;
 
   return Math.ceil(

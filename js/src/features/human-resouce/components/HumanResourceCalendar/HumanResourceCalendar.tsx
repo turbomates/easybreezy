@@ -36,14 +36,13 @@ export const HumanResourceCalendar: React.FC<Props> = ({
   const months = getMonthsFromInterval(interval);
 
   return (
-    <div className="content human-resource-calendar">
+    <div className="content timetable">
       <HumanResourceCalendarControls
         moveBack={() => dispatch({ type: "move", direction: "back" })}
         moveForward={() => dispatch({ type: "move", direction: "forward" })}
         today={() => dispatch({ type: "today" })}
       />
       <table
-        className="timetable"
         ref={tableRef}
         onWheel={(e) => {
           dispatch({
@@ -76,8 +75,8 @@ export const HumanResourceCalendar: React.FC<Props> = ({
                 {formatDate(format, date)}
               </th>
             ))}
-            <th>Vacation</th>
-            <th>Sick</th>
+            <th className="timetable-title__info">Days left</th>
+            <th className="timetable-title__info">Sick leave</th>
           </tr>
         </thead>
         <tbody>

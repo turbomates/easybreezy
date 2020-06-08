@@ -1,6 +1,6 @@
 import addDate from "date-fns/fp/add";
 
-import { getCountCell } from "./helpers";
+import { calculateCellCount } from "./helpers";
 
 export type State = {
   date: Date;
@@ -15,7 +15,7 @@ export type Action =
 
 export const initial: State = {
   date: new Date(),
-  daysCount: getCountCell(),
+  daysCount: calculateCellCount(),
   scrollDaysCount: 7,
 };
 

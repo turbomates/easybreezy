@@ -1,6 +1,11 @@
 .timetable {
   .timetable-title {
     font-weight: bold;
+
+    &__info {
+      width: 80px;
+      text-align: center;
+    }
   }
 
   .timetable-date {
@@ -31,9 +36,10 @@
       transform: scale(1.3);
       z-index: 2;
       transition: 0.2s;
-      box-shadow:inset 0 0 0 2px white;
+      box-shadow: inset 0 0 0 2px white;
       border-bottom: 2px solid;
       border-top: 2px solid;
+      border-right-width: 2px;
     }
 
     &.holiday {
@@ -41,10 +47,10 @@
     }
 
     &.vacation {
-      background-color: rgba(142, 195, 81, 1);
+      background-color: #52c41a;
 
       &.not-approved {
-        background-color: rgba(142, 195, 81, 0.5);
+        background-color: #95de64;
       }
     }
 
@@ -59,18 +65,18 @@
     }
 
     &.dayon {
-      background-color: rgba(106, 90, 205, 1);
+      background-color: #722ed1;
 
       &.not-approved {
-        background-color: rgba(106, 90, 205, 0.5);
+        background-color: #b37feb;
       }
     }
 
     &.personal {
-      background-color: rgba(250, 128, 114, 1);
+      background-color: #fa8c16;
 
       &.not-approved {
-        background-color: rgba(250, 128, 114, 0.5);
+        background-color: #ffc069;
       }
     }
 
@@ -88,10 +94,11 @@
 
   .today {
     font-weight: 700;
+    color: #40a9ff;
   }
 
   .last-day-of-month {
-    border-right: 2px solid #595959;
+    border-right: 3px solid #595959;
   }
 
   .title {
@@ -108,5 +115,9 @@
     td {
       border-bottom: none;
     }
+  }
+
+  .today-btn{
+    margin: 0 5px;
   }
 }

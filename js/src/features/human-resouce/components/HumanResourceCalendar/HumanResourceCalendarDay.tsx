@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Tooltip } from "antd";
 import isLastDayOfMonth from "date-fns/fp/isLastDayOfMonth";
 
@@ -16,23 +16,18 @@ export const HumanResourceCalendarDay: React.FC<Props> = ({
 }) => {
   const { className, title } = generateCellInfo(date, absences);
 
+  const lastDayOfMonthClassName = useMemo(
+    () => (isLastDayOfMonth(date) ? "last-day-of-month" : ""),
+    [date],
+  );
+
   if (!className) {
-    return (
-      <td
-        className={`timetable-cell ${
-          isLastDayOfMonth(date) ? "last-day-of-month" : ""
-        }`}
-      />
-    );
+    return <td className={`timetable-cell ${lastDayOfMonthClassName}`} />;
   }
 
   return (
     <Tooltip title={title}>
-      <td
-        className={`timetable-cell ${className} ${
-          isLastDayOfMonth(date) ? "last-day-of-month" : ""
-        }`}
-      >
+      <td className={`timetable-cell ${className} ${lastDayOfMonthClassName}`}>
         {className.includes("sick") && <span>&#10010;</span>}
       </td>
     </Tooltip>
