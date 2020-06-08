@@ -57,4 +57,24 @@ declare module "LocationModels" {
       userLocations: EmployeeLocation[];
     };
   };
+
+  export type Calendar = {
+    id: string;
+    name: string;
+    location: Location;
+  };
+
+  export type CalendarResponse = {
+    data: { calendars: Calendar[] };
+  };
+
+  export type Holiday = {
+    name: string;
+    day: string;
+    isWorkingDay: boolean;
+  };
+
+  export type HolidayResponse = {
+    data: { holidays: Holiday[] };
+  };
 }

@@ -6,6 +6,8 @@ import {
   fetchLocationsAsync,
   createLocationAsync,
   removeLocationAsync,
+  fetchCalendarsAsync,
+  fetchHolidaysAsync,
 } from "./actions";
 
 export const fetchLocationsEpic: RootEpic = (action$, state$, { api }) =>
@@ -55,6 +57,34 @@ export const removeLocationEpic: RootEpic = (action$, state$, { api }) =>
             : removeLocationAsync.failure(result.reason),
         ),
         catchError((message) => of(removeLocationAsync.failure(message))),
+      ),
+    ),
+  );
+
+export const fetchCalendars: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchCalendarsAsync.request)),
+    switchMap(() =>
+      from(api.calendar.fetchCalendars()).pipe(
+        map((result) =>
+          result.success
+            ? fetchCalendarsAsync.success(result.data)
+            : fetchCalendarsAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const fetchHolidays: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchHolidaysAsync.request)),
+    switchMap((action) =>
+      from(api.calendar.fetchHolidays(action.payload)).pipe(
+        map((result) =>
+          result.success
+            ? fetchHolidaysAsync.success(result.data)
+            : fetchHolidaysAsync.failure(result.reason),
+        ),
       ),
     ),
   );
