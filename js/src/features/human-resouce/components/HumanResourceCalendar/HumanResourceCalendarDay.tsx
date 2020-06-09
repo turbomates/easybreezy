@@ -26,7 +26,7 @@ export const HumanResourceCalendarDay: React.FC<Props> = ({
   }
 
   return (
-    <Tooltip title={title}>
+    <Tooltip title={title || ''}>
       <td className={`timetable-cell ${className} ${lastDayOfMonthClassName}`}>
         {className.includes("sick") && <span>&#10010;</span>}
       </td>

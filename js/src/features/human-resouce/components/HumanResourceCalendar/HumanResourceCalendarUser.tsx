@@ -18,10 +18,7 @@ export const HumanResourceCalendarUser: React.FC<Props> = ({ employee }) => {
   return (
     <div>
       <Link to={`/users/${employee.userId}`}>
-        <Avatar>
-          {getEmployeeInitials(employee.firstName)}
-          {getEmployeeInitials(employee.lastName)}
-        </Avatar>
+        <Avatar>{getEmployeeInitials(employee)}</Avatar>
         <span className="title">{name}</span>
       </Link>
     </div>
