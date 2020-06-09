@@ -12,7 +12,6 @@ class MembersNormalize @Inject constructor(
 ) : ElementNormalizer {
 
     override suspend fun normalize(project: UUID, parsedIssue: ParsedIssue, normalizedIssue: NormalizedIssue): NormalizedIssue {
-
         return normalizedIssue.copy(
             assignee = parsedIssue.assignee?.let { username ->
                 queryExecutor.execute(MembersQO(project, listOf(username)))?.firstOrNull()

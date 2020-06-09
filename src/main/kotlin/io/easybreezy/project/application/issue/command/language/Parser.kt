@@ -5,7 +5,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.math.max
 
 class Parser @Inject constructor(
     translator: LanguageTranslator
@@ -14,6 +13,7 @@ class Parser @Inject constructor(
 
     companion object {
         const val PERSON_IDENTIFIER = "(?<=@).+?(?=\\s)"
+        const val REASSIGN_IDENTIFIER = "(?<=->@).+?(?=\\s)"
         const val CATEGORY_IDENTIFIER = "(?<=<).+?(?=>)"
         const val LABEL_IDENTIFIER = "(?<=\\*)\\b.+?\\b(?=\\*)"
         const val TITLE_IDENTIFIER = "(.+[\\n.!?])((.|\\n)*)"
@@ -23,18 +23,17 @@ class Parser @Inject constructor(
 
     fun parse(text: String): ParsedIssue {
         val (title, description) = extractTitle(text)
+        val reassign = extractReassign(description)
         val persons = extractPersons(description)
-        val dates = extractDates(description)
         return ParsedIssue(
             title.trim(),
             description.trim(),
             extractPriority(description),
             extractCategory(description),
-            persons.firstOrNull(),
+            reassign ?: persons.firstOrNull(),
             persons.drop(1).distinct().toList(),
             extractLabels(description),
-            dates.first,
-            dates.second
+            extractDueDate(description)
         )
     }
 
@@ -48,7 +47,7 @@ class Parser @Inject constructor(
 
         return Pair(
             text.take(TITLE_NO_IDENTIFIER_LENGTH),
-            text.takeLast(max(0, text.count() - TITLE_NO_IDENTIFIER_LENGTH))
+            text
         )
     }
 
@@ -56,6 +55,11 @@ class Parser @Inject constructor(
         return PERSON_IDENTIFIER.toRegex()
             .findAll(description)
             .map { it.value.trim() }
+    }
+
+    private fun extractReassign(description: String): String? {
+        return REASSIGN_IDENTIFIER.toRegex()
+            .find(description)?.value
     }
 
     private fun extractCategory(description: String): String? {
@@ -81,7 +85,7 @@ class Parser @Inject constructor(
         return null
     }
 
-    private fun extractDates(description: String): Pair<LocalDateTime?, LocalDateTime?> {
+    private fun extractDueDate(description: String): LocalDateTime? {
         val dates = DATE_IDENTIFIER.toRegex()
             .findAll(description).toList()
             .map { dateStr ->
@@ -94,11 +98,7 @@ class Parser @Inject constructor(
         }
         .sortedDescending()
 
-        return when (dates.count()) {
-            0 -> Pair(null, null)
-            1 -> Pair(null, dates.first())
-            else -> Pair(dates.last(), dates.first())
-        }
+        return dates.lastOrNull()
     }
 }
 
@@ -110,6 +110,5 @@ data class ParsedIssue(
     val assignee: String? = null,
     val watchers: List<String>? = null,
     val labels: List<String>? = null,
-    val start: LocalDateTime? = null,
     val due: LocalDateTime? = null
 )

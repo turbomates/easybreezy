@@ -47,7 +47,7 @@ class ParserTest {
 
         Assertions.assertEquals("Roles to A", data.title)
         Assertions.assertEquals("""
-            ctivities We upgrade (and obvious rename)
+            Roles to Activities We upgrade (and obvious rename)
         """.trimIndent(), data.description)
     }
 
@@ -59,7 +59,7 @@ class ParserTest {
         val data = parser.parse(description)
 
         Assertions.assertEquals("Roles", data.title)
-        Assertions.assertEquals("", data.description)
+        Assertions.assertEquals("Roles", data.description)
     }
 
     @Test fun `extract category`() {
@@ -122,15 +122,11 @@ class ParserTest {
     @Test fun `extract date time`() {
         val description = """
             Roles to Activities 
-            We upgrade (and obvious rename) start on 01/01/2020 due date 12/05/2020 15:00
+            We upgrade (and obvious rename) due date 12/05/2020 15:00
         """.trimIndent()
         val data = parser.parse(description)
         Assertions.assertEquals(
             LocalDateTime.of(2020, 5, 12, 15, 0),
             data.due)
-
-        Assertions.assertEquals(
-            LocalDateTime.of(2020, 1, 1, 0, 0),
-            data.start)
     }
 }

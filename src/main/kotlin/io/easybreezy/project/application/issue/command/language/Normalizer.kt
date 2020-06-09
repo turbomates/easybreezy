@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import io.easybreezy.project.application.issue.command.language.element.ElementNormalizer
 import io.easybreezy.project.model.issue.Label
 import io.easybreezy.project.model.issue.Priority
+import java.time.LocalDateTime
 import java.util.UUID
 
 class Normalizer @Inject constructor(
@@ -13,7 +14,8 @@ class Normalizer @Inject constructor(
 
         var normalizedIssue = NormalizedIssue(
             parsedIssue.title,
-            parsedIssue.description
+            parsedIssue.description,
+            parsedIssue.due
         )
         elementNormalizers.forEach {
             normalizedIssue = it.normalize(project, parsedIssue, normalizedIssue)
@@ -25,6 +27,7 @@ class Normalizer @Inject constructor(
 data class NormalizedIssue(
     val title: String,
     val description: String,
+    val due: LocalDateTime?,
     val priority: Priority? = null,
     val category: UUID? = null,
     val assignee: UUID? = null,

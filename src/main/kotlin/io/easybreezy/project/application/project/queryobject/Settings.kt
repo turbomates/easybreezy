@@ -1,6 +1,7 @@
 package io.easybreezy.project.application.project.queryobject
 
 import io.easybreezy.infrastructure.query.QueryObject
+import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.PriorityTable
@@ -66,4 +67,10 @@ class LastHighestPriorityQO(private val project: UUID) : QueryObject<Int> {
             .orderBy(Issues.priority[PriorityTable.value], SortOrder.ASC).singleOrNull()
         return row?.let { it[Issues.priority[PriorityTable.value]] } ?: 0
     }
+}
+
+class ProjectHasStatus(private val project: String, private val status: UUID) : QueryObject<Boolean> {
+    override suspend fun getData() =
+        Statuses.innerJoin(Projects)
+            .select { Statuses.id eq status and (Projects.slug eq project) }.count() > 0
 }

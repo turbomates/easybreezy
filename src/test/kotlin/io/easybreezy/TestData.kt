@@ -5,6 +5,8 @@ import io.easybreezy.infrastructure.ktor.auth.Activity
 import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.issue.Issues
+import io.easybreezy.project.model.issue.Solutions
 import io.easybreezy.project.model.issue.Statuses
 import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Roles
@@ -20,6 +22,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 internal fun Database.createMember(
+    username: String = "johndoe",
     firstName: String = "John",
     lastName: String = "Doe",
     status: Status = Status.ACTIVE,
@@ -28,6 +31,7 @@ internal fun Database.createMember(
     return transaction(this) {
         val id = Users.insert {
             it[this.status] = status
+            it[this.username] = username
             it[this.email[EmailTable.email]] = email
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName
@@ -46,6 +50,21 @@ internal fun Database.createMyProject(): EntityID<UUID> {
             it[author] = UUID.randomUUID()
             it[status] = Project.Status.Active
         } get Projects.id
+    }
+}
+
+internal fun Database.createIssue(projectId: UUID): EntityID<UUID> {
+    return transaction(this) {
+        val issueId = Issues.insert {
+            it[title] = "issue"
+            it[description] = "Issue description"
+            it[project] = projectId
+        } get Issues.id
+
+        Solutions.insert {
+            it[id] = EntityID(issueId.value, Solutions)
+        }
+        issueId
     }
 }
 

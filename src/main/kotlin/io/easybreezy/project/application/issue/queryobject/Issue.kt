@@ -1,3 +1,4 @@
+@file:UseSerializers(UUIDSerializer::class)
 package io.easybreezy.project.application.issue.queryobject
 
 import io.easybreezy.infrastructure.query.ContinuousList
@@ -9,10 +10,14 @@ import kotlinx.serialization.Serializable
 import java.util.UUID
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
+import io.easybreezy.project.model.issue.Comments
+import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
-import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.PriorityTable
+import io.easybreezy.project.model.issue.Solutions
+import io.easybreezy.project.model.issue.Statuses
+import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.ResultRow
@@ -25,15 +30,18 @@ class HasIssuesInCategoryQO(private val inCategory: UUID) : QueryObject<Boolean>
 
 class HasIssuesInStatusQO(private val inStatus: UUID) : QueryObject<Boolean> {
     override suspend fun getData() =
-        Issues.select { Issues.status eq inStatus }.count() > 0
+        Solutions.select { Solutions.status eq inStatus }.count() > 0
 }
 
 class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
     override suspend fun getData() =
         Issues
             .leftJoin(IssueLabel)
+            .leftJoin(Comments)
             .join(Labels, JoinType.LEFT, IssueLabel.label, Labels.id)
+            .join(Solutions, JoinType.INNER, Solutions.id, Issues.id)
             .join(Categories, JoinType.LEFT, Issues.category, Categories.id)
+            .join(Statuses, JoinType.LEFT, Solutions.status, Statuses.id)
             .select {
                 Issues.id eq id
             }
@@ -52,9 +60,17 @@ fun Iterable<ResultRow>.toIssueDetails(): List<IssueDetails> {
         val categoryId = resultRow.getOrNull(Categories.id)
         val category = categoryId?.let { resultRow.toCategory() }
 
+        val statusId = resultRow.getOrNull(Statuses.id)
+        val status = statusId?.let { resultRow.toStatus() }
+
+        val commentId = resultRow.getOrNull(Comments.id)
+        val comments = commentId?.let { resultRow.toComment() }
+
         map[details.id] = current.copy(
             labels = current.labels.plus(listOfNotNull(labels)).distinct(),
-            category = category
+            category = category,
+            status = status,
+            comments = current.comments.plus(listOfNotNull(comments)).distinct()
         )
         map
     }.values.toList()
@@ -73,12 +89,16 @@ class IssuesQO(private val paging: PagingParameters, private val project: String
 
 fun ResultRow.toIssue() = Issue(
     this[Issues.id].value,
+    this[Issues.parent]?.value,
     this[Issues.title],
     this[Issues.priority[PriorityTable.color]]?.rgb
 )
 
 fun ResultRow.toIssueDetails() = IssueDetails(
     this[Issues.id].value,
+    this[Issues.parent]?.value,
+    this[Solutions.assignee],
+    this[Solutions.watchers],
     this[Issues.title],
     this[Issues.priority[PriorityTable.color]]?.rgb
 )
@@ -88,39 +108,65 @@ fun ResultRow.toLabel() = Label(
     this[Labels.name]
 )
 
+fun ResultRow.toComment() = Comment(
+    this[Comments.id].value,
+    this[Comments.author],
+    this[Comments.comment]
+)
+
 fun ResultRow.toCategory() = Category(
     this[Categories.id].value,
     this[Categories.name]
 )
 
+fun ResultRow.toStatus() = Status(
+    this[Statuses.id].value,
+    this[Statuses.name]
+)
+
+@Serializable
+data class Comment(
+    val id: UUID,
+    val author: UUID,
+    val comment: String
+)
+
 @Serializable
 data class Label(
-    @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val name: String
 )
 
 @Serializable
 data class Category(
-    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
+    val name: String
+)
+
+@Serializable
+data class Status(
     val id: UUID,
     val name: String
 )
 
 @Serializable
 data class Issue(
-    @Serializable(with = UUIDSerializer::class)
     val id: UUID,
+    val parent: UUID?,
     val title: String,
     val priority: String?
 )
 
 @Serializable
 data class IssueDetails(
-    @Serializable(with = UUIDSerializer::class)
     val id: UUID,
+    val parent: UUID?,
+    val assignee: UUID?,
+    val watchers: List<UUID>?,
     val title: String,
     val priority: String?,
     val labels: List<Label> = listOf(),
-    val category: Category? = null
+    val category: Category? = null,
+    val status: Status? = null,
+    val comments: List<Comment> = listOf()
 )
