@@ -26,7 +26,7 @@ declare module "HumanResourceModels" {
     id: string;
     startedAt: string;
     endedAt: string;
-    comment: string;
+    comment: string | null;
     reason: AbsenceReason;
     userId: string;
     isApproved: boolean;
