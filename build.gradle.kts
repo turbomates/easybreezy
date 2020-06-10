@@ -128,6 +128,14 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+
+tasks.compileJava {
+    options.isIncremental = true
+    options.isFork = true
+}
+
+
+
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_12
 }
