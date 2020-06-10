@@ -1,8 +1,11 @@
 import React, { useCallback } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Upload, InputNumber } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+
 import { LocationForm as LocationFormModel } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
 import { useFormServerErrors } from "hooks/useFormServerErrors";
+import { getRequiredErrors } from "../../../../utils/errors";
 
 interface Props {
   create: (form: LocationFormModel) => void;
@@ -16,11 +19,11 @@ export const LocationForm: React.FC<Props> = ({ create, errors }) => {
 
   useFormServerErrors(form, errors, ["name", "vacationDays"]);
 
-  const onFinish = useCallback((values: any) => create(values), [create]);
-
-  const onFinishFailed = useCallback(
-    (errorInfo: any) => console.log("onFinishFailed:", errorInfo),
-    [],
+  const onFinish = useCallback(
+    (values: any) => {
+      create(values);
+    },
+    [create],
   );
 
   return (
@@ -29,25 +32,38 @@ export const LocationForm: React.FC<Props> = ({ create, errors }) => {
       form={form}
       labelCol={{ span: 8 }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       initialValues={initialFormValues}
     >
-      <Form.Item
-        label="Name"
-        name="name"
-        rules={[{ required: true, message: "Please input location name!" }]}
-      >
+      <Form.Item label="Name" name="name" rules={[...getRequiredErrors(false)]}>
         <Input />
       </Form.Item>
 
       <Form.Item
         label="Vacation Days"
         name="vacationDays"
-        rules={[
-          { required: true, message: "Please input your vacations dayss!" },
-        ]}
+        rules={[...getRequiredErrors(false)]}
       >
-        <Input />
+        <InputNumber min={24} />
+      </Form.Item>
+
+      <Form.Item
+        wrapperCol={{ offset: 8 }}
+        // name="calendar"
+        valuePropName="fileList"
+        getValueFromEvent={(value) => {
+          if (value.fileList.length !== 0) {
+            return [value.fileList[value.fileList.length - 1]];
+          } else {
+            return value.fileList;
+          }
+        }}
+      >
+        <Upload beforeUpload={() => false}>
+          <Button>
+            <UploadOutlined />
+            Upload calendar
+          </Button>
+        </Upload>
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8 }}>

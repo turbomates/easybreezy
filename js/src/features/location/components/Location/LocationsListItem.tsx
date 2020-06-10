@@ -12,7 +12,7 @@ interface Props {
 export const LocationsListItem: React.FC<Props> = ({ item, remove }) => (
   <List.Item>
     <NavLink to={`locations/${item.id}`}>
-      {item.name} {item.vacationDays}
+      {item.name}
     </NavLink>
     <CloseCircleTwoTone twoToneColor="#ff7875" onClick={() => remove(item.id)} />
   </List.Item>

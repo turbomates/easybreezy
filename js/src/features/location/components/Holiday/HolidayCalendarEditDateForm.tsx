@@ -5,13 +5,15 @@ import DatePicker from "../../../../components/antd/DatePicker";
 import { getRequiredErrors } from "../../../../utils/errors";
 
 type Props = {
-  activeDateHolidayName: any;
+  activeDateHolidayName: string;
   activeDate: Date;
+  isWorkingDay: boolean;
 };
 
-export const HolidayCalendarMoveDate: React.FC<Props> = ({
+export const HolidayCalendarEditDateForm: React.FC<Props> = ({
   activeDate,
   activeDateHolidayName,
+  isWorkingDay,
 }) => {
   const [form] = Form.useForm();
 
@@ -23,18 +25,28 @@ export const HolidayCalendarMoveDate: React.FC<Props> = ({
   }, [activeDateHolidayName, activeDate, form]);
 
   return (
-    <Form form={form} labelCol={{ span: 4 }}>
-      <Form.Item label="Name" name="name" rules={[...getRequiredErrors()]}>
+    <Form form={form} labelCol={{ span: 5 }}>
+      <Form.Item
+        label={isWorkingDay ? "Comment" : "Name"}
+        name="name"
+        required={false}
+        rules={[...getRequiredErrors()]}
+      >
         <Input style={{ width: 250 }} />
       </Form.Item>
-      <Form.Item label="From" name="from" rules={[...getRequiredErrors()]}>
-        <DatePicker />
+      <Form.Item
+        label="To"
+        name="to"
+        required={false}
+        rules={[...getRequiredErrors(false)]}
+      >
+        <DatePicker placeholder="To" />
       </Form.Item>
-      <Form.Item label="To" name="to" rules={[...getRequiredErrors()]}>
-        <DatePicker />
-      </Form.Item>
-      <Form.Item wrapperCol={{ offset: 4 }}>
+      <Form.Item wrapperCol={{ offset: 5 }}>
         <Button type="primary">Move</Button>
+        <Button type="danger" style={{ float: "right" }}>
+          Remove
+        </Button>
       </Form.Item>
     </Form>
   );

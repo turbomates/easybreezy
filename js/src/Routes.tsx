@@ -14,7 +14,7 @@ import { ProjectPage } from "./pages/ProjectPage";
 import { ProjectRolePage } from "./pages/ProjectRolePage";
 import { ProjectTeamsPage } from "./pages/ProjectTeamsPage";
 import { ProjectTeamPage } from "./pages/ProjectTeamPage";
-import { LocationCalendarPage } from "./pages/LocationCalendarPage"
+import { LocationPage } from "./pages/LocationPage"
 
 import { isAuthorized } from "./features/auth/selectors";
 import { canRender } from "./features/app/selectors";
@@ -34,7 +34,7 @@ export const Routes: React.FC = () => {
         <Route exact path="/" component={HumanResourcesPage} />
         <Route path="/human-resources" component={HumanResourcesPage} />
         <Route path="/users/:id" component={UserDetailsPage} />
-        <Route path="/locations/:id" component={LocationCalendarPage }/>
+        <Route path="/locations/:id" component={LocationPage }/>
         <Route path="/locations" component={LocationsPage} />
         <Route path="/projects" component={ProjectsPage} exact />
         <Route path="/projects/:slug">
