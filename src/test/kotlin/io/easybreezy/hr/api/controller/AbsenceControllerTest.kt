@@ -19,9 +19,8 @@ class AbsenceControllerTest {
     @Test
     fun `absence create`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
+        withTestApplication({ testApplication(memberId) }) {
+            rollbackTransaction {
                 with(handleRequest(HttpMethod.Post, "/api/hr/absences") {
                     addHeader("Content-Type", "application/json")
                     setBody(
@@ -47,10 +46,9 @@ class AbsenceControllerTest {
     @Test
     fun `absence update`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val absenceId = database.createAbsence(memberId, isApproved = false)
+        withTestApplication({ testApplication(memberId) }) {
+            rollbackTransaction {
+                val absenceId = testDatabase.createAbsence(memberId, isApproved = false)
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/absences/$absenceId") {
                     addHeader("Content-Type", "application/json")
@@ -63,7 +61,6 @@ class AbsenceControllerTest {
                         }.toString()
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
@@ -77,11 +74,9 @@ class AbsenceControllerTest {
 
     @Test
     fun `approve absence`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val absenceId = database.createAbsence(memberId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val absenceId = testDatabase.createAbsence()
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/absences/$absenceId/approve")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -96,11 +91,9 @@ class AbsenceControllerTest {
 
     @Test
     fun `remove absence`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val absenceId = database.createAbsence(memberId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val absenceId = testDatabase.createAbsence()
 
                 with(handleRequest(HttpMethod.Delete, "/api/hr/absences/$absenceId")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
@@ -116,10 +109,9 @@ class AbsenceControllerTest {
     @Test
     fun `my absences`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                database.createAbsence(memberId)
+        withTestApplication({ testApplication(memberId) }) {
+            rollbackTransaction {
+                testDatabase.createAbsence(memberId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/me")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
@@ -132,10 +124,9 @@ class AbsenceControllerTest {
     @Test
     fun `user absences`() {
         val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                database.createAbsence(memberId)
+        withTestApplication({ testApplication(memberId) }) {
+            rollbackTransaction(testDatabase) {
+                testDatabase.createAbsence(memberId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/user/$memberId/absences")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
@@ -147,11 +138,9 @@ class AbsenceControllerTest {
 
     @Test
     fun absences() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                database.createAbsence(memberId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                testDatabase.createAbsence()
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences?from=2010-04-04&to=2030-04-04")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)
@@ -163,11 +152,9 @@ class AbsenceControllerTest {
 
     @Test
     fun show() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val absenceId = database.createAbsence(memberId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val absenceId = testDatabase.createAbsence()
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/absences/$absenceId")) {
                     Assertions.assertTrue(response.content?.contains("Test Comment")!!)

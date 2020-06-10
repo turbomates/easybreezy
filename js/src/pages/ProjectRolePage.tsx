@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Card } from "antd";
 
-import { ProjectRoleForm } from "../features/project/components/ProjectRoleForm";
+import { RoleForm } from "../features/project/components/Role/RoleForm";
 import {
   CreateProjectRoleRequest,
   EditProjectRoleRequest,
@@ -68,14 +68,16 @@ export const ProjectRolePage: React.FC = () => {
   if (!project || slug !== project.slug) return null;
 
   return (
-    <Card title="Role">
-      <ProjectRoleForm
-        project={project}
-        edit={editProjectRole}
-        create={createProjectRole}
-        remove={removeProjectRole}
-        rolePermissions={rolePermissions}
-      />
-    </Card>
+    <div className="content">
+      <Card title="Role">
+        <RoleForm
+          project={project}
+          edit={editProjectRole}
+          create={createProjectRole}
+          remove={removeProjectRole}
+          rolePermissions={rolePermissions}
+        />
+      </Card>
+    </div>
   );
 };

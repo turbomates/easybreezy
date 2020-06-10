@@ -13,7 +13,7 @@ import {
   applyEmployeeSalaryAsync,
   applyEmployeePositionAsync,
 } from "./actions";
-import { normalizeErrors, fillErrors } from "utils/error";
+import { normalizeErrors, fillErrors } from "utils/errors";
 
 export type State = {
   loading: boolean;

@@ -12,7 +12,7 @@ import {
 } from "./actions";
 import { combineReducers } from "redux";
 import { FormErrorMap } from "MyTypes";
-import { normalizeErrors, fillErrors } from "utils/error";
+import { normalizeErrors, fillErrors } from "utils/errors";
 
 export type AllState = AbsencesMap;
 

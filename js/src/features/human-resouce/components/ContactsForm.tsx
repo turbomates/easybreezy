@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Row, Col, Select } from "antd";
-import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleTwoTone, PlusCircleOutlined } from "@ant-design/icons";
 import {
   EmployeeContact,
   ContactsForm as ContactsFormModel,
@@ -83,7 +83,8 @@ export const ContactsForm: React.FC<Props> = ({
                 </Col>
                 <Col flex="none">
                   {canEdit && (
-                    <MinusCircleOutlined
+                    <MinusCircleTwoTone
+                      twoToneColor="#ff7875"
                       className="dynamic-delete-button"
                       onClick={() => remove(field.name)}
                     />
@@ -95,7 +96,7 @@ export const ContactsForm: React.FC<Props> = ({
               <Row justify="end">
                 <Col>
                   <PlusCircleOutlined
-                    onClick={add}
+                    onClick={() => add()}
                     className="dynamic-add-button"
                   />
                 </Col>

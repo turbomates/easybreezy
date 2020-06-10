@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useLocation, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Card } from "antd";
+import { Card, Col, List, Row } from "antd";
 
 import {
   EditProjectDescriptionRequest,
   EditProjectSlugRequest,
-  EditProjectStatusRequest,
+  ProjectStatusTypeRequest,
 } from "ProjectModels";
 import {
   changeProjectStatusAsync,
@@ -15,29 +15,27 @@ import {
   fetchProjectAsync,
 } from "../features/project/actions";
 import {
-  selectErrors,
   selectProject,
-  selectIsLoading,
+  selectProjectSlugFormErrors,
+  selectProjectDescriptionFormErrors,
+  selectIsLoadingProject,
 } from "../features/project/selectors";
-import { ProjectDescriptionForm } from "../features/project/components/ProjectDescriptionForm";
-import { ProjectStatusForm } from "../features/project/components/ProjectStatusForm";
-import { ProjectDescription } from "../features/project/components/ProjectDescription";
-import { ProjectSlug } from "../features/project/components/ProjectSlug";
-import { ProjectSlugForm } from "../features/project/components/ProjectSlugForm";
+import { ProjectDescriptionForm } from "../features/project/components/Project/ProjectDescriptionForm";
+import { ProjectStatusDangerZone } from "../features/project/components/Project/ProjectStatusDangerZone";
+import { ProjectSlugForm } from "../features/project/components/Project/ProjectSlugForm";
+
+import "./Project.scss";
 
 export const ProjectPage: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-
   const { slug } = useParams<{ slug: string }>();
 
-  const [isOpenProjectEditSlugForm, setIsOpenProjectEditSlugForm] = useState(
-    false,
-  );
-  const [
-    isOpenProjectDescriptionForm,
-    setIsOpenProjectDescriptionForm,
-  ] = useState(false);
+  const loading = useSelector(selectIsLoadingProject);
+  const project = useSelector(selectProject);
+  const descriptionFormErrors = useSelector(selectProjectDescriptionFormErrors);
+  const slugFormErrors = useSelector(selectProjectSlugFormErrors);
+
   const fetchProject = useCallback(
     (slug: string) => {
       dispatch(fetchProjectAsync.request(slug));
@@ -53,8 +51,15 @@ export const ProjectPage: React.FC = () => {
   );
 
   const changeProjectStatus = useCallback(
-    (form: EditProjectStatusRequest) => {
-      dispatch(changeProjectStatusAsync.request(form));
+    (slug: string) => {
+      return (statusType: ProjectStatusTypeRequest) => {
+        dispatch(
+          changeProjectStatusAsync.request({
+            slug,
+            statusType,
+          }),
+        );
+      };
     },
     [dispatch],
   );
@@ -66,10 +71,6 @@ export const ProjectPage: React.FC = () => {
     [dispatch],
   );
 
-  const errors = useSelector(selectErrors);
-  const loading = useSelector(selectIsLoading);
-  const project = useSelector(selectProject);
-
   useEffect(() => {
     fetchProject(slug);
   }, [location, slug, fetchProject]);
@@ -77,59 +78,39 @@ export const ProjectPage: React.FC = () => {
   if (!project || slug !== project.slug) return null;
 
   return (
-    <div>
-      <Card title="Name">{project?.name}</Card>
+    <Row className="content" gutter={24}>
+      <Col lg={12} md={24} xs={24}>
+        <Card>
+          <List>
+            <List.Item className="list-item">
+              <List.Item.Meta title="Description" />
+              <ProjectDescriptionForm
+                edit={editProjectDescription}
+                errors={descriptionFormErrors}
+                project={project}
+                loading={loading}
+              />
+            </List.Item>
 
-      <Card title="Status">
-        {!!project && (
-          <ProjectStatusForm
-            change={changeProjectStatus}
-            project={project}
-            errors={errors}
-            loading={loading}
-          />
-        )}
-      </Card>
+            <List.Item className="list-item">
+              <List.Item.Meta title="Slug" />
+              <ProjectSlugForm
+                edit={editProjectSlug}
+                errors={slugFormErrors}
+                project={project}
+                loading={loading}
+              />
+            </List.Item>
 
-      <Card title="Description">
-        {!isOpenProjectDescriptionForm && (
-          <ProjectDescription
-            onButtonClick={() =>
-              setIsOpenProjectDescriptionForm(true)
-            }
-            description={project?.description}
-          />
-        )}
-
-        {isOpenProjectDescriptionForm && (
-          <ProjectDescriptionForm
-            edit={editProjectDescription}
-            close={() => setIsOpenProjectDescriptionForm(false)}
-            errors={errors}
-            project={project}
-            loading={loading}
-          />
-        )}
-      </Card>
-
-      <Card title="Slug">
-        {!isOpenProjectEditSlugForm && (
-          <ProjectSlug
-            openProjectSlugForm={() => setIsOpenProjectEditSlugForm(true)}
-            slug={project.slug}
-          />
-        )}
-
-        {!!project && isOpenProjectEditSlugForm && (
-          <ProjectSlugForm
-            edit={editProjectSlug}
-            close={() => setIsOpenProjectEditSlugForm(false)}
-            errors={errors}
-            project={project}
-            loading={loading}
-          />
-        )}
-      </Card>
-    </div>
+            <List.Item className="list-item">
+              <ProjectStatusDangerZone
+                change={changeProjectStatus(project.slug)}
+                project={project}
+              />
+            </List.Item>
+          </List>
+        </Card>
+      </Col>
+    </Row>
   );
 };

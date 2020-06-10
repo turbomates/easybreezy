@@ -110,7 +110,7 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit, employeeId }) => {
         />
       </Card>
       <Modal
-        title="Update absence"
+        title="Update Absence"
         visible={isUpdateVisible}
         onCancel={closeUpdateModal}
         footer={null}
@@ -124,7 +124,7 @@ export const AbsencesCard: React.FC<Props> = ({ canEdit, employeeId }) => {
         />
       </Modal>
       <Modal
-        title="Create absence"
+        title="New Absence"
         visible={absences.isCreateModalVisible}
         onCancel={closeCreateModal}
         footer={null}

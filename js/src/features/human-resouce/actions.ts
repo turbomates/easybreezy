@@ -11,6 +11,7 @@ import {
   Absence,
   CreateAbsenceData,
   AbsenceForm,
+  VacationMap,
 } from "HumanResourceModels";
 import { createAsyncAction, createAction } from "typesafe-actions";
 import { Paging, FormError } from "MyTypes";
@@ -177,3 +178,9 @@ export const closeApplySalaryModal = createAction("CLOSE_APPLY_SALARY_MODAL")();
 export const openAddPositionModal = createAction("OPEN_ADD_POSITION_MODAL")();
 
 export const closeAddPositionModal = createAction("CLOSE_ADD_POSITION_MODAL")();
+
+export const fetchVacationsAsync = createAsyncAction(
+  "FETCH_VACATIONS_REQUEST",
+  "FETCH_VACATIONS_SUCCESS",
+  "FETCH_VACATIONS_FAILURE",
+)<undefined, VacationMap, string>();

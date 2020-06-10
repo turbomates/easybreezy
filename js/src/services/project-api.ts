@@ -21,7 +21,10 @@ export const fetchProjects = (params: ProjectsListQuery) => {
       success: true,
       data: resp.data,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const fetchProject = (slug: string) => {
@@ -31,7 +34,10 @@ export const fetchProject = (slug: string) => {
       success: true,
       data: resp.data,
     }))
-    .catch<Failure>(() => ({ success: false, reason: "Error" }));
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));
 };
 
 export const createProject = (body: CreateProjectRequest) => {
@@ -78,9 +84,9 @@ export const removeRole = ({ slug, roleId }: RemoveProjectRoleRequest) => {
   return api
     .post(`/projects/${slug}/roles/${roleId}/remove`, {})
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<FormFailure>((resp) => ({
+    .catch<Failure>(() => ({
       success: false,
-      errors: resp?.response?.data?.errors || [],
+      reason: "unexpected_server_error",
     }));
 };
 
@@ -101,9 +107,9 @@ export const editStatus = ({ slug, statusType }: EditProjectStatusRequest) => {
   return api
     .post(`/projects/${slug}/${statusType}`, {})
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<FormFailure>((resp) => ({
+    .catch<Failure>(() => ({
       success: false,
-      errors: resp?.response?.data?.errors || [],
+      reason: "unexpected_server_error",
     }));
 };
 
@@ -114,9 +120,9 @@ export const fetchRolePermissions = () => {
       success: true,
       data: resp.data.data,
     }))
-    .catch<FormFailure>((resp) => ({
+    .catch<Failure>(() => ({
       success: false,
-      errors: resp?.response?.data?.errors || [],
+      reason: "unexpected_server_error",
     }));
 };
 

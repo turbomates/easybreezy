@@ -99,7 +99,7 @@ class ExposedTestTransactionManager(
     }
 }
 
-fun <T> rollbackTransaction(db: Database? = null, statement: Transaction.() -> T): T {
+fun <T> rollbackTransaction(db: Database = testDatabase, statement: Transaction.() -> T): T {
     return transaction(db) { val result = statement(); rollback(); result }
 }
 

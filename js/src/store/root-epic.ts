@@ -6,7 +6,7 @@ import * as humanResource from "../features/human-resouce/epics";
 import * as account from "../features/account/epics";
 import * as location from "../features/location/epics";
 import * as project from "../features/project/epics";
-
+import * as notification from "../features/notification/epics";
 
 export default combineEpics(
   ...Object.values(app),
@@ -15,4 +15,5 @@ export default combineEpics(
   ...Object.values(account),
   ...Object.values(location),
   ...Object.values(project),
+  ...Object.values(notification),
 );

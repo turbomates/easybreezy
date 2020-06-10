@@ -7,32 +7,32 @@ import {
   fetchProjectsAsync,
 } from "./actions";
 import { FormErrorMap, Paging } from "MyTypes";
-import { normalizeErrors } from "utils/error";
+import { normalizeErrors } from "utils/errors";
 import { ProjectList } from "ProjectModels";
 
 export type State = {
   list: Paging<ProjectList> | null;
-  isOpenCreateForm: boolean;
+  isOpenNewForm: boolean;
   loading: boolean;
-  errors: FormErrorMap;
+  newFormErrors: FormErrorMap;
 }
 
 const initialSate: State = {
   list: null,
-  isOpenCreateForm: false,
+  isOpenNewForm: false,
   loading: false,
-  errors: {},
+  newFormErrors: {}
 };
 
 export const reducer = createReducer<State>(initialSate)
   //CREATE
   .handleAction(openProjectCreateForm, (state, action) => ({
     ...state,
-    isOpenCreateForm: true,
+    isOpenNewForm: true,
   }))
   .handleAction(closeProjectCreateForm, (state, action) => ({
     ...state,
-    isOpenCreateForm: false,
+    isOpenNewForm: false,
     loading: false,
   }))
   .handleAction(createProjectAsync.request, (state, action) => ({
@@ -41,13 +41,13 @@ export const reducer = createReducer<State>(initialSate)
   }))
   .handleAction(createProjectAsync.success, (state, action) => ({
     ...state,
-    isOpenCreateForm: false,
+    isOpenNewForm: false,
     loading: false,
-    formErrors: {},
+    newFormErrors: {},
   }))
   .handleAction(createProjectAsync.failure, (state, action) => ({
     ...state,
-    formErrors: normalizeErrors(action.payload),
+    newFormErrors: normalizeErrors(action.payload),
     loading: false,
   }))
   //PROJECTS

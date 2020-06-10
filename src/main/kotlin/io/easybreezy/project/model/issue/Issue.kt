@@ -10,6 +10,8 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
@@ -25,6 +27,9 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var watchers by Issues.watchers
     private var status by Issues.status
     private var priority by Issues.priority
+    private var startDate by Issues.startDate
+    private var dueDate by Issues.dueDate
+    private var labels by Label via IssueLabel
 
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {
         fun create(
@@ -36,7 +41,9 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             assignee: UUID? = null,
             category: UUID? = null,
             status: UUID? = null,
-            watchers: List<UUID> = listOf()
+            watchers: List<UUID> = listOf(),
+            startDate: LocalDateTime? = null,
+            dueDate: LocalDateTime? = null
         ): Issue {
             return Issue.new {
                 this.author = author
@@ -48,8 +55,16 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.watchers = watchers
                 this.status = status
                 this.priority = priority
+                this.dueDate = dueDate
+                this.startDate = startDate
             }
         }
+    }
+
+    fun assignLabels(list: List<Label>) {
+        val updated = labels.toMutableList()
+        updated.addAll(list)
+        labels = SizedCollection(updated)
     }
 
     fun reassign(reassigned: UUID) {
@@ -76,4 +91,12 @@ object Issues : UUIDTable("issues") {
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
     val priority = embedded<Priority>(PriorityTable)
+    val startDate = datetime("start_date").nullable()
+    val dueDate = datetime("due_date").nullable()
+}
+
+object IssueLabel : Table("issue_label") {
+    val issue = reference("issue", Issues)
+    val label = reference("label", Labels)
+    override val primaryKey = PrimaryKey(issue, label, name = "issue_label_pkey")
 }

@@ -32,6 +32,7 @@ import {
   closeApplySalaryModal,
   closeAddPositionModal,
   fetchEmployeeAbsencesAsync,
+  fetchVacationsAsync,
 } from "./actions";
 
 export const fetchAbsencesEpic: RootEpic = (action$, state$, { api }) =>
@@ -388,6 +389,20 @@ export const refetchEmployeeLocationsEpic: RootEpic = (
           result.success
             ? fetchEmployeeLocationsAsync.success(result.data)
             : fetchEmployeeLocationsAsync.failure(result.reason),
+        ),
+      ),
+    ),
+  );
+
+export const fetchVacationsEpic: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(fetchVacationsAsync.request)),
+    switchMap(() =>
+      from(api.humanResource.fetchVacations()).pipe(
+        map((result) =>
+          result.success
+            ? fetchVacationsAsync.success(result.data)
+            : fetchVacationsAsync.failure(result.reason),
         ),
       ),
     ),

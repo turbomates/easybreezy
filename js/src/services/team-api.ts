@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { FormFailure, Success } from "MyTypes";
+import { Failure, FormFailure, Success } from "MyTypes";
 import {
   NewProjectTeamMemberRequest,
   ChangeProjectTeamStatusRequest,
@@ -38,9 +38,9 @@ export const editMemberRole = ({
   api
     .post(`/teams/${teamId}/members/${memberId}/change-role`, { newRoleId })
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<FormFailure>((resp) => ({
+    .catch<Failure>(() => ({
       success: false,
-      errors: resp?.response?.data?.errors || [],
+      reason: "unexpected_server_error",
     }));
 
 export const removeMember = ({
@@ -50,9 +50,9 @@ export const removeMember = ({
   api
     .post(`/teams/${teamId}/members/${memberId}/remove`, {})
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<FormFailure>((resp) => ({
+    .catch<Failure>(() => ({
       success: false,
-      errors: resp?.response?.data?.errors || [],
+      reason: "unexpected_server_error",
     }));
 
 export const addMember = ({
@@ -78,7 +78,7 @@ export const changeStatus = ({
   api
     .post(`/teams/${teamId}/${status}`, {})
     .then<Success<null>>(() => ({ success: true, data: null }))
-    .catch<FormFailure>((resp) => ({
+    .catch<Failure>(() => ({
       success: false,
-      errors: resp?.response?.data?.errors || [],
+      reason: "unexpected_server_error",
     }));

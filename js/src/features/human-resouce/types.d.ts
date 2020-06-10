@@ -26,7 +26,7 @@ declare module "HumanResourceModels" {
     id: string;
     startedAt: string;
     endedAt: string;
-    comment: string;
+    comment: string | null;
     reason: AbsenceReason;
     userId: string;
     isApproved: boolean;
@@ -146,5 +146,15 @@ declare module "HumanResourceModels" {
   export type ApplySalaryForm = {
     amount: string;
     comment: string;
+  };
+
+  export type Vacation = {
+    userId: string,
+    days: number
+    hours: number
+  }
+
+  export type VacationMap = {
+    [userId: string]: Vacation;
   };
 }

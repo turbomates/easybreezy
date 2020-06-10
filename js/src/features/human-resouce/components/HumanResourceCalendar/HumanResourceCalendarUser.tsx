@@ -1,6 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Avatar } from "antd";
+
 import { EmployeeShort } from "HumanResourceModels";
+import { getEmployeeInitials } from "./helpers";
 
 interface Props {
   employee: EmployeeShort;
@@ -13,8 +16,11 @@ export const HumanResourceCalendarUser: React.FC<Props> = ({ employee }) => {
       : employee.userId;
 
   return (
-    <Link to={`/users/${employee.userId}`}>
-      <span className="title">{name}</span>
-    </Link>
+    <div>
+      <Link to={`/users/${employee.userId}`}>
+        <Avatar>{getEmployeeInitials(employee)}</Avatar>
+        <span className="title">{name}</span>
+      </Link>
+    </div>
   );
 };

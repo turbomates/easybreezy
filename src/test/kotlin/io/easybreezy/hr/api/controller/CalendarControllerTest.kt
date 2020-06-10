@@ -14,17 +14,14 @@ import io.ktor.server.testing.withTestApplication
 import kotlinx.serialization.json.json
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class CalendarControllerTest {
 
     @Test
     fun `calendar import`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
                 val name = "Belarus custom calendar"
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/calendars") {
@@ -50,12 +47,10 @@ class CalendarControllerTest {
 
     @Test
     fun `calendar edit`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val calendarId = database.createCalendar(locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val calendarId = testDatabase.createCalendar(locationId)
                 val name = "New calendar name"
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/calendars/$calendarId") {
@@ -80,12 +75,10 @@ class CalendarControllerTest {
 
     @Test
     fun calendars() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                database.createCalendar(locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                testDatabase.createCalendar(locationId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/calendars")) {
                     Assertions.assertTrue(response.content?.contains("Belarus")!!)
@@ -97,13 +90,11 @@ class CalendarControllerTest {
 
     @Test
     fun `calendar remove`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val calendarId = database.createCalendar(locationId)
-                val holidayId = database.createHoliday(calendarId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val calendarId = testDatabase.createCalendar(locationId)
+                val holidayId = testDatabase.createHoliday(calendarId)
 
                 with(handleRequest(HttpMethod.Delete, "/api/hr/calendars/$calendarId") {
                     addHeader("Content-Type", "application/json")
@@ -126,12 +117,10 @@ class CalendarControllerTest {
 
     @Test
     fun `add holiday`() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val calendarId = database.createCalendar(locationId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val calendarId = testDatabase.createCalendar(locationId)
                 val name = "Custom holiday"
 
                 with(handleRequest(HttpMethod.Post, "/api/hr/calendars/holidays") {
@@ -145,7 +134,6 @@ class CalendarControllerTest {
                         }.toString()
                     )
                 }) {
-                    println(response.content)
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
@@ -160,13 +148,11 @@ class CalendarControllerTest {
 
     @Test
     fun holidays() {
-        val memberId = UUID.randomUUID()
-        val database = testDatabase
-        withTestApplication({ testApplication(memberId, database) }) {
-            rollbackTransaction(database) {
-                val locationId = database.createLocation()
-                val calendarId = database.createCalendar(locationId)
-                database.createHoliday(calendarId)
+        withTestApplication({ testApplication() }) {
+            rollbackTransaction {
+                val locationId = testDatabase.createLocation()
+                val calendarId = testDatabase.createCalendar(locationId)
+                testDatabase.createHoliday(calendarId)
 
                 with(handleRequest(HttpMethod.Get, "/api/hr/calendars/holidays/$calendarId")) {
                     Assertions.assertTrue(response.content?.contains("New year")!!)

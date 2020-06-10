@@ -1,13 +1,10 @@
-.project {
-  &__link:hover {
-    text-decoration: none !important;
-  }
+.page-header {
+  background: #fff !important;
+  width: 100%;
 
-  &__create-btn {
-    margin-bottom: 8px;
-  }
-
-  &__item {
-    height: 100%;
+  &__menu {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
   }
 }

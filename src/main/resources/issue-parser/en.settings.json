@@ -1,0 +1,9 @@
+{
+  "priority" : {
+    "high": "high priority, hhhh priority",
+    "low": "low priority",
+    "normal": "normal priority",
+    "highest": "highest priority",
+    "lowest": "lowest priority"
+  }
+}
