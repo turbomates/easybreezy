@@ -31,7 +31,7 @@ sealed class Response {
 
     class Data<T : Any>(val data: T) : Response()
 
-    class File(val file: java.io.File): Response()
+    class File(val file: java.io.File) : Response()
 
     class Errors(val errors: List<io.easybreezy.infrastructure.ktor.Error>) : Response()
 

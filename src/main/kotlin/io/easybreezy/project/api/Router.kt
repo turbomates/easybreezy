@@ -233,8 +233,6 @@ class Router @Inject constructor(
                     controller<IssueController>(this).create(new)
                 }
 
-
-
                 data class ProjectIssue(val slug: String, val issueId: UUID)
                 get<Response.Data<IssueDetails>, ProjectIssue>("/{issueId}") { params ->
                     controller<IssueController>(this).show(params.issueId)
@@ -256,8 +254,6 @@ class Router @Inject constructor(
                         controller<IssueController>(this).removeFile(params.id, params.path)
                     }
                 }
-                
-
             }
         }
     }
