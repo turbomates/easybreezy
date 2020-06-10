@@ -4,8 +4,8 @@ import { Card, Col, Row } from "antd";
 import isSameDay from "date-fns/fp/isSameDay";
 import format from "date-fns/fp/format";
 
-import { HolidayCalendarEditDateForm } from "./HolidayCalendarEditDateForm";
-import { HolidayCalendarAddDateForm } from "./HolidayCalendarAddDateForm";
+import { HolidayCalendarEditDate } from "./HolidayCalendarEditDate";
+import { HolidayCalendarAddDate } from "./HolidayCalendarAddDate";
 import { Holiday } from "LocationModels";
 
 import "./HolidayCalendar.scss";
@@ -46,6 +46,19 @@ export const HolidayCalendar: React.FC<Props> = ({ holidays }) => {
     [getHoliday],
   );
 
+  const getDayType = useCallback(
+    (date: Date) => {
+      const holiday = getHoliday(date);
+
+      if (holiday) {
+        return holiday.isWorkingDay ? "Working day" : "Holiday day";
+      }
+
+      return "";
+    },
+    [getHoliday],
+  );
+
   return (
     <Row gutter={16}>
       <Col>
@@ -66,11 +79,19 @@ export const HolidayCalendar: React.FC<Props> = ({ holidays }) => {
         </Card>
       </Col>
       <Col>
-        <Card style={{ width: 400 }} title={format("yyyy-MM-dd", activeDate)}>
+        <Card
+          style={{ width: 400 }}
+          title={
+            <span>
+              {format("yyyy-MM-dd", activeDate)}{" "}
+              <span className="day-type">{getDayType(activeDate)}</span>
+            </span>
+          }
+        >
           {!activeDateHolidayName ? (
-            <HolidayCalendarAddDateForm activeDate={activeDate} />
+            <HolidayCalendarAddDate activeDate={activeDate} />
           ) : (
-            <HolidayCalendarEditDateForm
+            <HolidayCalendarEditDate
               activeDate={activeDate}
               activeDateHolidayName={activeDateHolidayName}
               isWorkingDay={isWorkingDay(activeDate)}

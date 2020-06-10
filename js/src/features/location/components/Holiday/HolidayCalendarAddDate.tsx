@@ -7,7 +7,7 @@ type Props = {
   activeDate: Date;
 };
 
-export const HolidayCalendarAddDateForm: React.FC<Props> = ({ activeDate }) => {
+export const HolidayCalendarAddDate: React.FC<Props> = ({ activeDate }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {

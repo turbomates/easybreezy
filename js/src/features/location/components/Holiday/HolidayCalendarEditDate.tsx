@@ -10,7 +10,7 @@ type Props = {
   isWorkingDay: boolean;
 };
 
-export const HolidayCalendarEditDateForm: React.FC<Props> = ({
+export const HolidayCalendarEditDate: React.FC<Props> = ({
   activeDate,
   activeDateHolidayName,
   isWorkingDay,
@@ -20,7 +20,7 @@ export const HolidayCalendarEditDateForm: React.FC<Props> = ({
   useEffect(() => {
     form.setFieldsValue({
       name: activeDateHolidayName,
-      from: activeDate,
+      to: activeDate,
     });
   }, [activeDateHolidayName, activeDate, form]);
 
