@@ -12,6 +12,7 @@ import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
 import io.easybreezy.project.model.issue.IssueLabel
+import io.easybreezy.project.model.issue.Path
 import io.easybreezy.project.model.issue.PriorityTable
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
@@ -80,7 +81,8 @@ fun ResultRow.toIssue() = Issue(
 fun ResultRow.toIssueDetails() = IssueDetails(
     this[Issues.id].value,
     this[Issues.title],
-    this[Issues.priority[PriorityTable.color]]?.rgb
+    this[Issues.priority[PriorityTable.color]]?.rgb,
+    this[Issues.files]
 )
 
 fun ResultRow.toLabel() = Label(
@@ -121,6 +123,7 @@ data class IssueDetails(
     val id: UUID,
     val title: String,
     val priority: String?,
+    val files: Set<Path>,
     val labels: List<Label> = listOf(),
     val category: Category? = null
 )

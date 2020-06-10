@@ -6,6 +6,8 @@ import io.easybreezy.infrastructure.exposed.dao.embedded
 import io.easybreezy.infrastructure.exposed.type.jsonb
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.builtins.set
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
@@ -30,6 +32,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var startDate by Issues.startDate
     private var dueDate by Issues.dueDate
     private var labels by Label via IssueLabel
+    private var files by Issues.files
 
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {
         fun create(
@@ -72,6 +75,20 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         updatedAt = LocalDateTime.now()
     }
 
+    suspend fun addFiles(files: List<File>, fileStorage: FileStorage) {
+        val newFiles = mutableSetOf<Path>()
+        files.forEach {
+            val path = fileStorage.add(it, id.value)
+            newFiles.add(path)
+        }
+        this.files = this.files.plus(newFiles)
+    }
+
+    suspend fun removeFile(path: Path, fileStorage: FileStorage) {
+        this.files = this.files.minus(path)
+        fileStorage.remove(id.value, path)
+    }
+
     abstract class Repository : EntityClass<UUID, Issue>(Issues, Issue::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Issue {
             return Issue(entityId)
@@ -93,6 +110,7 @@ object Issues : UUIDTable("issues") {
     val priority = embedded<Priority>(PriorityTable)
     val startDate = datetime("start_date").nullable()
     val dueDate = datetime("due_date").nullable()
+    val files = jsonb("files", String.serializer().set).default(setOf())
 }
 
 object IssueLabel : Table("issue_label") {

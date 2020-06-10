@@ -10,12 +10,14 @@ import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.infrastructure.ktor.auth.containsAny
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.integration.openapi.ktor.delete
 import io.easybreezy.integration.openapi.ktor.get
 import io.easybreezy.integration.openapi.ktor.post
 import io.easybreezy.integration.openapi.ktor.postParams
 import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
+import io.easybreezy.project.application.issue.command.AddFiles
 import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
@@ -149,7 +151,6 @@ class Router @Inject constructor(
                     controller<ProjectController>(this).show(params.slug)
                 }
             }
-
             authorize(setOf(Activity.PROJECTS_MANAGE)) {
                 post<Response.Either<Response.Ok, Response.Errors>, SlugParam, SlugParam>("/change-slug") { new, params ->
                     controller<ProjectController>(this).changeSlug(ChangeSlug(params.slug, new.slug))
@@ -232,10 +233,31 @@ class Router @Inject constructor(
                     controller<IssueController>(this).create(new)
                 }
 
+
+
                 data class ProjectIssue(val slug: String, val issueId: UUID)
                 get<Response.Data<IssueDetails>, ProjectIssue>("/{issueId}") { params ->
                     controller<IssueController>(this).show(params.issueId)
                 }
+            }
+        }
+
+        route("/issues/{id}") {
+            authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
+                data class File(val id: UUID, val path: String)
+                route("/files") {
+                    post<Response.Either<Response.Ok, Response.Errors>, AddFiles, ID>("/add") { command, params ->
+                        controller<IssueController>(this).addFiles(command, params.id)
+                    }
+                    get<Response.File, File>("/{path}") { params ->
+                        controller<IssueController>(this).issueFile(params.id, params.path)
+                    }
+                    delete<Response.Either<Response.Ok, Response.Errors>, File>("/{path}") { params ->
+                        controller<IssueController>(this).removeFile(params.id, params.path)
+                    }
+                }
+                
+
             }
         }
     }
@@ -252,4 +274,6 @@ class Router @Inject constructor(
             queryExecutor.execute(MemberActivities(principal.id, locations.resolve<SlugParam>(this).slug))
         return memberActivities.containsAny(activities)
     }
+
+    internal data class ID(val id: UUID)
 }

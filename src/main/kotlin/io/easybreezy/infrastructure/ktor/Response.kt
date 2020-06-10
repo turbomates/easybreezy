@@ -6,6 +6,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.ApplicationSendPipeline
 import io.ktor.routing.Route
 import io.easybreezy.infrastructure.serialization.resolveSerializer
+import io.ktor.application.call
+import io.ktor.response.respondFile
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
@@ -29,6 +31,8 @@ sealed class Response {
 
     class Data<T : Any>(val data: T) : Response()
 
+    class File(val file: java.io.File): Response()
+
     class Errors(val errors: List<io.easybreezy.infrastructure.ktor.Error>) : Response()
 
     class Listing<T : Any>(val list: ContinuousList<T>) : Response()
@@ -41,8 +45,15 @@ class EmptyParams()
 
 class RouteResponseInterceptor : Interceptor() {
     override fun intercept(route: Route) {
+        route.sendPipeline.intercept(ApplicationSendPipeline.Before) {
+            if (it is Response.File) {
+                context.response.status(it.status())
+                call.respondFile(it.file)
+                finish()
+            }
+        }
         route.sendPipeline.intercept(ApplicationSendPipeline.Transform) {
-            if (it is Response) {
+            if (it is Response && it !is Response.File) {
                 context.response.status(it.status())
                 proceedWith(SerializableResponse(it))
             }
@@ -108,6 +119,7 @@ object ResponseSerializer : KSerializer<Response> {
                 val anon = { response: Response -> output.json.toJson(response) }
                 value.data.fold(anon, anon) as JsonObject
             }
+            else -> throw Exception("Response serialization: shouldn't reach here")
         }
         output.encodeJson(tree)
     }
