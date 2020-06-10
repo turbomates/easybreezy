@@ -53,7 +53,7 @@ class RouteResponseInterceptor : Interceptor() {
             }
         }
         route.sendPipeline.intercept(ApplicationSendPipeline.Transform) {
-            if (it is Response && it !is Response.File) {
+            if (it is Response) {
                 context.response.status(it.status())
                 proceedWith(SerializableResponse(it))
             }
