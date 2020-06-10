@@ -35,11 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: mr-smithers-excellent/docker-build-push@v2
+      - uses: docker/build-push-action@v1
         with:
-          image: turbomates/easybreezy
-          tag: latest
+          repository: turbomates/easybreezy
+          tags: latest
           registry: registry.hub.docker.com
-          dockerfile: Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}

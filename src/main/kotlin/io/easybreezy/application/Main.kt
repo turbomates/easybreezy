@@ -139,7 +139,6 @@ suspend fun main() {
                 cookie.path = "/"
             }
         }
-
         install(StatusPages) {
             status(HttpStatusCode.Unauthorized) {
                 call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
