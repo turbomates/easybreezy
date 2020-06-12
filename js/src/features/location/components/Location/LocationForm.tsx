@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
-import { Form, Input, Button, Upload, InputNumber } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Button, InputNumber } from "antd";
 
 import { LocationForm as LocationFormModel } from "LocationModels";
 import { FormErrorMap } from "MyTypes";
@@ -46,27 +45,7 @@ export const LocationForm: React.FC<Props> = ({ create, errors }) => {
         <InputNumber min={24} />
       </Form.Item>
 
-      <Form.Item
-        wrapperCol={{ offset: 8 }}
-        // name="calendar"
-        valuePropName="fileList"
-        getValueFromEvent={(value) => {
-          if (value.fileList.length !== 0) {
-            return [value.fileList[value.fileList.length - 1]];
-          } else {
-            return value.fileList;
-          }
-        }}
-      >
-        <Upload beforeUpload={() => false}>
-          <Button>
-            <UploadOutlined />
-            Upload calendar
-          </Button>
-        </Upload>
-      </Form.Item>
-
-      <Form.Item wrapperCol={{ offset: 8 }}>
+      <Form.Item wrapperCol={{ md: { offset: 8 } }}>
         <Button type="primary" htmlType="submit" style={{ alignSelf: "right" }}>
           Create location
         </Button>

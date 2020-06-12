@@ -1,13 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Button, Checkbox, Form, Input } from "antd";
+import formatISO from "date-fns/esm/formatISO";
 
 import { getRequiredErrors } from "../../../../utils/errors";
+import { AddHolidayForm } from "LocationModels";
 
 type Props = {
   activeDate: Date;
+  add: (form: AddHolidayForm) => void;
 };
 
-export const HolidayCalendarAddDate: React.FC<Props> = ({ activeDate }) => {
+export const HolidayCalendarAddDate: React.FC<Props> = ({
+  activeDate,
+  add,
+}) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -17,8 +23,23 @@ export const HolidayCalendarAddDate: React.FC<Props> = ({ activeDate }) => {
     });
   }, [activeDate, form]);
 
+  const onFinish = useCallback(
+    (values: any) => {
+      add({
+        ...values,
+        day: formatISO(activeDate, { representation: "date" }),
+      });
+    },
+    [add, activeDate],
+  );
+
   return (
-    <Form form={form} labelCol={{ span: 5 }}>
+    <Form
+      form={form}
+      onFinish={onFinish}
+      initialValues={{ isWorkingDay: false }}
+      labelCol={{ span: 5 }}
+    >
       <Form.Item shouldUpdate noStyle={true}>
         {({ getFieldValue }) => {
           return (
@@ -37,12 +58,14 @@ export const HolidayCalendarAddDate: React.FC<Props> = ({ activeDate }) => {
       <Form.Item
         name="isWorkingDay"
         valuePropName="checked"
-        wrapperCol={{ offset: 5 }}
+        wrapperCol={{ md: { offset: 5 } }}
       >
         <Checkbox>Working day</Checkbox>
       </Form.Item>
-      <Form.Item wrapperCol={{ offset: 5 }}>
-        <Button type="primary">Add</Button>
+      <Form.Item wrapperCol={{ md: { offset: 5 } }}>
+        <Button type="primary" htmlType="submit">
+          Add
+        </Button>
       </Form.Item>
     </Form>
   );

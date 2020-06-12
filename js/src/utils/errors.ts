@@ -39,3 +39,10 @@ export const getUrlError = () => ({
   pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
   message: "Not valid",
 });
+
+export const getCalendarError = () => ({
+  transform: (value?: File[]) =>
+    !!value && !!value.length ? value[0].name : "",
+  pattern: /.ics/,
+  message: "Must be .ics format",
+});
