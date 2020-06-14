@@ -27,6 +27,7 @@ data class SchemaObject(
     val externalDocs: ExternalDocumentationObject? = null,
     @ContextualSerialization val example: Any? = null,
     val type: String? = null,
+    val format: String? = null,
     val properties: Map<String, SchemaObject>? = null,
     val additionalProperties: SchemaObject? = null,
     val items: SchemaObject? = null,

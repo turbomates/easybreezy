@@ -142,9 +142,7 @@ class Router @Inject constructor(
         }
 
         route("/{slug}") {
-
             authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
-
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
                 }
