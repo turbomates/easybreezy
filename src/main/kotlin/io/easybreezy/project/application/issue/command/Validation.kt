@@ -19,10 +19,10 @@ class Validation @Inject constructor(
         }
     }
 
-    fun validateCommand(command: CommentUpdate): List<Error> {
+    fun validateCommand(command: AddComment): List<Error> {
 
         return validate(command) {
-            validate(CommentUpdate::content).isNotBlank()
+            validate(AddComment::content).isNotBlank()
         }
     }
 

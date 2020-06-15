@@ -5,7 +5,7 @@ import kotlinx.serialization.Transient
 import java.util.UUID
 
 @Serializable
-class CommentUpdate(val content: String) {
+class AddComment(val content: String) {
     @Transient
     lateinit var issue: UUID
     @Transient

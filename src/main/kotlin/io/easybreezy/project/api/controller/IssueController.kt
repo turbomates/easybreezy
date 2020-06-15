@@ -7,7 +7,7 @@ import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.project.application.issue.command.ChangeStatus
-import io.easybreezy.project.application.issue.command.CommentUpdate
+import io.easybreezy.project.application.issue.command.AddComment
 import io.easybreezy.project.application.issue.command.CreateSubIssue
 import io.easybreezy.project.application.issue.command.Handler
 import io.easybreezy.project.application.issue.command.New
@@ -33,7 +33,7 @@ class IssueController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun commentUpdate(command: CommentUpdate): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun commentUpdate(command: AddComment): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))

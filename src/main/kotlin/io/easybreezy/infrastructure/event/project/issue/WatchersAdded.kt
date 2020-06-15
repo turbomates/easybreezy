@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Serializable
-data class WatchersUpdated(
+data class WatchersAdded(
     val issue: UUID,
     val labels: List<UUID>,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
@@ -18,5 +18,5 @@ data class WatchersUpdated(
     override val key
         get() = Companion
 
-    companion object : Event.Key<WatchersUpdated>
+    companion object : Event.Key<WatchersAdded>
 }

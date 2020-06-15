@@ -9,13 +9,16 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import io.easybreezy.project.model.Projects
+import io.easybreezy.project.model.issue.Behavior
+import io.easybreezy.project.model.issue.Behaviors
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Comments
+import io.easybreezy.project.model.issue.Estimations
 import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
+import io.easybreezy.project.model.issue.Participants
 import io.easybreezy.project.model.issue.PriorityTable
-import io.easybreezy.project.model.issue.Solutions
 import io.easybreezy.project.model.issue.Statuses
 import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.sql.JoinType
@@ -30,7 +33,7 @@ class HasIssuesInCategoryQO(private val inCategory: UUID) : QueryObject<Boolean>
 
 class HasIssuesInStatusQO(private val inStatus: UUID) : QueryObject<Boolean> {
     override suspend fun getData() =
-        Solutions.select { Solutions.status eq inStatus }.count() > 0
+        Behaviors.select { Behaviors.status eq inStatus }.count() > 0
 }
 
 class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
@@ -39,9 +42,11 @@ class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
             .leftJoin(IssueLabel)
             .leftJoin(Comments)
             .join(Labels, JoinType.LEFT, IssueLabel.label, Labels.id)
-            .join(Solutions, JoinType.INNER, Solutions.id, Issues.id)
+            .join(Behaviors, JoinType.LEFT, Behaviors.id, Issues.id)
+            .join(Estimations, JoinType.LEFT, Estimations.id, Issues.id)
+            .join(Participants, JoinType.LEFT, Participants.id, Issues.id)
             .join(Categories, JoinType.LEFT, Issues.category, Categories.id)
-            .join(Statuses, JoinType.LEFT, Solutions.status, Statuses.id)
+            .join(Statuses, JoinType.LEFT, Behaviors.status, Statuses.id)
             .select {
                 Issues.id eq id
             }
@@ -97,8 +102,8 @@ fun ResultRow.toIssue() = Issue(
 fun ResultRow.toIssueDetails() = IssueDetails(
     this[Issues.id].value,
     this[Issues.parent]?.value,
-    this[Solutions.assignee],
-    this[Solutions.watchers],
+    this[Participants.assignee],
+    this[Participants.watchers],
     this[Issues.title],
     this[Issues.priority[PriorityTable.color]]?.rgb
 )

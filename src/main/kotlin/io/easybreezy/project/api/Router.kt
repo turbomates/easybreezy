@@ -16,7 +16,7 @@ import io.easybreezy.integration.openapi.ktor.postParams
 import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
-import io.easybreezy.project.application.issue.command.CommentUpdate
+import io.easybreezy.project.application.issue.command.AddComment
 import io.easybreezy.project.application.issue.command.CreateSubIssue
 import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
@@ -237,7 +237,7 @@ class Router @Inject constructor(
                     controller<IssueController>(this).show(params.issueId)
                 }
 
-                post<Response.Either<Response.Ok, Response.Errors>, CommentUpdate, ProjectIssue>("/{issueId}/comment") { command, params ->
+                post<Response.Either<Response.Ok, Response.Errors>, AddComment, ProjectIssue>("/{issueId}/comment") { command, params ->
                     command.issue = params.issueId
                     command.member = resolvePrincipal<UserPrincipal>()
                     controller<IssueController>(this).commentUpdate(command)
