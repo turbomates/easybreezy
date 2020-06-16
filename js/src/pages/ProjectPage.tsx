@@ -9,10 +9,13 @@ import {
   ProjectStatusTypeRequest,
 } from "ProjectModels";
 import {
+  addProjectIssueStatusAsync,
+  changeProjectIssueStatusAsync,
   changeProjectStatusAsync,
   editProjectDescriptionAsync,
   editProjectSlugAsync,
   fetchProjectAsync,
+  removeProjectIssueStatusAsync,
 } from "../features/project/actions";
 import {
   selectProject,
@@ -25,6 +28,7 @@ import { ProjectStatusDangerZone } from "../features/project/components/Project/
 import { ProjectSlugForm } from "../features/project/components/Project/ProjectSlugForm";
 
 import "./Project.scss";
+import { ProjectIssueStatus } from "../features/project/components/Project/ProjectIssueStatus";
 
 export const ProjectPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -71,6 +75,46 @@ export const ProjectPage: React.FC = () => {
     [dispatch],
   );
 
+  const addProjectIssueStatus = useCallback(
+    (slug: string) => {
+      return (name: string) =>
+        dispatch(
+          addProjectIssueStatusAsync.request({
+            slug,
+            name,
+          }),
+        );
+    },
+    [dispatch],
+  );
+
+  const changeProjectIssueStatus = useCallback(
+    (slug: string) => {
+      return (name: string, statusId: string) =>
+        dispatch(
+          changeProjectIssueStatusAsync.request({
+            slug,
+            statusId,
+            name,
+          }),
+        );
+    },
+    [dispatch],
+  );
+
+  const removeProjectIssueStatus = useCallback(
+    (slug: string) => {
+      return (statusId: string) =>
+        dispatch(
+          removeProjectIssueStatusAsync.request({
+            slug,
+            statusId,
+          }),
+        );
+    },
+    [dispatch],
+  );
+
   useEffect(() => {
     fetchProject(slug);
   }, [location, slug, fetchProject]);
@@ -82,6 +126,16 @@ export const ProjectPage: React.FC = () => {
       <Col lg={12} md={24} xs={24}>
         <Card>
           <List>
+            <List.Item className="list-item">
+              <List.Item.Meta title="Issue statuses" />
+              <ProjectIssueStatus
+                statuses={project.statuses}
+                change={changeProjectIssueStatus(project.slug)}
+                add={addProjectIssueStatus(project.slug)}
+                remove={removeProjectIssueStatus(project.slug)}
+              />
+            </List.Item>
+
             <List.Item className="list-item">
               <List.Item.Meta title="Description" />
               <ProjectDescriptionForm

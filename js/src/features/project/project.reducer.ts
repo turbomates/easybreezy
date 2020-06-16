@@ -11,6 +11,8 @@ import {
   closeProjectTeamCreateFormAction,
   editProjectSlugAsync,
   createProjectTeamAsync,
+  addProjectIssueStatusAsync,
+  changeProjectIssueStatusAsync,
 } from "./actions";
 import { FormErrorMap } from "MyTypes";
 import { normalizeErrors } from "utils/errors";
@@ -24,6 +26,7 @@ export type State = {
   descriptionFormErrors: FormErrorMap;
   slugFormErrors: FormErrorMap;
   newTeamFormErrors: FormErrorMap;
+  issueStatusesFormErrors: FormErrorMap;
 };
 
 const initialSate: State = {
@@ -34,6 +37,7 @@ const initialSate: State = {
   descriptionFormErrors: {},
   slugFormErrors: {},
   newTeamFormErrors: {},
+  issueStatusesFormErrors: {},
 };
 
 export const reducer = createReducer<State>(initialSate)
@@ -153,4 +157,13 @@ export const reducer = createReducer<State>(initialSate)
   .handleAction(createProjectTeamAsync.failure, (state, action) => ({
     ...state,
     newTeamFormErrors: normalizeErrors(action.payload),
+  }))
+  //ISSUE STATUSES
+  .handleAction(addProjectIssueStatusAsync.failure, (state, action) => ({
+    ...state,
+    issueStatusesFormErrors: normalizeErrors(action.payload),
+  }))
+  .handleAction(changeProjectIssueStatusAsync.failure, (state, action) => ({
+    ...state,
+    issueStatusesFormErrors: normalizeErrors(action.payload),
   }));
