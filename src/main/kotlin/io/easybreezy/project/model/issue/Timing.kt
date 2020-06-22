@@ -12,18 +12,18 @@ import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Estimation private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var issue by Estimations.id
-    private var updatedAt by Estimations.updatedAt
-    private var dueDate by Estimations.dueDate
+class Timing private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
+    private var issue by Timings.id
+    private var updatedAt by Timings.updatedAt
+    private var dueDate by Timings.dueDate
 
-    companion object : PrivateEntityClass<UUID, Estimation>(object : Estimation.Repository() {}) {
+    companion object : PrivateEntityClass<UUID, Timing>(object : Timing.Repository() {}) {
         fun ofIssue(
             issue: UUID,
             dueDate: LocalDateTime
-        ): Estimation {
-            return Estimation.new {
-                this.issue = EntityID(issue, Estimations)
+        ): Timing {
+            return Timing.new {
+                this.issue = EntityID(issue, Timings)
                 this.dueDate = dueDate
             }
         }
@@ -35,14 +35,14 @@ class Estimation private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(i
         dueDate = updated
     }
 
-    abstract class Repository : EntityClass<UUID, Estimation>(Estimations, Estimation::class.java) {
-        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Estimation {
-            return Estimation(entityId)
+    abstract class Repository : EntityClass<UUID, Timing>(Timings, Timing::class.java) {
+        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Timing {
+            return Timing(entityId)
         }
     }
 }
 
-object Estimations : IdTable<UUID>("issue_estimations") {
+object Timings : IdTable<UUID>("issue_estimations") {
     override val id: Column<EntityID<UUID>> = uuid("issue").entityId()
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())

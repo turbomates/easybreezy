@@ -16,6 +16,7 @@ data class SubIssueCreated(
     val issue: UUID,
     val by: UUID,
     val title: String,
+    val description: String?,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key

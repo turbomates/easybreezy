@@ -12,18 +12,18 @@ import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
 
-class Behavior private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var issue by Behaviors.id
-    private var updatedAt by Behaviors.updatedAt
-    private var status by Behaviors.status
+class Workflow private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
+    private var issue by Workflows.id
+    private var updatedAt by Workflows.updatedAt
+    private var status by Workflows.status
 
-    companion object : PrivateEntityClass<UUID, Behavior>(object : Behavior.Repository() {}) {
+    companion object : PrivateEntityClass<UUID, Workflow>(object : Workflow.Repository() {}) {
         fun ofIssue(
             issue: UUID,
             status: UUID
-        ): Behavior {
-            return Behavior.new {
-                this.issue = EntityID(issue, Behaviors)
+        ): Workflow {
+            return Workflow.new {
+                this.issue = EntityID(issue, Workflows)
                 this.status = status
             }
         }
@@ -35,14 +35,14 @@ class Behavior private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
         status = updated
     }
 
-    abstract class Repository : EntityClass<UUID, Behavior>(Behaviors, Behavior::class.java) {
-        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Behavior {
-            return Behavior(entityId)
+    abstract class Repository : EntityClass<UUID, Workflow>(Workflows, Workflow::class.java) {
+        override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Workflow {
+            return Workflow(entityId)
         }
     }
 }
 
-object Behaviors : IdTable<UUID>("issue_behaviors") {
+object Workflows : IdTable<UUID>("issue_behaviors") {
     override val id: Column<EntityID<UUID>> = uuid("issue").entityId()
     val status = uuid("status").nullable()
     val createdAt = datetime("created_at").default(LocalDateTime.now())

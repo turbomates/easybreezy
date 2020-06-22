@@ -9,11 +9,10 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import io.easybreezy.project.model.Projects
-import io.easybreezy.project.model.issue.Behavior
-import io.easybreezy.project.model.issue.Behaviors
+import io.easybreezy.project.model.issue.Workflows
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Comments
-import io.easybreezy.project.model.issue.Estimations
+import io.easybreezy.project.model.issue.Timings
 import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
@@ -33,7 +32,7 @@ class HasIssuesInCategoryQO(private val inCategory: UUID) : QueryObject<Boolean>
 
 class HasIssuesInStatusQO(private val inStatus: UUID) : QueryObject<Boolean> {
     override suspend fun getData() =
-        Behaviors.select { Behaviors.status eq inStatus }.count() > 0
+        Workflows.select { Workflows.status eq inStatus }.count() > 0
 }
 
 class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
@@ -42,11 +41,11 @@ class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
             .leftJoin(IssueLabel)
             .leftJoin(Comments)
             .join(Labels, JoinType.LEFT, IssueLabel.label, Labels.id)
-            .join(Behaviors, JoinType.LEFT, Behaviors.id, Issues.id)
-            .join(Estimations, JoinType.LEFT, Estimations.id, Issues.id)
+            .join(Workflows, JoinType.LEFT, Workflows.id, Issues.id)
+            .join(Timings, JoinType.LEFT, Timings.id, Issues.id)
             .join(Participants, JoinType.LEFT, Participants.id, Issues.id)
             .join(Categories, JoinType.LEFT, Issues.category, Categories.id)
-            .join(Statuses, JoinType.LEFT, Behaviors.status, Statuses.id)
+            .join(Statuses, JoinType.LEFT, Workflows.status, Statuses.id)
             .select {
                 Issues.id eq id
             }

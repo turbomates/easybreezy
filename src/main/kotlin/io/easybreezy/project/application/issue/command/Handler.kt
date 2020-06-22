@@ -2,12 +2,12 @@ package io.easybreezy.project.application.issue.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.project.application.issue.command.language.NormalizedIssue
 import io.easybreezy.project.application.issue.command.language.Normalizer
 import io.easybreezy.project.application.issue.command.language.Parser
 import io.easybreezy.project.infrastructure.IssueRepository
-import io.easybreezy.project.model.issue.Behavior
-import io.easybreezy.project.model.issue.Estimation
+import io.easybreezy.project.infrastructure.LifeCycleRepository
+import io.easybreezy.project.model.issue.Workflow
+import io.easybreezy.project.model.issue.Timing
 import io.easybreezy.project.model.Repository as ProjectRepository
 import io.easybreezy.project.model.issue.Issue
 import io.easybreezy.project.model.issue.Participant
@@ -19,7 +19,8 @@ class Handler @Inject constructor(
     private val statusWorkflow: StatusWorkflow,
     private val normalizer: Normalizer,
     private val repository: IssueRepository,
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val lifeCycleRepository: LifeCycleRepository
 ) {
 
     suspend fun newIssue(command: New) {
@@ -34,11 +35,9 @@ class Handler @Inject constructor(
                 normalized.priority,
                 normalized.category
             )
-            statusOnCreate(project)?.let {
-                Behavior.ofIssue(issue.id.value, it)
-            }
+
             if (normalized.due != null) {
-                Estimation.ofIssue(issue.id.value, normalized.due)
+                Timing.ofIssue(issue.id.value, normalized.due)
             }
             if (normalized.assignee != null) {
                 Participant.ofIssue(issue.id.value, normalized.assignee, normalized.watchers)
@@ -56,7 +55,7 @@ class Handler @Inject constructor(
     suspend fun update(command: AddComment) {
         transaction {
             val issue = issue(command.issue)
-            val normalized = normalizer.normalize(parser.parse(command.content), issue.projectUUID())
+            val normalized = normalizer.normalize(parser.parse(command.content), issue.project())
 
             issue.comment(command.member, normalized.description)
             normalized.category?.let {
@@ -69,28 +68,19 @@ class Handler @Inject constructor(
                 issue.updatePriority(it)
             }
 
-//            val solution = solution(command.issue)
-//            normalized.assignee?.let {
-//                solution.reassign(it)
-//            }
-//            normalized.watchers?.let {
-//                solution.addWatchers(it)
-//            }
-//            normalized.due?.let { solution.changeDueDate(it) }
         }
     }
 
     suspend fun changeStatus(command: ChangeStatus) {
         transaction {
-//            val solution = solution(command.issue)
-//            solution.updateStatus(command.newStatus)
+            lifeCycleRepository[command.issue].updateStatus(command.newStatus)
         }
     }
 
     suspend fun createSubIssue(command: CreateSubIssue) {
         transaction {
             val issue = issue(command.issue)
-            val normalized = normalizer.normalize(parser.parse(command.content), issue.projectUUID())
+            val normalized = normalizer.normalize(parser.parse(command.content), issue.project())
             val subIssue = issue.extractSubIssue(
                 command.member,
                 normalized.title,
@@ -98,11 +88,9 @@ class Handler @Inject constructor(
                 normalized.priority,
                 normalized.category
             )
-            statusOnCreate(issue.projectUUID())?.let {
-                Behavior.ofIssue(subIssue.id.value, it)
-            }
+
             if (normalized.due != null) {
-                Estimation.ofIssue(subIssue.id.value, normalized.due)
+                Timing.ofIssue(subIssue.id.value, normalized.due)
             }
             if (normalized.assignee != null) {
                 Participant.ofIssue(subIssue.id.value, normalized.assignee, normalized.watchers)
@@ -110,7 +98,19 @@ class Handler @Inject constructor(
         }
     }
 
-    private suspend fun statusOnCreate(project: UUID) = statusWorkflow.onCreate(project)
+    suspend fun applyWorkflow(command: ApplyWorkflow) {
+        statusWorkflow.onCreate(command.project)?.let {
+            transaction {
+                Workflow.ofIssue(command.issue, it)
+            }
+        }
+    }
+
+    suspend fun applyTiming(command: ApplyTiming) {
+    }
+
+    suspend fun applyParticipants(command: ApplyParticipants) {
+    }
 
     private fun issue(id: UUID) = repository[id]
 }

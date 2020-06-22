@@ -47,7 +47,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.description = description
                 this.category = category
                 this.priority = priority ?: Priority.neutral()
-                addEvent(Created(this.project, this.id.value, this.author, this.title, LocalDateTime.now()))
+                addEvent(Created(this.project, this.id.value, this.author, this.title, this.description, LocalDateTime.now()))
             }
         }
     }
@@ -68,7 +68,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             this.category = category
             this.priority = priority ?: Priority.neutral()
             this.parent = issue
-            addEvent(SubIssueCreated(this.project, issue.id.value, this.id.value, this.author, this.title, LocalDateTime.now()))
+            addEvent(SubIssueCreated(this.project, issue.id.value, this.id.value, this.author, this.title, this.description, LocalDateTime.now()))
         }
     }
 
@@ -95,10 +95,10 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     fun comment(author: UUID, content: String) {
         Comment.create(author, this, content)
         updatedAt = LocalDateTime.now()
-        addEvent(Commented(this.id.value, author, updatedAt))
+        addEvent(Commented(this.id.value, author, content, updatedAt))
     }
 
-    fun projectUUID() = project
+    fun project() = project
 
     abstract class Repository : EntityClass<UUID, Issue>(Issues, Issue::class.java) {
         override fun createInstance(entityId: EntityID<UUID>, row: ResultRow?): Issue {

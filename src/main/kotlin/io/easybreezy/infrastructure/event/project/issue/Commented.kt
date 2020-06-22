@@ -13,6 +13,7 @@ import java.util.UUID
 data class Commented(
     val issue: UUID,
     val by: UUID,
+    val content: String,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key
