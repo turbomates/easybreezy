@@ -42,7 +42,7 @@ class Workflow private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id)
     }
 }
 
-object Workflows : IdTable<UUID>("issue_behaviors") {
+object Workflows : IdTable<UUID>("issue_workflows") {
     override val id: Column<EntityID<UUID>> = uuid("issue").entityId()
     val status = uuid("status").nullable()
     val createdAt = datetime("created_at").default(LocalDateTime.now())

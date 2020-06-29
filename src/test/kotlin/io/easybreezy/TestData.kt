@@ -6,7 +6,6 @@ import io.easybreezy.project.model.Project
 import io.easybreezy.project.model.Projects
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Issues
-import io.easybreezy.project.model.issue.Solutions
 import io.easybreezy.project.model.issue.Statuses
 import io.easybreezy.project.model.team.Members
 import io.easybreezy.project.model.team.Roles
@@ -61,9 +60,6 @@ internal fun Database.createIssue(projectId: UUID): EntityID<UUID> {
             it[project] = projectId
         } get Issues.id
 
-        Solutions.insert {
-            it[id] = EntityID(issueId.value, Solutions)
-        }
         issueId
     }
 }

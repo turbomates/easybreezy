@@ -2,20 +2,23 @@ package io.easybreezy.project.application.issue.command.language.normalizer
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.query.QueryExecutor
-import io.easybreezy.project.application.issue.command.language.ParsedElements
-import io.easybreezy.project.application.issue.command.language.NormalizedElements
+import io.easybreezy.project.application.issue.command.language.NormalizedFields
+import io.easybreezy.project.application.issue.command.language.ParsedFields
 import io.easybreezy.project.application.project.queryobject.CategoryQO
 import java.util.UUID
 
 class CategoryNormalizer @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) : ElementNormalizer {
-    override suspend fun normalize(project: UUID, parsed: ParsedElements, normalizedElements: NormalizedElements): NormalizedElements {
+    override suspend fun normalize(project: UUID, parsed: ParsedFields, normalized: NormalizedFields): NormalizedFields {
 
-        return normalizedElements.copy(
+        return normalized.copy(
             category = parsed.category?.let { name ->
                 queryExecutor.execute(CategoryQO(project, name))
             }
         )
+    }
+    override fun elementField(): String {
+        return NormalizedFields::category.name
     }
 }

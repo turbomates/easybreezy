@@ -16,11 +16,12 @@ import io.easybreezy.project.application.issue.command.Handler
 import io.easybreezy.project.application.issue.command.language.normalizer.LabelNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.CategoryNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.PriorityNormalizer
-import io.easybreezy.project.application.issue.command.language.normalizer.MembersNormalize
+import io.easybreezy.project.application.issue.command.language.normalizer.ParticipantsNormalize
 import io.easybreezy.project.application.issue.command.language.normalizer.ElementNormalizer
-import io.easybreezy.project.application.issue.subscriber.ParticipantSubscriber
-import io.easybreezy.project.application.issue.subscriber.TimingSubscriber
-import io.easybreezy.project.application.issue.subscriber.WorkflowSubscriber
+import io.easybreezy.project.application.issue.subscriber.UpdateIssueLabelsSubscriber
+import io.easybreezy.project.application.issue.subscriber.UpdateIssueParticipantsSubscriber
+import io.easybreezy.project.application.issue.subscriber.UpdateIssueTimingSubscriber
+import io.easybreezy.project.application.issue.subscriber.UpdateIssueWorkflowSubscriber
 import io.easybreezy.project.infrastructure.ProjectRepository
 import io.easybreezy.project.infrastructure.TeamRepository
 import io.easybreezy.project.model.Repository
@@ -34,7 +35,7 @@ class ProjectModule : AbstractModule() {
 
         val normalizers: Multibinder<ElementNormalizer> = Multibinder.newSetBinder(binder(), ElementNormalizer::class.java)
         normalizers.addBinding().to(PriorityNormalizer::class.java)
-        normalizers.addBinding().to(MembersNormalize::class.java)
+        normalizers.addBinding().to(ParticipantsNormalize::class.java)
         normalizers.addBinding().to(CategoryNormalizer::class.java)
         normalizers.addBinding().to(LabelNormalizer::class.java)
     }
@@ -57,8 +58,9 @@ class ProjectModule : AbstractModule() {
 
 class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers, handler: Handler) {
     init {
-        eventSystem.subscribe(ParticipantSubscriber(handler))
-        eventSystem.subscribe(TimingSubscriber(handler))
-        eventSystem.subscribe(WorkflowSubscriber(handler))
+        eventSystem.subscribe(UpdateIssueParticipantsSubscriber(handler))
+        eventSystem.subscribe(UpdateIssueTimingSubscriber(handler))
+        eventSystem.subscribe(UpdateIssueWorkflowSubscriber(handler))
+        eventSystem.subscribe(UpdateIssueLabelsSubscriber(handler))
     }
 }

@@ -1,6 +1,6 @@
 package io.easybreezy.project.application.issue.command.language.parser
 
-import io.easybreezy.project.application.issue.command.language.ParsedElements
+import io.easybreezy.project.application.issue.command.language.ParsedFields
 import kotlin.reflect.KProperty
 
 class TitleDescriptionParser {
@@ -10,12 +10,12 @@ class TitleDescriptionParser {
         const val TITLE_NO_IDENTIFIER_LENGTH = 10
     }
 
-    operator fun getValue(parsed: ParsedElements, property: KProperty<*>): TitleDescription {
+    operator fun getValue(parsed: ParsedFields, property: KProperty<*>): TitleDescription {
         val titleRegex = TITLE_IDENTIFIER.toRegex()
         val titleMatch = titleRegex.find(parsed.text)
         if (titleMatch != null) {
             val (title, description) = titleMatch.destructured
-            return TitleDescription(title, description)
+            return TitleDescription(title.trim(), description)
         }
 
         return TitleDescription(

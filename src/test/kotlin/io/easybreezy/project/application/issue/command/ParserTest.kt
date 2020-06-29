@@ -18,11 +18,11 @@ class ParserTest {
 
         val data = parser.parse(description)
 
-        Assertions.assertEquals("Roles to Activities", data.title)
+        Assertions.assertEquals("Roles to Activities", data.titleDescription.title)
         Assertions.assertEquals("""
             We upgrade (and obvious rename) roles to
             activities and add activities update.
-        """.trimIndent(), data.description)
+        """.trimIndent(), data.titleDescription.description)
     }
 
     @Test fun `title dot`() {
@@ -32,10 +32,10 @@ class ParserTest {
 
         val data = parser.parse(description)
 
-        Assertions.assertEquals("Roles to Activities.", data.title)
+        Assertions.assertEquals("Roles to Activities.", data.titleDescription.title)
         Assertions.assertEquals("""
             We upgrade (and obvious rename)
-        """.trimIndent(), data.description)
+        """.trimIndent(), data.titleDescription.description)
     }
 
     @Test fun `no title separator`() {
@@ -45,10 +45,10 @@ class ParserTest {
 
         val data = parser.parse(description)
 
-        Assertions.assertEquals("Roles to A", data.title)
+        Assertions.assertEquals("Roles to A", data.titleDescription.title)
         Assertions.assertEquals("""
             Roles to Activities We upgrade (and obvious rename)
-        """.trimIndent(), data.description)
+        """.trimIndent(), data.titleDescription.description)
     }
 
     @Test fun `no title separator less 10 chars`() {
@@ -58,8 +58,8 @@ class ParserTest {
 
         val data = parser.parse(description)
 
-        Assertions.assertEquals("Roles", data.title)
-        Assertions.assertEquals("Roles", data.description)
+        Assertions.assertEquals("Roles", data.titleDescription.title)
+        Assertions.assertEquals("Roles", data.titleDescription.description)
     }
 
     @Test fun `extract category`() {
@@ -78,7 +78,7 @@ class ParserTest {
         """.trimIndent()
         val data = parser.parse(description)
         Assertions.assertEquals("dima", data.assignee)
-        Assertions.assertEquals(listOf("anna"), data.watchers)
+        Assertions.assertEquals(listOf("dima", "anna"), data.watchers)
     }
 
     @Test fun `extract priority`() {
@@ -116,7 +116,7 @@ class ParserTest {
         val data = parser.parse(description)
         Assertions.assertEquals(
             LocalDateTime.of(2020, 5, 12, 0, 0),
-            data.due)
+            data.dueDate)
     }
 
     @Test fun `extract date time`() {
@@ -127,6 +127,6 @@ class ParserTest {
         val data = parser.parse(description)
         Assertions.assertEquals(
             LocalDateTime.of(2020, 5, 12, 15, 0),
-            data.due)
+            data.dueDate)
     }
 }

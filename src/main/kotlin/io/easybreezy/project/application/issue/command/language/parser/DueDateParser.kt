@@ -1,6 +1,6 @@
 package io.easybreezy.project.application.issue.command.language.parser
 
-import io.easybreezy.project.application.issue.command.language.ParsedElements
+import io.easybreezy.project.application.issue.command.language.ParsedFields
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -13,7 +13,7 @@ class DueDateParser {
         const val DATE_IDENTIFIER = "[0-9]{2}/[0-9]{2}/[0-9]{4}(\\s[0-9]{2}:[0-9]{2})?"
     }
 
-    operator fun getValue(parsed: ParsedElements, property: KProperty<*>): LocalDateTime? {
+    operator fun getValue(parsed: ParsedFields, property: KProperty<*>): LocalDateTime? {
         val dates = DATE_IDENTIFIER.toRegex()
             .findAll(parsed.text).toList()
             .map { dateStr ->

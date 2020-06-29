@@ -95,7 +95,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     fun comment(author: UUID, content: String) {
         Comment.create(author, this, content)
         updatedAt = LocalDateTime.now()
-        addEvent(Commented(this.id.value, author, content, updatedAt))
+        addEvent(Commented(this.id.value, this.project, author, content, updatedAt))
     }
 
     fun project() = project

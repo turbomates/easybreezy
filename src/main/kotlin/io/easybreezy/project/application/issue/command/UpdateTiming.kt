@@ -7,4 +7,8 @@ import kotlinx.serialization.UseSerializers
 import java.util.UUID
 
 @Serializable
-class ApplyWorkflow(var issue: UUID, var project: UUID)
+class UpdateTiming(
+    var issue: UUID,
+    var project: UUID,
+    var description: String
+)

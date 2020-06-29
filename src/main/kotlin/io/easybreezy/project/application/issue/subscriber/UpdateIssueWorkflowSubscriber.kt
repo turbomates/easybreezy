@@ -4,32 +4,22 @@ import com.google.inject.Inject
 import io.easybreezy.infrastructure.event.Event
 import io.easybreezy.infrastructure.event.EventSubscriber
 import io.easybreezy.infrastructure.event.EventsSubscriber
-import io.easybreezy.infrastructure.event.project.issue.Commented
 import io.easybreezy.infrastructure.event.project.issue.Created
 import io.easybreezy.infrastructure.event.project.issue.SubIssueCreated
-import io.easybreezy.project.application.issue.command.ApplyTiming
 import io.easybreezy.project.application.issue.command.Handler
+import io.easybreezy.project.application.issue.command.StartWorkflow
 
-class TimingSubscriber @Inject constructor(private val handler: Handler) : EventsSubscriber {
+class UpdateIssueWorkflowSubscriber @Inject constructor(private val handler: Handler) : EventsSubscriber {
     override fun subscribers(): List<EventsSubscriber.EventSubscriberItem<out Event>> {
         return listOf(
             Created to object : EventSubscriber<Created> {
                 override suspend fun invoke(event: Created) {
-                    if (null !== event.description) {
-                        handler.applyTiming(ApplyTiming(event.issue, event.description))
-                    }
+                    handler.startWorkflow(StartWorkflow(event.issue, event.project))
                 }
             },
             SubIssueCreated to object : EventSubscriber<SubIssueCreated> {
                 override suspend fun invoke(event: SubIssueCreated) {
-                    if (null !== event.description) {
-                        handler.applyTiming(ApplyTiming(event.issue, event.description))
-                    }
-                }
-            },
-            Commented to object : EventSubscriber<Commented> {
-                override suspend fun invoke(event: Commented) {
-                    handler.applyTiming(ApplyTiming(event.issue, event.content))
+                    handler.startWorkflow(StartWorkflow(event.issue, event.project))
                 }
             }
         )

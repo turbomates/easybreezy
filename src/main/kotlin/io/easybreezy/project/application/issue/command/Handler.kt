@@ -2,10 +2,13 @@ package io.easybreezy.project.application.issue.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
+import io.easybreezy.project.application.issue.command.language.NormalizedFields
 import io.easybreezy.project.application.issue.command.language.Normalizer
 import io.easybreezy.project.application.issue.command.language.Parser
 import io.easybreezy.project.infrastructure.IssueRepository
-import io.easybreezy.project.infrastructure.LifeCycleRepository
+import io.easybreezy.project.infrastructure.ParticipantRepository
+import io.easybreezy.project.infrastructure.TimingRepository
+import io.easybreezy.project.infrastructure.WorkflowRepository
 import io.easybreezy.project.model.issue.Workflow
 import io.easybreezy.project.model.issue.Timing
 import io.easybreezy.project.model.Repository as ProjectRepository
@@ -16,100 +19,118 @@ import java.util.UUID
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val parser: Parser,
-    private val statusWorkflow: StatusWorkflow,
+    private val statusWorkflow: StatusWorkflowHelper,
     private val normalizer: Normalizer,
     private val repository: IssueRepository,
     private val projectRepository: ProjectRepository,
-    private val lifeCycleRepository: LifeCycleRepository
+    private val workflowRepository: WorkflowRepository,
+    private val participantRepository: ParticipantRepository,
+    private val timingRepository: TimingRepository
 ) {
+
+    private val issueFields = listOf(NormalizedFields::priority.name, NormalizedFields::category.name)
 
     suspend fun newIssue(command: New) {
         val project = projectRepository.getBySlug(command.project).id.value
-        val normalized = normalizer.normalize(parser.parse(command.content), project)
-        val issue = transaction {
-            val issue = Issue.planIssue(
+        val parsed = parser.parse(command.content)
+        val normalized = normalizer.normalize(parsed, project, issueFields)
+        transaction {
+            Issue.planIssue(
                 command.author,
                 project,
-                normalized.title,
-                normalized.description,
+                parsed.titleDescription.title,
+                parsed.titleDescription.description,
                 normalized.priority,
                 normalized.category
             )
-
-            if (normalized.due != null) {
-                Timing.ofIssue(issue.id.value, normalized.due)
-            }
-            if (normalized.assignee != null) {
-                Participant.ofIssue(issue.id.value, normalized.assignee, normalized.watchers)
-            }
-            issue
-        }
-
-        normalized.labels?.let {
-            transaction {
-                issue.assignLabels(it)
-            }
         }
     }
 
     suspend fun update(command: AddComment) {
         transaction {
             val issue = issue(command.issue)
-            val normalized = normalizer.normalize(parser.parse(command.content), issue.project())
+            val parsed = parser.parse(command.content)
+            val normalized = normalizer.normalize(parsed, issue.project(), issueFields)
 
-            issue.comment(command.member, normalized.description)
+            issue.comment(command.member, parsed.titleDescription.description)
             normalized.category?.let {
                 issue.changeCategory(it)
-            }
-            normalized.labels?.let {
-                issue.assignLabels(it)
             }
             normalized.priority?.let {
                 issue.updatePriority(it)
             }
-
-        }
-    }
-
-    suspend fun changeStatus(command: ChangeStatus) {
-        transaction {
-            lifeCycleRepository[command.issue].updateStatus(command.newStatus)
         }
     }
 
     suspend fun createSubIssue(command: CreateSubIssue) {
         transaction {
             val issue = issue(command.issue)
-            val normalized = normalizer.normalize(parser.parse(command.content), issue.project())
-            val subIssue = issue.extractSubIssue(
+            val parsed = parser.parse(command.content)
+            val normalized = normalizer.normalize(parsed, issue.project(), issueFields)
+            issue.extractSubIssue(
                 command.member,
-                normalized.title,
-                normalized.description,
+                parsed.titleDescription.title,
+                parsed.titleDescription.description,
                 normalized.priority,
                 normalized.category
             )
-
-            if (normalized.due != null) {
-                Timing.ofIssue(subIssue.id.value, normalized.due)
-            }
-            if (normalized.assignee != null) {
-                Participant.ofIssue(subIssue.id.value, normalized.assignee, normalized.watchers)
-            }
         }
     }
 
-    suspend fun applyWorkflow(command: ApplyWorkflow) {
-        statusWorkflow.onCreate(command.project)?.let {
+    suspend fun startWorkflow(command: StartWorkflow) {
+        statusWorkflow.getStartStatus(command.project)?.let {
             transaction {
                 Workflow.ofIssue(command.issue, it)
             }
         }
     }
 
-    suspend fun applyTiming(command: ApplyTiming) {
+    suspend fun changeStatus(command: ChangeStatus) {
+        transaction {
+            val status = workflowRepository.findById(command.issue)
+            status?.updateStatus(command.newStatus) ?: Workflow.ofIssue(command.issue, command.newStatus)
+        }
     }
 
-    suspend fun applyParticipants(command: ApplyParticipants) {
+    suspend fun updateTiming(command: UpdateTiming) {
+        val parsed = parser.parse(command.description)
+        parsed.dueDate?.let {
+
+            transaction {
+                val timing = timingRepository.findById(command.issue)
+                timing?.changeDueDate(it) ?: Timing.ofIssue(command.issue, it)
+            }
+        }
+    }
+
+    suspend fun updateLabels(command: UpdateLabels) {
+        val parsed = parser.parse(command.description)
+        parsed.labels?.let {
+            transaction {
+                val normalized = normalizer.normalize(parsed, command.project, listOf(NormalizedFields::labels.name))
+                normalized.labels?.let { labels -> issue(command.issue).assignLabels(labels) }
+            }
+        }
+    }
+
+    suspend fun updateParticipants(command: UpdateParticipants) {
+        val parsed = parser.parse(command.description)
+        val normalized = normalizer.normalize(parsed, command.project, listOf(NormalizedFields::participants.name))
+        normalized.participants?.let { participantsFields ->
+            transaction {
+                when (val participants = participantRepository.findById(command.issue)) {
+                    is Participant -> {
+                        participantsFields.reassigned?.let {
+                            participants.reassign(it)
+                        }
+                        participantsFields.watchers?.let {
+                            participants.addWatchers(it)
+                        }
+                    }
+                    else -> Participant.ofIssue(command.issue, participantsFields.assignee, participantsFields.watchers)
+                }
+            }
+        }
     }
 
     private fun issue(id: UUID) = repository[id]

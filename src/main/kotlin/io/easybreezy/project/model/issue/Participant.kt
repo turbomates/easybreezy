@@ -25,7 +25,7 @@ class Participant private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(
     companion object : PrivateEntityClass<UUID, Participant>(object : Participant.Repository() {}) {
         fun ofIssue(
             issue: UUID,
-            assignee: UUID,
+            assignee: UUID?,
             watchers: List<UUID>?
         ): Participant {
             return Participant.new {

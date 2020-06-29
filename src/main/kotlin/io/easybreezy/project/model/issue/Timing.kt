@@ -42,7 +42,7 @@ class Timing private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     }
 }
 
-object Timings : IdTable<UUID>("issue_estimations") {
+object Timings : IdTable<UUID>("issue_timings") {
     override val id: Column<EntityID<UUID>> = uuid("issue").entityId()
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())

@@ -15,17 +15,17 @@ class Parser @Inject constructor(
 ) {
     private val translations: List<Translations> by lazy { translator.load() }
 
-    fun parse(text: String): ParsedElements {
-        return ParsedElements(text, translations)
+    fun parse(text: String): ParsedFields {
+        return ParsedFields(text, translations)
     }
 }
 
-class ParsedElements(val text: String, val translations: List<Translations>) {
+class ParsedFields(val text: String, val translations: List<Translations>) {
     val titleDescription by TitleDescriptionParser()
     val priority by PriorityParser()
     val category by CategoryParser()
     val assignee by AssigneeParser()
-    val reassignee by ReassignParser()
+    val reassigned by ReassignParser()
     val watchers by WatchersParser()
     val labels by LabelsParser()
     val dueDate by DueDateParser()

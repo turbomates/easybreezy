@@ -11,6 +11,7 @@ import java.util.UUID
 
 @Serializable
 data class Commented(
+    val project: UUID,
     val issue: UUID,
     val by: UUID,
     val content: String,

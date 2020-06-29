@@ -5,11 +5,11 @@ import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.application.project.queryobject.IssueStatusOnCreateQO
 import java.util.UUID
 
-class StatusWorkflow @Inject constructor(
+class StatusWorkflowHelper @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) {
 
-    suspend fun onCreate(project: UUID): UUID? {
+    suspend fun getStartStatus(project: UUID): UUID? {
         return queryExecutor.execute(IssueStatusOnCreateQO(project))
     }
 }
