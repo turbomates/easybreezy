@@ -80,16 +80,16 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         addEvent(LabelsAssigned(this.id.value, updated.map { it.id.value }, updatedAt))
     }
 
-    fun updatePriority(updated: Priority) {
-        updatedAt = LocalDateTime.now()
-        addEvent(PriorityUpdated(this.id.value, updated.value, updatedAt))
-        priority = updated
-    }
-
     fun changeCategory(updated: UUID) {
         updatedAt = LocalDateTime.now()
         addEvent(CategoryChanged(this.id.value, category, updated, updatedAt))
         category = updated
+    }
+
+    fun updatePriority(updated: Priority) {
+        updatedAt = LocalDateTime.now()
+        addEvent(PriorityUpdated(this.id.value, updated.value, updatedAt))
+        priority = updated
     }
 
     fun comment(author: UUID, content: String) {
