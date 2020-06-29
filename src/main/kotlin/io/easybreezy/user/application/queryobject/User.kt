@@ -32,6 +32,7 @@ private fun ResultRow.toUser(): User {
     return User(
         id = this[Users.id].value,
         email = this[Users.email[EmailTable.email]],
+        username = this[Users.username],
         status = this[Users.status].toString(),
         comment = this[Users.comment],
         activities = this[Users.activities]
@@ -43,6 +44,7 @@ data class User(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val email: String?,
+    val username: String?,
     val status: String,
     val comment: String?,
     val activities: Set<String>
