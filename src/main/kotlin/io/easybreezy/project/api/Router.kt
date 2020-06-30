@@ -240,7 +240,7 @@ class Router @Inject constructor(
                 post<Response.Either<Response.Ok, Response.Errors>, AddComment, ProjectIssue>("/{issueId}/comment") { command, params ->
                     command.issue = params.issueId
                     command.member = resolvePrincipal<UserPrincipal>()
-                    controller<IssueController>(this).commentUpdate(command)
+                    controller<IssueController>(this).addComment(command)
                 }
 
                 post<Response.Either<Response.Ok, Response.Errors>, io.easybreezy.project.application.issue.command.ChangeStatus, ProjectIssue>("/{issueId}/change-status") { command, params ->

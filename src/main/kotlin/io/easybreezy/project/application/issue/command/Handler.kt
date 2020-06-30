@@ -19,7 +19,7 @@ import java.util.UUID
 class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val parser: Parser,
-    private val statusWorkflow: StatusWorkflowHelper,
+    private val statusWorkflow: StatusLoader,
     private val normalizer: Normalizer,
     private val repository: IssueRepository,
     private val projectRepository: ProjectRepository,
@@ -46,7 +46,7 @@ class Handler @Inject constructor(
         }
     }
 
-    suspend fun update(command: AddComment) {
+    suspend fun addComment(command: AddComment) {
         transaction {
             val issue = issue(command.issue)
             val parsed = parser.parse(command.content)

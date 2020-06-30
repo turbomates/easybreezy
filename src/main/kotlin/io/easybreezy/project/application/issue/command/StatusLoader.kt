@@ -5,7 +5,7 @@ import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.application.project.queryobject.IssueStatusOnCreateQO
 import java.util.UUID
 
-class StatusWorkflowHelper @Inject constructor(
+class StatusLoader @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) {
 

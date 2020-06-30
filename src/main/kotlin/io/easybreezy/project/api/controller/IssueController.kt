@@ -33,12 +33,12 @@ class IssueController @Inject constructor(
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun commentUpdate(command: AddComment): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun addComment(command: AddComment): Response.Either<Response.Ok, Response.Errors> {
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.update(command)
+        handler.addComment(command)
         return Response.Either(Either.Left(Response.Ok))
     }
 

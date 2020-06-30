@@ -9,7 +9,7 @@ import io.easybreezy.infrastructure.event.project.issue.SubIssueCreated
 import io.easybreezy.project.application.issue.command.AssignNumber
 import io.easybreezy.project.application.issue.command.Handler
 
-class AssignIssueNumberSubscriber @Inject constructor(private val handler: Handler) : EventsSubscriber {
+class IssueNumberSubscriber @Inject constructor(private val handler: Handler) : EventsSubscriber {
     override fun subscribers(): List<EventsSubscriber.EventSubscriberItem<out Event>> {
         return listOf(
             Created to object : EventSubscriber<Created> {
