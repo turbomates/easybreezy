@@ -31,10 +31,10 @@ class Handler @Inject constructor(
     private val issueFields = listOf(NormalizedFields::priority.name, NormalizedFields::category.name)
 
     suspend fun newIssue(command: New) {
-        val project = projectRepository.getBySlug(command.project).id.value
-        val parsed = parser.parse(command.content)
-        val normalized = normalizer.normalize(parsed, project, issueFields)
         transaction {
+            val project = projectRepository.getBySlug(command.project).id.value
+            val parsed = parser.parse(command.content)
+            val normalized = normalizer.normalize(parsed, project, issueFields)
             Issue.planIssue(
                 command.author,
                 project,
@@ -130,6 +130,12 @@ class Handler @Inject constructor(
                     else -> Participant.ofIssue(command.issue, participantsFields.assignee, participantsFields.watchers)
                 }
             }
+        }
+    }
+
+    suspend fun assignNumber(command: AssignNumber) {
+        transaction {
+            issue(command.issue).assignNumber(repository.getNextIssueNumber(command.project))
         }
     }
 

@@ -18,10 +18,11 @@ import io.easybreezy.project.application.issue.command.language.normalizer.Categ
 import io.easybreezy.project.application.issue.command.language.normalizer.PriorityNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.ParticipantsNormalize
 import io.easybreezy.project.application.issue.command.language.normalizer.ElementNormalizer
+import io.easybreezy.project.application.issue.subscriber.AssignIssueNumberSubscriber
 import io.easybreezy.project.application.issue.subscriber.UpdateIssueLabelsSubscriber
 import io.easybreezy.project.application.issue.subscriber.UpdateIssueParticipantsSubscriber
 import io.easybreezy.project.application.issue.subscriber.UpdateIssueTimingSubscriber
-import io.easybreezy.project.application.issue.subscriber.UpdateIssueWorkflowSubscriber
+import io.easybreezy.project.application.issue.subscriber.StartIssueWorkflowSubscriber
 import io.easybreezy.project.infrastructure.ProjectRepository
 import io.easybreezy.project.infrastructure.TeamRepository
 import io.easybreezy.project.model.Repository
@@ -60,7 +61,8 @@ class SubscriberDescription @Inject constructor(eventSystem: EventSubscribers, h
     init {
         eventSystem.subscribe(UpdateIssueParticipantsSubscriber(handler))
         eventSystem.subscribe(UpdateIssueTimingSubscriber(handler))
-        eventSystem.subscribe(UpdateIssueWorkflowSubscriber(handler))
+        eventSystem.subscribe(StartIssueWorkflowSubscriber(handler))
         eventSystem.subscribe(UpdateIssueLabelsSubscriber(handler))
+        eventSystem.subscribe(AssignIssueNumberSubscriber(handler))
     }
 }

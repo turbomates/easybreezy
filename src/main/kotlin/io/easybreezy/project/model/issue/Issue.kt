@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
+    private var number by Issues.number
     private var category by Issues.category
     private var author by Issues.author
     private var updatedAt by Issues.updatedAt
@@ -98,6 +99,12 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         addEvent(Commented(this.id.value, this.project, author, content, updatedAt))
     }
 
+    fun assignNumber(assigned: Int) {
+        if (null == number) {
+            number = assigned
+        }
+    }
+
     fun project() = project
 
     abstract class Repository : EntityClass<UUID, Issue>(Issues, Issue::class.java) {
@@ -109,6 +116,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
 object Issues : UUIDTable("issues") {
     val category = uuid("category").nullable()
+    val number = integer("number").nullable()
     val author = uuid("author")
     val project = uuid("project")
     val title = varchar("title", 255)
