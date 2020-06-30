@@ -93,12 +93,6 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         priority = updated
     }
 
-    fun comment(author: UUID, content: String) {
-        Comment.create(author, this, content)
-        updatedAt = LocalDateTime.now()
-        addEvent(Commented(this.id.value, this.project, author, content, updatedAt))
-    }
-
     fun assignNumber(assigned: Int) {
         if (null == number) {
             number = assigned

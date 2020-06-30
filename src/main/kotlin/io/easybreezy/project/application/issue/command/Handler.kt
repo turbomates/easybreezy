@@ -13,6 +13,7 @@ import io.easybreezy.project.infrastructure.IssueRepository
 import io.easybreezy.project.infrastructure.ParticipantRepository
 import io.easybreezy.project.infrastructure.TimingRepository
 import io.easybreezy.project.infrastructure.WorkflowRepository
+import io.easybreezy.project.model.issue.Comment
 import io.easybreezy.project.model.issue.Workflow
 import io.easybreezy.project.model.issue.Timing
 import io.easybreezy.project.model.Repository as ProjectRepository
@@ -55,7 +56,8 @@ class Handler @Inject constructor(
             val normalizer = Normalizer(fieldNormalizers.filter { it is PriorityNormalizer || it is CategoryNormalizer })
             val normalized = normalizer.normalize(parsed, issue.project())
 
-            issue.comment(command.member, parsed.titleDescription.description)
+            Comment.add(command.member, issue, parsed.titleDescription.description)
+
             normalized.category?.let {
                 issue.changeCategory(it)
             }
