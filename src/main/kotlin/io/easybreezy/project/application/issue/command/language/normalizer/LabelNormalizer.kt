@@ -27,8 +27,4 @@ class LabelNormalizer @Inject constructor(
                 }
             )
     }
-
-    override fun elementField(): String {
-        return NormalizedFields::labels.name
-    }
 }

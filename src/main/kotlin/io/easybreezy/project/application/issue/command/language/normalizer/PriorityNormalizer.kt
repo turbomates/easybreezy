@@ -25,8 +25,4 @@ class PriorityNormalizer @Inject constructor(
             }
         )
     }
-
-    override fun elementField(): String {
-        return NormalizedFields::priority.name
-    }
 }

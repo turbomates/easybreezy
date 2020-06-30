@@ -6,5 +6,4 @@ import java.util.UUID
 
 interface ElementNormalizer {
     suspend fun normalize(project: UUID, parsed: ParsedFields, normalized: NormalizedFields): NormalizedFields
-    fun elementField(): String
 }

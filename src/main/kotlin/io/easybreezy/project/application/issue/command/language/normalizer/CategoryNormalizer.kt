@@ -18,7 +18,4 @@ class CategoryNormalizer @Inject constructor(
             }
         )
     }
-    override fun elementField(): String {
-        return NormalizedFields::category.name
-    }
 }

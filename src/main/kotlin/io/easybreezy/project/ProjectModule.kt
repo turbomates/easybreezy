@@ -16,7 +16,7 @@ import io.easybreezy.project.application.issue.command.Handler
 import io.easybreezy.project.application.issue.command.language.normalizer.LabelNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.CategoryNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.PriorityNormalizer
-import io.easybreezy.project.application.issue.command.language.normalizer.ParticipantsNormalize
+import io.easybreezy.project.application.issue.command.language.normalizer.ParticipantsNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.ElementNormalizer
 import io.easybreezy.project.application.issue.subscriber.IssueNumberSubscriber
 import io.easybreezy.project.application.issue.subscriber.IssueLabelsSubscriber
@@ -36,7 +36,7 @@ class ProjectModule : AbstractModule() {
 
         val normalizers: Multibinder<ElementNormalizer> = Multibinder.newSetBinder(binder(), ElementNormalizer::class.java)
         normalizers.addBinding().to(PriorityNormalizer::class.java)
-        normalizers.addBinding().to(ParticipantsNormalize::class.java)
+        normalizers.addBinding().to(ParticipantsNormalizer::class.java)
         normalizers.addBinding().to(CategoryNormalizer::class.java)
         normalizers.addBinding().to(LabelNormalizer::class.java)
     }

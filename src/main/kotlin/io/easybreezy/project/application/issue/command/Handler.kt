@@ -2,9 +2,13 @@ package io.easybreezy.project.application.issue.command
 
 import com.google.inject.Inject
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.project.application.issue.command.language.NormalizedFields
 import io.easybreezy.project.application.issue.command.language.Normalizer
 import io.easybreezy.project.application.issue.command.language.Parser
+import io.easybreezy.project.application.issue.command.language.normalizer.CategoryNormalizer
+import io.easybreezy.project.application.issue.command.language.normalizer.ElementNormalizer
+import io.easybreezy.project.application.issue.command.language.normalizer.LabelNormalizer
+import io.easybreezy.project.application.issue.command.language.normalizer.ParticipantsNormalizer
+import io.easybreezy.project.application.issue.command.language.normalizer.PriorityNormalizer
 import io.easybreezy.project.infrastructure.IssueRepository
 import io.easybreezy.project.infrastructure.ParticipantRepository
 import io.easybreezy.project.infrastructure.TimingRepository
@@ -20,21 +24,19 @@ class Handler @Inject constructor(
     private val transaction: TransactionManager,
     private val parser: Parser,
     private val statusWorkflow: StatusLoader,
-    private val normalizer: Normalizer,
+    private val fieldNormalizers: Set<@JvmSuppressWildcards ElementNormalizer>,
     private val repository: IssueRepository,
     private val projectRepository: ProjectRepository,
     private val workflowRepository: WorkflowRepository,
     private val participantRepository: ParticipantRepository,
     private val timingRepository: TimingRepository
 ) {
-
-    private val issueFields = listOf(NormalizedFields::priority.name, NormalizedFields::category.name)
-
     suspend fun newIssue(command: New) {
         transaction {
             val project = projectRepository.getBySlug(command.project).id.value
             val parsed = parser.parse(command.content)
-            val normalized = normalizer.normalize(parsed, project, issueFields)
+            val normalizer = Normalizer(fieldNormalizers.filter { it is PriorityNormalizer || it is CategoryNormalizer })
+            val normalized = normalizer.normalize(parsed, project)
             Issue.planIssue(
                 command.author,
                 project,
@@ -50,7 +52,8 @@ class Handler @Inject constructor(
         transaction {
             val issue = issue(command.issue)
             val parsed = parser.parse(command.content)
-            val normalized = normalizer.normalize(parsed, issue.project(), issueFields)
+            val normalizer = Normalizer(fieldNormalizers.filter { it is PriorityNormalizer || it is CategoryNormalizer })
+            val normalized = normalizer.normalize(parsed, issue.project())
 
             issue.comment(command.member, parsed.titleDescription.description)
             normalized.category?.let {
@@ -66,7 +69,8 @@ class Handler @Inject constructor(
         transaction {
             val issue = issue(command.issue)
             val parsed = parser.parse(command.content)
-            val normalized = normalizer.normalize(parsed, issue.project(), issueFields)
+            val normalizer = Normalizer(fieldNormalizers.filter { it is PriorityNormalizer || it is CategoryNormalizer })
+            val normalized = normalizer.normalize(parsed, issue.project())
             issue.extractSubIssue(
                 command.member,
                 parsed.titleDescription.title,
@@ -107,7 +111,8 @@ class Handler @Inject constructor(
         val parsed = parser.parse(command.description)
         parsed.labels?.let {
             transaction {
-                val normalized = normalizer.normalize(parsed, command.project, listOf(NormalizedFields::labels.name))
+                val normalizer = Normalizer(fieldNormalizers.filterIsInstance<LabelNormalizer>())
+                val normalized = normalizer.normalize(parsed, command.project)
                 normalized.labels?.let { labels -> issue(command.issue).assignLabels(labels) }
             }
         }
@@ -115,7 +120,8 @@ class Handler @Inject constructor(
 
     suspend fun updateParticipants(command: UpdateParticipants) {
         val parsed = parser.parse(command.description)
-        val normalized = normalizer.normalize(parsed, command.project, listOf(NormalizedFields::participants.name))
+        val normalizer = Normalizer(fieldNormalizers.filterIsInstance<ParticipantsNormalizer>())
+        val normalized = normalizer.normalize(parsed, command.project)
         normalized.participants?.let { participantsFields ->
             transaction {
                 when (val participants = participantRepository.findById(command.issue)) {

@@ -7,14 +7,12 @@ import io.easybreezy.project.model.issue.Priority
 import java.util.UUID
 
 class Normalizer @Inject constructor(
-    private val elementNormalizers: Set<@JvmSuppressWildcards ElementNormalizer>
+    private val fieldNormalizers: List<ElementNormalizer>
 ) {
-    suspend fun normalize(parsed: ParsedFields, project: UUID, fields: List<String>): NormalizedFields {
+    suspend fun normalize(parsed: ParsedFields, project: UUID): NormalizedFields {
         var normalized = NormalizedFields()
-        elementNormalizers.forEach {
-            if (fields.contains(it.elementField())) {
-                normalized = it.normalize(project, parsed, normalized)
-            }
+        fieldNormalizers.forEach {
+            normalized = it.normalize(project, parsed, normalized)
         }
 
         return normalized

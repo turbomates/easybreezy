@@ -8,7 +8,7 @@ import io.easybreezy.project.application.issue.command.language.ParticipantsFiel
 import io.easybreezy.project.application.project.queryobject.MembersQO
 import java.util.UUID
 
-class ParticipantsNormalize @Inject constructor(
+class ParticipantsNormalizer @Inject constructor(
     private val queryExecutor: QueryExecutor
 ) : ElementNormalizer {
 
@@ -26,9 +26,5 @@ class ParticipantsNormalize @Inject constructor(
             }
         )
         return normalized.copy(participants = participantsFields)
-    }
-
-    override fun elementField(): String {
-        return NormalizedFields::participants.name
     }
 }
