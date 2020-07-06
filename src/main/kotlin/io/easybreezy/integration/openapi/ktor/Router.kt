@@ -253,7 +253,7 @@ inline fun <reified TResponse : Any, reified TQuery : Any, reified TPath : Any> 
         HttpMethod.Delete,
         typeOf<TResponse>(),
         null,
-        typeOf<TPath>()//typeOf<TQuery>(),
+        typeOf<TPath>() // typeOf<TQuery>(),
     )
     return route(path, HttpMethod.Delete) {
         handle {
@@ -271,7 +271,7 @@ inline fun <reified TResponse : Any, reified TQuery : Any, reified TPath : Any, 
         HttpMethod.Delete,
         typeOf<TResponse>(),
         typeOf<TBody>(),
-        typeOf<TPath>()//typeOf<TQuery>(),
+        typeOf<TPath>() // typeOf<TQuery>(),
     )
     return route(path, HttpMethod.Delete) {
         handle {
