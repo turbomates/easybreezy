@@ -93,6 +93,7 @@ class IssuesQO(private val paging: PagingParameters, private val project: String
 
 fun ResultRow.toIssue() = Issue(
     this[Issues.id].value,
+    this[Issues.number],
     this[Issues.parent]?.value,
     this[Issues.title],
     this[Issues.priority[PriorityTable.color]]?.rgb
@@ -100,6 +101,7 @@ fun ResultRow.toIssue() = Issue(
 
 fun ResultRow.toIssueDetails() = IssueDetails(
     this[Issues.id].value,
+    this[Issues.number],
     this[Issues.parent]?.value,
     this[Participants.assignee],
     this[Participants.watchers],
@@ -156,6 +158,7 @@ data class Status(
 @Serializable
 data class Issue(
     val id: UUID,
+    val number: Int,
     val parent: UUID?,
     val title: String,
     val priority: String?
@@ -164,6 +167,7 @@ data class Issue(
 @Serializable
 data class IssueDetails(
     val id: UUID,
+    val number: Int,
     val parent: UUID?,
     val assignee: UUID?,
     val watchers: List<UUID>?,

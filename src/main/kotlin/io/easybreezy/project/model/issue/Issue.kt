@@ -38,6 +38,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             project: UUID,
             title: String,
             description: String,
+            number: Int,
             priority: Priority?,
             category: UUID?
         ): Issue {
@@ -46,6 +47,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
                 this.project = project
                 this.title = title
                 this.description = description
+                this.number = number
                 this.category = category
                 this.priority = priority ?: Priority.neutral()
                 addEvent(Created(this.project, this.id.value, this.author, this.title, this.description, LocalDateTime.now()))
@@ -57,6 +59,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         author: UUID,
         title: String,
         description: String,
+        number: Int,
         priority: Priority?,
         category: UUID?
     ): Issue {
@@ -64,6 +67,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         return Issue.new {
             this.author = author
             this.project = issue.project
+            this.number = number
             this.title = title
             this.description = description
             this.category = category
@@ -93,12 +97,6 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         priority = updated
     }
 
-    fun assignNumber(assigned: Int) {
-        if (null == number) {
-            number = assigned
-        }
-    }
-
     fun project() = project
 
     abstract class Repository : EntityClass<UUID, Issue>(Issues, Issue::class.java) {
@@ -110,7 +108,7 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
 object Issues : UUIDTable("issues") {
     val category = uuid("category").nullable()
-    val number = integer("number").nullable()
+    val number = integer("number")
     val author = uuid("author")
     val project = uuid("project")
     val title = varchar("title", 255)

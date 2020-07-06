@@ -118,6 +118,7 @@ class IssueControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains(userId.toString())!!)
                     Assertions.assertTrue(response.content?.contains("#FF0000")!!)
+                    Assertions.assertTrue(response.content?.contains("number\": 1")!!)
                     Assertions.assertTrue(response.content?.contains("comments")!!)
                 }
             }

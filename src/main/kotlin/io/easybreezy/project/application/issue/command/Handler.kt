@@ -43,6 +43,7 @@ class Handler @Inject constructor(
                 project,
                 parsed.titleDescription.title,
                 parsed.titleDescription.description,
+                repository.getNextIssueNumber(project),
                 normalized.priority,
                 normalized.category
             )
@@ -77,6 +78,7 @@ class Handler @Inject constructor(
                 command.member,
                 parsed.titleDescription.title,
                 parsed.titleDescription.description,
+                repository.getNextIssueNumber(issue.project()),
                 normalized.priority,
                 normalized.category
             )
@@ -138,12 +140,6 @@ class Handler @Inject constructor(
                     else -> Participant.ofIssue(command.issue, participantsFields.assignee, participantsFields.watchers)
                 }
             }
-        }
-    }
-
-    suspend fun assignNumber(command: AssignNumber) {
-        transaction {
-            issue(command.issue).assignNumber(repository.getNextIssueNumber(command.project))
         }
     }
 

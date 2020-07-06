@@ -58,6 +58,7 @@ internal fun Database.createIssue(projectId: UUID): EntityID<UUID> {
             it[title] = "issue"
             it[description] = "Issue description"
             it[project] = projectId
+            it[number] = 1
         } get Issues.id
 
         issueId
