@@ -1,9 +1,8 @@
 package io.easybreezy.project.model.issue
 
 import io.easybreezy.infrastructure.event.project.issue.CategoryChanged
-import io.easybreezy.infrastructure.event.project.issue.Commented
 import io.easybreezy.infrastructure.event.project.issue.Created
-import io.easybreezy.infrastructure.event.project.issue.LabelsAssigned
+import io.easybreezy.infrastructure.event.project.issue.LabelAssigned
 import io.easybreezy.infrastructure.event.project.issue.PriorityUpdated
 import io.easybreezy.infrastructure.event.project.issue.SubIssueCreated
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
@@ -14,7 +13,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SizedCollection
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
@@ -28,7 +26,6 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var title by Issues.title
     private var description by Issues.description
     private var priority by Issues.priority
-    private var labels by Label via IssueLabel
     private val comments by Comment referrersOn Comments.issue
     private var parent by Issue optionalReferencedOn Issues.parent
 
@@ -77,14 +74,6 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         }
     }
 
-    fun assignLabels(list: List<Label>) {
-        val updated = labels.toMutableList()
-        updated.addAll(list)
-        labels = SizedCollection(updated)
-        updatedAt = LocalDateTime.now()
-        addEvent(LabelsAssigned(this.id.value, updated.map { it.id.value }, updatedAt))
-    }
-
     fun changeCategory(updated: UUID) {
         updatedAt = LocalDateTime.now()
         addEvent(CategoryChanged(this.id.value, category, updated, updatedAt))
@@ -117,10 +106,4 @@ object Issues : UUIDTable("issues") {
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
     val priority = embedded<Priority>(PriorityTable)
     val parent = reference("parent", Issues).nullable()
-}
-
-object IssueLabel : Table("issue_label") {
-    val issue = reference("issue", Issues)
-    val label = reference("label", Labels)
-    override val primaryKey = PrimaryKey(issue, label, name = "issue_label_pkey")
 }

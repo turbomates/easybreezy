@@ -10,13 +10,13 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Serializable
-data class LabelsAssigned(
+data class LabelAssigned(
     val issue: UUID,
-    val labels: List<UUID>,
+    val label: UUID,
     @Serializable(with = LocalDateTimeSerializer::class) val at: LocalDateTime
 ) : Event {
     override val key
         get() = Companion
 
-    companion object : Event.Key<LabelsAssigned>
+    companion object : Event.Key<LabelAssigned>
 }

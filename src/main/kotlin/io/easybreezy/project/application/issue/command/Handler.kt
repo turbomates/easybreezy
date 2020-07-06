@@ -117,7 +117,9 @@ class Handler @Inject constructor(
             transaction {
                 val normalizer = Normalizer(fieldNormalizers.filterIsInstance<LabelNormalizer>())
                 val normalized = normalizer.normalize(parsed, command.project)
-                normalized.labels?.let { labels -> issue(command.issue).assignLabels(labels) }
+                normalized.labels?.let { labels ->
+                    labels.forEach { it.assignToIssue(issue(command.issue)) }
+                }
             }
         }
     }
