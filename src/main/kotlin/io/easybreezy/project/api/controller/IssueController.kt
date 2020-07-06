@@ -12,9 +12,15 @@ import io.easybreezy.project.application.issue.command.CreateSubIssue
 import io.easybreezy.project.application.issue.command.Handler
 import io.easybreezy.project.application.issue.command.New
 import io.easybreezy.project.application.issue.command.Validation
+import io.easybreezy.project.application.issue.queryobject.Comment
 import io.easybreezy.project.application.issue.queryobject.Issue
+import io.easybreezy.project.application.issue.queryobject.IssueCommentsQO
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
+import io.easybreezy.project.application.issue.queryobject.IssueParticipants
+import io.easybreezy.project.application.issue.queryobject.IssueParticipantsQO
 import io.easybreezy.project.application.issue.queryobject.IssueQO
+import io.easybreezy.project.application.issue.queryobject.IssueTiming
+import io.easybreezy.project.application.issue.queryobject.IssueTimingQO
 import io.easybreezy.project.application.issue.queryobject.IssuesQO
 import java.util.UUID
 
@@ -63,6 +69,24 @@ class IssueController @Inject constructor(
     suspend fun show(id: UUID): Response.Data<IssueDetails> {
         return Response.Data(
             queryExecutor.execute(IssueQO(id))
+        )
+    }
+
+    suspend fun comments(id: UUID): Response.Data<Set<Comment>> {
+        return Response.Data(
+            queryExecutor.execute(IssueCommentsQO(id))
+        )
+    }
+
+    suspend fun timing(id: UUID): Response.Data<IssueTiming> {
+        return Response.Data(
+            queryExecutor.execute(IssueTimingQO(id))
+        )
+    }
+
+    suspend fun participants(id: UUID): Response.Data<IssueParticipants> {
+        return Response.Data(
+            queryExecutor.execute(IssueParticipantsQO(id))
         )
     }
 

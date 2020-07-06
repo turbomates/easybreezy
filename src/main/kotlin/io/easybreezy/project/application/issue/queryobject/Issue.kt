@@ -5,6 +5,7 @@ import io.easybreezy.infrastructure.query.ContinuousList
 import io.easybreezy.infrastructure.query.PagingParameters
 import io.easybreezy.infrastructure.query.QueryObject
 import io.easybreezy.infrastructure.query.toContinuousList
+import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
 import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
@@ -24,6 +25,7 @@ import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
+import java.time.LocalDateTime
 
 class HasIssuesInCategoryQO(private val inCategory: UUID) : QueryObject<Boolean> {
     override suspend fun getData() =
@@ -39,11 +41,8 @@ class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
     override suspend fun getData() =
         Issues
             .leftJoin(IssueLabel)
-            .leftJoin(Comments)
             .join(Labels, JoinType.LEFT, IssueLabel.label, Labels.id)
             .join(Workflows, JoinType.LEFT, Workflows.id, Issues.id)
-            .join(Timings, JoinType.LEFT, Timings.id, Issues.id)
-            .join(Participants, JoinType.LEFT, Participants.id, Issues.id)
             .join(Categories, JoinType.LEFT, Issues.category, Categories.id)
             .join(Statuses, JoinType.LEFT, Workflows.status, Statuses.id)
             .select {
@@ -51,6 +50,36 @@ class IssueQO(private val id: UUID) : QueryObject<IssueDetails> {
             }
             .toIssueDetails()
             .single()
+}
+
+class IssueTimingQO(private val id: UUID) : QueryObject<IssueTiming> {
+    override suspend fun getData() =
+        Timings
+            .select {
+                Timings.id eq id
+            }
+            .first()
+            .toIssueTiming()
+}
+
+class IssueParticipantsQO(private val id: UUID) : QueryObject<IssueParticipants> {
+    override suspend fun getData() =
+        Participants
+            .select {
+                Participants.id eq id
+            }
+            .first()
+            .toIssueParticipants()
+}
+
+class IssueCommentsQO(private val id: UUID) : QueryObject<Set<Comment>> {
+    override suspend fun getData() =
+        Comments
+            .select {
+                Comments.issue eq id
+            }
+            .map { it.toComment() }
+            .toSet()
 }
 
 fun Iterable<ResultRow>.toIssueDetails(): List<IssueDetails> {
@@ -67,14 +96,10 @@ fun Iterable<ResultRow>.toIssueDetails(): List<IssueDetails> {
         val statusId = resultRow.getOrNull(Statuses.id)
         val status = statusId?.let { resultRow.toStatus() }
 
-        val commentId = resultRow.getOrNull(Comments.id)
-        val comments = commentId?.let { resultRow.toComment() }
-
         map[details.id] = current.copy(
             labels = current.labels.plus(listOfNotNull(labels)).distinct(),
             category = category,
-            status = status,
-            comments = current.comments.plus(listOfNotNull(comments)).distinct()
+            status = status
         )
         map
     }.values.toList()
@@ -103,10 +128,17 @@ fun ResultRow.toIssueDetails() = IssueDetails(
     this[Issues.id].value,
     this[Issues.number],
     this[Issues.parent]?.value,
-    this[Participants.assignee],
-    this[Participants.watchers],
     this[Issues.title],
     this[Issues.priority[PriorityTable.color]]?.rgb
+)
+
+fun ResultRow.toIssueParticipants() = IssueParticipants(
+    this[Participants.assignee],
+    this[Participants.watchers]
+)
+
+fun ResultRow.toIssueTiming() = IssueTiming(
+    this[Timings.dueDate]
 )
 
 fun ResultRow.toLabel() = Label(
@@ -169,12 +201,20 @@ data class IssueDetails(
     val id: UUID,
     val number: Int,
     val parent: UUID?,
-    val assignee: UUID?,
-    val watchers: List<UUID>?,
     val title: String,
     val priority: String?,
     val labels: List<Label> = listOf(),
     val category: Category? = null,
-    val status: Status? = null,
-    val comments: List<Comment> = listOf()
+    val status: Status? = null
+)
+
+@Serializable
+data class IssueParticipants(
+    val assignee: UUID?,
+    val watchers: List<UUID>?
+)
+
+@Serializable
+data class IssueTiming(
+    val dueDate: @Serializable(with = LocalDateTimeSerializer::class) LocalDateTime?
 )

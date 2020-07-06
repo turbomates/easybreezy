@@ -2,7 +2,6 @@ package io.easybreezy.project.model.issue
 
 import io.easybreezy.infrastructure.event.project.issue.CategoryChanged
 import io.easybreezy.infrastructure.event.project.issue.Created
-import io.easybreezy.infrastructure.event.project.issue.LabelAssigned
 import io.easybreezy.infrastructure.event.project.issue.PriorityUpdated
 import io.easybreezy.infrastructure.event.project.issue.SubIssueCreated
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
@@ -12,7 +11,6 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID

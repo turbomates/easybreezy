@@ -58,6 +58,7 @@ class IssueControllerTest {
                         // Assertions.assertTrue(response.content?.contains("bug")!!)
                         // Assertions.assertTrue(response.content?.contains("frontend")!!)
                         Assertions.assertTrue(response.content?.contains("Nice category")!!)
+                        Assertions.assertTrue(response.content?.contains("number\": 1")!!)
                     }
                 }
             }
@@ -116,10 +117,13 @@ class IssueControllerTest {
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues/$issue")) {
                     val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                    Assertions.assertTrue(response.content?.contains(userId.toString())!!)
                     Assertions.assertTrue(response.content?.contains("#FF0000")!!)
-                    Assertions.assertTrue(response.content?.contains("number\": 1")!!)
-                    Assertions.assertTrue(response.content?.contains("comments")!!)
+                }
+
+                with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues/$issue/comments")) {
+                    val p = response.content
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    Assertions.assertTrue(response.content?.contains("high priority")!!)
                 }
             }
         }
