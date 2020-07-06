@@ -184,4 +184,28 @@ class UserControllerTest {
             }
         }
     }
+
+    @Test
+    fun `change username`() {
+        rollbackTransaction {
+            val userId = testDatabase.createMember()
+            withTestApplication({ testApplication(userId) }) {
+                withSwagger(handleRequest(HttpMethod.Post, "/api/users/change-username") {
+                    addHeader("Content-Type", "application/json")
+                    setBody(
+                        json {
+                            "username" to "new-username"
+                        }.toString()
+                    )
+                }) {
+                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                }
+
+                withSwagger(handleRequest(HttpMethod.Get, "/api/users")) {
+                    Assertions.assertEquals(response.status(), HttpStatusCode.OK)
+                    Assertions.assertTrue(response.content?.contains("new-username") ?: false)
+                }
+            }
+        }
+    }
 }

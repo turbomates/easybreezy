@@ -7,6 +7,7 @@ import io.easybreezy.user.model.User
 import io.easybreezy.user.model.Users
 import io.easybreezy.user.model.exception.InvalidTokenException
 import io.easybreezy.user.model.exception.UserNotFoundException
+import org.jetbrains.exposed.sql.lowerCase
 import java.util.UUID
 
 class UserRepository : User.Repository(), Repository {
@@ -28,6 +29,10 @@ class UserRepository : User.Repository(), Repository {
     }
 
     override fun findByEmail(email: Email): User? {
-        return find { Users.email[EmailTable.email] eq email.address }.firstOrNull()
+        return find { Users.email[EmailTable.email].lowerCase() eq email.address.toLowerCase() }.firstOrNull()
+    }
+
+    override fun findByUsername(username: String): User? {
+        return find { Users.username.lowerCase() eq username.toLowerCase() }.firstOrNull()
     }
 }
