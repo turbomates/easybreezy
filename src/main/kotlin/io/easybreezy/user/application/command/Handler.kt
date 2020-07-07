@@ -50,6 +50,12 @@ class Handler @Inject constructor(private val repository: Repository, private va
         }
     }
 
+    suspend fun handleChangeUsername(command: ChangeUsername) {
+        transaction {
+            repository.getOne(command.userId).changeUsername(command.username)
+        }
+    }
+
     suspend fun handleConfirm(command: Confirm) {
         transaction {
             val user = repository.getByToken(command.token)

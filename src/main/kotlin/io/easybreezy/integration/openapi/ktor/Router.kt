@@ -181,6 +181,11 @@ inline fun <reified TResponse : Any, reified TQuery : Any, reified TPath : Any> 
 inline fun <reified TResponse : Any> Route.delete(
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.() -> TResponse
 ): Route {
+    openApi.addPath(
+        buildFullPath(),
+        HttpMethod.Delete,
+        typeOf<TResponse>()
+    )
     return method(HttpMethod.Delete) {
         handle {
             call.respond(body())
@@ -192,6 +197,11 @@ inline fun <reified TResponse : Any> Route.delete(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.() -> TResponse
 ): Route {
+    openApi.addPath(
+        buildFullPath() + path,
+        HttpMethod.Delete,
+        typeOf<TResponse>()
+    )
     return route(path, HttpMethod.Delete) {
         handle {
             call.respond(body())
@@ -203,6 +213,13 @@ inline fun <reified TResponse : Any, reified TParams : Any> Route.delete(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TParams) -> TResponse
 ): Route {
+    openApi.addPath(
+        buildFullPath() + path,
+        HttpMethod.Delete,
+        typeOf<TResponse>(),
+        null,
+        typeOf<TParams>()
+    )
     return route(path, HttpMethod.Delete) {
         handle {
             call.respond(body(locations.resolve(TParams::class, call)))
@@ -214,6 +231,12 @@ inline fun <reified TResponse : Any, reified TBody : Any> Route.deleteWithBody(
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TBody) -> TResponse
 ): Route {
+    openApi.addPath(
+        buildFullPath() + path,
+        HttpMethod.Delete,
+        typeOf<TResponse>(),
+        typeOf<TBody>()
+    )
     return route(path, HttpMethod.Delete) {
         handle {
             call.respond(body(call.receive()))
@@ -225,6 +248,13 @@ inline fun <reified TResponse : Any, reified TQuery : Any, reified TPath : Any> 
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TPath, TQuery) -> TResponse
 ): Route {
+    openApi.addPath(
+        buildFullPath() + path,
+        HttpMethod.Delete,
+        typeOf<TResponse>(),
+        null,
+        typeOf<TPath>() // typeOf<TQuery>(),
+    )
     return route(path, HttpMethod.Delete) {
         handle {
             call.respond(body(locations.resolve(TPath::class, call), locations.resolve(TQuery::class, call)))
@@ -236,6 +266,13 @@ inline fun <reified TResponse : Any, reified TQuery : Any, reified TPath : Any, 
     path: String,
     noinline body: suspend PipelineContext<Unit, ApplicationCall>.(TPath, TQuery, TBody) -> TResponse
 ): Route {
+    openApi.addPath(
+        buildFullPath() + path,
+        HttpMethod.Delete,
+        typeOf<TResponse>(),
+        typeOf<TBody>(),
+        typeOf<TPath>() // typeOf<TQuery>(),
+    )
     return route(path, HttpMethod.Delete) {
         handle {
             call.respond(
@@ -250,11 +287,7 @@ inline fun <reified TResponse : Any, reified TQuery : Any, reified TPath : Any, 
 }
 
 fun Route.buildFullPath(): String {
-    return if (children.isEmpty()) {
-        return toString().replace(Regex("\\/\\(.*?\\)"), "")
-    } else {
-        children.first().buildFullPath()
-    }
+    return this.toString().replace(Regex("\\/\\(.*?\\)"), "")
 }
 
 val Route.openApi: OpenApi

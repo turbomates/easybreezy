@@ -8,4 +8,5 @@ interface Repository {
     suspend fun findByToken(token: String): User?
     suspend fun getByToken(token: String): User
     fun findByEmail(email: Email): User?
+    fun findByUsername(username: String): User?
 }
