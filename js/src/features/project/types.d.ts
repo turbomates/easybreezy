@@ -15,6 +15,7 @@ declare module "ProjectModels" {
     description: string;
     roles: Role[];
     teams: Team[];
+    statuses: ProjectStatuses[];
   };
 
   type Role = {
@@ -43,6 +44,11 @@ declare module "ProjectModels" {
     role: string;
     last: string;
     first: string;
+  };
+
+  export type ProjectStatuses = {
+    id: string;
+    name: string;
   };
 
   ///////////////////////////////////////////////////////////
@@ -127,4 +133,20 @@ declare module "ProjectModels" {
 
   export type ProjectTeamStatusResponse = "Active" | "Closed";
   export type ProjectTeamStatusRequest = "activate" | "close";
+
+  export type AddProjectStatusRequest = {
+    slug: string;
+    name: string;
+  };
+
+  export type ChangeProjectStatusRequest = {
+    slug: string;
+    name: string;
+    statusId: string;
+  };
+
+  export type RemoveProjectStatusRequest = {
+    slug: string;
+    statusId: string;
+  };
 }

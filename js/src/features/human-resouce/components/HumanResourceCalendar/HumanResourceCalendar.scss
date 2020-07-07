@@ -1,49 +1,24 @@
 .timetable {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-
   .timetable-title {
     font-weight: bold;
 
-    &__month {
-      position: relative;
-      z-index: 10000;
+    &__info {
+      width: 80px;
+      text-align: center;
     }
   }
 
   .timetable-date {
-    font-size: 10px;
     font-weight: 200;
     text-align: center;
     position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      z-index: 1000;
-      height: 100%;
-      left: 1px;
-      bottom: calc(100% - 1px);
-      box-shadow: 0 0 0 1.6px #f0f2f5;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      z-index: 1000;
-      height: 100%;
-      left: calc(100% - 0.6px);
-      bottom: calc(100% - 1px);
-      box-shadow: 0 0 0 1.6px #f0f2f5;
-    }
+    height: 30px;
   }
 
   .timetable-user {
-    width: 150px;
-    height: 20px;
-    padding: 0 5px;
-    border: 2px solid grey;
+    display: flex;
+    justify-content: flex-start;
+    padding-right: 5px;
 
     a {
       color: black;
@@ -52,46 +27,56 @@
   }
 
   .timetable-cell {
-    width: 25px;
-    height: 25px;
-    border: 2px solid grey;
-    position: relative;
+    min-width: 30px;
+    border: 2px solid #f0f2f5;
+    cursor: pointer;
+    background-color: lightgray;
+
+    &:hover {
+      transform: scale(1.3);
+      z-index: 2;
+      transition: 0.2s;
+      box-shadow: inset 0 0 0 2px white;
+      border-bottom: 2px solid;
+      border-top: 2px solid;
+      border-right-width: 2px;
+    }
 
     &.holiday {
       background-color: #fadb14;
     }
 
     &.vacation {
-      background-color: rgba(142, 195, 81, 1);
+      background-color: #52c41a;
 
       &.not-approved {
-        background-color: rgba(142, 195, 81, 0.5);
+        background-color: #95de64;
       }
     }
 
     &.sick {
-      background-color: rgba(255, 255, 255, 1);
-      color: darkred;
+      background-color: #f5222d;
+      color: white;
       text-align: center;
 
       &.not-approved {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: #ff7875;
       }
     }
 
     &.dayon {
-      background-color: rgba(106, 90, 205, 1);
+      background-color: #722ed1;
 
       &.not-approved {
-        background-color: rgba(106, 90, 205, 0.5);
+        background-color: #b37feb;
       }
     }
 
     &.personal {
-      background-color: rgba(250, 128, 114, 1);
+      background-color: #fa8c16;
 
       &.not-approved {
-        background-color: rgba(250, 128, 114, 0.5);
+        background-color: #ffc069;
       }
     }
 
@@ -102,65 +87,37 @@
 
   .timetable-info {
     min-width: 25px;
-    height: 25px;
-    border: 2px solid grey;
     text-align: center;
+    background-color: lightgray;
+    border: 2px solid #f0f2f5;
   }
 
-  .select-row:hover {
-    position: relative;
-    th::before {
-      content: "";
-      width: 10000px;
-      height: 0;
-      position: absolute;
-      left: 0;
-      z-index: 4;
-      box-shadow: 0 -1px 0 1.5px black;
-    }
-
-    th::after {
-      content: "";
-      width: 10000px;
-      height: 0;
-      position: absolute;
-      left: 0;
-      z-index: 4;
-      box-shadow: 0 1px 0 1.5px black;
-    }
+  .today {
+    font-weight: 700;
+    color: #40a9ff;
   }
 
-  .timetable-cell {
-    &:hover::before {
-      content: "";
-      height: 10000px;
-      left: 0;
-      position: absolute;
-      top: -5000px;
-      width: 0;
-      z-index: 4;
-      box-shadow: 0 0 0 1.5px black;
-    }
+  .last-day-of-month {
+    border-right: 3px solid #595959;
+  }
 
-    &:hover::after {
-      content: "";
-      height: 10000px;
-      left: 100%;
-      position: absolute;
-      top: -5000px;
-      width: 0;
-      z-index: 4;
-      box-shadow: 0 0 0 1.5px black;
+  .title {
+    padding-left: 10px;
+  }
+
+  tr:nth-of-type(1) {
+    td {
+      border-top: none;
     }
   }
 
-  .avatar {
-    .ant-popover-inner-content {
-      padding: 0;
+  tr:nth-last-of-type(1) {
+    td {
+      border-bottom: none;
     }
+  }
 
-    .ant-avatar {
-      border-radius: 0;
-    }
+  .today-btn{
+    margin: 0 5px;
   }
 }

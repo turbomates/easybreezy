@@ -1,3 +1,5 @@
+import uniqWith from "lodash/uniqWith";
+
 import { FormError, FormErrorMap } from "MyTypes";
 
 export const normalizeErrors = (errors: FormError[]): FormErrorMap =>
@@ -45,4 +47,18 @@ export const getCalendarError = () => ({
     !!value && !!value.length ? value[0].name : "",
   pattern: /.ics/,
   message: "Must be .ics format",
+});
+
+export const getUniqError = (fields: any[], fieldKey: string) => ({
+  validator() {
+    const uniqValues = uniqWith(fields, (prev: any, curr: any) => {
+      return prev[fieldKey] === curr[fieldKey];
+    });
+
+    if (uniqValues.length === fields.length) {
+      return Promise.resolve();
+    }
+
+    return Promise.reject("The value must be unique");
+  },
 });

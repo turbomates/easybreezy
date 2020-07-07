@@ -10,6 +10,9 @@ import {
   ProjectsListQuery,
   RolePermissions,
   EditProjectSlugRequest,
+  AddProjectStatusRequest,
+  ChangeProjectStatusRequest,
+  RemoveProjectStatusRequest,
 } from "ProjectModels";
 import { Failure, FormFailure, Paging, Success } from "MyTypes";
 import { api } from "./api";
@@ -138,3 +141,49 @@ export const editSlug = ({ slug, newSlug }: EditProjectSlugRequest) => {
       errors: resp?.response?.data?.errors || [],
     }));
 };
+
+export const addProjectIssueStatus = ({
+  slug,
+  name,
+}: AddProjectStatusRequest) =>
+  api
+    .post(`/projects/${slug}/statuses/add`, { name })
+    .then<Success<null>>(() => ({
+      success: true,
+      data: null,
+    }))
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
+
+export const changeProjectIssueStatus = ({
+  slug,
+  name,
+  statusId,
+}: ChangeProjectStatusRequest) =>
+  api
+    .post(`/projects/${slug}/statuses/${statusId}/change`, { name })
+    .then<Success<null>>(() => ({
+      success: true,
+      data: null,
+    }))
+    .catch<FormFailure>((resp) => ({
+      success: false,
+      errors: resp?.response?.data?.errors || [],
+    }));
+
+export const removeProjectIssueStatus = ({
+  slug,
+  statusId,
+}: RemoveProjectStatusRequest) =>
+  api
+    .post(`/projects/${slug}/statuses/${statusId}/remove`, {})
+    .then<Success<null>>(() => ({
+      success: true,
+      data: null,
+    }))
+    .catch<Failure>(() => ({
+      success: false,
+      reason: "unexpected_server_error",
+    }));

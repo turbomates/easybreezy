@@ -11,7 +11,7 @@ import toPairs from "lodash/fp/toPairs";
 import toLower from "lodash/fp/toLower";
 import differenceInDays from "date-fns/fp/differenceInDays";
 
-import { Absence, AbsenceReason } from "HumanResourceModels";
+import { Absence, AbsenceReason, EmployeeShort } from "HumanResourceModels";
 
 export function getDateInterval(date: Date, cells: number) {
   const start = addDate({ days: -cells }, date);
@@ -37,9 +37,8 @@ export function generateCellInfo(date: Date, absences: Absence[] = []) {
     if (isWithinInterval(interval, date)) {
       const reason = toLower(absence.reason);
       const approved = absence.isApproved ? "" : "not-approved";
-      const title = absence.isApproved
-        ? absence.comment
-        : `${absence.comment} (not approved)`;
+      const comment = absence.comment ? absence.comment : "";
+      const title = absence.isApproved ? comment : `${comment} (not approved)`;
       return { className: `${reason} ${approved}`, title };
     }
   }
@@ -64,6 +63,26 @@ export function getAbsencesDays(absences: Absence[], reason: AbsenceReason) {
   }, 1);
 }
 
-export function getCapitalLetter(value: string | null) {
-  return value ? value.charAt(0) : "";
+export function getEmployeeInitials(employee: EmployeeShort): string {
+  const firstName = employee.firstName
+    ? employee.firstName.charAt(0).toLocaleUpperCase()
+    : "";
+  const lastName = employee.lastName
+    ? employee.lastName.charAt(0).toLocaleUpperCase()
+    : "";
+
+  return `${firstName}${lastName}`;
+}
+
+export function calculateCellCount() {
+  const screenWidth = window.innerWidth;
+  const asideMenuWidth = 200;
+  const tableUserWidth = 200;
+  const tableInfoWidth = 160;
+  const cellWidth = 30;
+
+  return Math.ceil(
+    ((screenWidth - asideMenuWidth - tableInfoWidth - tableUserWidth) * 0.45) /
+      cellWidth,
+  );
 }
