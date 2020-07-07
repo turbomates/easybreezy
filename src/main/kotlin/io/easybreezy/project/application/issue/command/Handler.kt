@@ -102,6 +102,7 @@ class Handler @Inject constructor(
 
     suspend fun updateTiming(command: UpdateTiming) {
         val parsed = parser.parse(command.description)
+        val dd = parsed.dueDate
         parsed.dueDate?.let {
 
             transaction {
