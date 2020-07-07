@@ -1,3 +1,5 @@
+import uniqWith from "lodash/uniqWith";
+
 import { FormError, FormErrorMap } from "MyTypes";
 
 export const normalizeErrors = (errors: FormError[]): FormErrorMap =>
@@ -38,4 +40,18 @@ export const getMaxError = (max: number) => ({
 export const getUrlError = () => ({
   pattern: /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/,
   message: "Not valid",
+});
+
+export const getUniqError = (fields: any[], fieldKey: string) => ({
+  validator() {
+    const uniqValues = uniqWith(fields, (prev: any, curr: any) => {
+      return prev[fieldKey] === curr[fieldKey];
+    });
+
+    if (uniqValues.length === fields.length) {
+      return Promise.resolve();
+    }
+
+    return Promise.reject("The value must be unique");
+  },
 });
