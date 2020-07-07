@@ -42,6 +42,13 @@ export const getUrlError = () => ({
   message: "Not valid",
 });
 
+export const getCalendarError = () => ({
+  transform: (value?: File[]) =>
+    !!value && !!value.length ? value[0].name : "",
+  pattern: /.ics/,
+  message: "Must be .ics format",
+});
+
 export const getUniqError = (fields: any[], fieldKey: string) => ({
   validator() {
     const uniqValues = uniqWith(fields, (prev: any, curr: any) => {

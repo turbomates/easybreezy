@@ -13,22 +13,22 @@ export const SiderMenu: FC<{}> = () => {
   return (
     <Menu
       mode="inline"
-      selectedKeys={[location.pathname]}
+      selectedKeys={[location.pathname.split("/")[1]]}
       defaultOpenKeys={["sub1"]}
       className="app-menu"
     >
-      <Menu.Item key="/human-resources">
+      <Menu.Item key="human-resources">
         <Link to="/human-resources">
           <UserOutlined /> <span>Timeline</span>
         </Link>
       </Menu.Item>
-      <Menu.Item key="/projects">
+      <Menu.Item key="projects">
         <Link to="/projects">
           <LaptopOutlined />
           <span>Projects</span>
         </Link>
       </Menu.Item>
-      <Menu.Item key="/locations">
+      <Menu.Item key="locations">
         <Link to="/locations">
           <GlobalOutlined /> <span>Locations</span>
         </Link>
