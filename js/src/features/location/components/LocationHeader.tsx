@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Button, Modal, PageHeader } from "antd";
+import { Button, Modal, PageHeader, Descriptions } from "antd";
 
 import { Location } from "LocationModels";
 import { useDispatch, useSelector } from "react-redux";
@@ -85,7 +85,6 @@ export const LocationHeader: React.FC<Props> = ({
       <PageHeader
         className="page-header"
         title={location.name}
-        subTitle={location.vacationDays}
         extra={[
           <CalendarButton
             key="1"
@@ -98,7 +97,13 @@ export const LocationHeader: React.FC<Props> = ({
             }
           />,
         ]}
-      />
+      >
+        <Descriptions size="small">
+          <Descriptions.Item label="Vacation days">
+            {location.vacationDays}
+          </Descriptions.Item>
+        </Descriptions>
+      </PageHeader>
 
       <Modal
         title="Import calendar"
