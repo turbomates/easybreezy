@@ -14,6 +14,9 @@ class ParticipantsNormalizer @Inject constructor(
 
     override suspend fun normalize(project: UUID, parsed: ParsedFields, normalized: NormalizedFields): NormalizedFields {
 
+        if (parsed.assignee == null && parsed.reassigned == null && parsed.watchers.count() == 0) {
+            return normalized
+        }
         val participantsFields = ParticipantsFields(
             assignee = parsed.assignee?.let { username ->
                 queryExecutor.execute(MembersQO(project, listOf(username)))?.firstOrNull()

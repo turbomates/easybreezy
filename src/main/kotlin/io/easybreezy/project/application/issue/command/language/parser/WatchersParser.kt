@@ -6,7 +6,7 @@ import kotlin.reflect.KProperty
 class WatchersParser {
 
     companion object {
-        const val WATCHERS_IDENTIFIER = "(?<=@).+?(?=\\s)"
+        const val WATCHERS_IDENTIFIER = "(?<=@)[^\\s]+?(?=(\\s|$))"
     }
 
     operator fun getValue(parsed: ParsedFields, property: KProperty<*>): List<String> {
