@@ -23,6 +23,9 @@ import {
   changeProjectTeamStatusAsync,
   addProjectTeamMemberAsync,
   closeProjectTeamNewMemberFormAction,
+  addProjectIssueStatusAsync,
+  changeProjectIssueStatusAsync,
+  removeProjectIssueStatusAsync,
 } from "./actions";
 import { showNotification } from "../notification/actions";
 
@@ -301,7 +304,61 @@ export const addProjectTeamMember: RootEpic = (action$, state$, { api }) =>
               ]
             : [addProjectTeamMemberAsync.failure(result.errors)],
         ),
-        catchError((message) => of(addProjectTeamMemberAsync.failure(message))),
+        catchError(() => of(showNotification({ type: "error" }))),
+      ),
+    ),
+  );
+
+export const addProjectIssueStatus: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(addProjectIssueStatusAsync.request)),
+    switchMap((action) =>
+      from(api.project.addProjectIssueStatus(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                addProjectIssueStatusAsync.success(),
+                fetchProjectAsync.request(action.payload.slug),
+              ]
+            : [addProjectIssueStatusAsync.failure(result.errors)],
+        ),
+        catchError(() => of(showNotification({ type: "error" }))),
+      ),
+    ),
+  );
+
+export const changeProjectIssueStatus: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(changeProjectIssueStatusAsync.request)),
+    switchMap((action) =>
+      from(api.project.changeProjectIssueStatus(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                changeProjectIssueStatusAsync.success(),
+                fetchProjectAsync.request(action.payload.slug),
+              ]
+            : [changeProjectIssueStatusAsync.failure(result.errors)],
+        ),
+        catchError(() => of(showNotification({ type: "error" }))),
+      ),
+    ),
+  );
+
+export const removeProjectIssueStatus: RootEpic = (action$, state$, { api }) =>
+  action$.pipe(
+    filter(isActionOf(removeProjectIssueStatusAsync.request)),
+    switchMap((action) =>
+      from(api.project.removeProjectIssueStatus(action.payload)).pipe(
+        mergeMap((result) =>
+          result.success
+            ? [
+                removeProjectIssueStatusAsync.success(),
+                fetchProjectAsync.request(action.payload.slug),
+              ]
+            : [showNotification({ type: "error" })],
+        ),
+        catchError(() => of(showNotification({ type: "error" }))),
       ),
     ),
   );

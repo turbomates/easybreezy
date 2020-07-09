@@ -7,6 +7,7 @@ import * as realHr from "./human-resource-api";
 import * as project from "./project-api";
 import * as humanResource from "./human-resource-api";
 import * as team from "./team-api";
+import * as calendar from "./calendar-api";
 
 export default {
   logger,
@@ -20,5 +21,6 @@ export default {
     realHr,
     project,
     team,
+    calendar,
   },
 };
