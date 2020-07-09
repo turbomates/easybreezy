@@ -100,7 +100,7 @@ class IssueSubscribersTest {
             runBlocking {
                 eventSubscribers.call(event)
                 val details = queryExecutor.execute(IssueTimingQO(issue.value))
-                assertEquals(LocalDateTime.of(2020,1,1,0,0), details.dueDate)
+                assertEquals(LocalDateTime.of(2020, 1, 1, 0, 0), details.dueDate)
             }
         }
     }
