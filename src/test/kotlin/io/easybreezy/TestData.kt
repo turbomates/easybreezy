@@ -21,6 +21,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
 internal fun Database.createMember(
+    username: String = "johndoe",
     firstName: String = "John",
     lastName: String = "Doe",
     status: Status = Status.ACTIVE,
@@ -29,6 +30,7 @@ internal fun Database.createMember(
     return transaction(this) {
         val id = Users.insert {
             it[this.status] = status
+            it[this.username] = username
             it[this.email[EmailTable.email]] = email
             it[name[NameTable.firstName]] = firstName
             it[name[NameTable.lastName]] = lastName
@@ -50,15 +52,17 @@ internal fun Database.createMyProject(): EntityID<UUID> {
     }
 }
 
-internal fun Database.createIssue(): EntityID<UUID> {
-    val projectId = createMyProject()
+internal fun Database.createIssue(projectId: UUID): EntityID<UUID> {
     return transaction(this) {
-        Issues.insert {
-            it[project] = projectId.value
-            it[title] = "title"
-            it[description] = "description"
-        }
-    } get Issues.id
+        val issueId = Issues.insert {
+            it[title] = "issue"
+            it[description] = "Issue description"
+            it[project] = projectId
+            it[number] = 1
+        } get Issues.id
+
+        issueId
+    }
 }
 
 internal fun Database.createProjectRole(projectId: EntityID<UUID>, role: String): UUID {

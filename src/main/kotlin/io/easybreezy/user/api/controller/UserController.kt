@@ -7,6 +7,7 @@ import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.infrastructure.query.pagingParameters
 import io.easybreezy.infrastructure.structure.Either
 import io.easybreezy.user.application.command.Archive
+import io.easybreezy.user.application.command.ChangeUsername
 import io.easybreezy.user.application.command.Confirm
 import io.easybreezy.user.application.command.Create
 import io.easybreezy.user.application.command.Handler
@@ -100,6 +101,16 @@ class UserController @Inject constructor(
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
         handler.handleConfirm(command)
+
+        return Response.Either(Either.Left(Response.Ok))
+    }
+
+    suspend fun changeUsername(command: ChangeUsername): Response.Either<Response.Ok, Response.Errors> {
+        val errors = validation.onChangeUsername(command)
+        if (errors.isNotEmpty()) {
+            return Response.Either(Either.Right(Response.Errors(errors)))
+        }
+        handler.handleChangeUsername(command)
 
         return Response.Either(Either.Left(Response.Ok))
     }

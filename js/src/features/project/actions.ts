@@ -19,6 +19,9 @@ import {
   RemoveProjectTeamMemberRequest,
   NewProjectTeamMemberRequest,
   ChangeProjectTeamStatusRequest,
+  AddProjectStatusRequest,
+  RemoveProjectStatusRequest,
+  ChangeProjectStatusRequest,
 } from "ProjectModels";
 
 //PROJECT
@@ -146,3 +149,22 @@ export const changeProjectTeamStatusAsync = createAsyncAction(
   "CHANGE_PROJECT_TEAM_STATUS_SUCCESS",
   "CHANGE_PROJECT_TEAM_STATUS_FAILED",
 )<ChangeProjectTeamStatusRequest, undefined, string>();
+
+// ISSUE STATUSES
+export const addProjectIssueStatusAsync = createAsyncAction(
+  "ADD_PROJECT_ISSUE_STATUS_REQUEST",
+  "ADD_PROJECT_ISSUE_STATUS_SUCCESS",
+  "ADD_PROJECT_ISSUE_STATUS_FAILED",
+)<AddProjectStatusRequest, undefined, FormError[]>();
+
+export const changeProjectIssueStatusAsync = createAsyncAction(
+  "CHANGE_PROJECT_ISSUE_STATUS_REQUEST",
+  "CHANGE_PROJECT_ISSUE_STATUS_SUCCESS",
+  "CHANGE_PROJECT_ISSUE_STATUS_FAILED",
+)<ChangeProjectStatusRequest, undefined, FormError[]>();
+
+export const removeProjectIssueStatusAsync = createAsyncAction(
+  "REMOVE_PROJECT_ISSUE_STATUS_REQUEST",
+  "REMOVE_PROJECT_ISSUE_STATUS_SUCCESS",
+  "REMOVE_PROJECT_ISSUE_STATUS_FAILED",
+)<RemoveProjectStatusRequest, undefined, string>();

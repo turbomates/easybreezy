@@ -1,79 +1,96 @@
 package io.easybreezy.project.model.issue
 
+import io.easybreezy.infrastructure.event.project.issue.CategoryChanged
+import io.easybreezy.infrastructure.event.project.issue.Created
+import io.easybreezy.infrastructure.event.project.issue.PriorityUpdated
+import io.easybreezy.infrastructure.event.project.issue.SubIssueCreated
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
-import io.easybreezy.infrastructure.exposed.type.jsonb
-import io.easybreezy.infrastructure.serialization.UUIDSerializer
-import kotlinx.serialization.builtins.list
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.builtins.set
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SizedCollection
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 import java.util.UUID
+import kotlinx.serialization.builtins.set
+import io.easybreezy.infrastructure.exposed.type.jsonb
+import io.easybreezy.infrastructure.serialization.UUIDSerializer
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.serializer
 
 class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
-    private var assignee by Issues.assignee
+    private var number by Issues.number
     private var category by Issues.category
     private var author by Issues.author
     private var updatedAt by Issues.updatedAt
     private var project by Issues.project
     private var title by Issues.title
     private var description by Issues.description
-    private var watchers by Issues.watchers
-    private var status by Issues.status
     private var priority by Issues.priority
-    private var startDate by Issues.startDate
-    private var dueDate by Issues.dueDate
-    private var labels by Label via IssueLabel
+    private val comments by Comment referrersOn Comments.issue
+    private var parent by Issue optionalReferencedOn Issues.parent
     private var files by Issues.files
 
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {
-        fun create(
+        fun planIssue(
             author: UUID,
             project: UUID,
             title: String,
             description: String,
-            priority: Priority = Priority.normal(),
-            assignee: UUID? = null,
-            category: UUID? = null,
-            status: UUID? = null,
-            watchers: List<UUID> = listOf(),
-            startDate: LocalDateTime? = null,
-            dueDate: LocalDateTime? = null
+            number: Int,
+            priority: Priority?,
+            category: UUID?
         ): Issue {
             return Issue.new {
                 this.author = author
                 this.project = project
                 this.title = title
                 this.description = description
-                this.assignee = assignee
+                this.number = number
                 this.category = category
-                this.watchers = watchers
-                this.status = status
-                this.priority = priority
-                this.dueDate = dueDate
-                this.startDate = startDate
+                this.priority = priority ?: Priority.neutral()
+                addEvent(Created(this.project, this.id.value, this.author, this.title, this.description, LocalDateTime.now()))
             }
         }
     }
 
-    fun assignLabels(list: List<Label>) {
-        val updated = labels.toMutableList()
-        updated.addAll(list)
-        labels = SizedCollection(updated)
+    fun extractSubIssue(
+        author: UUID,
+        title: String,
+        description: String,
+        number: Int,
+        priority: Priority?,
+        category: UUID?
+    ): Issue {
+        val issue = this
+        return Issue.new {
+            this.author = author
+            this.project = issue.project
+            this.number = number
+            this.title = title
+            this.description = description
+            this.category = category
+            this.priority = priority ?: Priority.neutral()
+            this.parent = issue
+            addEvent(SubIssueCreated(this.project, issue.id.value, this.id.value, this.author, this.title, this.description, LocalDateTime.now()))
+        }
     }
 
-    fun reassign(reassigned: UUID) {
-        assignee = reassigned
+    fun changeCategory(updated: UUID) {
         updatedAt = LocalDateTime.now()
+        addEvent(CategoryChanged(this.id.value, category, updated, updatedAt))
+        category = updated
     }
+
+    fun updatePriority(updated: Priority) {
+        updatedAt = LocalDateTime.now()
+        addEvent(PriorityUpdated(this.id.value, updated.value, updatedAt))
+        priority = updated
+    }
+
+    fun project() = project
 
     suspend fun addFiles(files: List<File>, fileStorage: FileStorage) {
         val newFiles = mutableSetOf<Path>()
@@ -98,23 +115,14 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
 
 object Issues : UUIDTable("issues") {
     val category = uuid("category").nullable()
-    val assignee = uuid("assignee").nullable()
+    val number = integer("number")
     val author = uuid("author")
     val project = uuid("project")
     val title = varchar("title", 255)
     val description = text("description")
-    val watchers = jsonb("watchers", UUIDSerializer.list)
-    val status = uuid("status").nullable()
     val createdAt = datetime("created_at").default(LocalDateTime.now())
     val updatedAt = datetime("updated_at").default(LocalDateTime.now())
     val priority = embedded<Priority>(PriorityTable)
-    val startDate = datetime("start_date").nullable()
-    val dueDate = datetime("due_date").nullable()
+    val parent = reference("parent", Issues).nullable()
     val files = jsonb("files", String.serializer().set).default(setOf())
-}
-
-object IssueLabel : Table("issue_label") {
-    val issue = reference("issue", Issues)
-    val label = reference("label", Labels)
-    override val primaryKey = PrimaryKey(issue, label, name = "issue_label_pkey")
 }

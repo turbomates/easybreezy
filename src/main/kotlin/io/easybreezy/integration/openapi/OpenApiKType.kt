@@ -1,5 +1,7 @@
 package io.easybreezy.integration.openapi
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
@@ -8,7 +10,7 @@ import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.typeOf
 
-class OpenApiKType(val type: KType) {
+class OpenApiKType(val type: KType, private val descriptions: Map<String, ClassTypeDescription> = emptyMap()) {
     val jvmErasure = type.jvmErasure
     private val projectionTypes: Map<String, KType> = buildGenericTypes(type)
     private fun buildGenericTypes(type: KType): Map<String, KType> {
@@ -31,6 +33,13 @@ class OpenApiKType(val type: KType) {
         return buildType(name, type) as Type.Object
     }
 
+    fun getArgumentProjectionType(type: KType): OpenApiKType {
+        if (projectionTypes.containsKey(type.toString())) {
+            return OpenApiKType(projectionTypes.getValue(type.toString()))
+        }
+        return OpenApiKType(type)
+    }
+
     private fun buildType(name: String, type: KType): Type {
         if (type.isCollection() || type.isPrimitive()) {
             return buildType(type)
@@ -40,7 +49,7 @@ class OpenApiKType(val type: KType) {
             var memberType = property.returnType
             descriptions.add(Property(property.name, buildType(memberType)))
         }
-        return Type.Object(name, descriptions, returnType = type.jvmErasure.qualifiedName)
+        return Type.Object(name, descriptions)
     }
 
     private fun buildType(memberType: KType): Type {
@@ -67,6 +76,7 @@ class OpenApiKType(val type: KType) {
                 if (projectionTypes.containsKey(secondType.toString())) {
                     secondType = projectionTypes.getValue(secondType.toString())
                 }
+                val description = descriptions[firstType.jvmErasure.qualifiedName]
                 Type.Object(
                     "map",
                     properties = listOf(
@@ -74,7 +84,8 @@ class OpenApiKType(val type: KType) {
                             firstType.jvmErasure.simpleName!!,
                             buildType(secondType)
                         )
-                    )
+                    ),
+                    example = description?.example
                 )
             }
             memberType.isPrimitive() ->
@@ -97,6 +108,8 @@ class OpenApiKType(val type: KType) {
             isSubtypeOf(typeOf<Boolean?>()) ||
             isSubtypeOf(typeOf<UUID?>()) ||
             isSubtypeOf(typeOf<Enum<*>?>()) ||
+            isSubtypeOf(typeOf<LocalDate>()) ||
+            isSubtypeOf(typeOf<LocalDateTime>()) ||
             javaClass.isEnum
     }
 
@@ -108,22 +121,17 @@ class OpenApiKType(val type: KType) {
         return isSubtypeOf(typeOf<Map<*, *>>())
     }
 
-    fun getArgumentProjectionType(type: KType): OpenApiKType {
-        if (projectionTypes.containsKey(type.toString())) {
-            return OpenApiKType(projectionTypes.getValue(type.toString()))
-        }
-        return OpenApiKType(type)
-    }
-
     private val KType.openApiType: Type
         get() {
             return when {
-                isSubtypeOf(typeOf<String?>()) -> Type.String
-                isSubtypeOf(typeOf<UUID?>()) -> Type.String
+                isSubtypeOf(typeOf<String?>()) -> Type.String()
+                isSubtypeOf(typeOf<LocalDate?>()) -> Type.String(format = "date")
+                isSubtypeOf(typeOf<LocalDateTime?>()) -> Type.String(format = "date-time")
+                isSubtypeOf(typeOf<UUID?>()) -> Type.String()
                 isSubtypeOf(typeOf<Int?>()) -> Type.Number
                 isSubtypeOf(typeOf<Float?>()) -> Type.Number
                 isSubtypeOf(typeOf<Boolean?>()) -> Type.Boolean
-                javaClass.isEnum || isSubtypeOf(typeOf<Enum<*>?>()) -> Type.String
+                javaClass.isEnum || isSubtypeOf(typeOf<Enum<*>?>()) -> Type.String()
                 else -> throw UnhandledTypeException(jvmErasure.simpleName!!)
             }
         }
@@ -131,6 +139,10 @@ class OpenApiKType(val type: KType) {
 
 val KType.openApiKType: OpenApiKType
     get() = OpenApiKType(this)
+
+fun KType.getOpenApiKType(descriptions: Map<String, ClassTypeDescription>): OpenApiKType {
+    return OpenApiKType(this, descriptions)
+}
 
 class UnhandledTypeException(type: String) : Exception("unhandled type $type")
 class InvalidTypeForOpenApiType(type: String, openApiType: String) : Exception("Invalid $type to build $openApiType")

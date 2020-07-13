@@ -3,6 +3,7 @@ package io.easybreezy.user.model
 import io.easybreezy.infrastructure.event.user.Confirmed
 import io.easybreezy.infrastructure.event.user.Hired
 import io.easybreezy.infrastructure.event.user.Invited
+import io.easybreezy.infrastructure.event.user.UsernameChanged
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.Embeddable
 import io.easybreezy.infrastructure.exposed.dao.EmbeddableClass
@@ -72,6 +73,11 @@ class User private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
         replaced.map {
             ContactModel.add(this, it.type, it.value)
         }
+    }
+
+    fun changeUsername(changed: String) {
+        addEvent(UsernameChanged(this.id.value, this.username, changed))
+        username = changed
     }
 
     fun email(): String {

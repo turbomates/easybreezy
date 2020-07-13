@@ -1,9 +1,10 @@
 package io.easybreezy.integration.openapi.ktor
 
+import io.easybreezy.integration.openapi.ClassTypeDescription
 import io.easybreezy.integration.openapi.OpenAPI
 import io.easybreezy.integration.openapi.OpenApiKType
 import io.easybreezy.integration.openapi.Type
-import io.easybreezy.integration.openapi.openApiKType
+import io.easybreezy.integration.openapi.getOpenApiKType
 import io.easybreezy.integration.openapi.spec.Root
 import io.ktor.application.ApplicationCall
 import io.ktor.application.ApplicationCallPipeline
@@ -19,6 +20,7 @@ import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.serializer
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 class OpenApi(configuration: Configuration) {
@@ -26,6 +28,7 @@ class OpenApi(configuration: Configuration) {
     private val responseBuilder: (OpenApiKType) -> Map<Int, Type> = configuration.responseBuilder
     private val openApi: OpenAPI = configuration.openApi
     private val path: String = configuration.path
+    private val descriptions: MutableMap<String, ClassTypeDescription> = mutableMapOf()
 
     class Configuration {
         var typeBuilder: (OpenApiKType) -> Type.Object = { type -> type.objectType("response") }
@@ -33,6 +36,10 @@ class OpenApi(configuration: Configuration) {
         var path = "/openapi.json"
         var configure: (OpenApi) -> Unit = {}
         var openApi: OpenAPI = OpenAPI("localhost")
+    }
+
+    fun addClassTypeDescription(clazz: KClass<*>, description: ClassTypeDescription) {
+        descriptions[clazz.qualifiedName!!] = description
     }
 
     fun addPath(
@@ -45,9 +52,9 @@ class OpenApi(configuration: Configuration) {
         openApi.addPath(
             path,
             OpenAPI.Method.valueOf(method.value),
-            responseBuilder(response.openApiKType),
-            body?.openApiKType?.let(typeBuilder),
-            pathParams?.openApiKType?.let(typeBuilder)
+            responseBuilder(response.getOpenApiKType(this.descriptions)),
+            body?.getOpenApiKType(this.descriptions)?.let(typeBuilder),
+            pathParams?.getOpenApiKType(this.descriptions)?.let(typeBuilder)
         )
     }
 

@@ -23,6 +23,7 @@ import io.easybreezy.infrastructure.ktor.auth.SessionSerializer
 import io.easybreezy.infrastructure.ktor.openapi.DescriptionBuilder
 import io.easybreezy.infrastructure.serialization.LocalDateSerializer
 import io.easybreezy.infrastructure.serialization.LocalDateTimeSerializer
+import io.easybreezy.integration.openapi.ClassTypeDescription
 import io.easybreezy.integration.openapi.ktor.OpenApi
 import io.easybreezy.project.ProjectModule
 import io.easybreezy.user.UserModule
@@ -139,7 +140,6 @@ suspend fun main() {
                 cookie.path = "/"
             }
         }
-
         install(StatusPages) {
             status(HttpStatusCode.Unauthorized) {
                 call.respond(HttpStatusCode.Unauthorized, Error("You're not authorized"))
@@ -171,6 +171,13 @@ suspend fun main() {
             responseBuilder = { type -> DescriptionBuilder(type).buildResponseMap() }
             typeBuilder = { type -> DescriptionBuilder(type).buildType() }
             path = "/api/openapi.json"
+            configure = { openApi ->
+                openApi.addClassTypeDescription(LocalDate::class, ClassTypeDescription("date", format = "2012-12-12"))
+                openApi.addClassTypeDescription(
+                    LocalDateTime::class,
+                    ClassTypeDescription("date", format = "2012-12-12 12:22:31.459")
+                )
+            }
         }
         install(Webjars) {
         }

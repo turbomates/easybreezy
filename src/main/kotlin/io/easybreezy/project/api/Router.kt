@@ -18,8 +18,13 @@ import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
 import io.easybreezy.project.application.issue.command.AddFiles
+import io.easybreezy.project.application.issue.command.AddComment
+import io.easybreezy.project.application.issue.command.CreateSubIssue
+import io.easybreezy.project.application.issue.queryobject.Comment
 import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
+import io.easybreezy.project.application.issue.queryobject.IssueParticipants
+import io.easybreezy.project.application.issue.queryobject.IssueTiming
 import io.easybreezy.project.application.member.queryobject.IsTeamMember
 import io.easybreezy.project.application.member.queryobject.MemberActivities
 import io.easybreezy.project.application.project.command.ChangeCategory
@@ -144,9 +149,7 @@ class Router @Inject constructor(
         }
 
         route("/{slug}") {
-
             authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
-
                 get<Response.Data<Project>, SlugParam>("") { params ->
                     controller<ProjectController>(this).show(params.slug)
                 }
@@ -236,6 +239,36 @@ class Router @Inject constructor(
                 data class ProjectIssue(val slug: String, val issueId: UUID)
                 get<Response.Data<IssueDetails>, ProjectIssue>("/{issueId}") { params ->
                     controller<IssueController>(this).show(params.issueId)
+                }
+
+                get<Response.Data<Set<Comment>>, ProjectIssue>("/{issueId}/comments") { params ->
+                    controller<IssueController>(this).comments(params.issueId)
+                }
+
+                get<Response.Data<IssueTiming>, ProjectIssue>("/{issueId}/timing") { params ->
+                    controller<IssueController>(this).timing(params.issueId)
+                }
+
+                get<Response.Data<IssueParticipants>, ProjectIssue>("/{issueId}/participants") { params ->
+                    controller<IssueController>(this).participants(params.issueId)
+                }
+
+                post<Response.Either<Response.Ok, Response.Errors>, AddComment, ProjectIssue>("/{issueId}/comment") { command, params ->
+                    command.issue = params.issueId
+                    command.member = resolvePrincipal<UserPrincipal>()
+                    controller<IssueController>(this).addComment(command)
+                }
+
+                post<Response.Either<Response.Ok, Response.Errors>, io.easybreezy.project.application.issue.command.ChangeStatus, ProjectIssue>("/{issueId}/change-status") { command, params ->
+                    command.issue = params.issueId
+                    command.project = params.slug
+                    controller<IssueController>(this).changeStatus(command)
+                }
+
+                post<Response.Either<Response.Ok, Response.Errors>, CreateSubIssue, ProjectIssue>("/{issueId}/sub-issue") { command, params ->
+                    command.issue = params.issueId
+                    command.member = resolvePrincipal<UserPrincipal>()
+                    controller<IssueController>(this).subIssue(command)
                 }
             }
         }

@@ -23,7 +23,7 @@ class Validation @Inject constructor(
     suspend fun onCreate(command: Create): List<Error> {
         return transactionManager {
             validate(command) {
-                validate(Create::email).isNotNull().isNotBlank().isUnique()
+                validate(Create::email).isNotNull().isNotBlank().isUniqueEmail()
                 validate(Create::firstName).isNotNull().isNotBlank()
                 validate(Create::lastName).isNotNull().isNotBlank()
                 validate(Create::activities).isNotNull().isActivities()
@@ -34,7 +34,7 @@ class Validation @Inject constructor(
     suspend fun onInvite(command: Invite): List<Error> {
         return transactionManager {
             validate(command) {
-                validate(Invite::email).isNotNull().isNotBlank().isUnique()
+                validate(Invite::email).isNotNull().isNotBlank().isUniqueEmail()
                 validate(Invite::activities).isNotNull().isActivities()
             }
         }
@@ -75,13 +75,39 @@ class Validation @Inject constructor(
         }
     }
 
-    private object Unique : Constraint {
+    fun onChangeUsername(command: ChangeUsername): List<Error> {
+        return validate(command) {
+            validate(ChangeUsername::username).isNotNull().isValidUsername().isUniqueUsername()
+        }
+    }
+
+    private object UniqueEmail : Constraint {
         override val name: String
             get() = "User with this email already exist"
     }
 
-    private fun <E> Validator<E>.Property<String?>.isUnique(): Validator<E>.Property<String?> =
-        this.validate(Unique) { value ->
+    private fun <E> Validator<E>.Property<String?>.isUniqueEmail(): Validator<E>.Property<String?> =
+        this.validate(UniqueEmail) { value ->
             repository.findByEmail(Email.create(value!!)) !is User
+        }
+
+    private object UniqueUsername : Constraint {
+        override val name: String
+            get() = "User with this username already exist"
+    }
+
+    private fun <E> Validator<E>.Property<String?>.isUniqueUsername(): Validator<E>.Property<String?> =
+        this.validate(UniqueUsername) { value ->
+            repository.findByUsername(value!!) !is User
+        }
+
+    private object ValidUsername : Constraint {
+        override val name: String
+            get() = "Username should not contain spaces"
+    }
+
+    private fun <E> Validator<E>.Property<String?>.isValidUsername(): Validator<E>.Property<String?> =
+        this.validate(ValidUsername) { value ->
+            !("""\s""".toRegex().containsMatchIn(value!!))
         }
 }

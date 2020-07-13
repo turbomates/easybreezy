@@ -5,12 +5,6 @@ declare module "LocationModels" {
     vacationDays: number;
   };
 
-  export type LocationResponse = {
-    data: {
-      locations: Location[];
-    };
-  };
-
   export type LocationForm = {
     name: string;
     vacationDays: number;
@@ -52,9 +46,81 @@ declare module "LocationModels" {
     [userId: string]: EmployeeLocation[];
   };
 
+  export type Calendar = {
+    id: string;
+    name: string;
+    location: Location;
+  };
+
+  export type Holiday = {
+    name: string;
+    day: string;
+    isWorkingDay: boolean;
+  };
+
+  export type AddHolidayForm = {
+    day: string;
+    name: string;
+    isWorkingDay: boolean;
+  };
+
+  export type EditHolidayForm = {
+    day: string;
+    name: string;
+    isWorkingDay: boolean;
+  };
+
+  export type ChangeCalendar = {
+    calendarId: string;
+    locationId: string;
+    name: string;
+    encodedCalendar: string;
+  };
+
+  ///////////////////////////////////////////////////////////
+
+  export type LocationResponse = {
+    data: {
+      locations: Location[];
+    };
+  };
+
   export type EmployeeLocationsResponse = {
     data: {
       userLocations: EmployeeLocation[];
     };
+  };
+
+  export type CalendarResponse = {
+    data: { calendars: Calendar[] };
+  };
+
+  export type HolidayResponse = {
+    data: { holidays: Holiday[] };
+  };
+
+  export type ImportCalendarRequest = {
+    locationId: string;
+    name: string;
+    encodedCalendar: string;
+  };
+
+  export type AddHolidayRequest = {
+    calendarId: string;
+    day: string;
+    name: string;
+    isWorkingDay: boolean;
+  };
+
+  export type EditHolidayRequest = {
+    calendarId: string;
+    day: string;
+    name: string;
+    isWorkingDay: boolean;
+  };
+
+  export type RemoveHolidayRequest = {
+    calendarId: string;
+    day: string;
   };
 }

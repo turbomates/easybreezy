@@ -10,11 +10,9 @@ import io.easybreezy.integration.openapi.spec.ResponseObject
 import io.easybreezy.integration.openapi.spec.Root
 import io.easybreezy.integration.openapi.spec.SchemaObject
 import kotlinx.serialization.json.JsonObject
-import kotlin.reflect.KClass
 
 class OpenAPI(var host: String) {
     val root: Root = Root("3.0.2", InfoObject("Api", version = "0.1.0"))
-    val descriptions: MutableMap<String, ClassTypeDescription> = mutableMapOf()
 
     fun addPath(
         path: String,
@@ -23,8 +21,7 @@ class OpenAPI(var host: String) {
         body: Type.Object? = null,
         pathParams: Type.Object? = null
     ) {
-        val pathItemObject = PathItemObject()
-        root.paths[path] = pathItemObject
+        val pathItemObject = root.paths.getOrPut(path, { PathItemObject() })
         when (method) {
             Method.GET -> {
                 pathItemObject.get = OperationObject(
@@ -56,13 +53,8 @@ class OpenAPI(var host: String) {
         }
     }
 
-    fun addClassTypeDescription(clazz: KClass<*>, description: ClassTypeDescription) {
-        descriptions[clazz.qualifiedName!!] = description
-    }
-
     private fun Type.toResponseObject(): ResponseObject {
         return ResponseObject(
-            description?.description,
             content = mapOf("application/json" to MediaTypeObject(schema = toSchemaObject()))
         )
     }
@@ -82,7 +74,7 @@ class OpenAPI(var host: String) {
     private fun Type.toSchemaObject(): SchemaObject {
         return when (this) {
             is Type.String -> {
-                SchemaObject(type = "string")
+                SchemaObject(type = "string", format = this.format)
             }
             is Type.Array -> {
                 SchemaObject(type = "array", items = this.type.toSchemaObject())
@@ -106,17 +98,7 @@ class OpenAPI(var host: String) {
     enum class Method {
         GET, POST, DELETE, PATCH
     }
-
-    val Type.description: ClassTypeDescription?
-        get() {
-            if (this !is Type.Object) {
-                return null
-            }
-            return this@OpenAPI.descriptions[this.returnType]
-        }
 }
-
-data class ClassTypeDescription(val description: String, val example: JsonObject? = null)
 
 data class Property(
     val name: String,
@@ -124,13 +106,12 @@ data class Property(
 )
 
 sealed class Type {
-    object String : Type()
+    class String(val format: kotlin.String? = null) : Type()
     class Array(val type: Type) : Type()
     class Object(
         val name: kotlin.String,
         val properties: List<Property>,
-        val example: JsonObject? = null,
-        val returnType: kotlin.String? = null
+        val example: JsonObject? = null
     ) : Type()
 
     object Boolean : Type()

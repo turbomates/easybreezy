@@ -1,8 +1,8 @@
 package io.easybreezy.infrastructure.ktor.openapi
 
 import io.easybreezy.infrastructure.ktor.Response
-import io.easybreezy.integration.openapi.Property
 import io.easybreezy.integration.openapi.OpenApiKType
+import io.easybreezy.integration.openapi.Property
 import io.easybreezy.integration.openapi.Type
 import kotlinx.serialization.json.json
 import kotlin.reflect.full.isSubclassOf
@@ -26,7 +26,7 @@ class DescriptionBuilder(private val type: OpenApiKType) {
                     listOf(
                         Property(
                             "error",
-                            Type.String
+                            Type.String()
                         )
                     ),
                     example = json { "status" to "Wrong response" }
@@ -54,7 +54,7 @@ class DescriptionBuilder(private val type: OpenApiKType) {
             listOf(
                 Property(
                     "status",
-                    Type.String
+                    Type.String()
                 )
             ),
             example = json { "status" to "ok" }

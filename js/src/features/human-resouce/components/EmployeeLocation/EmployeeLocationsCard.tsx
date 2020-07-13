@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { Card, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { location as locationSelector } from "../../../../features/location/selectors";
+import { selectLocation } from "../../../location/selectors";
 import {
   employeeLocations,
   isEditEmployeeLocationFormVisible,
@@ -38,7 +38,7 @@ export const EmployeeLocationsCard: React.FC<Props> = ({
   canEdit,
   employeeId,
 }) => {
-  const location = useSelector(locationSelector);
+  const location = useSelector(selectLocation);
   const employeeLocation = useSelector(employeeLocations);
   const isEditVisible = useSelector(isEditEmployeeLocationFormVisible);
   const isAssignVisible = useSelector(isAssignLocationFormVisible);
