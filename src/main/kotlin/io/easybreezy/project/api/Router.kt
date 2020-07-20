@@ -17,9 +17,10 @@ import io.easybreezy.integration.openapi.ktor.postParams
 import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
-import io.easybreezy.project.application.issue.command.AddFiles
+import io.easybreezy.project.application.issue.command.AttachFiles
 import io.easybreezy.project.application.issue.command.AddComment
 import io.easybreezy.project.application.issue.command.CreateSubIssue
+import io.easybreezy.project.application.issue.queryobject.Attachment
 import io.easybreezy.project.application.issue.queryobject.Comment
 import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
@@ -275,16 +276,21 @@ class Router @Inject constructor(
 
         route("/issues/{id}") {
             authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
-                data class File(val id: UUID, val path: String)
-                route("/files") {
-                    post<Response.Either<Response.Ok, Response.Errors>, AddFiles, ID>("/add") { command, params ->
-                        controller<IssueController>(this).addFiles(command, params.id)
+                data class Issue(val id: UUID)
+                data class AttachmentFile(val id: UUID, val fileId: UUID)
+
+                route("/attachments") {
+                    get<Response.Data<Set<Attachment>>, Issue>("") { params ->
+                        controller<IssueController>(this).attachments(params.id)
                     }
-                    get<Response.File, File>("/{path}") { params ->
-                        controller<IssueController>(this).issueFile(params.id, params.path)
+                    post<Response.Either<Response.Ok, Response.Errors>, AttachFiles, ID>("/add") { command, params ->
+                        controller<IssueController>(this).attachFiles(command, params.id)
                     }
-                    delete<Response.Either<Response.Ok, Response.Errors>, File>("/{path}") { params ->
-                        controller<IssueController>(this).removeFile(params.id, params.path)
+                    get<Response.File, AttachmentFile>("/{fileId}") { params ->
+                        controller<IssueController>(this).attachmentFile(params.id, params.fileId)
+                    }
+                    delete<Response.Either<Response.Ok, Response.Errors>, AttachmentFile>("/{fileId}") { params ->
+                        controller<IssueController>(this).removeAttachmentFile(params.id, params.fileId)
                     }
                 }
             }

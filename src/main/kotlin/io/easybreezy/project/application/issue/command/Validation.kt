@@ -6,7 +6,7 @@ import org.valiktor.functions.isNotBlank
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.application.project.queryobject.ProjectHasStatus
-import io.easybreezy.project.model.issue.File
+import io.easybreezy.project.model.issue.UploadedAttachment
 import org.valiktor.Constraint
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.validateForEach
@@ -44,20 +44,13 @@ class Validation @Inject constructor(
         }
     }
 
-    fun validateCommand(command: AddFiles): List<Error> {
+    fun validateCommand(command: AttachFiles): List<Error> {
         return validate(command) {
-            validate(AddFiles::files).validateForEach {
-                validate(File::name).isNotNull().isNotBlank()
-                validate(File::encodedContent).isNotNull().isNotBlank()
-                validate(File::extension).isNotNull().isNotBlank()
+            validate(AttachFiles::files).validateForEach {
+                validate(UploadedAttachment::name).isNotNull().isNotBlank()
+                validate(UploadedAttachment::encodedContent).isNotNull().isNotBlank()
+                validate(UploadedAttachment::extension).isNotNull().isNotBlank()
             }
-        }
-    }
-
-    fun validateCommand(command: RemoveFile): List<Error> {
-        return validate(command) {
-            validate(RemoveFile::issueId).isNotNull()
-            validate(RemoveFile::path).isNotNull().isNotBlank()
         }
     }
 

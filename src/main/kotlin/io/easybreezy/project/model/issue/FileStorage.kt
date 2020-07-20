@@ -1,15 +1,14 @@
 package io.easybreezy.project.model.issue
 
+import io.easybreezy.common.model.File
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
-typealias Path = String
-
 interface FileStorage {
-    suspend fun add(file: File, issueId: UUID): Path
-    suspend fun get(issueId: UUID, fileName: Path): java.io.File
-    suspend fun remove(issueId: UUID, fileName: Path)
+    suspend fun upload(file: UploadedAttachment, issueId: UUID): File
+    suspend fun get(file: File): java.io.File
+    suspend fun remove(file: File)
 }
 
 @Serializable
-data class File(val name: String, val encodedContent: String, val extension: String)
+data class UploadedAttachment(val name: String, val encodedContent: String, val extension: String)

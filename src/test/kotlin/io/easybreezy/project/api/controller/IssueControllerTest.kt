@@ -40,11 +40,9 @@ class IssueControllerTest {
                         }
                             .toString())
                 }) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues")) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("Important")!!)
                     Assertions.assertTrue(response.content?.contains("#FFFFFF")!!)
@@ -54,10 +52,7 @@ class IssueControllerTest {
                     }
 
                     with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues/$issueId")) {
-                        val p = response.content
                         Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                        // Assertions.assertTrue(response.content?.contains("bug")!!)
-                        // Assertions.assertTrue(response.content?.contains("frontend")!!)
                         Assertions.assertTrue(response.content?.contains("Nice category")!!)
                         Assertions.assertTrue(response.content?.contains("number\": 1")!!)
                     }
@@ -82,11 +77,9 @@ class IssueControllerTest {
                         }
                             .toString())
                 }) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues/$issue")) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("In progress")!!)
                 }
@@ -112,11 +105,9 @@ class IssueControllerTest {
                         }
                             .toString())
                 }) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues/$issue")) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                     Assertions.assertTrue(response.content?.contains("#FF0000")!!)
                 }
@@ -146,7 +137,6 @@ class IssueControllerTest {
                         }
                             .toString())
                 }) {
-                    val p = response.content
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
                 with(handleRequest(HttpMethod.Get, "/api/projects/my-project/issues")) {
@@ -163,11 +153,10 @@ class IssueControllerTest {
     fun `add files to issue and delete one file`() {
         rollbackTransaction {
             val userId = testDatabase.createMember()
-
             withTestApplication({ testApplication(userId) }) {
                 val project = testDatabase.createMyProject()
                 val issueId = testDatabase.createIssue(project.value)
-                with(handleRequest(HttpMethod.Post, "/api/projects/issues/$issueId/files/add") {
+                with(handleRequest(HttpMethod.Post, "/api/projects/issues/$issueId/attachments/add") {
                     addHeader("Content-Type", "application/json")
                     setBody(
                         json {
@@ -189,12 +178,19 @@ class IssueControllerTest {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
                 }
 
-                with(handleRequest(HttpMethod.Get, "/api/projects/issues/$issueId/files/dummy_pdf.pdf")) {
+                with(handleRequest(HttpMethod.Get, "/api/projects/issues/$issueId/attachments")) {
                     Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                }
+                    val fileId = response.content?.let {
+                        """(?<="id": ").+?(?=")""".toRegex().find(it)?.value
+                    }
 
-                with(handleRequest(HttpMethod.Delete, "/api/projects/issues/$issueId/files/dummy_pdf.pdf")) {
-                    Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    with(handleRequest(HttpMethod.Get, "/api/projects/issues/$issueId/attachments/$fileId")) {
+                        Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    }
+
+                    with(handleRequest(HttpMethod.Delete, "/api/projects/issues/$issueId/attachments/$fileId")) {
+                        Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                    }
                 }
             }
         }

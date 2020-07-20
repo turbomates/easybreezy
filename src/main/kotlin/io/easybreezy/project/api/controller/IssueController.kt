@@ -1,6 +1,7 @@
 package io.easybreezy.project.api.controller
 
 import com.google.inject.Inject
+import io.easybreezy.infrastructure.exposed.TransactionManager
 import io.easybreezy.infrastructure.ktor.Controller
 import io.easybreezy.infrastructure.ktor.Response
 import io.easybreezy.infrastructure.query.QueryExecutor
@@ -12,8 +13,14 @@ import io.easybreezy.project.application.issue.command.CreateSubIssue
 import io.easybreezy.project.application.issue.command.Handler
 import io.easybreezy.project.application.issue.command.New
 import io.easybreezy.project.application.issue.command.Validation
+import java.util.UUID
+import io.easybreezy.project.application.issue.FileStorage
+import io.easybreezy.project.application.issue.command.AttachFiles
+import io.easybreezy.project.application.issue.command.RemoveAttachmentFile
+import io.easybreezy.project.application.issue.queryobject.Attachment
 import io.easybreezy.project.application.issue.queryobject.Comment
 import io.easybreezy.project.application.issue.queryobject.Issue
+import io.easybreezy.project.application.issue.queryobject.IssueAttachmentsQO
 import io.easybreezy.project.application.issue.queryobject.IssueCommentsQO
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
 import io.easybreezy.project.application.issue.queryobject.IssueParticipants
@@ -22,17 +29,15 @@ import io.easybreezy.project.application.issue.queryobject.IssueQO
 import io.easybreezy.project.application.issue.queryobject.IssueTiming
 import io.easybreezy.project.application.issue.queryobject.IssueTimingQO
 import io.easybreezy.project.application.issue.queryobject.IssuesQO
-import java.util.UUID
-import io.easybreezy.infrastructure.upload.Path
-import io.easybreezy.project.application.issue.FileStorage
-import io.easybreezy.project.application.issue.command.AddFiles
-import io.easybreezy.project.application.issue.command.RemoveFile
+import io.easybreezy.project.infrastructure.AttachmentRepository
 
 class IssueController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
     private val queryExecutor: QueryExecutor,
-    private val fileStorage: FileStorage
+    private val fileStorage: FileStorage,
+    private val transaction: TransactionManager,
+    private val attachmentRepository: AttachmentRepository
 ) : Controller() {
 
     suspend fun create(command: New): Response.Either<Response.Ok, Response.Errors> {
@@ -101,29 +106,31 @@ class IssueController @Inject constructor(
         )
     }
 
-    suspend fun addFiles(command: AddFiles, issueId: UUID): Response.Either<Response.Ok, Response.Errors> {
+    suspend fun attachments(id: UUID): Response.Data<Set<Attachment>> {
+        return Response.Data(
+            queryExecutor.execute(IssueAttachmentsQO(id))
+        )
+    }
+
+    suspend fun attachFiles(command: AttachFiles, issueId: UUID): Response.Either<Response.Ok, Response.Errors> {
         command.issueId = issueId
         val errors = validation.validateCommand(command)
         if (errors.isNotEmpty()) {
             return Response.Either(Either.Right(Response.Errors(errors)))
         }
-        handler.addFiles(command)
+        handler.attachFiles(command)
 
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun removeFile(issueId: UUID, path: Path): Response.Either<Response.Ok, Response.Errors> {
-        val command = RemoveFile(issueId, path)
-        val errors = validation.validateCommand(command)
-        if (errors.isNotEmpty()) {
-            return Response.Either(Either.Right(Response.Errors(errors)))
-        }
-        handler.removeFile(command)
+    suspend fun removeAttachmentFile(issueId: UUID, fileId: UUID): Response.Either<Response.Ok, Response.Errors> {
+        val command = RemoveAttachmentFile(issueId, fileId)
+        handler.removeAttachmentFile(command)
 
         return Response.Either(Either.Left(Response.Ok))
     }
 
-    suspend fun issueFile(issueId: UUID, path: Path): Response.File {
-        return Response.File(fileStorage.get(issueId, path))
+    suspend fun attachmentFile(issueId: UUID, fileId: UUID): Response.File = transaction {
+        return@transaction Response.File(fileStorage.get(attachmentRepository[issueId].get(fileId)))
     }
 }

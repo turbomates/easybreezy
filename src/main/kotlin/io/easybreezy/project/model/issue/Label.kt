@@ -4,7 +4,6 @@ import io.easybreezy.infrastructure.event.project.issue.LabelAssigned
 import io.easybreezy.infrastructure.event.project.issue.LabelCreated
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
-import io.easybreezy.project.model.issue.Issue.Companion.via
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable

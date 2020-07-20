@@ -10,23 +10,23 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import io.easybreezy.project.model.Projects
-import io.easybreezy.project.model.issue.Workflows
+import io.easybreezy.project.model.issue.AttachmentFiles
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Comments
-import io.easybreezy.project.model.issue.Timings
 import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
 import io.easybreezy.project.model.issue.Participants
 import io.easybreezy.project.model.issue.PriorityTable
 import io.easybreezy.project.model.issue.Statuses
+import io.easybreezy.project.model.issue.Timings
+import io.easybreezy.project.model.issue.Workflows
 import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import java.time.LocalDateTime
-import io.easybreezy.project.model.issue.Path
 
 class HasIssuesInCategoryQO(private val inCategory: UUID) : QueryObject<Boolean> {
     override suspend fun getData() =
@@ -83,6 +83,16 @@ class IssueCommentsQO(private val id: UUID) : QueryObject<Set<Comment>> {
             .toSet()
 }
 
+class IssueAttachmentsQO(private val id: UUID) : QueryObject<Set<Attachment>> {
+    override suspend fun getData() =
+        AttachmentFiles
+            .select {
+                AttachmentFiles.attachment eq id
+            }
+            .map { it.toAttachment() }
+            .toSet()
+}
+
 fun Iterable<ResultRow>.toIssueDetails(): List<IssueDetails> {
     return fold(mutableMapOf<UUID, IssueDetails>()) { map, resultRow ->
         val details = resultRow.toIssueDetails()
@@ -128,7 +138,6 @@ fun ResultRow.toIssue() = Issue(
 fun ResultRow.toIssueDetails() = IssueDetails(
     this[Issues.id].value,
     this[Issues.number],
-    this[Issues.files],
     this[Issues.parent]?.value,
     this[Issues.title],
     this[Issues.priority[PriorityTable.color]]?.rgb
@@ -154,6 +163,10 @@ fun ResultRow.toComment() = Comment(
     this[Comments.comment]
 )
 
+fun ResultRow.toAttachment() = Attachment(
+    this[AttachmentFiles.file].value
+)
+
 fun ResultRow.toCategory() = Category(
     this[Categories.id].value,
     this[Categories.name]
@@ -162,6 +175,11 @@ fun ResultRow.toCategory() = Category(
 fun ResultRow.toStatus() = Status(
     this[Statuses.id].value,
     this[Statuses.name]
+)
+
+@Serializable
+data class Attachment(
+    val id: UUID
 )
 
 @Serializable
@@ -202,7 +220,6 @@ data class Issue(
 data class IssueDetails(
     val id: UUID,
     val number: Int,
-    val files: Set<Path>,
     val parent: UUID?,
     val title: String,
     val priority: String?,
