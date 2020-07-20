@@ -14,7 +14,7 @@ import io.easybreezy.project.application.issue.command.Handler
 import io.easybreezy.project.application.issue.command.New
 import io.easybreezy.project.application.issue.command.Validation
 import java.util.UUID
-import io.easybreezy.project.application.issue.FileStorage
+import io.easybreezy.infrastructure.upload.LocalFileStorage
 import io.easybreezy.project.application.issue.command.AttachFiles
 import io.easybreezy.project.application.issue.command.RemoveAttachmentFile
 import io.easybreezy.project.application.issue.queryobject.Attachment
@@ -35,7 +35,7 @@ class IssueController @Inject constructor(
     private val handler: Handler,
     private val validation: Validation,
     private val queryExecutor: QueryExecutor,
-    private val fileStorage: FileStorage,
+    private val fileStorage: LocalFileStorage,
     private val transaction: TransactionManager,
     private val attachmentRepository: AttachmentRepository
 ) : Controller() {

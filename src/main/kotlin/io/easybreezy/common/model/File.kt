@@ -1,7 +1,5 @@
 package io.easybreezy.common.model
 
-import io.easybreezy.infrastructure.event.file.FileAdded
-import io.easybreezy.infrastructure.event.file.FileRemoved
 import io.easybreezy.infrastructure.exposed.dao.AggregateRoot
 import io.easybreezy.infrastructure.exposed.dao.PrivateEntityClass
 import io.easybreezy.infrastructure.exposed.dao.embedded
@@ -25,12 +23,10 @@ class File private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
             this.title = title
             this.extension = extension
             this.location = location
-            addEvent(FileAdded(this.id.value, location.path))
         }
     }
 
     fun remove() {
-        addEvent(FileRemoved(id.value, location.path))
         this.delete()
     }
 

@@ -3,7 +3,7 @@ package io.easybreezy.project.application.issue.command
 import com.google.inject.Inject
 import io.easybreezy.common.model.File
 import io.easybreezy.infrastructure.exposed.TransactionManager
-import io.easybreezy.project.application.issue.FileStorage
+import io.easybreezy.infrastructure.upload.LocalFileStorage
 import io.easybreezy.project.application.issue.command.language.Normalizer
 import io.easybreezy.project.application.issue.command.language.Parser
 import io.easybreezy.project.application.issue.command.language.normalizer.CategoryNormalizer
@@ -36,7 +36,7 @@ class Handler @Inject constructor(
     private val participantRepository: ParticipantRepository,
     private val timingRepository: TimingRepository,
     private val attachmentRepository: AttachmentRepository,
-    private val fileStorage: FileStorage
+    private val fileStorage: LocalFileStorage
 ) {
     suspend fun newIssue(command: New) {
         transaction {
@@ -155,7 +155,7 @@ class Handler @Inject constructor(
         val attachments = transaction {
             val attachments = mutableListOf<File>()
             command.files.forEach {
-                attachments.add(fileStorage.upload(it, command.issueId))
+                attachments.add(fileStorage.upload(it, Attachment.BUCKET + "/" + command.issueId))
             }
             attachments
         }

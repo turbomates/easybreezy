@@ -30,6 +30,8 @@ class Attachment private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(i
                 this.issue = EntityID(issue, Attachments)
             }
         }
+
+        const val BUCKET = "issue-attachment"
     }
 
     fun add(attachments: List<File>) {

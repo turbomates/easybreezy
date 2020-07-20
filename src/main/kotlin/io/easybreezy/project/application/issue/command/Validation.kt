@@ -6,7 +6,7 @@ import org.valiktor.functions.isNotBlank
 import io.easybreezy.infrastructure.ktor.Error
 import io.easybreezy.infrastructure.query.QueryExecutor
 import io.easybreezy.project.application.project.queryobject.ProjectHasStatus
-import io.easybreezy.project.model.issue.UploadedAttachment
+import io.easybreezy.infrastructure.upload.UploadedFile
 import org.valiktor.Constraint
 import org.valiktor.functions.isNotNull
 import org.valiktor.functions.validateForEach
@@ -47,9 +47,9 @@ class Validation @Inject constructor(
     fun validateCommand(command: AttachFiles): List<Error> {
         return validate(command) {
             validate(AttachFiles::files).validateForEach {
-                validate(UploadedAttachment::name).isNotNull().isNotBlank()
-                validate(UploadedAttachment::encodedContent).isNotNull().isNotBlank()
-                validate(UploadedAttachment::extension).isNotNull().isNotBlank()
+                validate(UploadedFile::name).isNotNull().isNotBlank()
+                validate(UploadedFile::encodedContent).isNotNull().isNotBlank()
+                validate(UploadedFile::extension).isNotNull().isNotBlank()
             }
         }
     }
