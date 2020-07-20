@@ -10,16 +10,17 @@ import io.easybreezy.infrastructure.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import io.easybreezy.project.model.Projects
-import io.easybreezy.project.model.issue.Workflows
+import io.easybreezy.project.model.issue.AttachmentFiles
 import io.easybreezy.project.model.issue.Categories
 import io.easybreezy.project.model.issue.Comments
-import io.easybreezy.project.model.issue.Timings
 import io.easybreezy.project.model.issue.IssueLabel
 import io.easybreezy.project.model.issue.Issues
 import io.easybreezy.project.model.issue.Labels
 import io.easybreezy.project.model.issue.Participants
 import io.easybreezy.project.model.issue.PriorityTable
 import io.easybreezy.project.model.issue.Statuses
+import io.easybreezy.project.model.issue.Timings
+import io.easybreezy.project.model.issue.Workflows
 import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
@@ -79,6 +80,16 @@ class IssueCommentsQO(private val id: UUID) : QueryObject<Set<Comment>> {
                 Comments.issue eq id
             }
             .map { it.toComment() }
+            .toSet()
+}
+
+class IssueAttachmentsQO(private val id: UUID) : QueryObject<Set<Attachment>> {
+    override suspend fun getData() =
+        AttachmentFiles
+            .select {
+                AttachmentFiles.attachment eq id
+            }
+            .map { it.toAttachment() }
             .toSet()
 }
 
@@ -152,6 +163,10 @@ fun ResultRow.toComment() = Comment(
     this[Comments.comment]
 )
 
+fun ResultRow.toAttachment() = Attachment(
+    this[AttachmentFiles.file].value
+)
+
 fun ResultRow.toCategory() = Category(
     this[Categories.id].value,
     this[Categories.name]
@@ -160,6 +175,11 @@ fun ResultRow.toCategory() = Category(
 fun ResultRow.toStatus() = Status(
     this[Statuses.id].value,
     this[Statuses.name]
+)
+
+@Serializable
+data class Attachment(
+    val id: UUID
 )
 
 @Serializable

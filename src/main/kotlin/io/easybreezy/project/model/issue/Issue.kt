@@ -24,7 +24,6 @@ class Issue private constructor(id: EntityID<UUID>) : AggregateRoot<UUID>(id) {
     private var title by Issues.title
     private var description by Issues.description
     private var priority by Issues.priority
-    private val comments by Comment referrersOn Comments.issue
     private var parent by Issue optionalReferencedOn Issues.parent
 
     companion object : PrivateEntityClass<UUID, Issue>(object : Issue.Repository() {}) {

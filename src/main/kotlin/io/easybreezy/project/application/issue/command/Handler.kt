@@ -1,7 +1,9 @@
 package io.easybreezy.project.application.issue.command
 
 import com.google.inject.Inject
+import io.easybreezy.common.model.File
 import io.easybreezy.infrastructure.exposed.TransactionManager
+import io.easybreezy.infrastructure.upload.LocalFileStorage
 import io.easybreezy.project.application.issue.command.language.Normalizer
 import io.easybreezy.project.application.issue.command.language.Parser
 import io.easybreezy.project.application.issue.command.language.normalizer.CategoryNormalizer
@@ -9,16 +11,18 @@ import io.easybreezy.project.application.issue.command.language.normalizer.Eleme
 import io.easybreezy.project.application.issue.command.language.normalizer.LabelNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.ParticipantsNormalizer
 import io.easybreezy.project.application.issue.command.language.normalizer.PriorityNormalizer
+import io.easybreezy.project.infrastructure.AttachmentRepository
 import io.easybreezy.project.infrastructure.IssueRepository
 import io.easybreezy.project.infrastructure.ParticipantRepository
 import io.easybreezy.project.infrastructure.TimingRepository
 import io.easybreezy.project.infrastructure.WorkflowRepository
+import io.easybreezy.project.model.issue.Attachment
 import io.easybreezy.project.model.issue.Comment
-import io.easybreezy.project.model.issue.Workflow
-import io.easybreezy.project.model.issue.Timing
-import io.easybreezy.project.model.Repository as ProjectRepository
 import io.easybreezy.project.model.issue.Issue
 import io.easybreezy.project.model.issue.Participant
+import io.easybreezy.project.model.issue.Timing
+import io.easybreezy.project.model.issue.Workflow
+import io.easybreezy.project.model.Repository as ProjectRepository
 import java.util.UUID
 
 class Handler @Inject constructor(
@@ -30,7 +34,9 @@ class Handler @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val workflowRepository: WorkflowRepository,
     private val participantRepository: ParticipantRepository,
-    private val timingRepository: TimingRepository
+    private val timingRepository: TimingRepository,
+    private val attachmentRepository: AttachmentRepository,
+    private val fileStorage: LocalFileStorage
 ) {
     suspend fun newIssue(command: New) {
         transaction {
@@ -143,6 +149,29 @@ class Handler @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun attachFiles(command: AttachFiles) {
+        val attachments = transaction {
+            val attachments = mutableListOf<File>()
+            command.files.forEach {
+                attachments.add(fileStorage.upload(it, Attachment.BUCKET + "/" + command.issueId))
+            }
+            attachments
+        }
+        val attachment = transaction {
+            attachmentRepository.findById(command.issueId) ?: Attachment.ofIssue(command.issueId)
+        }
+        transaction {
+            attachment.add(attachments)
+        }
+    }
+
+    suspend fun removeAttachmentFile(command: RemoveAttachmentFile) = transaction {
+        val attachment = attachmentRepository[command.issueId]
+        val removed = attachment.get(command.file)
+        fileStorage.remove(removed)
+        attachment.remove(removed)
     }
 
     private fun issue(id: UUID) = repository[id]

@@ -10,14 +10,17 @@ import io.easybreezy.infrastructure.ktor.auth.UserPrincipal
 import io.easybreezy.infrastructure.ktor.auth.authorize
 import io.easybreezy.infrastructure.ktor.auth.containsAny
 import io.easybreezy.infrastructure.query.QueryExecutor
+import io.easybreezy.integration.openapi.ktor.delete
 import io.easybreezy.integration.openapi.ktor.get
 import io.easybreezy.integration.openapi.ktor.post
 import io.easybreezy.integration.openapi.ktor.postParams
 import io.easybreezy.project.api.controller.IssueController
 import io.easybreezy.project.api.controller.ProjectController
 import io.easybreezy.project.api.controller.TeamController
+import io.easybreezy.project.application.issue.command.AttachFiles
 import io.easybreezy.project.application.issue.command.AddComment
 import io.easybreezy.project.application.issue.command.CreateSubIssue
+import io.easybreezy.project.application.issue.queryobject.Attachment
 import io.easybreezy.project.application.issue.queryobject.Comment
 import io.easybreezy.project.application.issue.queryobject.Issue
 import io.easybreezy.project.application.issue.queryobject.IssueDetails
@@ -152,7 +155,6 @@ class Router @Inject constructor(
                     controller<ProjectController>(this).show(params.slug)
                 }
             }
-
             authorize(setOf(Activity.PROJECTS_MANAGE)) {
                 post<Response.Either<Response.Ok, Response.Errors>, SlugParam, SlugParam>("/change-slug") { new, params ->
                     controller<ProjectController>(this).changeSlug(ChangeSlug(params.slug, new.slug))
@@ -271,6 +273,28 @@ class Router @Inject constructor(
                 }
             }
         }
+
+        route("/issues/{id}") {
+            authorize(setOf(Activity.PROJECTS_SHOW), { memberHasAccess(setOf(Activity.PROJECTS_SHOW)) }) {
+                data class Issue(val id: UUID)
+                data class AttachmentFile(val id: UUID, val fileId: UUID)
+
+                route("/attachments") {
+                    get<Response.Data<Set<Attachment>>, Issue>("") { params ->
+                        controller<IssueController>(this).attachments(params.id)
+                    }
+                    post<Response.Either<Response.Ok, Response.Errors>, AttachFiles, ID>("/add") { command, params ->
+                        controller<IssueController>(this).attachFiles(command, params.id)
+                    }
+                    get<Response.File, AttachmentFile>("/{fileId}") { params ->
+                        controller<IssueController>(this).attachmentFile(params.id, params.fileId)
+                    }
+                    delete<Response.Either<Response.Ok, Response.Errors>, AttachmentFile>("/{fileId}") { params ->
+                        controller<IssueController>(this).removeAttachmentFile(params.id, params.fileId)
+                    }
+                }
+            }
+        }
     }
 
     @Serializable
@@ -285,4 +309,6 @@ class Router @Inject constructor(
             queryExecutor.execute(MemberActivities(principal.id, locations.resolve<SlugParam>(this).slug))
         return memberActivities.containsAny(activities)
     }
+
+    internal data class ID(val id: UUID)
 }

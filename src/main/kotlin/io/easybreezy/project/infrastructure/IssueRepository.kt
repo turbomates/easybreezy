@@ -18,4 +18,12 @@ class IssueRepository : Issue.Repository() {
 
         return row?.plus(1) ?: 1
     }
+
+    fun getOne(issueId: UUID): Issue {
+        return find(issueId) ?: throw NoSuchElementException("Issue with id $issueId not found")
+    }
+
+    private fun find(issueId: UUID): Issue? {
+        return find { Issues.id eq issueId }.firstOrNull()
+    }
 }
