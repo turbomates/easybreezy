@@ -11,7 +11,7 @@
     "interactjs": "1.8.5",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
-    "node-sass": "4.13.1",
+    "node-sass": "7.0.0",
     "query-string": "^6.12.1",
     "react": "16.13.1",
     "react-app-polyfill": "^1.0.6",
